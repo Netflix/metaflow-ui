@@ -12,10 +12,18 @@ Run the app in the development mode. Open [http://localhost:3000](http://localho
 $ yarn start
 ```
 
-Run the app using different Metaflow Service API endpoint (defaults to http://localhost:8083).
+Modify Metaflow UI Service proxy and endpoints:
 
 ```bash
+# Modify development proxy destination (default: http://localhost:8083)
 $ METAFLOW_SERVICE_PROXY=http://localhost:8083 yarn start
+
+# Modify both API & Websocket endpoint (default: /api via proxy)
+# NOTE: Use this in case proxy is causing problems
+$ REACT_APP_METAFLOW_SERVICE=http://localhost:8083 yarn start
+
+# Modify Websocket endpoint (default: same as API with /ws suffix)
+$ REACT_APP_METAFLOW_SERVICE_WS=http://localhost:8083/ws yarn start
 ```
 
 Launch the test runner in the interactive watch mode.
