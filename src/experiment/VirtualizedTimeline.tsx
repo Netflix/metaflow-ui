@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createRef, useRef, useReducer } from 'react';
-import { /*AutoSizer,*/ List, ScrollParams } from 'react-virtualized';
+import { /*AutoSizer,*/ List /* ScrollParams*/ } from 'react-virtualized';
 import { Step, Task } from '../types';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
@@ -65,6 +65,8 @@ function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAc
 
 type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
 
+type StepIndex = { name: string; index: number };
+
 /**
  *
  */
@@ -73,12 +75,16 @@ const VirtualizedTimeline: React.FC<{
   onOpen: (item: Step) => void;
 }> = ({ data }) => {
   const _listref = createRef<List>();
+  // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef(null);
-  let listContainer = useComponentSize(_listContainer);
+  const listContainer = useComponentSize(_listContainer);
 
   const [rows, setRows] = useState<Row[]>([]);
   // Actual step data. Sorted by ts_epoch
   const [steps, setSteps] = useState<Step[]>([]);
+  // Position of each step in timeline. Used to track if we should use sticky header
+  const [stepPositions, setStepPositions] = useState<StepIndex[]>([]);
+  const [stickyHeader, setStickyHeader] = useState<null | string>(null);
   // List of row indexes that needs their height recalculated. Needs to be here so everything has time to render after changes
   // const [recomputeIds, setRecomputeIds] = useState<number[]>([]);
 
@@ -111,22 +117,9 @@ const VirtualizedTimeline: React.FC<{
   // Init steps list when data changes (needs sorting)
   useEffect(() => {
     setSteps(data.sort((a, b) => a.ts_epoch - b.ts_epoch));
-    // setRowData([]);
     dispatch({ type: 'init', ids: data.map((item) => item.step_name) });
   }, [data]); // eslint-disable-line
 
-  // Force height calculations for given rows
-  /*
-  useEffect(() => {
-    if (recomputeIds.length > 0) {
-      recomputeIds.forEach((id) => {
-        if (_listref.current) {
-          _listref.current.recomputeRowHeights(id);
-        }
-      });
-    }
-  }, [recomputeIds]); // eslint-disable-line
-*/
   // Mode selection change. We need to calculate new graph values if mode changes
   // TODO find longest task for absolute mode (or relative? which one?)
   useEffect(() => {
@@ -184,29 +177,22 @@ const VirtualizedTimeline: React.FC<{
               taskData: { state: 1, data },
             },
           });
-
-          // setRecomputeIds([...recomputeIds, index]);
         });
       });
     }
-
-    // setRecomputeIds([...recomputeIds, index]);
   };
 
   const expandAll = () => {
     steps.forEach((step) => {
       openRow(step.step_name, true);
     });
-    // setRecomputeIds([...recomputeIds, ...steps.map((_, index) => index)]);
   };
 
   const collapseAll = () => {
     steps.forEach((item) => {
       dispatch({ type: 'close', id: item.step_name });
     });
-    // setRecomputeIds([...recomputeIds, ...steps.map((_, index) => index)]);
   };
-  const subRowMaxHeight = listContainer.height - ROW_HEIGH;
 
   useEffect(() => {
     setRows(
@@ -238,6 +224,16 @@ const VirtualizedTimeline: React.FC<{
     setRows(newRows);
   }, [rowDataState]);
 
+  useEffect(() => {
+    const stepPos: StepIndex[] = rows.reduce((arr: StepIndex[], current: Row, index: number) => {
+      if (current.type === 'step') {
+        return [...arr, { name: current.data.step_name, index: index }];
+      }
+      return arr;
+    }, []);
+    setStepPositions(stepPos);
+  }, [rows]);
+
   return (
     <VirtualizedTimelineContainer>
       <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
@@ -265,45 +261,50 @@ const VirtualizedTimeline: React.FC<{
             <List
               // eslint-disable-next-line react/no-string-refs
               ref={_listref}
-              overscanRowCount={15}
+              overscanRowCount={10}
               rowCount={rows.length}
-              onScroll={(params: ScrollParams) => console.log(params)}
-              rowHeight={(_props) => {
-                // Need to think how this should work
-                // If there is million tasks, maybe we have maximum height and virtualise that stuff?
-                /*if (rowDataState[index]) {
-                  const item = rowDataState[index];
-                  return item.isOpen
-                    ? item.taskData.state === 1
-                      ? ROW_HEIGH +
-                        (item.taskData.data.length * ROW_HEIGH > subRowMaxHeight
-                          ? subRowMaxHeight
-                          : item.taskData.data.length * ROW_HEIGH)
-                      : ROW_HEIGH * 2
-                    : ROW_HEIGH;
-                }*/
-                return ROW_HEIGH;
+              onRowsRendered={(params) => {
+                console.log(params);
+                const stepNeedsSticky = stepPositions.find((item, index) => {
+                  const isLast = index + 1 === stepPositions.length;
+
+                  if (
+                    item.index < params.startIndex &&
+                    (isLast || stepPositions[index + 1].index > params.startIndex + 1)
+                  ) {
+                    return true;
+                  }
+                  return false;
+                });
+
+                if (stepNeedsSticky) {
+                  setStickyHeader(stepNeedsSticky.name);
+                } else {
+                  if (stickyHeader) {
+                    setStickyHeader(null);
+                  }
+                }
               }}
+              rowHeight={ROW_HEIGH}
               rowRenderer={({ index, style }) => {
                 const row = rows[index];
                 return (
                   <div key={index} style={style}>
-                    <TimelineRow
-                      item={row}
-                      graph={graph}
-                      maxHeight={subRowMaxHeight}
-                      rowData={{ isOpen: false, taskData: { state: 1, data: [] } }}
-                      onOpen={() => openRow(row.data.step_name)}
-                    />
+                    <TimelineRow item={row} graph={graph} onOpen={() => openRow(row.data.step_name)} />
                   </div>
                 );
               }}
-              height={listContainer.height /*steps.length * ROW_HEIGH*/}
+              height={listContainer.height}
               width={listContainer.width}
             />
-            <StyledRow style={{ position: 'absolute', background: '#fff', top: 0, left: 0 }}>
-              <RowLabel>Absolute row</RowLabel>
-            </StyledRow>
+            {stickyHeader && (
+              <TimelineRow
+                item={rows.find((item) => item.type === 'step' && item.data.step_name === stickyHeader)}
+                graph={graph}
+                onOpen={() => openRow(stickyHeader)}
+                sticky
+              />
+            )}
           </div>
         </div>
         <GraphFooter>
@@ -316,16 +317,20 @@ const VirtualizedTimeline: React.FC<{
 };
 
 const TimelineRow: React.FC<{
-  item: Row;
+  item?: Row;
   graph: GraphState;
-  maxHeight: number;
   onOpen: () => void;
-  rowData?: StepRowData;
-}> = ({ item, graph, onOpen, maxHeight, rowData }) => {
+  sticky?: boolean;
+}> = ({ item, graph, onOpen, sticky }) => {
+  if (!item) return null;
+
   const dataItem = item.data;
+
+  const Element = sticky ? StickyStyledRow : StyledRow;
+
   return (
     <>
-      <StyledRow
+      <Element
         style={{
           opacity: dataItem.ts_epoch < graph.timelineStart || dataItem.ts_epoch > graph.timelineEnd ? 0.5 : 1,
         }}
@@ -343,65 +348,9 @@ const TimelineRow: React.FC<{
             }}
           ></BoxGraphic>
         </RowGraphContainer>
-      </StyledRow>
-
-      <TimelineTasksList data={rowData} graph={graph} maxHeight={maxHeight} parentTime={dataItem.ts_epoch} />
+      </Element>
     </>
   );
-};
-
-const TimelineTasksList: React.FC<{ data?: StepRowData; graph: GraphState; maxHeight: number; parentTime: number }> = ({
-  data,
-  // graph,
-  // maxHeight,
-  // parentTime,
-}) => {
-  // const _listref = createRef<List>();
-
-  if (!data || !data.isOpen) {
-    return null;
-  }
-
-  if (data.taskData.state === 0) {
-    return <StyledRow>loading</StyledRow>;
-  } else {
-    // const items = data.taskData.data;
-    return null /*(
-      <AutoSizer disableHeight>
-        {({ width }) => (
-          <List
-            // eslint-disable-next-line react/no-string-refs
-            ref={_listref}
-            overscanRowCount={15}
-            rowCount={items.length}
-            rowHeight={ROW_HEIGH}
-            rowRenderer={({ index, style }) => (
-              <div key={index} style={style}>
-                <Row>
-                  <RowLabel>{items[index].task_id}</RowLabel>
-                  <RowGraphContainer>
-                    <BoxGraphic
-                      style={{
-                        left:
-                          graph.mode === 'relative'
-                            ? 0
-                            : `${
-                                ((parentTime - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100
-                              }%`,
-                        minWidth: '50px',
-                      }}
-                    ></BoxGraphic>
-                  </RowGraphContainer>
-                </Row>
-              </div>
-            )}
-            height={items.length * ROW_HEIGH > maxHeight ? maxHeight : items.length * ROW_HEIGH}
-            width={width}
-          />
-        )}
-      </AutoSizer>
-    )*/;
-  }
 };
 
 const VirtualizedTimelineContainer = styled.div`
@@ -420,6 +369,13 @@ const StyledRow = styled.div`
   &:hover {
     background: #e8e8e8;
   }
+`;
+
+const StickyStyledRow = styled(StyledRow)`
+  position: absolute;
+  background: #fff;
+  top: 0;
+  left: 0;
 `;
 
 const RowLabel = styled.div`
