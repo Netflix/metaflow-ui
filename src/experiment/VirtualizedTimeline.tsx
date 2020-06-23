@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createRef, useRef, useReducer } from 'react';
-import { /*AutoSizer,*/ List } from 'react-virtualized';
+import { /*AutoSizer,*/ List, ScrollParams } from 'react-virtualized';
 import { Step, Task } from '../types';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
@@ -41,27 +41,29 @@ function makeGraph(mode: 'relative' | 'absolute', start: number, end: number): G
 const ROW_HEIGH = 28;
 
 type RowDataAction =
-  | { type: 'init'; indexes: number[] }
-  | { type: 'add'; index: number; data: StepRowData }
-  | { type: 'close'; index: number };
+  | { type: 'init'; ids: string[] }
+  | { type: 'add'; id: string; data: StepRowData }
+  | { type: 'close'; id: string };
 
-function rowDataReducer(state: { [key: number]: StepRowData }, action: RowDataAction): { [key: number]: StepRowData } {
+function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAction): { [key: string]: StepRowData } {
   switch (action.type) {
     case 'init':
-      return action.indexes.reduce((obj, index) => {
-        return { ...obj, [index]: { isOpen: false, taskData: { state: 0, data: [] } } };
+      return action.ids.reduce((obj, id) => {
+        return { ...obj, [id]: { isOpen: false, taskData: { state: 0, data: [] } } };
       }, {});
     case 'add':
-      return { ...state, [action.index]: action.data };
+      return { ...state, [action.id]: action.data };
     case 'close':
-      if (state[action.index]) {
-        return { ...state, [action.index]: { ...state[action.index], isOpen: false } };
+      if (state[action.id]) {
+        return { ...state, [action.id]: { ...state[action.id], isOpen: false } };
       }
       return state;
   }
 
   return state;
 }
+
+type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
 
 /**
  *
@@ -74,11 +76,11 @@ const VirtualizedTimeline: React.FC<{
   const _listContainer = useRef(null);
   let listContainer = useComponentSize(_listContainer);
 
-  // const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState<Row[]>([]);
   // Actual step data. Sorted by ts_epoch
   const [steps, setSteps] = useState<Step[]>([]);
   // List of row indexes that needs their height recalculated. Needs to be here so everything has time to render after changes
-  const [recomputeIds, setRecomputeIds] = useState<number[]>([]);
+  // const [recomputeIds, setRecomputeIds] = useState<number[]>([]);
 
   const [rowDataState, dispatch] = useReducer(rowDataReducer, {});
 
@@ -110,10 +112,11 @@ const VirtualizedTimeline: React.FC<{
   useEffect(() => {
     setSteps(data.sort((a, b) => a.ts_epoch - b.ts_epoch));
     // setRowData([]);
-    dispatch({ type: 'init', indexes: data.map((_, index) => index) });
+    dispatch({ type: 'init', ids: data.map((item) => item.step_name) });
   }, [data]); // eslint-disable-line
 
   // Force height calculations for given rows
+  /*
   useEffect(() => {
     if (recomputeIds.length > 0) {
       recomputeIds.forEach((id) => {
@@ -123,7 +126,7 @@ const VirtualizedTimeline: React.FC<{
       });
     }
   }, [recomputeIds]); // eslint-disable-line
-
+*/
   // Mode selection change. We need to calculate new graph values if mode changes
   // TODO find longest task for absolute mode (or relative? which one?)
   useEffect(() => {
@@ -142,8 +145,13 @@ const VirtualizedTimeline: React.FC<{
   }, [graph.mode]); // eslint-disable-line
 
   // Open row
-  const openRow = (index: number, forceOpen?: boolean) => {
-    const item = rowDataState[index];
+  const openRow = (id: string, forceOpen?: boolean) => {
+    const step = steps.find((item) => item.step_name === id);
+    const item = rowDataState[id];
+
+    if (!step) {
+      return;
+    }
 
     /**
      * Handle what happens when row is clicked. Few situations
@@ -161,46 +169,74 @@ const VirtualizedTimeline: React.FC<{
     // Update open state
     dispatch({
       type: 'add',
-      index,
+      id,
       data: row,
     });
-
-    const step = steps[index];
 
     if (row.taskData.state === 0) {
       fetch(`/flows/${step.flow_id}/runs/${step.run_number}/steps/${step.step_name}/tasks`).then((resp) => {
         resp.json().then((data) => {
           dispatch({
             type: 'add',
-            index,
+            id,
             data: {
               ...row,
               taskData: { state: 1, data },
             },
           });
 
-          setRecomputeIds([...recomputeIds, index]);
+          // setRecomputeIds([...recomputeIds, index]);
         });
       });
     }
 
-    setRecomputeIds([...recomputeIds, index]);
+    // setRecomputeIds([...recomputeIds, index]);
   };
 
   const expandAll = () => {
-    steps.forEach((_, index) => {
-      openRow(index, true);
+    steps.forEach((step) => {
+      openRow(step.step_name, true);
     });
-    setRecomputeIds([...recomputeIds, ...steps.map((_, index) => index)]);
+    // setRecomputeIds([...recomputeIds, ...steps.map((_, index) => index)]);
   };
 
   const collapseAll = () => {
-    steps.forEach((_, index) => {
-      dispatch({ type: 'close', index });
+    steps.forEach((item) => {
+      dispatch({ type: 'close', id: item.step_name });
     });
-    setRecomputeIds([...recomputeIds, ...steps.map((_, index) => index)]);
+    // setRecomputeIds([...recomputeIds, ...steps.map((_, index) => index)]);
   };
   const subRowMaxHeight = listContainer.height - ROW_HEIGH;
+
+  useEffect(() => {
+    setRows(
+      steps.map((item) => ({
+        type: 'step',
+        data: item,
+      })),
+    );
+  }, [steps]);
+
+  useEffect(() => {
+    const newRows: Row[] = steps.reduce((arr: Row[], current: Step): Row[] => {
+      const rowData = rowDataState[current.step_name];
+
+      if (rowData?.isOpen && rowData.taskData.state === 1) {
+        return [
+          ...arr,
+          { type: 'step', data: current },
+          ...rowData.taskData.data.map((item) => ({
+            type: 'task' as const,
+            data: item,
+          })),
+        ];
+      }
+
+      return [...arr, { type: 'step', data: current }];
+    }, []);
+
+    setRows(newRows);
+  }, [rowDataState]);
 
   return (
     <VirtualizedTimelineContainer>
@@ -225,16 +261,17 @@ const VirtualizedTimeline: React.FC<{
           <div className="heading" style={{ position: 'relative', height: '30px' }}></div>
         </div>
         <div style={{ flex: '1' }} ref={_listContainer}>
-          <div style={{ height: listContainer.height + 'px', width: listContainer.width + 'px' }}>
+          <div style={{ position: 'relative', height: listContainer.height + 'px', width: listContainer.width + 'px' }}>
             <List
               // eslint-disable-next-line react/no-string-refs
               ref={_listref}
               overscanRowCount={15}
-              rowCount={steps.length}
-              rowHeight={({ index }) => {
+              rowCount={rows.length}
+              onScroll={(params: ScrollParams) => console.log(params)}
+              rowHeight={(_props) => {
                 // Need to think how this should work
                 // If there is million tasks, maybe we have maximum height and virtualise that stuff?
-                if (rowDataState[index]) {
+                /*if (rowDataState[index]) {
                   const item = rowDataState[index];
                   return item.isOpen
                     ? item.taskData.state === 1
@@ -244,23 +281,29 @@ const VirtualizedTimeline: React.FC<{
                           : item.taskData.data.length * ROW_HEIGH)
                       : ROW_HEIGH * 2
                     : ROW_HEIGH;
-                }
+                }*/
                 return ROW_HEIGH;
               }}
-              rowRenderer={({ index, style }) => (
-                <div key={index} style={style}>
-                  <TimelineRow
-                    item={steps[index]}
-                    graph={graph}
-                    maxHeight={subRowMaxHeight}
-                    rowData={rowDataState[index]}
-                    onOpen={() => openRow(index)}
-                  />
-                </div>
-              )}
+              rowRenderer={({ index, style }) => {
+                const row = rows[index];
+                return (
+                  <div key={index} style={style}>
+                    <TimelineRow
+                      item={row}
+                      graph={graph}
+                      maxHeight={subRowMaxHeight}
+                      rowData={{ isOpen: false, taskData: { state: 1, data: [] } }}
+                      onOpen={() => openRow(row.data.step_name)}
+                    />
+                  </div>
+                );
+              }}
               height={listContainer.height /*steps.length * ROW_HEIGH*/}
               width={listContainer.width}
             />
+            <StyledRow style={{ position: 'absolute', background: '#fff', top: 0, left: 0 }}>
+              <RowLabel>Absolute row</RowLabel>
+            </StyledRow>
           </div>
         </div>
         <GraphFooter>
@@ -273,21 +316,22 @@ const VirtualizedTimeline: React.FC<{
 };
 
 const TimelineRow: React.FC<{
-  item: Step;
+  item: Row;
   graph: GraphState;
   maxHeight: number;
   onOpen: () => void;
   rowData?: StepRowData;
 }> = ({ item, graph, onOpen, maxHeight, rowData }) => {
+  const dataItem = item.data;
   return (
     <>
-      <Row
+      <StyledRow
         style={{
-          opacity: item.ts_epoch < graph.timelineStart || item.ts_epoch > graph.timelineEnd ? 0.5 : 1,
+          opacity: dataItem.ts_epoch < graph.timelineStart || dataItem.ts_epoch > graph.timelineEnd ? 0.5 : 1,
         }}
       >
         <RowLabel onClick={() => onOpen()} style={{ cursor: 'pointer' }}>
-          {item.step_name}
+          {item.type === 'task' ? item.data.task_id : dataItem.step_name}
         </RowLabel>
         <RowGraphContainer>
           <BoxGraphic
@@ -295,13 +339,13 @@ const TimelineRow: React.FC<{
               left:
                 graph.mode === 'relative'
                   ? 0
-                  : `${((item.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100}%`,
+                  : `${((dataItem.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100}%`,
             }}
           ></BoxGraphic>
         </RowGraphContainer>
-      </Row>
+      </StyledRow>
 
-      <TimelineTasksList data={rowData} graph={graph} maxHeight={maxHeight} parentTime={item.ts_epoch} />
+      <TimelineTasksList data={rowData} graph={graph} maxHeight={maxHeight} parentTime={dataItem.ts_epoch} />
     </>
   );
 };
@@ -319,7 +363,7 @@ const TimelineTasksList: React.FC<{ data?: StepRowData; graph: GraphState; maxHe
   }
 
   if (data.taskData.state === 0) {
-    return <Row>loading</Row>;
+    return <StyledRow>loading</StyledRow>;
   } else {
     // const items = data.taskData.data;
     return null /*(
@@ -366,7 +410,7 @@ const VirtualizedTimelineContainer = styled.div`
   width: 100%;
 `;
 
-const Row = styled.div`
+const StyledRow = styled.div`
   display: flex;
   width: 100%;
   min-height: ${ROW_HEIGH}px;
