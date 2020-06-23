@@ -5,7 +5,7 @@ import Notification, { NotificationType } from '../../components/Notification';
 import { Run as IRun, Step as IStep } from '../../types';
 import ResourceBar from '../../components/ResourceBar';
 import Tabs from '../../components/Tabs';
-import { Content, Layout } from '../../components/Structure';
+import { Content, FixedContent, Layout } from '../../components/Structure';
 import VirtualizedTimeline from '../../experiment/VirtualizedTimeline';
 import DAG from '../../experiment/DAG';
 
@@ -32,7 +32,7 @@ export default function RunPage() {
   }, [params]);
 
   return (
-    <>
+    <FixedContent>
       <ResourceBar>
         {run?.run_number}
         {error && <Notification type={NotificationType.Danger}>Error loading run: {error}</Notification>}
@@ -57,16 +57,10 @@ export default function RunPage() {
             key: 'timeline',
             label: 'Timeline',
             linkTo: `${urlBase}/timeline`,
-            component: (
-              <Layout>
-                <Content>
-                  <VirtualizedTimeline data={stepsResource.data} onOpen={() => null} />
-                </Content>
-              </Layout>
-            ),
+            component: <VirtualizedTimeline data={stepsResource.data} onOpen={() => null} />,
           },
         ]}
       />
-    </>
+    </FixedContent>
   );
 }

@@ -11,5 +11,5 @@ export default function Page({ children }: PageProps) {
 }
 
 const Wrapper = styled.div`
-  padding: ${layout('appbarHeight')}rem ${layout('pagePaddingX')}rem;
+  padding: ${layout('appbarHeight')}rem ${layout('pagePaddingX')}rem 0;
 `;

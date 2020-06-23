@@ -12,7 +12,7 @@ const Home: React.FC = () => {
     url: `/runs`,
     initialData: [],
     subscribeToEvents: '/runs',
-    queryParams: { _group: 'flow_id', _limit: 5, _order: '+flow_id,run_number' },
+    queryParams: { _group: 'flow_id', _limit: 99, _order: '-ts_epoch,run_number' },
   });
 
   return (

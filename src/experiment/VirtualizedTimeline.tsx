@@ -209,26 +209,28 @@ const VirtualizedTimeline: React.FC<{
 
   return (
     <VirtualizedTimelineContainer>
-      <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-        <button onClick={() => expandAll()}>Expand all</button>
-        <button onClick={() => collapseAll()}>Collapse all</button>
-        <button
-          onClick={() => {
-            setGraph({ ...graph, mode: 'relative' });
-          }}
-        >
-          relative
-        </button>
-        <button
-          onClick={() => {
-            setGraph({ ...graph, mode: 'absolute' });
-          }}
-        >
-          absolute
-        </button>
-        <div className="heading" style={{ position: 'relative', height: '30px' }}></div>
-        <AutoSizer disableHeight>
-          {({ width }) => (
+      <div style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', flexDirection: 'column' }}>
+        <div>
+          <button onClick={() => expandAll()}>Expand all</button>
+          <button onClick={() => collapseAll()}>Collapse all</button>
+          <button
+            onClick={() => {
+              setGraph({ ...graph, mode: 'relative' });
+            }}
+          >
+            relative
+          </button>
+          <button
+            onClick={() => {
+              setGraph({ ...graph, mode: 'absolute' });
+            }}
+          >
+            absolute
+          </button>
+          <div className="heading" style={{ position: 'relative', height: '30px' }}></div>
+        </div>
+        <AutoSizer>
+          {({ width, height }) => (
             <>
               <List
                 // eslint-disable-next-line react/no-string-refs
@@ -260,7 +262,7 @@ const VirtualizedTimeline: React.FC<{
                     />
                   </div>
                 )}
-                height={steps.length * ROW_HEIGH}
+                height={height /*steps.length * ROW_HEIGH*/}
                 width={width}
               />
             </>

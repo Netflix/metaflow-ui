@@ -32,7 +32,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab }) => {
   const activeDef = tabs.find((t) => t.key === active);
 
   return (
-    <div className="tabs">
+    <TabsContainer>
       <TabsHeading>
         {tabs.map((tab) =>
           tab.linkTo ? (
@@ -47,14 +47,20 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab }) => {
         )}
       </TabsHeading>
 
-      {activeDef && activeDef.component}
-    </div>
+      <ActiveTab>{activeDef && activeDef.component}</ActiveTab>
+    </TabsContainer>
   );
 };
 
 /**
  * Style
  */
+
+const TabsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+`;
 
 const TabsHeading = styled.div`
   display: flex;
@@ -64,6 +70,10 @@ const TabsHeadingItem = styled.div`
   padding: 10px;
 
   border-bottom: ${(props: { active: boolean }) => (props.active ? '2px solid blue' : 'none')};
+`;
+
+const ActiveTab = styled.div`
+  flex: 1 1 auto;
 `;
 
 export default Tabs;
