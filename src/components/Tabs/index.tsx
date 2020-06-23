@@ -59,11 +59,12 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab }) => {
 const TabsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  flex: 1 1 auto;
+  flex: 1;
 `;
 
 const TabsHeading = styled.div`
   display: flex;
+  height: 40px;
 `;
 
 const TabsHeadingItem = styled.div`
@@ -73,7 +74,7 @@ const TabsHeadingItem = styled.div`
 `;
 
 const ActiveTab = styled.div`
-  flex: 1 1 auto;
+  flex: 1 1;
 `;
 
 export default Tabs;

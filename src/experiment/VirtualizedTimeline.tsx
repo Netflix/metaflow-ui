@@ -1,7 +1,8 @@
-import React, { useEffect, useState, createRef, useReducer } from 'react';
-import { AutoSizer, List } from 'react-virtualized';
+import React, { useEffect, useState, createRef, useRef, useReducer } from 'react';
+import { /*AutoSizer,*/ List } from 'react-virtualized';
 import { Step, Task } from '../types';
 import styled from 'styled-components';
+import useComponentSize from '@rehooks/component-size';
 import { color } from '../utils/theme';
 
 type GraphState = {
@@ -70,6 +71,10 @@ const VirtualizedTimeline: React.FC<{
   onOpen: (item: Step) => void;
 }> = ({ data }) => {
   const _listref = createRef<List>();
+  const _listContainer = useRef(null);
+  let listContainer = useComponentSize(_listContainer);
+
+  // const [rows, setRows] = useState([]);
   // Actual step data. Sorted by ts_epoch
   const [steps, setSteps] = useState<Step[]>([]);
   // List of row indexes that needs their height recalculated. Needs to be here so everything has time to render after changes
@@ -135,18 +140,7 @@ const VirtualizedTimeline: React.FC<{
       setGraph(makeGraph(graph.mode, start, end));
     }
   }, [graph.mode]); // eslint-disable-line
-  /*
-  useEffect(() => {
-    setRowData({ ...rowData, ...updateArray });
-  }, [updateArray]);*/
-  /*
-  const updateRowData = (key: number, data: StepRowData) => {
-    setRowData({
-      ...rowData,
-      [key]: data,
-    });
-  };
-*/
+
   // Open row
   const openRow = (index: number, forceOpen?: boolean) => {
     const item = rowDataState[index];
@@ -206,6 +200,7 @@ const VirtualizedTimeline: React.FC<{
     });
     setRecomputeIds([...recomputeIds, ...steps.map((_, index) => index)]);
   };
+  const subRowMaxHeight = listContainer.height - ROW_HEIGH;
 
   return (
     <VirtualizedTimelineContainer>
@@ -229,95 +224,61 @@ const VirtualizedTimeline: React.FC<{
           </button>
           <div className="heading" style={{ position: 'relative', height: '30px' }}></div>
         </div>
-        <AutoSizer>
-          {({ width, height }) => (
-            <>
-              <List
-                // eslint-disable-next-line react/no-string-refs
-                ref={_listref}
-                autoHeight={true}
-                overscanRowCount={15}
-                rowCount={steps.length}
-                rowHeight={({ index }) => {
-                  // Need to think how this should work
-                  // If there is million tasks, maybe we have maximum height and virtualise that stuff?
-                  if (rowDataState[index]) {
-                    const item = rowDataState[index];
-                    return item.isOpen
-                      ? item.taskData.state === 1
-                        ? ROW_HEIGH +
-                          (item.taskData.data.length * ROW_HEIGH > 300 ? 300 : item.taskData.data.length * ROW_HEIGH)
-                        : ROW_HEIGH * 2
-                      : ROW_HEIGH;
-                  }
-                  return ROW_HEIGH;
-                }}
-                rowRenderer={({ index, style }) => (
-                  <div key={index} style={style}>
-                    <TimelineRow
-                      item={steps[index]}
-                      graph={graph}
-                      rowData={rowDataState[index]}
-                      onOpen={() => openRow(index)}
-                    />
-                  </div>
-                )}
-                height={height /*steps.length * ROW_HEIGH*/}
-                width={width}
-              />
-            </>
-          )}
-        </AutoSizer>
+        <div style={{ flex: '1' }} ref={_listContainer}>
+          <div style={{ height: listContainer.height + 'px', width: listContainer.width + 'px' }}>
+            <List
+              // eslint-disable-next-line react/no-string-refs
+              ref={_listref}
+              overscanRowCount={15}
+              rowCount={steps.length}
+              rowHeight={({ index }) => {
+                // Need to think how this should work
+                // If there is million tasks, maybe we have maximum height and virtualise that stuff?
+                if (rowDataState[index]) {
+                  const item = rowDataState[index];
+                  return item.isOpen
+                    ? item.taskData.state === 1
+                      ? ROW_HEIGH +
+                        (item.taskData.data.length * ROW_HEIGH > subRowMaxHeight
+                          ? subRowMaxHeight
+                          : item.taskData.data.length * ROW_HEIGH)
+                      : ROW_HEIGH * 2
+                    : ROW_HEIGH;
+                }
+                return ROW_HEIGH;
+              }}
+              rowRenderer={({ index, style }) => (
+                <div key={index} style={style}>
+                  <TimelineRow
+                    item={steps[index]}
+                    graph={graph}
+                    maxHeight={subRowMaxHeight}
+                    rowData={rowDataState[index]}
+                    onOpen={() => openRow(index)}
+                  />
+                </div>
+              )}
+              height={listContainer.height /*steps.length * ROW_HEIGH*/}
+              width={listContainer.width}
+            />
+          </div>
+        </div>
         <GraphFooter>
           <div>{Math.round((graph.timelineStart - graph.min) / 1000)}s</div>
           <div>{Math.round((graph.timelineEnd - graph.min) / 1000)}s</div>
         </GraphFooter>
-        <input
-          type="number"
-          onChange={(e) => {
-            const val = parseInt(e.target.value);
-            if (val || val === 0) {
-              setGraph({
-                ...graph,
-                timelineStart: graph.min + val * 1000,
-              });
-            }
-          }}
-        />
-        <input
-          type="number"
-          onChange={(e) => {
-            const val = parseInt(e.target.value);
-            if (val || val === 0) {
-              setGraph({
-                ...graph,
-                timelineEnd: graph.min + val * 1000,
-              });
-            }
-          }}
-        />
-        <button
-          onClick={() =>
-            setGraph({
-              ...graph,
-              timelineStart: graph.min,
-              timelineEnd: graph.max,
-            })
-          }
-        >
-          reset
-        </button>
       </div>
     </VirtualizedTimelineContainer>
   );
 };
 
-const TimelineRow: React.FC<{ item: Step; graph: GraphState; onOpen: () => void; rowData?: StepRowData }> = ({
-  item,
-  graph,
-  onOpen,
-  rowData,
-}) => {
+const TimelineRow: React.FC<{
+  item: Step;
+  graph: GraphState;
+  maxHeight: number;
+  onOpen: () => void;
+  rowData?: StepRowData;
+}> = ({ item, graph, onOpen, maxHeight, rowData }) => {
   return (
     <>
       <Row
@@ -340,17 +301,18 @@ const TimelineRow: React.FC<{ item: Step; graph: GraphState; onOpen: () => void;
         </RowGraphContainer>
       </Row>
 
-      <TimelineTasksList data={rowData} graph={graph} parentTime={item.ts_epoch} />
+      <TimelineTasksList data={rowData} graph={graph} maxHeight={maxHeight} parentTime={item.ts_epoch} />
     </>
   );
 };
 
-const TimelineTasksList: React.FC<{ data?: StepRowData; graph: GraphState; parentTime: number }> = ({
+const TimelineTasksList: React.FC<{ data?: StepRowData; graph: GraphState; maxHeight: number; parentTime: number }> = ({
   data,
-  graph,
-  parentTime,
+  // graph,
+  // maxHeight,
+  // parentTime,
 }) => {
-  const _listref = createRef<List>();
+  // const _listref = createRef<List>();
 
   if (!data || !data.isOpen) {
     return null;
@@ -359,8 +321,8 @@ const TimelineTasksList: React.FC<{ data?: StepRowData; graph: GraphState; paren
   if (data.taskData.state === 0) {
     return <Row>loading</Row>;
   } else {
-    const items = data.taskData.data;
-    return (
+    // const items = data.taskData.data;
+    return null /*(
       <AutoSizer disableHeight>
         {({ width }) => (
           <List
@@ -389,12 +351,12 @@ const TimelineTasksList: React.FC<{ data?: StepRowData; graph: GraphState; paren
                 </Row>
               </div>
             )}
-            height={items.length * ROW_HEIGH > 300 ? 300 : items.length * ROW_HEIGH}
+            height={items.length * ROW_HEIGH > maxHeight ? maxHeight : items.length * ROW_HEIGH}
             width={width}
           />
         )}
       </AutoSizer>
-    );
+    )*/;
   }
 };
 

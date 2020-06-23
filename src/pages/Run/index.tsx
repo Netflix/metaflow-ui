@@ -38,6 +38,8 @@ export default function RunPage() {
         {error && <Notification type={NotificationType.Danger}>Error loading run: {error}</Notification>}
       </ResourceBar>
 
+      <div>Lets just add some content here</div>
+
       <Tabs
         activeTab={tab}
         tabs={[
