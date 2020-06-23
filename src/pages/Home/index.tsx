@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Run as IRun } from '../../types';
 import Table from '../../components/Table';
@@ -8,11 +8,12 @@ import useResource from '../../hooks/useResource';
 import Notification, { NotificationType } from '../../components/Notification';
 
 const Home: React.FC = () => {
+  const [flowId, setFlowId] = useState('');
   const { data: runs, error } = useResource<IRun[]>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: '/runs',
-    queryParams: { _group: 'flow_id', _limit: 5, _order: '+flow_id,run_number' },
+    queryParams: { _group: 'flow_id', _limit: 5, _order: '+flow_id,run_number', flow_id: flowId },
   });
 
   return (
@@ -20,10 +21,11 @@ const Home: React.FC = () => {
       <Layout>
         <Sidebar className="sidebar">
           <h3>Filters here</h3>
-          {error && <Notification type={NotificationType.Danger}>Error loading run: {error}</Notification>}
+          <input type="text" value={flowId} onChange={(e) => setFlowId(e.target.value)} />
         </Sidebar>
 
         <Content>
+          {error && <Notification type={NotificationType.Danger}>Error loading runs: {error}</Notification>}
           <Table
             data={runs}
             noHeader

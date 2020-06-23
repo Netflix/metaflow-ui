@@ -7,7 +7,7 @@ enum SubscribeType {
 }
 
 export enum EventType {
-  CREATE = 'CREATE',
+  INSERT = 'INSERT',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
 }
