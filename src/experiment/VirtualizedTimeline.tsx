@@ -254,6 +254,30 @@ const VirtualizedTimeline: React.FC<{
           >
             absolute
           </button>
+          <button
+            onClick={() => {
+              const tenthOfTimeline = (graph.max - graph.min) / 10;
+              setGraph({
+                ...graph,
+                timelineStart: graph.timelineStart - tenthOfTimeline,
+                timelineEnd: graph.timelineEnd + tenthOfTimeline,
+              });
+            }}
+          >
+            -
+          </button>
+          <button
+            onClick={() => {
+              const tenthOfTimeline = (graph.max - graph.min) / 10;
+              setGraph({
+                ...graph,
+                timelineStart: graph.timelineStart + tenthOfTimeline,
+                timelineEnd: graph.timelineEnd - tenthOfTimeline,
+              });
+            }}
+          >
+            +
+          </button>
           <div className="heading" style={{ position: 'relative', height: '30px' }}></div>
         </div>
         <div style={{ flex: '1' }} ref={_listContainer}>
@@ -264,7 +288,6 @@ const VirtualizedTimeline: React.FC<{
               overscanRowCount={10}
               rowCount={rows.length}
               onRowsRendered={(params) => {
-                console.log(params);
                 const stepNeedsSticky = stepPositions.find((item, index) => {
                   const isLast = index + 1 === stepPositions.length;
 
@@ -297,6 +320,7 @@ const VirtualizedTimeline: React.FC<{
               height={listContainer.height}
               width={listContainer.width}
             />
+
             {stickyHeader && (
               <TimelineRow
                 item={rows.find((item) => item.type === 'step' && item.data.step_name === stickyHeader)}
@@ -308,8 +332,37 @@ const VirtualizedTimeline: React.FC<{
           </div>
         </div>
         <GraphFooter>
-          <div>{Math.round((graph.timelineStart - graph.min) / 1000)}s</div>
-          <div>{Math.round((graph.timelineEnd - graph.min) / 1000)}s</div>
+          <HorizontalScrollbar
+            graph={graph}
+            updateTimeline={(value) => {
+              const isStartOutOfBounds = graph.timelineStart + value < graph.min;
+              const isEndOutOfBounds = graph.timelineEnd + value > graph.max;
+
+              if (isStartOutOfBounds) {
+                setGraph({
+                  ...graph,
+                  timelineStart: graph.min,
+                  timelineEnd: graph.min + (graph.timelineEnd - graph.timelineStart),
+                });
+              } else if (isEndOutOfBounds) {
+                setGraph({
+                  ...graph,
+                  timelineStart: graph.max - (graph.timelineEnd - graph.timelineStart),
+                  timelineEnd: graph.max,
+                });
+              } else {
+                setGraph({
+                  ...graph,
+                  timelineStart: graph.timelineStart + value,
+                  timelineEnd: graph.timelineEnd + value,
+                });
+              }
+            }}
+          />
+          <div>
+            <div>{Math.round((graph.timelineStart - graph.min) / 1000)}s</div>
+            <div>{Math.round((graph.timelineEnd - graph.min) / 1000)}s</div>
+          </div>
         </GraphFooter>
       </div>
     </VirtualizedTimelineContainer>
@@ -332,7 +385,8 @@ const TimelineRow: React.FC<{
     <>
       <Element
         style={{
-          opacity: dataItem.ts_epoch < graph.timelineStart || dataItem.ts_epoch > graph.timelineEnd ? 0.5 : 1,
+          background:
+            dataItem.ts_epoch < graph.timelineStart || dataItem.ts_epoch > graph.timelineEnd ? '#f8f8f8' : '#fff',
         }}
       >
         <RowLabel onClick={() => onOpen()} style={{ cursor: 'pointer' }}>
@@ -352,6 +406,56 @@ const TimelineRow: React.FC<{
     </>
   );
 };
+
+const HorizontalScrollbar: React.FC<{ graph: GraphState; updateTimeline: (amount: number) => void }> = ({
+  graph,
+  updateTimeline,
+}) => {
+  const _container = createRef<HTMLDivElement>();
+  const [drag, setDrag] = useState({ dragging: false, start: 0 });
+
+  return (
+    <ScrollbarContainer
+      ref={_container}
+      onMouseMove={(e) => {
+        if (drag.dragging) {
+          if (_container && _container.current) {
+            const movement = (e.clientX - drag.start) / _container.current?.clientWidth;
+            setDrag({ ...drag, start: e.clientX });
+            updateTimeline((graph.max - graph.min) * movement);
+          }
+        }
+      }}
+      onMouseUp={() => {
+        setDrag({ dragging: false, start: 0 });
+      }}
+    >
+      <ScrollBarHandle
+        onMouseDown={(e) => {
+          setDrag({ ...drag, dragging: true, start: e.clientX });
+        }}
+        style={{
+          width: ((graph.timelineEnd - graph.timelineStart) / (graph.max - graph.min)) * 100 + '%',
+          left: ((graph.timelineStart - graph.min) / (graph.max - graph.min)) * 100 + '%',
+        }}
+      />
+    </ScrollbarContainer>
+  );
+};
+
+const ScrollbarContainer = styled.div`
+  width: 100%;
+  height: 24px;
+  position: relative;
+`;
+
+const ScrollBarHandle = styled.div`
+  min-width: 10px;
+  height: 8px;
+  background-color: #dadada;
+  position: absolute;
+  top: 8px;
+`;
 
 const VirtualizedTimelineContainer = styled.div`
   display: flex;
@@ -402,9 +506,9 @@ const BoxGraphic = styled.div`
 
 const GraphFooter = styled.div`
   display: flex;
+  flex-direction: column;
   width: 100%;
   padding-left: 150px;
-  justify-content: space-between;
 `;
 
 export default VirtualizedTimeline;
