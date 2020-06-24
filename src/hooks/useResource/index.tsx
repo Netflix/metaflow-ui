@@ -91,6 +91,12 @@ export default function useResource<T>({
   const abortCtrl = useRef(new AbortController());
   const signal = abortCtrl.current.signal;
 
+  // Construct query parameters string and append to url
+  const queryString = Object.keys(queryParams)
+    .filter((k) => queryParams[k] && queryParams[k] !== '')
+    .map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(queryParams[k]))
+    .join('&');
+
   useEffect(() => {
     // Subscribe to cache events
     const unsubCache = cache.subscribe(url, () => {
@@ -111,10 +117,11 @@ export default function useResource<T>({
     if (subscribeToEvents) {
       const eventResource = typeof subscribeToEvents === 'string' ? subscribeToEvents : url;
       unsubWebsocket = ResourceEvents.subscribe(eventResource, (event: Event<T>) => {
-        if (event.type === EventType.CREATE) {
+        if (event.type === EventType.INSERT) {
           // Get current cache and prepend to the list
           const currentCache = cache.get(url);
 
+          // TODO: How do we handle this properly?
           cache.set(url, {
             ...currentCache,
             data: Array.isArray(currentCache.data)
@@ -132,32 +139,38 @@ export default function useResource<T>({
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    const cached = cache.get(url);
-    if (!cached || !cached.data || cached.stale) {
-      let target = `${METAFLOW_SERVICE}${url}`;
-
-      // Construct query parameters string and append to url
-      const qs = Object.keys(queryParams || {})
-        .map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(queryParams[k]))
-        .join('&');
-      if (qs.length > 0) {
-        target += `?${qs}`;
-      }
-
-      fetch(target, { signal })
-        .then((response) =>
-          response.json().then((result: DataModel<T>) => ({
-            response,
-            data: result.data,
-          })),
-        )
-        .then((cacheItem) => cache.set(url, cacheItem), setError);
+    let target = `${METAFLOW_SERVICE}${url}`;
+    if (queryString.length > 0) {
+      target += `?${queryString}`;
     }
 
+    // TODO: Always disable response cache for now
+    // because it doesn't work for query parameters
+    fetch(target, { signal })
+      .then((response) =>
+        response.json().then((result: DataModel<T>) => ({
+          response,
+          data: result.data,
+        })),
+      )
+      .then(
+        (cacheItem) => {
+          cache.set(url, cacheItem);
+        },
+        (err) => {
+          if (err.name !== 'AbortError') {
+            console.error(err.name, err);
+            setError(err.toString());
+          }
+        },
+      );
+
     return () => {
-      abortCtrl.current.abort(); // eslint-disable-line
+      // TODO: Abort is disabled for now.
+      // For some reason this always aborts the "upcoming" request
+      // abortCtrl.current.abort(); // eslint-disable-line
     };
-  }, [url]); // eslint-disable-line
+  }, [url, queryString]); // eslint-disable-line
 
   return { url, data, error };
 }
