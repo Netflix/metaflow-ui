@@ -358,7 +358,15 @@ const VirtualizedTimeline: React.FC<{
                       item={row}
                       graph={graph}
                       onOpen={() => {
-                        dispatch({ type: 'open', id: row.data.step_name });
+                        if (row.type === 'task') return;
+
+                        const step = rowDataState[row.data.step_name];
+
+                        if (step && step.isOpen) {
+                          dispatch({ type: 'close', id: row.data.step_name });
+                        } else {
+                          dispatch({ type: 'open', id: row.data.step_name });
+                        }
                       }}
                     />
                   </div>
