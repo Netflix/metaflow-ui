@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import HorizontalScrollbar from './TimelineHorizontalScroll';
 import TimelineRow from './TimelineRow';
+import useResource from '../hooks/useResource';
 
 export type GraphState = {
   // Relative or absolute rendering? Absolute = just line length
@@ -13,8 +14,6 @@ export type GraphState = {
   min: number;
   // Maximum length of graph
   max: number;
-  // Period of graph (not really needed)
-  period: number;
   // Selected starting point (default to 0)
   timelineStart: number;
   // Selected ending point (default to last task timestamp)
@@ -25,7 +24,7 @@ type StepRowData = {
   // Is row opened?
   isOpen: boolean;
   // Tasks for this step
-  taskData: { state: number; data: Task[] };
+  data: Task[];
 };
 
 function makeGraph(mode: 'relative' | 'absolute', start: number, end: number): GraphState {
@@ -33,7 +32,6 @@ function makeGraph(mode: 'relative' | 'absolute', start: number, end: number): G
     mode: mode,
     min: start,
     max: end,
-    period: end - start,
     timelineStart: start,
     timelineEnd: end,
   };
@@ -44,16 +42,44 @@ export const ROW_HEIGHT = 28;
 type RowDataAction =
   | { type: 'init'; ids: string[] }
   | { type: 'add'; id: string; data: StepRowData }
+  | { type: 'fill'; data: Task[] }
+  | { type: 'open'; id: string }
   | { type: 'close'; id: string };
 
 function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAction): { [key: string]: StepRowData } {
   switch (action.type) {
     case 'init':
       return action.ids.reduce((obj, id) => {
-        return { ...obj, [id]: { isOpen: false, taskData: { state: 0, data: [] } } };
+        if (state[id]) {
+          return { ...obj, [id]: { ...state[id], isOpen: true } };
+        }
+        return { ...obj, [id]: { isOpen: true, data: [] } };
       }, {});
     case 'add':
       return { ...state, [action.id]: action.data };
+    case 'fill': {
+      const data = action.data.reduce((obj: { [key: string]: StepRowData }, value) => {
+        const isOpenValue = state[value.step_name] ? state[value.step_name].isOpen : true;
+
+        if (obj[value.step_name]) {
+          return {
+            ...obj,
+            [value.step_name]: {
+              isOpen: isOpenValue,
+              data: [...obj[value.step_name].data, value].sort((a, b) => a.ts_epoch - b.ts_epoch),
+            },
+          };
+        }
+        return { ...obj, [value.step_name]: { isOpen: isOpenValue, data: [value] } };
+      }, {});
+
+      return { ...state, ...data };
+    }
+    case 'open':
+      if (state[action.id]) {
+        return { ...state, [action.id]: { ...state[action.id], isOpen: true } };
+      }
+      return state;
     case 'close':
       if (state[action.id]) {
         return { ...state, [action.id]: { ...state[action.id], isOpen: false } };
@@ -68,13 +94,24 @@ export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
 
 type StepIndex = { name: string; index: number };
 
+export const TimelineContainer: React.FC<{
+  flowId: string;
+  runNumber: string;
+}> = ({ runNumber, flowId }) => {
+  if (!runNumber || !flowId) {
+    return <>Waiting for run data...</>;
+  }
+
+  return <VirtualizedTimeline runNumber={runNumber} flowId={flowId} />;
+};
+
 /**
  *
  */
 const VirtualizedTimeline: React.FC<{
-  data: Step[];
-  onOpen: (item: Step) => void;
-}> = ({ data }) => {
+  flowId: string;
+  runNumber: string;
+}> = ({ flowId, runNumber }) => {
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef(null);
@@ -86,17 +123,26 @@ const VirtualizedTimeline: React.FC<{
   // Position of each step in timeline. Used to track if we should use sticky header
   const [stepPositions, setStepPositions] = useState<StepIndex[]>([]);
   const [stickyHeader, setStickyHeader] = useState<null | string>(null);
-  // List of row indexes that needs their height recalculated. Needs to be here so everything has time to render after changes
-  // const [recomputeIds, setRecomputeIds] = useState<number[]>([]);
 
   const [rowDataState, dispatch] = useReducer(rowDataReducer, {});
+
+  const { data: taskData } = useResource<Task[]>({
+    url: `/flows/${flowId}/runs/${runNumber}/tasks?_limit=10000`,
+    subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/tasks`,
+    initialData: [],
+  });
+
+  const { data: stepData } = useResource<Step[]>({
+    url: `/flows/${flowId}/runs/${runNumber}/steps?_limit=1000`,
+    subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/steps`,
+    initialData: [],
+  });
 
   // Graph data. Need to know start and end time of run to render lines
   const [graph, setGraph] = useState<GraphState>({
     mode: 'absolute',
     min: 0,
     max: 10,
-    period: 10,
     timelineStart: 0,
     timelineEnd: 0,
   });
@@ -115,11 +161,26 @@ const VirtualizedTimeline: React.FC<{
     }
   }, [steps]); // eslint-disable-line
 
-  // Init steps list when data changes (needs sorting)
+  // Update steps data when they come in
   useEffect(() => {
-    setSteps(data.sort((a, b) => a.ts_epoch - b.ts_epoch));
-    dispatch({ type: 'init', ids: data.map((item) => item.step_name) });
-  }, [data]); // eslint-disable-line
+    setSteps(stepData.sort((a, b) => a.ts_epoch - b.ts_epoch));
+    dispatch({ type: 'init', ids: stepData.map((item) => item.step_name) });
+  }, [stepData]); // eslint-disable-line
+  // Update Tasks data when they come in
+  useEffect(() => {
+    if (!Array.isArray(taskData)) return;
+
+    dispatch({ type: 'fill', data: taskData });
+
+    const highestTimestamp = taskData.reduce((val, task) => {
+      if (task.ts_epoch > val) return task.ts_epoch;
+      return val;
+    }, graph.max);
+
+    if (highestTimestamp !== graph.max) {
+      setGraph(makeGraph(graph.mode, graph.min, highestTimestamp));
+    }
+  }, [taskData]);
 
   // Mode selection change. We need to calculate new graph values if mode changes
   // TODO find longest task for absolute mode (or relative? which one?)
@@ -138,54 +199,9 @@ const VirtualizedTimeline: React.FC<{
     }
   }, [graph.mode]); // eslint-disable-line
 
-  // Open row
-  const openRow = (id: string, forceOpen?: boolean) => {
-    const step = steps.find((item) => item.step_name === id);
-    const item = rowDataState[id];
-
-    if (!step) {
-      return;
-    }
-
-    /**
-     * Handle what happens when row is clicked. Few situations
-     * a) Row is closed -> Close it
-     * b) Row is opened for first time -> Create row metadata for object and
-     * fetch tasks
-     * c) Row is opened (not first time) -> Open and show already fetched tasks
-     */
-
-    const row = {
-      isOpen: forceOpen ? true : item ? !item.isOpen : true,
-      taskData: item ? item.taskData : { state: 0, data: [] },
-    };
-
-    // Update open state
-    dispatch({
-      type: 'add',
-      id,
-      data: row,
-    });
-
-    if (row.taskData.state === 0) {
-      fetch(`/flows/${step.flow_id}/runs/${step.run_number}/steps/${step.step_name}/tasks`).then((resp) => {
-        resp.json().then((data: Task[]) => {
-          dispatch({
-            type: 'add',
-            id,
-            data: {
-              ...row,
-              taskData: { state: 1, data: data.sort((a, b) => a.ts_epoch - b.ts_epoch) },
-            },
-          });
-        });
-      });
-    }
-  };
-
   const expandAll = () => {
-    steps.forEach((step) => {
-      openRow(step.step_name, true);
+    steps.forEach((item) => {
+      dispatch({ type: 'open', id: item.step_name });
     });
   };
 
@@ -195,26 +211,16 @@ const VirtualizedTimeline: React.FC<{
     });
   };
 
-  // Map steps to rows. TODO: This might clash with task rows thing
-  useEffect(() => {
-    setRows(
-      steps.map((item) => ({
-        type: 'step',
-        data: item,
-      })),
-    );
-  }, [steps]);
-
   // Add tasks after step rows if they are open
   useEffect(() => {
     const newRows: Row[] = steps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];
 
-      if (rowData?.isOpen && rowData.taskData.state === 1) {
+      if (rowData?.isOpen) {
         return [
           ...arr,
           { type: 'step', data: current },
-          ...rowData.taskData.data.map((item) => ({
+          ...rowData.data.map((item) => ({
             type: 'task' as const,
             data: item,
           })),
@@ -223,9 +229,8 @@ const VirtualizedTimeline: React.FC<{
 
       return [...arr, { type: 'step', data: current }];
     }, []);
-
     setRows(newRows);
-  }, [rowDataState]);
+  }, [steps, rowDataState]);
 
   // Update step position indexes (for sticky headers)
   useEffect(() => {
@@ -238,7 +243,10 @@ const VirtualizedTimeline: React.FC<{
     setStepPositions(stepPos);
   }, [rows]);
 
+  //
   // Scrollbar functions
+  //
+
   const moveScrollbar = (value: number) => {
     // Check if any of the edges of scroll bar are out of bounds
     if (startOrEndOutOfBounds(graph, value)) {
@@ -346,7 +354,13 @@ const VirtualizedTimeline: React.FC<{
                 const row = rows[index];
                 return (
                   <div key={index} style={style}>
-                    <TimelineRow item={row} graph={graph} onOpen={() => openRow(row.data.step_name)} />
+                    <TimelineRow
+                      item={row}
+                      graph={graph}
+                      onOpen={() => {
+                        dispatch({ type: 'open', id: row.data.step_name });
+                      }}
+                    />
                   </div>
                 );
               }}
@@ -358,7 +372,7 @@ const VirtualizedTimeline: React.FC<{
               <TimelineRow
                 item={rows.find((item) => item.type === 'step' && item.data.step_name === stickyHeader)}
                 graph={graph}
-                onOpen={() => openRow(stickyHeader)}
+                onOpen={() => dispatch({ type: 'close', id: stickyHeader })}
                 sticky
               />
             )}

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
 import Notification, { NotificationType } from '../../components/Notification';
-import { Run as IRun, Step as IStep } from '../../types';
+import { Run as IRun } from '../../types';
 import ResourceBar from '../../components/ResourceBar';
 import Tabs from '../../components/Tabs';
 import { Content, FixedContent, Layout } from '../../components/Structure';
-import VirtualizedTimeline from '../../experiment/VirtualizedTimeline';
+import { TimelineContainer } from '../../experiment/VirtualizedTimeline';
 import DAG from '../../experiment/DAG';
 
 export default function RunPage() {
@@ -14,15 +14,11 @@ export default function RunPage() {
   const urlBase = url.split('/').slice(0, -1).join('/');
   const { data: run, error } = useResource<IRun>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}`,
+    subscribeToEvents: `/flows/${params.flowId}/runs/${params.runNumber}`,
     initialData: null,
   });
 
-  // TODO: Each tab should fetch their own resources. This way we can also leverage React.Suspense in the future
-  const stepsResource = useResource<IStep[]>({
-    url: `/flows/${params.flowId}/runs/${params.runNumber}/steps`,
-    subscribeToEvents: `/flows/${params.flowId}/runs/${params.runNumber}/steps`,
-    initialData: [],
-  });
+  console.log(run);
 
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState('dag');
@@ -32,8 +28,6 @@ export default function RunPage() {
     }
   }, [params]);
 
-  console.log(stepsResource);
-
   return (
     <FixedContent>
       <ResourceBar>
@@ -41,7 +35,7 @@ export default function RunPage() {
         {error && <Notification type={NotificationType.Danger}>Error loading run: {error}</Notification>}
       </ResourceBar>
 
-      <div>Lets just add some content here</div>
+      <div>{run && run.run_number ? run.run_number : 'No run data'}</div>
 
       <Tabs
         activeTab={tab}
@@ -53,7 +47,7 @@ export default function RunPage() {
             component: (
               <Layout>
                 <Content>
-                  <DAG steps={stepsResource.data} />
+                  <DAG steps={[]} />
                 </Content>
               </Layout>
             ),
@@ -62,7 +56,7 @@ export default function RunPage() {
             key: 'timeline',
             label: 'Timeline',
             linkTo: `${urlBase}/timeline`,
-            component: <VirtualizedTimeline data={stepsResource.data} onOpen={() => null} />,
+            component: <TimelineContainer runNumber={params.runNumber} flowId={params.flowId} />,
           },
         ]}
       />
