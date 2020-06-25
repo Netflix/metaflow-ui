@@ -3,9 +3,10 @@ import { /*AutoSizer,*/ List /* ScrollParams*/ } from 'react-virtualized';
 import { Step, Task } from '../types';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
-import { color } from '../utils/theme';
+import HorizontalScrollbar from './TimelineHorizontalScroll';
+import TimelineRow from './TimelineRow';
 
-type GraphState = {
+export type GraphState = {
   // Relative or absolute rendering? Absolute = just line length
   mode: 'relative' | 'absolute';
   // Minimum value in graph
@@ -38,7 +39,7 @@ function makeGraph(mode: 'relative' | 'absolute', start: number, end: number): G
   };
 }
 
-const ROW_HEIGH = 28;
+export const ROW_HEIGHT = 28;
 
 type RowDataAction =
   | { type: 'init'; ids: string[] }
@@ -63,7 +64,7 @@ function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAc
   return state;
 }
 
-type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
+export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
 
 type StepIndex = { name: string; index: number };
 
@@ -168,13 +169,13 @@ const VirtualizedTimeline: React.FC<{
 
     if (row.taskData.state === 0) {
       fetch(`/flows/${step.flow_id}/runs/${step.run_number}/steps/${step.step_name}/tasks`).then((resp) => {
-        resp.json().then((data) => {
+        resp.json().then((data: Task[]) => {
           dispatch({
             type: 'add',
             id,
             data: {
               ...row,
-              taskData: { state: 1, data },
+              taskData: { state: 1, data: data.sort((a, b) => a.ts_epoch - b.ts_epoch) },
             },
           });
         });
@@ -194,6 +195,7 @@ const VirtualizedTimeline: React.FC<{
     });
   };
 
+  // Map steps to rows. TODO: This might clash with task rows thing
   useEffect(() => {
     setRows(
       steps.map((item) => ({
@@ -203,6 +205,7 @@ const VirtualizedTimeline: React.FC<{
     );
   }, [steps]);
 
+  // Add tasks after step rows if they are open
   useEffect(() => {
     const newRows: Row[] = steps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];
@@ -224,6 +227,7 @@ const VirtualizedTimeline: React.FC<{
     setRows(newRows);
   }, [rowDataState]);
 
+  // Update step position indexes (for sticky headers)
   useEffect(() => {
     const stepPos: StepIndex[] = rows.reduce((arr: StepIndex[], current: Row, index: number) => {
       if (current.type === 'step') {
@@ -233,6 +237,51 @@ const VirtualizedTimeline: React.FC<{
     }, []);
     setStepPositions(stepPos);
   }, [rows]);
+
+  // Scrollbar functions
+  const moveScrollbar = (value: number) => {
+    // Check if any of the edges of scroll bar are out of bounds
+    if (startOrEndOutOfBounds(graph, value)) {
+      setGraph({
+        ...graph,
+        timelineStart: startOutOfBounds(graph, value)
+          ? graph.min
+          : graph.max - (graph.timelineEnd - graph.timelineStart),
+        timelineEnd: endOutOfBounds(graph, value) ? graph.max : graph.min + (graph.timelineEnd - graph.timelineStart),
+      });
+    } else {
+      // Other wise just change start and end position of scrollbar
+      setGraph(updateGraph(graph, value));
+    }
+  };
+
+  const zoomOut = () => {
+    const tenthOfTimeline = (graph.max - graph.min) / 10;
+
+    if (zoomOverTotalLength(graph, tenthOfTimeline)) {
+      setGraph(resetTimeline(graph));
+    } else if (startOrEndOutOfBounds(graph, -tenthOfTimeline, tenthOfTimeline)) {
+      setGraph({
+        ...graph,
+        timelineStart: startOutOfBounds(graph, -tenthOfTimeline)
+          ? graph.min
+          : graph.max - (graph.timelineEnd - graph.timelineStart + tenthOfTimeline),
+        timelineEnd: endOutOfBounds(graph, tenthOfTimeline)
+          ? graph.max
+          : graph.min + (graph.timelineEnd - graph.timelineStart + tenthOfTimeline),
+      });
+    } else {
+      setGraph(updateGraph(graph, -tenthOfTimeline, tenthOfTimeline));
+    }
+  };
+
+  const zoomIn = () => {
+    const tenthOfTimeline = (graph.max - graph.min) / 10;
+
+    if (graph.timelineEnd - tenthOfTimeline <= graph.timelineStart + tenthOfTimeline) return;
+
+    setGraph(updateGraph(graph, tenthOfTimeline, -tenthOfTimeline));
+  };
 
   return (
     <VirtualizedTimelineContainer>
@@ -254,34 +303,18 @@ const VirtualizedTimeline: React.FC<{
           >
             absolute
           </button>
-          <button
-            onClick={() => {
-              const tenthOfTimeline = (graph.max - graph.min) / 10;
-              setGraph({
-                ...graph,
-                timelineStart: graph.timelineStart - tenthOfTimeline,
-                timelineEnd: graph.timelineEnd + tenthOfTimeline,
-              });
-            }}
-          >
-            -
-          </button>
-          <button
-            onClick={() => {
-              const tenthOfTimeline = (graph.max - graph.min) / 10;
-              setGraph({
-                ...graph,
-                timelineStart: graph.timelineStart + tenthOfTimeline,
-                timelineEnd: graph.timelineEnd - tenthOfTimeline,
-              });
-            }}
-          >
-            +
-          </button>
-          <div className="heading" style={{ position: 'relative', height: '30px' }}></div>
+          <button onClick={zoomOut}>-</button>
+          <button onClick={zoomIn}>+</button>
         </div>
         <div style={{ flex: '1' }} ref={_listContainer}>
-          <div style={{ position: 'relative', height: listContainer.height + 'px', width: listContainer.width + 'px' }}>
+          <div
+            style={{
+              position: 'relative',
+              paddingTop: '28px',
+              height: listContainer.height - 28 + 'px',
+              width: listContainer.width + 'px',
+            }}
+          >
             <List
               // eslint-disable-next-line react/no-string-refs
               ref={_listref}
@@ -308,7 +341,7 @@ const VirtualizedTimeline: React.FC<{
                   }
                 }
               }}
-              rowHeight={ROW_HEIGH}
+              rowHeight={ROW_HEIGHT}
               rowRenderer={({ index, style }) => {
                 const row = rows[index];
                 return (
@@ -317,7 +350,7 @@ const VirtualizedTimeline: React.FC<{
                   </div>
                 );
               }}
-              height={listContainer.height}
+              height={listContainer.height - 28}
               width={listContainer.width}
             />
 
@@ -332,34 +365,8 @@ const VirtualizedTimeline: React.FC<{
           </div>
         </div>
         <GraphFooter>
-          <HorizontalScrollbar
-            graph={graph}
-            updateTimeline={(value) => {
-              const isStartOutOfBounds = graph.timelineStart + value < graph.min;
-              const isEndOutOfBounds = graph.timelineEnd + value > graph.max;
-
-              if (isStartOutOfBounds) {
-                setGraph({
-                  ...graph,
-                  timelineStart: graph.min,
-                  timelineEnd: graph.min + (graph.timelineEnd - graph.timelineStart),
-                });
-              } else if (isEndOutOfBounds) {
-                setGraph({
-                  ...graph,
-                  timelineStart: graph.max - (graph.timelineEnd - graph.timelineStart),
-                  timelineEnd: graph.max,
-                });
-              } else {
-                setGraph({
-                  ...graph,
-                  timelineStart: graph.timelineStart + value,
-                  timelineEnd: graph.timelineEnd + value,
-                });
-              }
-            }}
-          />
-          <div>
+          <HorizontalScrollbar graph={graph} updateTimeline={moveScrollbar} />
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div>{Math.round((graph.timelineStart - graph.min) / 1000)}s</div>
             <div>{Math.round((graph.timelineEnd - graph.min) / 1000)}s</div>
           </div>
@@ -369,139 +376,43 @@ const VirtualizedTimeline: React.FC<{
   );
 };
 
-const TimelineRow: React.FC<{
-  item?: Row;
-  graph: GraphState;
-  onOpen: () => void;
-  sticky?: boolean;
-}> = ({ item, graph, onOpen, sticky }) => {
-  if (!item) return null;
+// Zoom functions
+function zoomOverTotalLength(graph: GraphState, change: number) {
+  return graph.timelineEnd + change - graph.timelineStart - change > graph.max - graph.min;
+}
 
-  const dataItem = item.data;
+function startOutOfBounds(graph: GraphState, change: number) {
+  return graph.timelineStart + change < graph.min;
+}
 
-  const Element = sticky ? StickyStyledRow : StyledRow;
+function endOutOfBounds(graph: GraphState, change: number) {
+  return graph.timelineEnd + change > graph.max;
+}
 
-  return (
-    <>
-      <Element
-        style={{
-          background:
-            dataItem.ts_epoch < graph.timelineStart || dataItem.ts_epoch > graph.timelineEnd ? '#f8f8f8' : '#fff',
-        }}
-      >
-        <RowLabel onClick={() => onOpen()} style={{ cursor: 'pointer' }}>
-          {item.type === 'task' ? item.data.task_id : dataItem.step_name}
-        </RowLabel>
-        <RowGraphContainer>
-          <BoxGraphic
-            style={{
-              left:
-                graph.mode === 'relative'
-                  ? 0
-                  : `${((dataItem.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100}%`,
-            }}
-          ></BoxGraphic>
-        </RowGraphContainer>
-      </Element>
-    </>
-  );
-};
+function startOrEndOutOfBounds(graph: GraphState, change: number, changeEnd?: number) {
+  return startOutOfBounds(graph, change) || endOutOfBounds(graph, changeEnd || change);
+}
 
-const HorizontalScrollbar: React.FC<{ graph: GraphState; updateTimeline: (amount: number) => void }> = ({
-  graph,
-  updateTimeline,
-}) => {
-  const _container = createRef<HTMLDivElement>();
-  const [drag, setDrag] = useState({ dragging: false, start: 0 });
+function updateGraph(graph: GraphState, change: number, changeEnd?: number): GraphState {
+  return {
+    ...graph,
+    timelineStart: graph.timelineStart + change,
+    timelineEnd: graph.timelineEnd + (changeEnd || change),
+  };
+}
 
-  return (
-    <ScrollbarContainer
-      ref={_container}
-      onMouseMove={(e) => {
-        if (drag.dragging) {
-          if (_container && _container.current) {
-            const movement = (e.clientX - drag.start) / _container.current?.clientWidth;
-            setDrag({ ...drag, start: e.clientX });
-            updateTimeline((graph.max - graph.min) * movement);
-          }
-        }
-      }}
-      onMouseUp={() => {
-        setDrag({ dragging: false, start: 0 });
-      }}
-    >
-      <ScrollBarHandle
-        onMouseDown={(e) => {
-          setDrag({ ...drag, dragging: true, start: e.clientX });
-        }}
-        style={{
-          width: ((graph.timelineEnd - graph.timelineStart) / (graph.max - graph.min)) * 100 + '%',
-          left: ((graph.timelineStart - graph.min) / (graph.max - graph.min)) * 100 + '%',
-        }}
-      />
-    </ScrollbarContainer>
-  );
-};
-
-const ScrollbarContainer = styled.div`
-  width: 100%;
-  height: 24px;
-  position: relative;
-`;
-
-const ScrollBarHandle = styled.div`
-  min-width: 10px;
-  height: 8px;
-  background-color: #dadada;
-  position: absolute;
-  top: 8px;
-`;
+function resetTimeline(graph: GraphState): GraphState {
+  return {
+    ...graph,
+    timelineStart: graph.min,
+    timelineEnd: graph.max,
+  };
+}
 
 const VirtualizedTimelineContainer = styled.div`
   display: flex;
   height: 100%;
   width: 100%;
-`;
-
-const StyledRow = styled.div`
-  display: flex;
-  width: 100%;
-  min-height: ${ROW_HEIGH}px;
-  border-bottom: 1px solid #e8e8e8;
-  transition: background 0.15s;
-
-  &:hover {
-    background: #e8e8e8;
-  }
-`;
-
-const StickyStyledRow = styled(StyledRow)`
-  position: absolute;
-  background: #fff;
-  top: 0;
-  left: 0;
-`;
-
-const RowLabel = styled.div`
-  flex: 0 0 150px;
-  text-align: right;
-  padding: 10px 10px 0;
-  font-size: 14px;
-`;
-
-const RowGraphContainer = styled.div`
-  position: relative;
-  width: 100%;
-  border-left: 1px solid #e8e8e8;
-  overflow-x: hidden;
-`;
-
-const BoxGraphic = styled.div`
-  position: absolute;
-  background: ${color('secondary')};
-  min-width: 100px;
-  height: 16px;
-  transform: translateY(7px);
 `;
 
 const GraphFooter = styled.div`

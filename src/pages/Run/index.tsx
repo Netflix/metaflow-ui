@@ -20,6 +20,7 @@ export default function RunPage() {
   // TODO: Each tab should fetch their own resources. This way we can also leverage React.Suspense in the future
   const stepsResource = useResource<IStep[]>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}/steps`,
+    subscribeToEvents: `/flows/${params.flowId}/runs/${params.runNumber}/steps`,
     initialData: [],
   });
 
@@ -30,6 +31,8 @@ export default function RunPage() {
       setTab(params.viewType);
     }
   }, [params]);
+
+  console.log(stepsResource);
 
   return (
     <FixedContent>
