@@ -152,9 +152,13 @@ const VirtualizedTimeline: React.FC<{
     // Let's check start and end times for graph so we can draw proper lines
     if (steps.length > 1) {
       const start = steps[0].ts_epoch;
-      const end = steps[steps.length - 1].ts_epoch;
 
-      setGraph(makeGraph(graph.mode, start, end));
+      const highestTimestamp = steps.reduce((val, step) => {
+        if (step.ts_epoch > val) return step.ts_epoch;
+        return val;
+      }, graph.max);
+
+      setGraph(makeGraph(graph.mode, start, highestTimestamp));
     } else if (steps && steps.length === 1) {
       // If only one step, lets just add some time
       setGraph(makeGraph(graph.mode, steps[0].ts_epoch, steps[0].ts_epoch + 2000));
