@@ -15,24 +15,43 @@ const TimelineRow: React.FC<{
 
   const Element = sticky ? StickyStyledRow : StyledRow;
 
+  const valueFromLeft =
+    graph.mode === 'relative'
+      ? 0
+      : ((dataItem.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100;
+
+  const width =
+    item.type === 'task' && item.data.finished_at
+      ? ((item.data.finished_at - item.data.ts_epoch) / (graph.timelineEnd - graph.timelineStart)) * 100 + '%'
+      : '100px';
+
   return (
     <>
       <Element
         style={{
           background:
-            dataItem.ts_epoch < graph.timelineStart || dataItem.ts_epoch > graph.timelineEnd ? '#f8f8f8' : '#fff',
+            item.type === 'step'
+              ? '#fff'
+              : item.data.ts_epoch > graph.timelineEnd || item.data.finished_at < graph.timelineStart
+              ? '#f8f8f8'
+              : '#fff',
         }}
       >
-        <RowLabel onClick={() => onOpen()} style={{ cursor: 'pointer' }}>
+        <RowLabel
+          onClick={() => onOpen()}
+          style={{
+            cursor: 'pointer',
+            background: item.type === 'step' ? '#deecff' : '#fff',
+            color: item.type === 'step' ? '#146ee6' : 'gray',
+          }}
+        >
           {item.type === 'task' ? item.data.task_id : dataItem.step_name}
         </RowLabel>
         <RowGraphContainer>
           <BoxGraphic
             style={{
-              left:
-                graph.mode === 'relative'
-                  ? 0
-                  : `${((dataItem.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100}%`,
+              width: width,
+              left: valueFromLeft + '%',
             }}
           ></BoxGraphic>
         </RowGraphContainer>
@@ -77,7 +96,7 @@ const RowGraphContainer = styled.div`
 const BoxGraphic = styled.div`
   position: absolute;
   background: ${color('secondary')};
-  min-width: 100px;
+  min-width: 10px;
   height: 16px;
   transform: translateY(7px);
 `;

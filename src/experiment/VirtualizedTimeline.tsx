@@ -177,7 +177,7 @@ const VirtualizedTimeline: React.FC<{
     dispatch({ type: 'fill', data: taskData });
 
     const highestTimestamp = taskData.reduce((val, task) => {
-      if (task.ts_epoch > val) return task.ts_epoch;
+      if (task.finished_at && task.finished_at > val) return task.finished_at;
       return val;
     }, graph.max);
 
@@ -192,15 +192,8 @@ const VirtualizedTimeline: React.FC<{
     if (steps.length === 0) {
       return;
     }
-    if (graph.mode === 'relative') {
-      const start = steps[0].ts_epoch;
-      const end = steps[steps.length - 1].ts_epoch;
-      setGraph(makeGraph(graph.mode, start, end));
-    } else {
-      const start = steps[0].ts_epoch;
-      const end = steps[steps.length - 1].ts_epoch;
-      setGraph(makeGraph(graph.mode, start, end));
-    }
+    // TODO: Fix this. Not good.
+    setGraph(makeGraph(graph.mode, steps[0].ts_epoch, steps[steps.length - 1].ts_epoch));
   }, [graph.mode]); // eslint-disable-line
 
   const expandAll = () => {
