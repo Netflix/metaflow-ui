@@ -52,11 +52,16 @@ const TimelineRow: React.FC<{
         </RowLabel>
         <RowGraphContainer>
           <BoxGraphic
+            root={item.type === 'step'}
             style={{
               width: width,
               left: valueFromLeft + '%',
             }}
-          ></BoxGraphic>
+          >
+            <BoxGraphicValue>
+              {finishedAt ? ((finishedAt - item.data.ts_epoch) / 1000).toFixed(2) + 's' : '?'}
+            </BoxGraphicValue>
+          </BoxGraphic>
         </RowGraphContainer>
       </Element>
     </>
@@ -96,12 +101,20 @@ const RowGraphContainer = styled.div`
   overflow-x: hidden;
 `;
 
-const BoxGraphic = styled.div`
+const BoxGraphic = styled.div<{ root: boolean }>`
   position: absolute;
-  background: ${color('secondary')};
+  background: ${(props) => (props.root ? color('main') : color('secondary'))};
+  color: ${(props) => (props.root ? color('main') : color('secondary'))};
   min-width: 10px;
   height: 16px;
   transform: translateY(7px);
+`;
+
+const BoxGraphicValue = styled.div`
+  position: relative;
+  left: 100%;
+  padding-left: 10px;
+  font-size: 14px;
 `;
 
 export default TimelineRow;

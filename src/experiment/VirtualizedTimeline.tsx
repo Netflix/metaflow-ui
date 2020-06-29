@@ -258,7 +258,6 @@ const VirtualizedTimeline: React.FC<{
   //
   // Scrollbar functions
   //
-  console.log(rowDataState);
   const moveScrollbar = (value: number) => {
     // Check if any of the edges of scroll bar are out of bounds
     if (startOrEndOutOfBounds(graph, value)) {
@@ -394,11 +393,12 @@ const VirtualizedTimeline: React.FC<{
             />
 
             {stickyHeader && (
-              <TimelineRow
-                item={rows.find((item) => item.type === 'step' && item.data.step_name === stickyHeader)}
+              <StickyHeader
+                stickyStep={stickyHeader}
+                items={rows}
                 graph={graph}
-                onOpen={() => dispatch({ type: 'close', id: stickyHeader })}
-                sticky
+                rowData={rowDataState[stickyHeader]}
+                onToggle={() => dispatch({ type: 'close', id: stickyHeader })}
               />
             )}
           </div>
@@ -413,6 +413,20 @@ const VirtualizedTimeline: React.FC<{
       </div>
     </VirtualizedTimelineContainer>
   );
+};
+
+const StickyHeader: React.FC<{
+  stickyStep: string;
+  items: Row[];
+  graph: GraphState;
+  rowData?: StepRowData;
+  onToggle: () => void;
+}> = ({ stickyStep, items, graph, rowData, onToggle }) => {
+  const item = items.find((item) => item.type === 'step' && item.data.step_name === stickyStep);
+
+  if (!item) return null;
+
+  return <TimelineRow item={item} endTime={rowData && rowData.finished_at} graph={graph} onOpen={onToggle} sticky />;
 };
 
 // Zoom functions
