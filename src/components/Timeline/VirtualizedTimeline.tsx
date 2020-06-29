@@ -1,5 +1,5 @@
-import React, { useEffect, useState, createRef, useRef, useReducer } from 'react';
-import { /*AutoSizer,*/ List /* ScrollParams*/ } from 'react-virtualized';
+import React, { useEffect, useState, createRef, useRef } from 'react';
+import { List } from 'react-virtualized';
 import { Step, Task } from '../../types';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
@@ -7,105 +7,16 @@ import HorizontalScrollbar from './TimelineHorizontalScroll';
 import TimelineRow from './TimelineRow';
 import useResource from '../../hooks/useResource';
 import useGraph, { GraphState } from './useGraph';
+import useRowData, { StepRowData } from './useRowData';
 
 export const ROW_HEIGHT = 28;
-
-//
-// Row data handling
-//
-
-type StepRowData = {
-  // Is row opened?
-  isOpen: boolean;
-  // We have to compute finished_at value so let it live in here now :(
-  finished_at: number;
-  // Tasks for this step
-  data: Task[];
-};
-
-type RowDataAction =
-  | { type: 'init'; ids: string[] }
-  | { type: 'add'; id: string; data: StepRowData }
-  | { type: 'fill'; data: Task[] }
-  | { type: 'toggle'; id: string }
-  | { type: 'open'; id: string }
-  | { type: 'close'; id: string }
-  | { type: 'sort'; ids: string[] };
-
-function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAction): { [key: string]: StepRowData } {
-  switch (action.type) {
-    case 'init':
-      return action.ids.reduce((obj, id) => {
-        if (state[id]) {
-          return { ...obj, [id]: { ...state[id], isOpen: true } };
-        }
-        return { ...obj, [id]: { isOpen: true, data: [] } };
-      }, {});
-    case 'add':
-      return { ...state, [action.id]: action.data };
-    case 'fill': {
-      const data = action.data.reduce((obj: { [key: string]: StepRowData }, value) => {
-        const existingObject = state[value.step_name];
-        const isOpenValue = existingObject ? existingObject.isOpen : true;
-
-        if (obj[value.step_name]) {
-          const row = obj[value.step_name];
-          return {
-            ...obj,
-            [value.step_name]: {
-              isOpen: isOpenValue,
-              finished_at:
-                row.finished_at < value.finished_at || row.finished_at < value.ts_epoch
-                  ? value.finished_at || value.ts_epoch
-                  : row.finished_at,
-              data: [...row.data, value],
-            },
-          };
-        }
-
-        return {
-          ...obj,
-          [value.step_name]: { isOpen: isOpenValue, finished_at: value.finished_at || value.ts_epoch, data: [value] },
-        };
-      }, {});
-
-      return { ...state, ...data };
-    }
-    case 'sort':
-      return Object.keys(state).reduce((obj, value) => {
-        if (action.ids.indexOf(value) > -1) {
-          return {
-            ...obj,
-            [value]: { ...state[value], data: state[value].data.sort((a, b) => a.ts_epoch - b.ts_epoch) },
-          };
-        }
-
-        return obj;
-      }, state);
-    case 'toggle':
-      if (state[action.id]) {
-        return { ...state, [action.id]: { ...state[action.id], isOpen: !state[action.id].isOpen } };
-      }
-      return state;
-    case 'open':
-      if (state[action.id]) {
-        return { ...state, [action.id]: { ...state[action.id], isOpen: true } };
-      }
-      return state;
-    case 'close':
-      if (state[action.id]) {
-        return { ...state, [action.id]: { ...state[action.id], isOpen: false } };
-      }
-      return state;
-  }
-
-  return state;
-}
-
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
-
 type StepIndex = { name: string; index: number };
 
+//
+// Container component for timeline. We might wanna show different states here if we havent
+// gotten run data yet.
+//
 export const TimelineContainer: React.FC<{
   flowId: string;
   runNumber: string;
@@ -118,9 +29,10 @@ export const TimelineContainer: React.FC<{
   return <VirtualizedTimeline runNumber={runNumber} flowId={flowId} realTime={realTime} />;
 };
 
-/**
- *
- */
+//
+// Self containing component for rendering everything related to timeline. Component fetched (and subscribes for live events) steps and tasks from different
+// endpoints. View is supposed to be full page (and full page only) since component itself will use virtualised scrolling.
+//
 const VirtualizedTimeline: React.FC<{
   flowId: string;
   runNumber: string;
@@ -139,9 +51,18 @@ const VirtualizedTimeline: React.FC<{
   const [stepPositions, setStepPositions] = useState<StepIndex[]>([]);
   // Name of sticky header (if should be visible)
   const [stickyHeader, setStickyHeader] = useState<null | string>(null);
-  // Data about step rows and their children.
-  const [rowDataState, dispatch] = useReducer(rowDataReducer, {});
+  // Data about step rows and their children. Each rowDataState item is step row and in its data property you will find
+  // tasks belonging to it.
+  const { rows: rowDataState, dispatch } = useRowData();
 
+  // Fetch & subscribe to steps
+  const { data: stepData } = useResource<Step[], Step>({
+    url: `/flows/${flowId}/runs/${runNumber}/steps?_order=+ts_epoch&_limit=1000`,
+    subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/steps`,
+    initialData: [],
+  });
+
+  // Fetch & subscribe to tasks
   const { data: taskData } = useResource<Task[], Task>({
     url: `/flows/${flowId}/runs/${runNumber}/tasks?_order=+ts_epoch&_limit=1000`,
     subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/tasks`,
@@ -149,15 +70,10 @@ const VirtualizedTimeline: React.FC<{
     updatePredicate: (a, b) => a.task_id === b.task_id,
   });
 
-  const { data: stepData } = useResource<Step[], Step>({
-    url: `/flows/${flowId}/runs/${runNumber}/steps?_order=+ts_epoch&_limit=1000`,
-    subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/steps`,
-    initialData: [],
-  });
-
   // Graph data. Need to know start and end time of run to render lines
   const { graph, dispatch: graphDispatch } = useGraph();
-  // Init graph
+
+  // Init graph when steps updates (do we need this?)
   useEffect(() => {
     // Let's check start and end times for graph so we can draw proper lines
     if (steps.length > 1) {
