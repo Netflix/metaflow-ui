@@ -4,22 +4,26 @@ import { Row } from './VirtualizedTimeline';
 import { color } from '../../utils/theme';
 import { GraphState } from './useGraph';
 
-const TimelineRow: React.FC<{
+type TimelineRowProps = {
+  // Row type and data
   item?: Row;
+  // Overall graph state (used to calculate dimensions)
   graph: GraphState;
   onOpen: () => void;
+  // Flag row as sticky for some absolute stylings
   sticky?: boolean;
   // Optional end time. Used for steps since they dont have data themselves
   endTime?: number;
-}> = ({ item, graph, onOpen, sticky, endTime }) => {
+};
+
+const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, sticky, endTime }) => {
   if (!item) return null;
 
   const dataItem = item.data;
-
   const Element = sticky ? StickyStyledRow : StyledRow;
-
   const finishedAt = endTime || item.data.finished_at;
 
+  // Calculate have much box needs to be pushed from left
   const valueFromLeft =
     graph.mode === 'relative'
       ? 0
@@ -33,6 +37,7 @@ const TimelineRow: React.FC<{
     <>
       <Element
         style={{
+          // TODO do this with styled components. But lets see what other states we will have.
           background:
             item.type === 'step'
               ? '#fff'

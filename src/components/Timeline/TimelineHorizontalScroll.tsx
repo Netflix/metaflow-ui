@@ -3,6 +3,11 @@ import React, { createRef, useState } from 'react';
 import { GraphState } from './useGraph';
 import styled from 'styled-components';
 
+//
+// Scrollbar for horizontal scrolling (moving in time).
+// NOTE: This element might want feature to zoom in to some specific point.
+// TODO: Touch support
+//
 const HorizontalScrollbar: React.FC<{ graph: GraphState; updateTimeline: (amount: number) => void }> = ({
   graph,
   updateTimeline,
@@ -14,6 +19,8 @@ const HorizontalScrollbar: React.FC<{ graph: GraphState; updateTimeline: (amount
     <ScrollbarContainer ref={_container}>
       <ScrollDragContainer
         style={{
+          // This container is extended to cover whole page when dragging so we can keep track of mouse moving
+          // even when mouse leaves actual scrollbar
           position: drag.dragging ? 'fixed' : 'absolute',
         }}
         onMouseMove={(e) => {

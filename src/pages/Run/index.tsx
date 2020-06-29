@@ -18,8 +18,6 @@ export default function RunPage() {
     initialData: null,
   });
 
-  console.log(run);
-
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState('dag');
   useEffect(() => {

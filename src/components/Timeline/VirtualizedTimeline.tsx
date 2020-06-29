@@ -143,14 +143,14 @@ const VirtualizedTimeline: React.FC<{
   const [rowDataState, dispatch] = useReducer(rowDataReducer, {});
 
   const { data: taskData } = useResource<Task[], Task>({
-    url: `/flows/${flowId}/runs/${runNumber}/tasks?_limit=10000`,
+    url: `/flows/${flowId}/runs/${runNumber}/tasks?_order=+ts_epoch&_limit=1000`,
     subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/tasks`,
     initialData: [],
     updatePredicate: (a, b) => a.task_id === b.task_id,
   });
 
   const { data: stepData } = useResource<Step[], Step>({
-    url: `/flows/${flowId}/runs/${runNumber}/steps?_limit=1000`,
+    url: `/flows/${flowId}/runs/${runNumber}/steps?_order=+ts_epoch&_limit=1000`,
     subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/steps`,
     initialData: [],
   });
@@ -168,11 +168,9 @@ const VirtualizedTimeline: React.FC<{
         return val;
       }, graph.max);
 
-      // setGraph(makeGraph(graph.mode, start, realTime ? Date.now() : highestTimestamp));
       graphDispatch({ type: 'init', start, end: highestTimestamp });
     } else if (steps && steps.length === 1) {
       // If only one step, lets just add some time
-      // setGraph(makeGraph(graph.mode, steps[0].ts_epoch, realTime ? Date.now() : steps[0].ts_epoch + 2000));
       graphDispatch({ type: 'init', start: steps[0].ts_epoch, end: steps[0].ts_epoch + 2000 });
     }
   }, [steps]); // eslint-disable-line

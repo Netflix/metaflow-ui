@@ -14,10 +14,15 @@ export type GraphState = {
 };
 
 export type GraphAction =
+  // Set min and max values for timeline and set zoom to full
   | { type: 'init'; start: number; end: number }
+  // Move timeline to backwards or forward. (minus value to move backwards)
   | { type: 'move'; value: number }
+  // Update maximum length of timeline (needed when new items comes from websocket)
   | { type: 'updateMax'; end: number }
+  // Update active mode. TODO: Specify more what this feature does
   | { type: 'mode'; mode: 'relative' | 'absolute' }
+  // Zoom functions manipulates timelineStart and timelineEnd values to kinda fake zooming.
   | { type: 'zoomIn' }
   | { type: 'zoomOut' }
   | { type: 'resetZoom' };
@@ -84,14 +89,17 @@ function graphReducer(state: GraphState, action: GraphAction) {
   return state;
 }
 
+// When if tried zoom is bigger than total length of timeline (might happen on zoom out)
 function zoomOverTotalLength(graph: GraphState, change: number) {
   return graph.timelineEnd + change - graph.timelineStart - change > graph.max - graph.min;
 }
 
+// Check if scrollbar is going backwards too much
 function startOutOfBounds(graph: GraphState, change: number) {
   return graph.timelineStart + change < graph.min;
 }
 
+// Check if scrollbar is going forward too much
 function endOutOfBounds(graph: GraphState, change: number) {
   return graph.timelineEnd + change > graph.max;
 }
@@ -116,6 +124,10 @@ function resetTimeline(graph: GraphState): GraphState {
   };
 }
 
+//
+// Hook to contain timelines graphical presentation data. We would not have to use hook here but
+// we might need some extra functionality later so why not.
+//
 export default function useGraph() {
   const [graph, dispatch] = useReducer(graphReducer, {
     mode: 'absolute',
