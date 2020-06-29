@@ -37,7 +37,7 @@ const VirtualizedTimeline: React.FC<{
   flowId: string;
   runNumber: string;
   realTime: boolean;
-}> = ({ flowId, runNumber, realTime }) => {
+}> = ({ flowId, runNumber }) => {
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef(null);
@@ -103,16 +103,6 @@ const VirtualizedTimeline: React.FC<{
 
     dispatch({ type: 'fill', data: taskData });
     dispatch({ type: 'sort', ids: Object.keys(rowDataState) });
-
-    const highestTimestamp = taskData.reduce((val, task) => {
-      if (task.finished_at && task.finished_at > val) return task.finished_at;
-      if (task.ts_epoch > val) return task.ts_epoch;
-      return val;
-    }, graph.max);
-
-    if (highestTimestamp !== graph.max && !realTime) {
-      graphDispatch({ type: 'updateMax', end: highestTimestamp });
-    }
   }, [taskData]);
 
   // Add tasks after step rows if they are open
@@ -133,6 +123,15 @@ const VirtualizedTimeline: React.FC<{
 
       return [...arr, { type: 'step', data: current }];
     }, []);
+
+    const highestTimestamp = Object.keys(rowDataState).reduce((val, key) => {
+      const step = rowDataState[key];
+      if (step.finished_at && step.finished_at > val) return step.finished_at;
+      return val;
+    }, 0);
+
+    graphDispatch({ type: 'updateMax', end: highestTimestamp });
+
     setRows(newRows);
   }, [rowDataState]);
 
