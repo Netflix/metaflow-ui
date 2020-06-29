@@ -12,7 +12,7 @@ import DAG from '../../experiment/DAG';
 export default function RunPage() {
   const { url, params } = useRouteMatch<{ flowId: string; runNumber: string; viewType: string }>();
   const urlBase = url.split('/').slice(0, -1).join('/');
-  const { data: run, error } = useResource<IRun>({
+  const { data: run, error } = useResource<IRun, IRun>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}`,
     subscribeToEvents: `/flows/${params.flowId}/runs/${params.runNumber}`,
     initialData: null,

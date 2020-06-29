@@ -23,6 +23,8 @@ export type GraphState = {
 type StepRowData = {
   // Is row opened?
   isOpen: boolean;
+  // We have to compute finished_at value so let it live in here now :(
+  finished_at: number;
   // Tasks for this step
   data: Task[];
 };
@@ -59,18 +61,28 @@ function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAc
       return { ...state, [action.id]: action.data };
     case 'fill': {
       const data = action.data.reduce((obj: { [key: string]: StepRowData }, value) => {
-        const isOpenValue = state[value.step_name] ? state[value.step_name].isOpen : true;
+        const existingObject = state[value.step_name];
+        const isOpenValue = existingObject ? existingObject.isOpen : true;
 
         if (obj[value.step_name]) {
+          const row = obj[value.step_name];
           return {
             ...obj,
             [value.step_name]: {
               isOpen: isOpenValue,
-              data: [...obj[value.step_name].data, value].sort((a, b) => a.ts_epoch - b.ts_epoch),
+              finished_at:
+                row.finished_at < value.finished_at || row.finished_at < value.ts_epoch
+                  ? value.finished_at || value.ts_epoch
+                  : row.finished_at,
+              data: [...row.data, value].sort((a, b) => a.ts_epoch - b.ts_epoch),
             },
           };
         }
-        return { ...obj, [value.step_name]: { isOpen: isOpenValue, data: [value] } };
+
+        return {
+          ...obj,
+          [value.step_name]: { isOpen: isOpenValue, finished_at: value.finished_at || value.ts_epoch, data: [value] },
+        };
       }, {});
 
       return { ...state, ...data };
@@ -126,13 +138,14 @@ const VirtualizedTimeline: React.FC<{
 
   const [rowDataState, dispatch] = useReducer(rowDataReducer, {});
 
-  const { data: taskData } = useResource<Task[]>({
+  const { data: taskData } = useResource<Task[], Task>({
     url: `/flows/${flowId}/runs/${runNumber}/tasks?_limit=10000`,
     subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/tasks`,
     initialData: [],
+    updatePredicate: (a, b) => a.task_id === b.task_id,
   });
 
-  const { data: stepData } = useResource<Step[]>({
+  const { data: stepData } = useResource<Step[], Step>({
     url: `/flows/${flowId}/runs/${runNumber}/steps?_limit=1000`,
     subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/steps`,
     initialData: [],
@@ -170,6 +183,7 @@ const VirtualizedTimeline: React.FC<{
     setSteps(stepData.sort((a, b) => a.ts_epoch - b.ts_epoch));
     dispatch({ type: 'init', ids: stepData.map((item) => item.step_name) });
   }, [stepData]); // eslint-disable-line
+
   // Update Tasks data when they come in
   useEffect(() => {
     if (!Array.isArray(taskData)) return;
@@ -178,6 +192,7 @@ const VirtualizedTimeline: React.FC<{
 
     const highestTimestamp = taskData.reduce((val, task) => {
       if (task.finished_at && task.finished_at > val) return task.finished_at;
+      if (task.ts_epoch > val) return task.ts_epoch;
       return val;
     }, graph.max);
 
@@ -243,7 +258,7 @@ const VirtualizedTimeline: React.FC<{
   //
   // Scrollbar functions
   //
-
+  console.log(rowDataState);
   const moveScrollbar = (value: number) => {
     // Check if any of the edges of scroll bar are out of bounds
     if (startOrEndOutOfBounds(graph, value)) {
@@ -354,6 +369,11 @@ const VirtualizedTimeline: React.FC<{
                     <TimelineRow
                       item={row}
                       graph={graph}
+                      endTime={
+                        row.type === 'step' && rowDataState[row.data.step_name]
+                          ? rowDataState[row.data.step_name].finished_at
+                          : undefined
+                      }
                       onOpen={() => {
                         if (row.type === 'task') return;
 

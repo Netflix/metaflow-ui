@@ -9,7 +9,7 @@ import Notification, { NotificationType } from '../../components/Notification';
 
 const Home: React.FC = () => {
   const [flowId, setFlowId] = useState('');
-  const { data: runs, error } = useResource<IRun[]>({
+  const { data: runs, error } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: '/runs',

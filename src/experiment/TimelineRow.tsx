@@ -8,22 +8,25 @@ const TimelineRow: React.FC<{
   graph: GraphState;
   onOpen: () => void;
   sticky?: boolean;
-}> = ({ item, graph, onOpen, sticky }) => {
+  // Optional end time. Used for steps since they dont have data themselves
+  endTime?: number;
+}> = ({ item, graph, onOpen, sticky, endTime }) => {
   if (!item) return null;
 
   const dataItem = item.data;
 
   const Element = sticky ? StickyStyledRow : StyledRow;
 
+  const finishedAt = endTime || item.data.finished_at;
+
   const valueFromLeft =
     graph.mode === 'relative'
       ? 0
       : ((dataItem.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100;
 
-  const width =
-    item.type === 'task' && item.data.finished_at
-      ? ((item.data.finished_at - item.data.ts_epoch) / (graph.timelineEnd - graph.timelineStart)) * 100 + '%'
-      : '100px';
+  const width = finishedAt
+    ? ((finishedAt - item.data.ts_epoch) / (graph.timelineEnd - graph.timelineStart)) * 100 + '%'
+    : '100px';
 
   return (
     <>

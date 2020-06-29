@@ -20,6 +20,7 @@ export interface Run extends MetaDataBaseObject {
 export interface Step extends MetaDataBaseObject {
   run_number: number;
   step_name: string;
+  finished_at?: number;
 }
 
 export interface Task extends MetaDataBaseObject {
