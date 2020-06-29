@@ -46,7 +46,8 @@ type RowDataAction =
   | { type: 'add'; id: string; data: StepRowData }
   | { type: 'fill'; data: Task[] }
   | { type: 'open'; id: string }
-  | { type: 'close'; id: string };
+  | { type: 'close'; id: string }
+  | { type: 'sort'; ids: string[] };
 
 function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAction): { [key: string]: StepRowData } {
   switch (action.type) {
@@ -74,7 +75,7 @@ function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAc
                 row.finished_at < value.finished_at || row.finished_at < value.ts_epoch
                   ? value.finished_at || value.ts_epoch
                   : row.finished_at,
-              data: [...row.data, value].sort((a, b) => a.ts_epoch - b.ts_epoch),
+              data: [...row.data, value],
             },
           };
         }
@@ -87,6 +88,17 @@ function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAc
 
       return { ...state, ...data };
     }
+    case 'sort':
+      return Object.keys(state).reduce((obj, value) => {
+        if (action.ids.indexOf(value) > -1) {
+          return {
+            ...obj,
+            [value]: { ...state[value], data: state[value].data.sort((a, b) => a.ts_epoch - b.ts_epoch) },
+          };
+        }
+
+        return obj;
+      }, state);
     case 'open':
       if (state[action.id]) {
         return { ...state, [action.id]: { ...state[action.id], isOpen: true } };
@@ -189,6 +201,7 @@ const VirtualizedTimeline: React.FC<{
     if (!Array.isArray(taskData)) return;
 
     dispatch({ type: 'fill', data: taskData });
+    dispatch({ type: 'sort', ids: Object.keys(rowDataState) });
 
     const highestTimestamp = taskData.reduce((val, task) => {
       if (task.finished_at && task.finished_at > val) return task.finished_at;
@@ -200,6 +213,38 @@ const VirtualizedTimeline: React.FC<{
       setGraph(makeGraph(graph.mode, graph.min, highestTimestamp));
     }
   }, [taskData]);
+
+  // Add tasks after step rows if they are open
+  useEffect(() => {
+    const newRows: Row[] = steps.reduce((arr: Row[], current: Step): Row[] => {
+      const rowData = rowDataState[current.step_name];
+
+      if (rowData?.isOpen) {
+        return [
+          ...arr,
+          { type: 'step', data: current },
+          ...rowData.data.map((item) => ({
+            type: 'task' as const,
+            data: item,
+          })),
+        ];
+      }
+
+      return [...arr, { type: 'step', data: current }];
+    }, []);
+    setRows(newRows);
+  }, [rowDataState]);
+
+  // Update step position indexes (for sticky headers)
+  useEffect(() => {
+    const stepPos: StepIndex[] = rows.reduce((arr: StepIndex[], current: Row, index: number) => {
+      if (current.type === 'step') {
+        return [...arr, { name: current.data.step_name, index: index }];
+      }
+      return arr;
+    }, []);
+    setStepPositions(stepPos);
+  }, [rows]);
 
   // Mode selection change. We need to calculate new graph values if mode changes
   // TODO find longest task for absolute mode (or relative? which one?)
@@ -222,38 +267,6 @@ const VirtualizedTimeline: React.FC<{
       dispatch({ type: 'close', id: item.step_name });
     });
   };
-
-  // Add tasks after step rows if they are open
-  useEffect(() => {
-    const newRows: Row[] = steps.reduce((arr: Row[], current: Step): Row[] => {
-      const rowData = rowDataState[current.step_name];
-
-      if (rowData?.isOpen) {
-        return [
-          ...arr,
-          { type: 'step', data: current },
-          ...rowData.data.map((item) => ({
-            type: 'task' as const,
-            data: item,
-          })),
-        ];
-      }
-
-      return [...arr, { type: 'step', data: current }];
-    }, []);
-    setRows(newRows);
-  }, [steps, rowDataState]);
-
-  // Update step position indexes (for sticky headers)
-  useEffect(() => {
-    const stepPos: StepIndex[] = rows.reduce((arr: StepIndex[], current: Row, index: number) => {
-      if (current.type === 'step') {
-        return [...arr, { name: current.data.step_name, index: index }];
-      }
-      return arr;
-    }, []);
-    setStepPositions(stepPos);
-  }, [rows]);
 
   //
   // Scrollbar functions
