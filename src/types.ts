@@ -15,6 +15,7 @@ export interface Flow extends MetaDataBaseObject {}
 
 export interface Run extends MetaDataBaseObject {
   run_number: number;
+  status: string;
 }
 
 export interface Step extends MetaDataBaseObject {

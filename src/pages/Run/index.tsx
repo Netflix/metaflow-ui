@@ -6,7 +6,7 @@ import { Run as IRun } from '../../types';
 import ResourceBar from '../../components/ResourceBar';
 import Tabs from '../../components/Tabs';
 import { Content, FixedContent, Layout } from '../../components/Structure';
-import { TimelineContainer } from '../../experiment/VirtualizedTimeline';
+import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
 import DAG from '../../experiment/DAG';
 
 export default function RunPage() {
@@ -31,11 +31,17 @@ export default function RunPage() {
   return (
     <FixedContent>
       <ResourceBar>
-        {run?.run_number}
+        <div>
+          {run && run.run_number ? (
+            <div>
+              {run.run_number}, {!run.status ? 'Running' : run.status}
+            </div>
+          ) : (
+            'No run data'
+          )}
+        </div>
         {error && <Notification type={NotificationType.Danger}>Error loading run: {error}</Notification>}
       </ResourceBar>
-
-      <div>{run && run.run_number ? run.run_number : 'No run data'}</div>
 
       <Tabs
         activeTab={tab}
@@ -56,7 +62,9 @@ export default function RunPage() {
             key: 'timeline',
             label: 'Timeline',
             linkTo: `${urlBase}/timeline`,
-            component: <TimelineContainer runNumber={params.runNumber} flowId={params.flowId} />,
+            component: (
+              <TimelineContainer runNumber={params.runNumber} flowId={params.flowId} realTime={run && !run.status} />
+            ),
           },
         ]}
       />

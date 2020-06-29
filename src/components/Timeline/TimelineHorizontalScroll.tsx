@@ -1,6 +1,6 @@
 import React, { createRef, useState } from 'react';
 
-import { GraphState } from './VirtualizedTimeline';
+import { GraphState } from './useGraph';
 import styled from 'styled-components';
 
 const HorizontalScrollbar: React.FC<{ graph: GraphState; updateTimeline: (amount: number) => void }> = ({

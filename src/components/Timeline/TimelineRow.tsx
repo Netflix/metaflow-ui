@@ -1,7 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Row, GraphState } from './VirtualizedTimeline';
-import { color } from '../utils/theme';
+import { Row } from './VirtualizedTimeline';
+import { color } from '../../utils/theme';
+import { GraphState } from './useGraph';
 
 const TimelineRow: React.FC<{
   item?: Row;

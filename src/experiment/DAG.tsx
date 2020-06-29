@@ -254,24 +254,22 @@ interface IDAG {
   steps: Step[];
 }
 
-const DAG: React.FC<IDAG> = ({ steps }) => {
+const DAG: React.FC<IDAG> = () => {
   // NOTE We might want some click handlers here and maybe even internal state.
   // Also need to think how to keep state over tab changes. (when switching tabs and coming back to dag)
 
   return (
     <div>
-      {Array.isArray(steps) && steps.length > 0 && (
-        <FlowChartWithState
-          initialValue={makeChartFromTreeData(treeExampleSlide16)}
-          config={chartSimple.config}
-          Components={{
-            Node: NodeCustom,
-            NodeInner: NodeInnerCustom,
-            CanvasInner: CanvasInnerCustom,
-            CanvasOuter: CanvasOuterCustom,
-          }}
-        />
-      )}
+      <FlowChartWithState
+        initialValue={makeChartFromTreeData(treeExampleSlide16)}
+        config={chartSimple.config}
+        Components={{
+          Node: NodeCustom,
+          NodeInner: NodeInnerCustom,
+          CanvasInner: CanvasInnerCustom,
+          CanvasOuter: CanvasOuterCustom,
+        }}
+      />
     </div>
   );
 };
