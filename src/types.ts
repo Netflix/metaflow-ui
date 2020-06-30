@@ -13,8 +13,19 @@ export interface MetaDataBaseObject {
 
 export interface Flow extends MetaDataBaseObject {}
 
+export type RunStatus = {
+  [index: string]: string;
+  completed: string;
+  running: string;
+  failed: string;
+};
+
 export interface Run extends MetaDataBaseObject {
+  [index: string]: any;
   run_number: number;
+  status: keyof RunStatus;
+  finished_at?: string;
+  duration?: string;
 }
 
 export interface Step extends MetaDataBaseObject {
