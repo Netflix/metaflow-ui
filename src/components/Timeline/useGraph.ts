@@ -50,7 +50,8 @@ function graphReducer(state: GraphState, action: GraphAction) {
       }
 
     case 'updateMax':
-      return { ...state, max: action.end, timelineEnd: action.end };
+      const val = action.end > state.max ? action.end : state.max;
+      return { ...state, max: val, timelineEnd: val };
 
     case 'mode':
       return { ...state, mode: action.mode };
@@ -128,13 +129,13 @@ function resetTimeline(graph: GraphState): GraphState {
 // Hook to contain timelines graphical presentation data. We would not have to use hook here but
 // we might need some extra functionality later so why not.
 //
-export default function useGraph() {
+export default function useGraph(start: number, end: number) {
   const [graph, dispatch] = useReducer(graphReducer, {
     mode: 'absolute',
-    min: 0,
-    max: 10,
-    timelineStart: 0,
-    timelineEnd: 0,
+    min: start,
+    max: end,
+    timelineStart: start,
+    timelineEnd: end,
   });
 
   return { graph, dispatch };

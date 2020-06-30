@@ -60,9 +60,7 @@ export default function RunPage() {
             key: 'timeline',
             label: 'Timeline',
             linkTo: `${urlBase}/timeline`,
-            component: (
-              <TimelineContainer runNumber={params.runNumber} flowId={params.flowId} realTime={run && !run.status} />
-            ),
+            component: <TimelineContainer run={run} />,
           },
         ]}
       />

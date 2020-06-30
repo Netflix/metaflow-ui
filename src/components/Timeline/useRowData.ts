@@ -23,7 +23,9 @@ type RowDataAction =
   | { type: 'close'; id: string }
   | { type: 'sort'; ids: string[] };
 
-function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAction): { [key: string]: StepRowData } {
+type RowDataModel = { [key: string]: StepRowData };
+
+function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataModel {
   switch (action.type) {
     case 'init':
       return action.ids.reduce((obj, id) => {
@@ -35,32 +37,54 @@ function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAc
     case 'add':
       return { ...state, [action.id]: action.data };
     case 'fill': {
-      const data = action.data.reduce((obj: { [key: string]: StepRowData }, value) => {
-        const existingObject = state[value.step_name];
-        const isOpenValue = existingObject ? existingObject.isOpen : true;
+      // Group incoming tasks by step
+      const groupped = action.data.reduce((obj: { [key: string]: Task[] }, value) => {
+        const step = value.step_name;
 
-        if (obj[value.step_name]) {
-          const row = obj[value.step_name];
+        if (obj[step]) return { ...obj, [step]: [...obj[step], value] };
+
+        return { ...obj, [step]: [value] };
+      }, {});
+      // And fill them to current state
+      const newState = Object.keys(groupped).reduce((obj: RowDataModel, key: string): RowDataModel => {
+        const row = obj[key];
+        const newItems = groupped[key];
+        const highestTime = latestTimeointOfTasks(newItems);
+
+        if (row) {
+          let newData = [...row.data];
+          const existingIds = row.data.map((item) => item.task_id);
+
+          for (const item of newItems) {
+            const itemIndex = existingIds.indexOf(item.task_id);
+            if (itemIndex > -1) {
+              newData[itemIndex] = item;
+            } else {
+              newData.push(item);
+            }
+          }
+
           return {
             ...obj,
-            [value.step_name]: {
-              isOpen: isOpenValue,
-              finished_at:
-                row.finished_at < value.finished_at || row.finished_at < value.ts_epoch
-                  ? value.finished_at || value.ts_epoch
-                  : row.finished_at,
-              data: [...row.data, value],
+            [key]: {
+              ...row,
+              finished_at: !row.finished_at || highestTime > row.finished_at ? highestTime : row.finished_at,
+              data: newData,
             },
           };
         }
 
         return {
           ...obj,
-          [value.step_name]: { isOpen: isOpenValue, finished_at: value.finished_at || value.ts_epoch, data: [value] },
+          [key]: {
+            isOpen: true,
+            finished_at: highestTime,
+            data: groupped[key],
+          },
         };
-      }, {});
+      }, state);
 
-      return { ...state, ...data };
+      return newState;
     }
     case 'sort':
       return Object.keys(state).reduce((obj, value) => {
@@ -91,6 +115,14 @@ function rowDataReducer(state: { [key: string]: StepRowData }, action: RowDataAc
   }
 
   return state;
+}
+
+function latestTimeointOfTasks(tasks: Task[]): number {
+  return tasks.reduce((val, item) => {
+    if (item.finished_at && item.finished_at > val) return item.finished_at;
+    if (item.ts_epoch > val) return item.ts_epoch;
+    return val;
+  }, 0);
 }
 
 export default function useRowData() {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, createRef, useRef } from 'react';
 import { List } from 'react-virtualized';
-import { Step, Task } from '../../types';
+import { Step, Task, Run } from '../../types';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import HorizontalScrollbar from './TimelineHorizontalScroll';
@@ -17,16 +17,12 @@ type StepIndex = { name: string; index: number };
 // Container component for timeline. We might wanna show different states here if we havent
 // gotten run data yet.
 //
-export const TimelineContainer: React.FC<{
-  flowId: string;
-  runNumber: string;
-  realTime: boolean;
-}> = ({ runNumber, flowId, realTime }) => {
-  if (!runNumber || !flowId) {
-    return <>Waiting for run data...</>;
+export const TimelineContainer: React.FC<{ run: Run }> = ({ run }) => {
+  if (!run || !run.run_number) {
+    return <>No run data. You can wait to see if this run is to be created</>;
   }
 
-  return <VirtualizedTimeline runNumber={runNumber} flowId={flowId} realTime={realTime} />;
+  return <VirtualizedTimeline run={run} />;
 };
 
 //
@@ -34,10 +30,8 @@ export const TimelineContainer: React.FC<{
 // endpoints. View is supposed to be full page (and full page only) since component itself will use virtualised scrolling.
 //
 const VirtualizedTimeline: React.FC<{
-  flowId: string;
-  runNumber: string;
-  realTime: boolean;
-}> = ({ flowId, runNumber }) => {
+  run: Run;
+}> = ({ run }) => {
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef(null);
@@ -57,21 +51,32 @@ const VirtualizedTimeline: React.FC<{
 
   // Fetch & subscribe to steps
   const { data: stepData } = useResource<Step[], Step>({
-    url: `/flows/${flowId}/runs/${runNumber}/steps?_order=+ts_epoch&_limit=1000`,
-    subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/steps`,
+    url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
+    subscribeToEvents: `/flows/${run.flow_id}/runs/${run.run_number}/steps`,
     initialData: [],
+    queryParams: {
+      _order: '+ts_epoch',
+      _limit: 1000,
+    },
   });
+
+  const [page, setPage] = useState(1);
 
   // Fetch & subscribe to tasks
   const { data: taskData } = useResource<Task[], Task>({
-    url: `/flows/${flowId}/runs/${runNumber}/tasks?_order=+ts_epoch&_limit=1000`,
-    subscribeToEvents: `/flows/${flowId}/runs/${runNumber}/tasks`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/tasks`,
+    subscribeToEvents: `/flows/${run.flow_id}/runs/${run.run_number}/tasks`,
     initialData: [],
     updatePredicate: (a, b) => a.task_id === b.task_id,
+    queryParams: {
+      _order: '+ts_epoch',
+      _limit: 1000,
+    },
+    fetchAllData: true,
   });
 
   // Graph data. Need to know start and end time of run to render lines
-  const { graph, dispatch: graphDispatch } = useGraph();
+  const { graph, dispatch: graphDispatch } = useGraph(run.ts_epoch, run.finished_at || Date.now());
 
   // Init graph when steps updates (do we need this?)
   useEffect(() => {
@@ -102,9 +107,8 @@ const VirtualizedTimeline: React.FC<{
     if (!Array.isArray(taskData)) return;
 
     dispatch({ type: 'fill', data: taskData });
-    dispatch({ type: 'sort', ids: Object.keys(rowDataState) });
+    // dispatch({ type: 'sort', ids: Object.keys(rowDataState) });
   }, [taskData]);
-
   // Add tasks after step rows if they are open
   useEffect(() => {
     const newRows: Row[] = steps.reduce((arr: Row[], current: Step): Row[] => {
@@ -168,6 +172,8 @@ const VirtualizedTimeline: React.FC<{
           <button onClick={() => graphDispatch({ type: 'mode', mode: 'absolute' })}>absolute</button>
           <button onClick={() => graphDispatch({ type: 'zoomOut' })}>-</button>
           <button onClick={() => graphDispatch({ type: 'zoomIn' })}>+</button>
+          <button onClick={() => setPage(page - 1)}>prev</button>
+          <button onClick={() => setPage(page + 1)}>next</button>
         </div>
         <div style={{ flex: '1' }} ref={_listContainer}>
           <FixedListContainer

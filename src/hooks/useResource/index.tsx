@@ -8,6 +8,7 @@ export interface HookConfig<T, U> {
   subscribeToEvents?: boolean | string;
   queryParams?: Record<string, string | number>;
   updatePredicate?: (_: U, _l: U) => boolean;
+  fetchAllData?: boolean;
 }
 
 interface DataModel<T> {
@@ -86,6 +87,7 @@ export default function useResource<T, U>({
   subscribeToEvents = false,
   queryParams = {},
   updatePredicate = (_a, _b) => false,
+  fetchAllData = false,
 }: HookConfig<T, U>): Resource<T> {
   const [error, setError] = useState(null);
   const [data, setData] = useState<T>(cache.get(url)?.data || initialData);
@@ -151,24 +153,24 @@ export default function useResource<T, U>({
     };
   }, []); // eslint-disable-line
 
-  useEffect(() => {
-    let target = `${METAFLOW_SERVICE}${url}`;
-    if (queryString.length > 0) {
-      target += `?${queryString}`;
-    }
-
+  function fetchData(targeturl: string) {
     // TODO: Always disable response cache for now
     // because it doesn't work for query parameters
-    fetch(target, { signal })
+    fetch(targeturl, { signal })
       .then((response) =>
         response.json().then((result: DataModel<T>) => ({
           response,
           data: result.data,
+          next: result.pages?.self !== result.pages?.last && result.links.next !== targeturl ? result.links.next : null,
         })),
       )
       .then(
         (cacheItem) => {
           cache.set(url, cacheItem);
+
+          if (fetchAllData && cacheItem.next && Array.isArray(cacheItem.data) && cacheItem.data.length > 0) {
+            fetchData(cacheItem.next);
+          }
         },
         (err) => {
           if (err.name !== 'AbortError') {
@@ -177,6 +179,15 @@ export default function useResource<T, U>({
           }
         },
       );
+  }
+
+  useEffect(() => {
+    let target = `${METAFLOW_SERVICE}${url}`;
+    if (queryString && queryString.length > 0) {
+      target += `?${queryString}`;
+    }
+
+    fetchData(target);
 
     return () => {
       // TODO: Abort is disabled for now.
