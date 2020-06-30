@@ -53,7 +53,7 @@ export function createWebsocketConnection(url: string) {
     console.error('Wwebsocket error', e);
   });
 
-  const emit = (event: Event<object>) => {
+  const emit = (event: Event<any>) => {
     if (subscribers[event.resource]) {
       subscribers[event.resource].forEach((onUpdate) => onUpdate(event));
     }

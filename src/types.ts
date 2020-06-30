@@ -11,7 +11,7 @@ export interface MetaDataBaseObject {
   system_tags: string[];
 }
 
-export interface Flow extends MetaDataBaseObject {}
+export type Flow = MetaDataBaseObject;
 
 export interface Run extends MetaDataBaseObject {
   run_number: number;
