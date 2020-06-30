@@ -14,7 +14,7 @@ interface DataModel<T> {
   status: number;
   links: ResourceLinks;
   pages?: ResourcePages;
-  query: object;
+  query: Record<string, unknown>;
 }
 
 interface ResourceLinks {

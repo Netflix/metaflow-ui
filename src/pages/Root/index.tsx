@@ -32,8 +32,8 @@ export default function RootPage() {
   );
 }
 
-const DefaultSubRoute = ({path}: {path: string}) => {
-  const {url} = useRouteMatch();
+const DefaultSubRoute = ({ path }: { path: string }) => {
+  const { url } = useRouteMatch();
 
   return <Redirect to={`${url}/${path}`} />;
 };
