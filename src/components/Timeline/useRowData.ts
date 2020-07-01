@@ -52,7 +52,7 @@ function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataMode
         const highestTime = latestTimeointOfTasks(newItems);
 
         if (row) {
-          let newData = [...row.data];
+          const newData = [...row.data];
           const existingIds = row.data.map((item) => item.task_id);
 
           for (const item of newItems) {
@@ -125,7 +125,7 @@ function latestTimeointOfTasks(tasks: Task[]): number {
   }, 0);
 }
 
-export default function useRowData() {
+export default function useRowData(): { rows: RowDataModel; dispatch: React.Dispatch<RowDataAction> } {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
 
   return { rows, dispatch };

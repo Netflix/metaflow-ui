@@ -205,7 +205,7 @@ export default function useResource<T, U>({
         abortCtrl.abort();
       }
     };
-  }, [target]);
+  }, [target]); // eslint-disable-line
 
   return { url, data, error, getResult: () => cache.get(target)?.result };
 }

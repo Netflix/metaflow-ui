@@ -144,7 +144,10 @@ function resetTimeline(graph: GraphState): GraphState {
 // Hook to contain timelines graphical presentation data. We would not have to use hook here but
 // we might need some extra functionality later so why not.
 //
-export default function useGraph(start: number, end: number) {
+export default function useGraph(
+  start: number,
+  end: number,
+): { graph: GraphState; dispatch: React.Dispatch<GraphAction> } {
   const [graph, dispatch] = useReducer(graphReducer, {
     mode: 'absolute',
     min: start,

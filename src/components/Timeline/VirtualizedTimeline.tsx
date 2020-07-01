@@ -106,7 +106,7 @@ const VirtualizedTimeline: React.FC<{
 
     dispatch({ type: 'fill', data: taskData });
     // dispatch({ type: 'sort', ids: Object.keys(rowDataState) });
-  }, [taskData]);
+  }, [taskData, dispatch]);
 
   // Add tasks after step rows if they are open
   useEffect(() => {
@@ -136,7 +136,7 @@ const VirtualizedTimeline: React.FC<{
     graphDispatch({ type: 'updateMax', end: highestTimestamp });
 
     setRows(newRows);
-  }, [rowDataState]);
+  }, [rowDataState, graphDispatch, steps]);
 
   // Update step position indexes (for sticky headers)
   useEffect(() => {
