@@ -61,7 +61,9 @@ export function createCache() {
   };
 
   const subscribe = (key: string, fn: () => void) => {
-    if (!subscribers[key]) subscribers[key] = {};
+    if (!subscribers[key]) {
+      subscribers[key] = {};
+    }
     const id = createCacheId();
     subscribers[key][id] = fn;
     return () => delete subscribers[key][id];
@@ -126,10 +128,10 @@ export default function useResource<T, U>({
           });
         } else if (event.type === EventType.UPDATE) {
           // Get current cache and prepend to the list
-          const currentCache = cache.get(url);
+          const currentCache = cache.get(target);
 
           // TODO: How do we handle this properly?
-          cache.set(url, {
+          cache.set(target, {
             ...currentCache,
             data: Array.isArray(currentCache.data)
               ? currentCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
@@ -145,7 +147,12 @@ export default function useResource<T, U>({
     };
   }, []); // eslint-disable-line
 
-  function fetchData(targeturl: string, signal: AbortSignal, updateFulfilled: (fulfilled: boolean) => void) {
+  function fetchData(
+    targeturl: string,
+    cacheKey: string,
+    signal: AbortSignal,
+    updateFulfilled: (fulfilled: boolean) => void,
+  ) {
     fetch(targeturl, { signal })
       .then((response) =>
         response.json().then((result: DataModel<T>) => ({
@@ -155,14 +162,14 @@ export default function useResource<T, U>({
       )
       .then(
         (cacheItem) => {
-          cache.set(targeturl, cacheItem);
+          cache.set(target, cacheItem);
 
           if (
             fetchAllData &&
             cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
             cacheItem.result.links.next !== targeturl
           ) {
-            fetchData(cacheItem.result.links.next || targeturl, signal, updateFulfilled);
+            fetchData(cacheItem.result.links.next || targeturl, cacheKey, signal, updateFulfilled);
           } else {
             updateFulfilled(true);
           }
@@ -183,7 +190,7 @@ export default function useResource<T, U>({
     let fulfilled: boolean = false;
 
     if (!cached || !cached.data || cached.stale) {
-      fetchData(target, signal, (value) => (fulfilled = value));
+      fetchData(target, target, signal, (value) => (fulfilled = value));
     } else if (cached) {
       setData(cached.data);
     }

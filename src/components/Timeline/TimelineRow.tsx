@@ -129,8 +129,8 @@ const RowGraphContainer = styled.div`
 
 const BoxGraphic = styled.div<{ root: boolean }>`
   position: absolute;
-  background: ${(p) => (p.root ? p.theme.color.main : p.theme.color.secondary)};
-  color: ${(p) => (p.root ? p.theme.color.main : p.theme.color.secondary)};
+  background: ${(p) => (p.root ? p.theme.color.bg.blue : p.theme.color.bg.teal)};
+  color: ${(p) => (p.root ? p.theme.color.bg.blue : p.theme.color.bg.teal)};
   min-width: 10px;
   height: 16px;
   transform: translateY(7px);
