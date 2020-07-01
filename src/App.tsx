@@ -4,7 +4,7 @@ import { ThemeProvider } from 'styled-components';
 
 import Root from './pages/Root';
 
-import PageLayout from './components/layout/Page';
+import {Page} from './components/Structure';
 import AppBar from './components/AppBar';
 
 import GlobalStyle from './GlobalStyle';
@@ -16,9 +16,9 @@ export default function App() {
       <GlobalStyle />
       <Router>
         <AppBar />
-        <PageLayout>
+        <Page>
           <Root />
-        </PageLayout>
+        </Page>
       </Router>
     </ThemeProvider>
   );

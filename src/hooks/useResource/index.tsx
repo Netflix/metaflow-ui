@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import ResourceEvents, { Event, EventType, Unsubscribe } from '../../ws';
 import { METAFLOW_SERVICE } from '../../constants';
 
@@ -6,7 +6,7 @@ export interface HookConfig<T> {
   url: string;
   initialData: T | T[] | null;
   subscribeToEvents?: boolean | string;
-  queryParams?: Record<string, string | number>;
+  queryParams?: Record<string, string>;
 }
 
 interface DataModel<T> {
@@ -37,11 +37,12 @@ export interface Resource<T> {
   url: string;
   data: T;
   error: Error | null;
+  getResult: () => DataModel<T>;
 }
 
 interface CacheItem<T> {
   stale?: boolean;
-  response: Response;
+  result: DataModel<T>;
   data: T | T[] | null;
 }
 
@@ -88,26 +89,18 @@ export default function useResource<T>({
   const [error, setError] = useState(null);
   const [data, setData] = useState<T>(cache.get(url)?.data || initialData);
 
-  const abortCtrl = useRef(new AbortController());
-  const signal = abortCtrl.current.signal;
-
-  // Construct query parameters string and append to url
-  const queryString = Object.keys(queryParams)
-    .filter((k) => queryParams[k] && queryParams[k] !== '')
-    .map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(queryParams[k]))
-    .join('&');
+  const q = new URLSearchParams(queryParams).toString();
+  const target = `${METAFLOW_SERVICE}${url}${q ? '?' + q : ''}`;
 
   useEffect(() => {
-    // Subscribe to cache events
-    const unsubCache = cache.subscribe(url, () => {
-      setData(cache.get(url).data);
+    const unsubCache = cache.subscribe(target, () => {
+      setData(cache.get(target).data);
     });
 
     return () => {
-      // Unsubscribe from cache events
       unsubCache();
     };
-  }, []); // eslint-disable-line
+  }, [target]);
 
   useEffect(() => {
     // Subscribe to Websocket events (optional)
@@ -119,10 +112,9 @@ export default function useResource<T>({
       unsubWebsocket = ResourceEvents.subscribe(eventResource, (event: Event<T>) => {
         if (event.type === EventType.INSERT) {
           // Get current cache and prepend to the list
-          const currentCache = cache.get(url);
+          const currentCache = cache.get(target);
 
-          // TODO: How do we handle this properly?
-          cache.set(url, {
+          cache.set(target, {
             ...currentCache,
             data: Array.isArray(currentCache.data)
               ? [event.data, ...currentCache.data]
@@ -139,38 +131,41 @@ export default function useResource<T>({
   }, []); // eslint-disable-line
 
   useEffect(() => {
-    let target = `${METAFLOW_SERVICE}${url}`;
-    if (queryString.length > 0) {
-      target += `?${queryString}`;
+    const cached = cache.get(target);
+    const abortCtrl = new AbortController();
+    const signal = abortCtrl.signal;
+    let fulfilled: boolean = false;
+
+    if (!cached || !cached.data || cached.stale) {
+      fetch(target, { signal })
+        .then((response) =>
+          response.json().then((result: DataModel<T>) => ({
+            result,
+            data: result.data,
+          })),
+        )
+        .then(
+          (cacheItem) => {
+            cache.set(target, cacheItem);
+            fulfilled = true;
+          },
+          (error) => {
+            if (error.name !== 'AbortError') {
+              setError(error.toString());
+            }
+            fulfilled = true;
+          },
+        );
+    } else if (cached) {
+      setData(cached.data);
     }
 
-    // TODO: Always disable response cache for now
-    // because it doesn't work for query parameters
-    fetch(target, { signal })
-      .then((response) =>
-        response.json().then((result: DataModel<T>) => ({
-          response,
-          data: result.data,
-        })),
-      )
-      .then(
-        (cacheItem) => {
-          cache.set(url, cacheItem);
-        },
-        (err) => {
-          if (err.name !== 'AbortError') {
-            console.error(err.name, err);
-            setError(err.toString());
-          }
-        },
-      );
-
     return () => {
-      // TODO: Abort is disabled for now.
-      // For some reason this always aborts the "upcoming" request
-      // abortCtrl.current.abort(); // eslint-disable-line
+      if (!fulfilled) {
+        abortCtrl.abort();
+      }
     };
-  }, [url, queryString]); // eslint-disable-line
+  }, [target]);
 
-  return { url, data, error };
+  return { url, data, error, getResult: () => cache.get(target)?.result };
 }

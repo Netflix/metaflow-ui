@@ -2,7 +2,6 @@ import React, { useEffect, useState, createRef, useReducer } from 'react';
 import { AutoSizer, List } from 'react-virtualized';
 import { Step, Task } from '../types';
 import styled from 'styled-components';
-import { color } from '../utils/theme';
 
 type GraphState = {
   // Relative or absolute rendering? Absolute = just line length
@@ -430,7 +429,7 @@ const RowGraphContainer = styled.div`
 
 const BoxGraphic = styled.div`
   position: absolute;
-  background: ${color('secondary')};
+  background: ${p => p.theme.color.bg.teal};
   min-width: 100px;
   height: 16px;
   transform: translateY(7px);

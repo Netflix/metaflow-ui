@@ -1,26 +1,83 @@
 import { DefaultTheme } from 'styled-components';
 
+const spacer = {
+  xs: 0.25,
+  sm: 0.5,
+  md: 1,
+  lg: 2,
+  hg: 3,
+};
+
+const brandColor = {
+  gray: '#333',
+  blue: '#146EE6',
+  teal: '#00BBCE',
+};
+
+const textColor = {
+  dark: brandColor.gray,
+  mid: '#666',
+  light: '#767676',
+  lightest: '#828282',
+  white: '#fff',
+  // this is a slightly darker tone of brand blue to meet a11y standards
+  blue: '#0C66DE',
+};
+
+const bgColor = {
+  white: '#fff',
+  dark: '#767676',
+  light: '#f6f6f6',
+  blue: brandColor.blue,
+  blueLight: '#e4f0ff',
+  teal: brandColor.teal,
+  yellow: '#E5A90C',
+  red: '#EB3428',
+  green: '#20AF2E',
+};
+
+const borderColor = {
+  light: '#e9e9e9',
+};
+
 const defaultTheme: DefaultTheme = {
   layout: {
-    appbarHeight: 4,
+    appbarHeight: 7,
     appbarLogoHeight: 1.5,
-    pagePaddingX: 2,
+    pagePaddingX: spacer.lg,
+    pagePaddingY: spacer.lg,
+    sidebarWidth: 14,
   },
 
-  colors: {
-    main: '#146EE6',
-    secondary: '#00BBCE',
-    darkGray: '#333',
-    lightGray: '#e6e6e6',
+  spacer,
+
+  color: {
+    text: textColor,
+    bg: bgColor,
+    border: borderColor,
   },
 
-  statusColors: {
-    success: '#28a745',
-    primary: '#007bff',
-    info: '#17a2b8',
-    warning: '#ffc107',
-    danger: '#dc3545',
-    default: '#eeeeee',
+  notification: {
+    success: {
+      bg: bgColor.white,
+      text: '#28a745',
+    },
+    info: {
+      bg: bgColor.white,
+      text: '#107177',
+    },
+    warning: {
+      bg: bgColor.white,
+      text: '#107177',
+    },
+    danger: {
+      bg: bgColor.white,
+      text: '#107177',
+    },
+    default: {
+      bg: bgColor.white,
+      text: textColor.mid,
+    },
   },
 };
 

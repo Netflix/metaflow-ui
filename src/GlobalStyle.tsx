@@ -11,6 +11,11 @@ const globalCSS = css`
       'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color: ${(p) => p.theme.color.text.dark};
+  }
+
+  a {
+    color: ${(p) => p.theme.color.text.blue};
   }
 
   code {
@@ -23,6 +28,18 @@ const globalCSS = css`
 
   dd {
     margin-inline-start: 0;
+  }
+
+  .muted {
+    color: ${(p) => p.theme.color.text.light};
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    font-weight: 600;
   }
 
   * {
