@@ -80,7 +80,7 @@ const TasksList: React.FC<{ flow: string; run: number; step: string }> = ({ flow
   );
 };
 
-const Experiment = () => {
+const Experiment: React.FC = () => {
   const [d, sd] = useState<{ s: number; d: Flow[] }>({ s: 0, d: [] });
 
   const [flow, setFlow] = useState<string | null>(null);
