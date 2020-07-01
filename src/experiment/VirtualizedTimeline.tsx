@@ -429,7 +429,7 @@ const RowGraphContainer = styled.div`
 
 const BoxGraphic = styled.div`
   position: absolute;
-  background: ${p => p.theme.color.bg.teal};
+  background: ${(p) => p.theme.color.bg.teal};
   min-width: 100px;
   height: 16px;
   transform: translateY(7px);

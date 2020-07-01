@@ -3,10 +3,7 @@ import styled from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '../../assets/logo_dark_horizontal.svg';
 
-interface AppBar {} // eslint-disable-line
-
-// eslint-disable-next-line
-export default function AppBar({}: AppBar) {
+const AppBar: React.FC = () => {
   const { pathname } = useLocation();
 
   return (
@@ -17,7 +14,9 @@ export default function AppBar({}: AppBar) {
       <DummyBreadcrumb pathname={pathname} />
     </Wrapper>
   );
-}
+};
+
+export default AppBar;
 
 const Wrapper = styled.header`
   display: flex;
@@ -27,14 +26,14 @@ const Wrapper = styled.header`
   top: 0;
   left: 0;
   right: 0;
-  height: ${p => p.theme.layout.appbarHeight}rem;
-  padding: 0 ${p => p.theme.layout.pagePaddingX}rem;
+  height: ${(p) => p.theme.layout.appbarHeight}rem;
+  padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem;
   background: rgba(255, 255, 255, 0.75);
   pointer-events: none;
 `;
 
 const Logo = styled.img`
-  height: ${p => p.theme.layout.appbarLogoHeight}rem;
+  height: ${(p) => p.theme.layout.appbarLogoHeight}rem;
 `;
 
 const DummyBreadcrumb: React.FC<{ pathname: string }> = ({ pathname }) => {

@@ -26,13 +26,13 @@ const Tag = styled.span`
   }
 
   &.removable {
-      cursor: pointer;
+    cursor: pointer;
   }
 `;
 
 export default Tag;
 
-export const RemovableTag: React.FC<{onClick: () => void}> = ({ children, onClick }) => (
+export const RemovableTag: React.FC<{ onClick: () => void }> = ({ children, onClick }) => (
   <Tag className="removable" onClick={() => onClick()}>
     {children}
     <Icon name="times" />

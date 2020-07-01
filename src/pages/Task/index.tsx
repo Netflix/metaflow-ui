@@ -1,5 +1,7 @@
 import React from 'react';
 
-export default function Task() {
+const Task: React.FC = () => {
   return <div>Todo</div>;
-}
+};
+
+export default Task;

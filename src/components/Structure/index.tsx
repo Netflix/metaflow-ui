@@ -27,9 +27,10 @@ export const Section = styled.section`
 
 export const SectionHeader = styled.header`
   display: flex;
-  align-items: center; 
+  align-items: center;
   justify-content: space-between;
-  padding: ${(p) => p.theme.spacer.sm}rem; ${(p) => p.theme.spacer.sm}rem;
+  padding: ${(p) => p.theme.spacer.sm}rem;
+  ${(p) => p.theme.spacer.sm}rem;
   margin: 0 -${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
   border-bottom: 1px solid ${(p) => p.theme.color.border.light};
   color: ${(p) => p.theme.color.text.light};
@@ -48,6 +49,6 @@ const alignmentToFlex: FlexAlignments = {
 };
 
 export const SectionHeaderContent = styled.div<{ align: keyof FlexAlignments }>`
-  justify-content: ${p => alignmentToFlex[p.align]};
+  justify-content: ${(p) => alignmentToFlex[p.align]};
   align-items: center;
 `;

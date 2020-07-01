@@ -9,7 +9,7 @@ import { Content, Layout } from '../../components/Structure';
 import VirtualizedTimeline from '../../experiment/VirtualizedTimeline';
 import DAG from '../../experiment/DAG';
 
-export default function RunPage() {
+const RunPage: React.FC = () => {
   const { url, params } = useRouteMatch<{ flowId: string; runNumber: string; viewType: string }>();
   const urlBase = url.split('/').slice(0, -1).join('/');
   const { data: run, error } = useResource<IRun>({
@@ -69,4 +69,6 @@ export default function RunPage() {
       />
     </>
   );
-}
+};
+
+export default RunPage;
