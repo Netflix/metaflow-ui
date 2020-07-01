@@ -16,6 +16,8 @@ type TimelineRowProps = {
   endTime?: number;
 };
 
+type LabelPosition = 'left' | 'inside' | 'inside-right' | 'right';
+
 const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, sticky, endTime }) => {
   if (!item) return null;
 
@@ -81,12 +83,15 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, sticky, 
   );
 };
 
-function getLengthLabelPosition(fromLeft: number, width: number): 'left' | 'inside' | 'right' {
+function getLengthLabelPosition(fromLeft: number, width: number): LabelPosition {
   if (fromLeft + width < 90) {
     return 'right';
   } else if (fromLeft + width > 90 && fromLeft > 10) {
     return 'left';
+  } else if (fromLeft + width < 100) {
+    return 'inside-right';
   }
+
   return 'inside';
 }
 
@@ -132,12 +137,13 @@ const BoxGraphic = styled.div<{ root: boolean }>`
   transform: translateY(7px);
 `;
 
-const BoxGraphicValue = styled.div<{ position: 'left' | 'inside' | 'right' }>`
+const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
   position: absolute;
   left: ${({ position }) => (position === 'right' ? '100%' : 'auto')};
-  right: ${({ position }) => (position === 'left' ? '100%' : position === 'inside' ? '0' : 'auto')};
+  right: ${({ position }) =>
+    position === 'left' ? '100%' : position === 'inside' || position === 'inside-right' ? '0' : 'auto'};
   top: ${({ position }) => (position === 'inside' ? '6px' : 'auto')};
-  color: ${({ position }) => (position === 'inside' ? '#fff' : 'inherit')};
+  color: ${({ position }) => (position === 'inside' || position === 'inside-right' ? '#fff' : 'inherit')};
   padding: 0 10px;
   font-size: 14px;
 `;
