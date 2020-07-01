@@ -129,7 +129,7 @@ const Home: React.FC = () => {
       });
   };
 
-  const { data: runs, error } = useResource<IRun[]>({
+  const { data: runs, error } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: '/runs',

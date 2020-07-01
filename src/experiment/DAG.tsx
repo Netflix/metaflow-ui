@@ -6,6 +6,7 @@ import {
   INodeInnerDefaultProps,
   ICanvasInnerDefaultProps,
   ICanvasOuterDefaultProps,
+  INode,
 } from '@mrblenny/react-flow-chart';
 import { getStepMeasures, treeExampleSlide16, StepTree, ParallelStep } from './PlayingAroundWithDagDataModel';
 import styled from 'styled-components';
@@ -31,19 +32,21 @@ const chartSimple = {
  * Node
  */
 
-const DarkBox = styled.div<any>`
+const DarkBox = styled.div<{
+  node: INode;
+}>`
   position: absolute;
   padding: 30px;
   color: white;
   border-radius: 10px;
-  background: ${(props) => (props.nodeProperties?.type === 'loop' ? 'green' : '#3e3e3e')};
+  background: ${(props) => (props.node.properties?.type === 'loop' ? 'green' : '#3e3e3e')};
 
   ${(props) =>
-    props.nodeProperties.node_type &&
-    props.nodeProperties.node_type === 'parallel' &&
+    props.node.properties?.node_type &&
+    props.node.properties.node_type === 'parallel' &&
     `
-    width: ${props.size.width}px;
-    height: ${props.size.height}px;
+    width: ${props.node.size?.width}px;
+    height: ${props.node.size?.height}px;
     background: transparent;
     border: 3px dashed blue;
     opacity: 0.8;
@@ -53,7 +56,7 @@ const DarkBox = styled.div<any>`
 const NodeCustom = React.forwardRef(
   ({ node, children, ...otherProps }: INodeDefaultProps, ref: React.Ref<HTMLDivElement>) => {
     return (
-      <DarkBox ref={ref} nodeProperties={node.properties} size={node.size} {...otherProps}>
+      <DarkBox ref={ref} node={node} {...otherProps}>
         {children}
       </DarkBox>
     );
@@ -76,7 +79,7 @@ export const CanvasOuterDefault = styled.div<ICanvasOuterDefaultProps>`
 `;
 
 const CanvasOuterCustom = React.forwardRef((props: ICanvasOuterDefaultProps, ref: React.Ref<HTMLDivElement>) => {
-  return <CanvasOuterDefault {...(props as any)} ref={ref} />;
+  return <CanvasOuterDefault {...props} ref={ref} />;
 });
 
 export const CanvasInnerStyle = styled.div<ICanvasInnerDefaultProps>`
@@ -254,24 +257,22 @@ interface IDAG {
   steps: Step[];
 }
 
-const DAG: React.FC<IDAG> = ({ steps }) => {
+const DAG: React.FC<IDAG> = () => {
   // NOTE We might want some click handlers here and maybe even internal state.
   // Also need to think how to keep state over tab changes. (when switching tabs and coming back to dag)
 
   return (
     <div>
-      {Array.isArray(steps) && steps.length > 0 && (
-        <FlowChartWithState
-          initialValue={makeChartFromTreeData(treeExampleSlide16)}
-          config={chartSimple.config}
-          Components={{
-            Node: NodeCustom,
-            NodeInner: NodeInnerCustom,
-            CanvasInner: CanvasInnerCustom,
-            CanvasOuter: CanvasOuterCustom,
-          }}
-        />
-      )}
+      <FlowChartWithState
+        initialValue={makeChartFromTreeData(treeExampleSlide16)}
+        config={chartSimple.config}
+        Components={{
+          Node: NodeCustom,
+          NodeInner: NodeInnerCustom,
+          CanvasInner: CanvasInnerCustom,
+          CanvasOuter: CanvasOuterCustom,
+        }}
+      />
     </div>
   );
 };

@@ -52,3 +52,9 @@ export const SectionHeaderContent = styled.div<{ align: keyof FlexAlignments }>`
   justify-content: ${(p) => alignmentToFlex[p.align]};
   align-items: center;
 `;
+
+export const FixedContent = styled.div`
+  height: calc(100vh - ${(p) => p.theme.layout.appbarHeight}rem);
+  display: flex;
+  flex-direction: column;
+`;

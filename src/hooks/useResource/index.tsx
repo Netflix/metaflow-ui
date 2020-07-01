@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import ResourceEvents, { Event, EventType, Unsubscribe } from '../../ws';
 import { METAFLOW_SERVICE } from '../../constants';
 
-export interface HookConfig<T> {
+export interface HookConfig<T, U> {
   url: string;
   initialData: T | T[] | null;
   subscribeToEvents?: boolean | string;
+  updatePredicate?: (_: U, _l: U) => boolean;
+  fetchAllData?: boolean;
   queryParams?: Record<string, string>;
 }
 
@@ -87,12 +89,14 @@ export function createCache(): CacheInterface {
 const cache = createCache();
 
 // TODO: cache map, cache subscriptions, ws connections, cache mutations
-export default function useResource<T>({
+export default function useResource<T, U>({
   url,
   initialData = null,
   subscribeToEvents = false,
   queryParams = {},
-}: HookConfig<T>): Resource<T> {
+  updatePredicate = (_a, _b) => false,
+  fetchAllData = false,
+}: HookConfig<T, U>): Resource<T> {
   const [error, setError] = useState(null);
   const [data, setData] = useState<T>(cache.get(url)?.data || initialData);
 
@@ -116,7 +120,7 @@ export default function useResource<T>({
     let unsubWebsocket: Unsubscribe | null = null;
     if (subscribeToEvents) {
       const eventResource = typeof subscribeToEvents === 'string' ? subscribeToEvents : url;
-      unsubWebsocket = ResourceEvents.subscribe(eventResource, (event: Event<T>) => {
+      unsubWebsocket = ResourceEvents.subscribe(eventResource, (event: Event<any>) => {
         if (event.type === EventType.INSERT) {
           // Get current cache and prepend to the list
           const currentCache = cache.get(target);
@@ -125,6 +129,17 @@ export default function useResource<T>({
             ...currentCache,
             data: Array.isArray(currentCache.data)
               ? [event.data, ...currentCache.data]
+              : (currentCache.data = event.data),
+          });
+        } else if (event.type === EventType.UPDATE) {
+          // Get current cache and prepend to the list
+          const currentCache = cache.get(target);
+
+          // TODO: How do we handle this properly?
+          cache.set(target, {
+            ...currentCache,
+            data: Array.isArray(currentCache.data)
+              ? currentCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
               : (currentCache.data = event.data),
           });
         }
@@ -137,6 +152,42 @@ export default function useResource<T>({
     };
   }, []); // eslint-disable-line
 
+  function fetchData(
+    targeturl: string,
+    cacheKey: string,
+    signal: AbortSignal,
+    updateFulfilled: (fulfilled: boolean) => void,
+  ) {
+    fetch(targeturl, { signal })
+      .then((response) =>
+        response.json().then((result: DataModel<T>) => ({
+          result,
+          data: result.data,
+        })),
+      )
+      .then(
+        (cacheItem) => {
+          cache.set(target, cacheItem);
+
+          if (
+            fetchAllData &&
+            cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
+            cacheItem.result.links.next !== targeturl
+          ) {
+            fetchData(cacheItem.result.links.next || targeturl, cacheKey, signal, updateFulfilled);
+          } else {
+            updateFulfilled(true);
+          }
+        },
+        (error) => {
+          if (error.name !== 'AbortError') {
+            setError(error.toString());
+          }
+          updateFulfilled(true);
+        },
+      );
+  }
+
   useEffect(() => {
     const cached = cache.get(target);
     const abortCtrl = new AbortController();
@@ -144,25 +195,7 @@ export default function useResource<T>({
     let fulfilled = false;
 
     if (!cached || !cached.data || cached.stale) {
-      fetch(target, { signal })
-        .then((response) =>
-          response.json().then((result: DataModel<T>) => ({
-            result,
-            data: result.data,
-          })),
-        )
-        .then(
-          (cacheItem) => {
-            cache.set(target, cacheItem);
-            fulfilled = true;
-          },
-          (error) => {
-            if (error.name !== 'AbortError') {
-              setError(error.toString());
-            }
-            fulfilled = true;
-          },
-        );
+      fetchData(target, target, signal, (value) => (fulfilled = value));
     } else if (cached) {
       setData(cached.data);
     }
@@ -172,7 +205,7 @@ export default function useResource<T>({
         abortCtrl.abort();
       }
     };
-  }, [target]);
+  }, [target]); // eslint-disable-line
 
   return { url, data, error, getResult: () => cache.get(target)?.result };
 }

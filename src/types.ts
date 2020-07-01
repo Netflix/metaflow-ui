@@ -24,19 +24,21 @@ export interface Run extends MetaDataBaseObject {
   [index: string]: keyof MetaDataBaseObject | keyof RunStatus | string | number | string[] | undefined;
   run_number: number;
   status: keyof RunStatus;
-  finished_at?: string;
+  finished_at?: number;
   duration?: string;
 }
 
 export interface Step extends MetaDataBaseObject {
   run_number: number;
   step_name: string;
+  finished_at?: number;
 }
 
 export interface Task extends MetaDataBaseObject {
   run_number: number;
   step_name: string;
   task_id: number;
+  finished_at: number;
 }
 
 export interface Metadata extends MetaDataBaseObject {
