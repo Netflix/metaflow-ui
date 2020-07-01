@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ResourceEvents, { Event, EventType, Unsubscribe } from '../../ws';
 import { METAFLOW_SERVICE } from '../../constants';
 
@@ -97,12 +97,12 @@ export default function useResource<T, U>({
   queryParams = {},
   updatePredicate = (_a, _b) => false,
   fetchAllData = false,
-  privateCache = false
+  privateCache = false,
 }: HookConfig<T, U>): Resource<T> {
-  const cache = privateCache ? createCache() : singletonCache;
+  const cache = useRef(privateCache ? createCache() : singletonCache).current;
   const [error, setError] = useState(null);
   const [data, setData] = useState<T>(cache.get(url)?.data || initialData);
-  
+
   const q = new URLSearchParams(queryParams).toString();
   const target = `${METAFLOW_SERVICE}${url}${q ? '?' + q : ''}`;
 
@@ -114,7 +114,7 @@ export default function useResource<T, U>({
     return () => {
       unsubCache();
     };
-  }, [target]);
+  }, [target, cache]);
 
   useEffect(() => {
     // Subscribe to Websocket events (optional)
