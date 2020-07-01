@@ -60,8 +60,6 @@ const VirtualizedTimeline: React.FC<{
     },
   });
 
-  const [page, setPage] = useState(1);
-
   // Fetch & subscribe to tasks
   const { data: taskData } = useResource<Task[], Task>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/tasks`,
@@ -173,8 +171,6 @@ const VirtualizedTimeline: React.FC<{
           <button onClick={() => graphDispatch({ type: 'mode', mode: 'absolute' })}>absolute</button>
           <button onClick={() => graphDispatch({ type: 'zoomOut' })}>-</button>
           <button onClick={() => graphDispatch({ type: 'zoomIn' })}>+</button>
-          <button onClick={() => setPage(page - 1)}>prev</button>
-          <button onClick={() => setPage(page + 1)}>next</button>
         </div>
         <div style={{ flex: '1' }} ref={_listContainer}>
           <FixedListContainer
