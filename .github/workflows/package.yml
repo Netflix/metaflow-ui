@@ -1,0 +1,39 @@
+name: Package
+
+on:
+  push:
+    tags:
+      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+        env:
+          CI: true
+
+      - name: Set release version
+        run: echo ::set-env name=RELEASE_VERSION::${GITHUB_REF##*/}
+
+      - run: yarn --frozen-lockfile
+      - run: yarn build
+
+      - run: echo ${{ env.RELEASE_VERSION}}
+      - run: echo $RELEASE_VERSION
+
+      - run: cd build && zip -r release.zip .
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: metaflow-ui-${{ env.RELEASE_VERSION }}.zip
+          path: ./build/release.zip
