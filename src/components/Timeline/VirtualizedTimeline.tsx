@@ -109,6 +109,7 @@ const VirtualizedTimeline: React.FC<{
     dispatch({ type: 'fill', data: taskData });
     // dispatch({ type: 'sort', ids: Object.keys(rowDataState) });
   }, [taskData]);
+
   // Add tasks after step rows if they are open
   useEffect(() => {
     const newRows: Row[] = steps.reduce((arr: Row[], current: Step): Row[] => {
@@ -188,17 +189,7 @@ const VirtualizedTimeline: React.FC<{
               overscanRowCount={10}
               rowCount={rows.length}
               onRowsRendered={(params) => {
-                const stepNeedsSticky = stepPositions.find((item, index) => {
-                  const isLast = index + 1 === stepPositions.length;
-
-                  if (
-                    item.index < params.startIndex &&
-                    (isLast || stepPositions[index + 1].index > params.startIndex + 1)
-                  ) {
-                    return true;
-                  }
-                  return false;
-                });
+                const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
 
                 if (stepNeedsSticky) {
                   setStickyHeader(stepNeedsSticky.name);
@@ -273,6 +264,17 @@ const StickyHeader: React.FC<{
 
   return <TimelineRow item={item} endTime={rowData && rowData.finished_at} graph={graph} onOpen={onToggle} sticky />;
 };
+
+function timelineNeedStickyHeader(stepPositions: StepIndex[], currentIndex: number) {
+  return stepPositions.find((item, index) => {
+    const isLast = index + 1 === stepPositions.length;
+
+    if (item.index < currentIndex && (isLast || stepPositions[index + 1].index > currentIndex + 1)) {
+      return true;
+    }
+    return false;
+  });
+}
 
 const VirtualizedTimelineContainer = styled.div`
   display: flex;
