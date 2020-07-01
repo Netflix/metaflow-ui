@@ -30,8 +30,16 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, sticky, 
       : ((dataItem.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100;
 
   const width = finishedAt
-    ? ((finishedAt - item.data.ts_epoch) / (graph.timelineEnd - graph.timelineStart)) * 100 + '%'
-    : '100px';
+    ? ((finishedAt - item.data.ts_epoch) / (graph.timelineEnd - graph.timelineStart)) * 100
+    : 100 - valueFromLeft;
+
+  const labelPosition = getLengthLabelPosition(valueFromLeft, width);
+
+  const LabelElement = () => (
+    <BoxGraphicValue position={labelPosition}>
+      {finishedAt ? ((finishedAt - item.data.ts_epoch) / 1000).toFixed(2) + 's' : '?'}
+    </BoxGraphicValue>
+  );
 
   return (
     <>
@@ -60,19 +68,27 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, sticky, 
           <BoxGraphic
             root={item.type === 'step'}
             style={{
-              width: width,
+              width: width + '%',
               left: valueFromLeft + '%',
             }}
           >
-            <BoxGraphicValue>
-              {finishedAt ? ((finishedAt - item.data.ts_epoch) / 1000).toFixed(2) + 's' : '?'}
-            </BoxGraphicValue>
+            {labelPosition !== 'inside' ? <LabelElement /> : null}
           </BoxGraphic>
+          {labelPosition === 'inside' ? <LabelElement /> : null}
         </RowGraphContainer>
       </Element>
     </>
   );
 };
+
+function getLengthLabelPosition(fromLeft: number, width: number): 'left' | 'inside' | 'right' {
+  if (fromLeft + width < 90) {
+    return 'right';
+  } else if (fromLeft + width > 90 && fromLeft > 10) {
+    return 'left';
+  }
+  return 'inside';
+}
 
 const StyledRow = styled.div`
   display: flex;
@@ -116,10 +132,13 @@ const BoxGraphic = styled.div<{ root: boolean }>`
   transform: translateY(7px);
 `;
 
-const BoxGraphicValue = styled.div`
-  position: relative;
-  left: 100%;
-  padding-left: 10px;
+const BoxGraphicValue = styled.div<{ position: 'left' | 'inside' | 'right' }>`
+  position: absolute;
+  left: ${({ position }) => (position === 'right' ? '100%' : 'auto')};
+  right: ${({ position }) => (position === 'left' ? '100%' : position === 'inside' ? '0' : 'auto')};
+  top: ${({ position }) => (position === 'inside' ? '6px' : 'auto')};
+  color: ${({ position }) => (position === 'inside' ? '#fff' : 'inherit')};
+  padding: 0 10px;
   font-size: 14px;
 `;
 
