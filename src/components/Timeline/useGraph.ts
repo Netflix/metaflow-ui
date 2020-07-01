@@ -11,6 +11,8 @@ export type GraphState = {
   timelineStart: number;
   // Selected ending point (default to last task timestamp)
   timelineEnd: number;
+  // Is zoom level user controlled?
+  controlled: boolean;
 };
 
 export type GraphAction =
@@ -25,12 +27,21 @@ export type GraphAction =
   // Zoom functions manipulates timelineStart and timelineEnd values to kinda fake zooming.
   | { type: 'zoomIn' }
   | { type: 'zoomOut' }
-  | { type: 'resetZoom' };
+  | { type: 'resetZoom' }
+  // Update zoom contol state. If controlled, we dont update zoom level.
+  | { type: 'setControlled'; value: boolean };
 
-function graphReducer(state: GraphState, action: GraphAction) {
+function graphReducer(state: GraphState, action: GraphAction): GraphState {
   switch (action.type) {
     case 'init':
-      return { ...state, max: action.end, min: action.start, timelineEnd: action.end, timelineStart: action.start };
+      return {
+        ...state,
+        max: action.end,
+        min: action.start,
+        timelineEnd: action.end,
+        timelineStart: action.start,
+        controlled: false,
+      };
 
     case 'move':
       // Check if any of the edges of scroll bar are out of bounds
@@ -51,7 +62,7 @@ function graphReducer(state: GraphState, action: GraphAction) {
 
     case 'updateMax':
       const val = action.end > state.max ? action.end : state.max;
-      return { ...state, max: val, timelineEnd: val };
+      return { ...state, max: val, timelineEnd: state.controlled ? state.timelineEnd : val };
 
     case 'mode':
       return { ...state, mode: action.mode };
@@ -61,7 +72,7 @@ function graphReducer(state: GraphState, action: GraphAction) {
 
       if (state.timelineEnd - tenthOfTimeline <= state.timelineStart + tenthOfTimeline) return state;
 
-      return updateGraph(state, tenthOfTimeline, -tenthOfTimeline);
+      return { ...updateGraph(state, tenthOfTimeline, -tenthOfTimeline), controlled: true };
     }
 
     case 'zoomOut': {
@@ -86,13 +97,16 @@ function graphReducer(state: GraphState, action: GraphAction) {
 
     case 'resetZoom':
       return resetTimeline(state);
+
+    case 'setControlled':
+      return { ...state, controlled: action.value };
   }
   return state;
 }
 
 // When if tried zoom is bigger than total length of timeline (might happen on zoom out)
 function zoomOverTotalLength(graph: GraphState, change: number) {
-  return graph.timelineEnd + change - graph.timelineStart - change > graph.max - graph.min;
+  return graph.timelineEnd + change - (graph.timelineStart - change) >= graph.max - graph.min;
 }
 
 // Check if scrollbar is going backwards too much
@@ -122,6 +136,7 @@ function resetTimeline(graph: GraphState): GraphState {
     ...graph,
     timelineStart: graph.min,
     timelineEnd: graph.max,
+    controlled: false,
   };
 }
 
@@ -136,6 +151,7 @@ export default function useGraph(start: number, end: number) {
     max: end,
     timelineStart: start,
     timelineEnd: end,
+    controlled: false,
   });
 
   return { graph, dispatch };
