@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Row } from './VirtualizedTimeline';
-import { color } from '../../utils/theme';
 import { GraphState } from './useGraph';
 
 type TimelineRowProps = {
@@ -130,8 +129,8 @@ const RowGraphContainer = styled.div`
 
 const BoxGraphic = styled.div<{ root: boolean }>`
   position: absolute;
-  background: ${(props) => (props.root ? color('main') : color('secondary'))};
-  color: ${(props) => (props.root ? color('main') : color('secondary'))};
+  background: ${(p) => (p.root ? p.theme.color.main : p.theme.color.secondary)};
+  color: ${(p) => (p.root ? p.theme.color.main : p.theme.color.secondary)};
   min-width: 10px;
   height: 16px;
   transform: translateY(7px);

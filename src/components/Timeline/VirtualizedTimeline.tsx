@@ -56,7 +56,7 @@ const VirtualizedTimeline: React.FC<{
     initialData: [],
     queryParams: {
       _order: '+ts_epoch',
-      _limit: 1000,
+      _limit: '1000',
     },
   });
 
@@ -70,7 +70,7 @@ const VirtualizedTimeline: React.FC<{
     updatePredicate: (a, b) => a.task_id === b.task_id,
     queryParams: {
       _order: '+ts_epoch',
-      _limit: 1000,
+      _limit: '1000',
     },
     fetchAllData: true,
   });

@@ -3,7 +3,6 @@ import styled from 'styled-components';
 
 export enum NotificationType {
   Success = 'success',
-  Primary = 'primary',
   Info = 'info',
   Warning = 'warning',
   Danger = 'danger',
@@ -11,17 +10,23 @@ export enum NotificationType {
 }
 
 export interface NotificationProps {
-  type: NotificationType;
+  type?: NotificationType;
   children: React.ReactNode;
+  className?: string;
 }
 
-const Notification: React.FC<NotificationProps> = ({ type, children }) => {
-  return <Wrapper type={type}>{children}</Wrapper>;
+const Notification: React.FC<NotificationProps> = ({ type = NotificationType.Default, children, className = '' }) => {
+  return (
+    <Wrapper type={type} className={className}>
+      {children}
+    </Wrapper>
+  );
 };
 
 const Wrapper = styled.div<{ type: NotificationType }>`
   border-radius: 0.5rem;
-  background: ${({ theme, type }) => theme.statusColors[type]};
+  background: ${({ theme, type }) => theme.notification[type].bg};
+  color: ${({ theme, type }) => theme.notification[type].text};
 `;
 
 export default Notification;

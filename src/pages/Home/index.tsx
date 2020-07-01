@@ -1,72 +1,346 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Run as IRun } from '../../types';
-import Table from '../../components/Table';
-import { Layout, Sidebar, Content } from '../../components/Structure';
+import React, { useEffect, useState } from 'react';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 
+import { Run as IRun } from '../../types';
+import useQuery from '../../hooks/useQuery';
 import useResource from '../../hooks/useResource';
+
+import { getISOString } from '../../utils/date';
+import { fromPairs } from '../../utils/object';
+import { getParamChangeHandler } from '../../utils/url';
+
+import { RemovableTag } from '../../components/Tag';
+import Table, { HeaderColumn, TR, TD } from '../../components/Table';
+import { Field } from '../../components/Form';
+import { Layout, Sidebar, Section, SectionHeader, SectionHeaderContent, Content } from '../../components/Structure';
 import Notification, { NotificationType } from '../../components/Notification';
+import TagInput from '../../components/TagInput';
+import Icon from '../../components/Icon';
+
+import { ResultGroup, StatusColorCell, StatusColorHeaderCell } from './styles';
+
+type QueryParam = string | null;
+
+interface DefaultQuery {
+  _group: 'string';
+  _order: 'string';
+  _limit: 'string';
+}
+
+const defaultQuery = new URLSearchParams({
+  _group: 'flow_id',
+  _order: '+run_number',
+  _limit: '5',
+  status: 'running,completed,failed',
+});
+
+const strExists = (p: string) => p !== '';
+function paramList(param: QueryParam): Array<string> {
+  return param !== null ? param.split(',').filter(strExists) : [];
+}
+
+interface StatusFieldProps {
+  value: string;
+  label: string;
+}
+
+type GroupPaginationValueProps = {
+  page: string;
+  pages: { self: string; last: string };
+  prop: string;
+  propVal: string;
+  data: IRun[];
+};
 
 const Home: React.FC = () => {
-  const [flowId, setFlowId] = useState('');
+  const query = useQuery();
+  const history = useHistory();
+  const location = useLocation();
+
+  const [groupPages, setGroupPages] = useState<Record<string, GroupPaginationValueProps>>({});
+
+  const search = (qs: string) => history.push(`${location.pathname}?${qs}`);
+
+  const handleParamChange = getParamChangeHandler(query, search, () => setGroupPages({}));
+
+  const getQueryParam = (prop: string) => query.get(prop) || defaultQuery.get(prop);
+
+  const getDefaultedQueryParam = (prop: keyof DefaultQuery) => getQueryParam(prop) as string;
+
+  const parseOrderParam = (val: string): [string, string] => [val.substr(0, 1), val.substr(1)];
+
+  const resetAllFilters = () => {
+    setGroupPages({});
+    search(defaultQuery.toString());
+  };
+
+  const handleRunClick = (r: IRun) => history.push(`/flows/${r.flow_id}/runs/${r.run_number}`);
+
+  const handleOrderChange = (value: string) => {
+    let nextDir = '+';
+    const [dir, val] = parseOrderParam(getDefaultedQueryParam('_order'));
+    if (val === value) nextDir = dir === '+' ? '-' : '+';
+    const nextOrder = `${nextDir}${value}`;
+    handleParamChange('_order', nextOrder, false);
+
+    // refetch reordered items that were loaded via load more
+    const gp = [...Object.entries(groupPages)];
+    const limit = getDefaultedQueryParam('_limit');
+
+    Promise.all(
+      gp.map(([, v]) =>
+        fetch(`/api/runs?${v.prop}=${v.propVal}&_order=${nextOrder}&_limit=${Number(limit) * Number(v.page)}`)
+          .then((r) => r.json())
+          .then((b) => ({ ...v, data: b.data })),
+      ),
+    ).then((bs) => {
+      const kv = bs.reduce<Record<string, GroupPaginationValueProps>>(
+        (acc, cur) => ({ ...acc, [cur.propVal]: cur }),
+        {},
+      );
+      setGroupPages(fromPairs(Object.entries(kv)));
+    });
+  };
+
+  const updateListValue = (key: string, val: string) => {
+    const vals = new Set(paramList(getQueryParam(key)));
+
+    if (!vals.has(val)) {
+      vals.add(val);
+    } else {
+      vals.delete(val);
+    }
+
+    handleParamChange(key, [...vals.values()].join(','));
+  };
+
+  const loadMoreRuns = (val: string, page: string = '1') => {
+    const prop = getDefaultedQueryParam('_group');
+    const order = getDefaultedQueryParam('_order');
+
+    fetch(`/api/runs?${prop}=${val}&_order=${order}&_limit=5&_page=${page}`)
+      .then((res) => res.json())
+      .then(({ pages, data, links }) => {
+        const commonProps = { page, pages, links, prop, propVal: val };
+        setGroupPages((obj) => ({
+          ...obj,
+          [val]: val in obj ? { ...commonProps, data: obj[val].data.concat(data) } : { ...commonProps, data },
+        }));
+      });
+  };
+
   const { data: runs, error } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: '/runs',
-    queryParams: { _group: 'flow_id', _limit: 5, _order: '+flow_id,run_number', flow_id: flowId },
+    queryParams: { ...fromPairs([...defaultQuery.entries()]), ...fromPairs([...query.entries()]) },
   });
 
-  return (
-    <div>
-      <Layout>
-        <Sidebar className="sidebar">
-          <h3>Filters here</h3>
-          <input type="text" value={flowId} onChange={(e) => setFlowId(e.target.value)} />
-        </Sidebar>
+  useEffect(() => {
+    if (!query.toString()) {
+      resetAllFilters();
+    }
+  }, [query, resetAllFilters]);
 
-        <Content>
-          {error && <Notification type={NotificationType.Danger}>Error loading runs: {error}</Notification>}
-          <Table
-            data={runs}
-            noHeader
-            columns={[
-              {
-                key: 'flow_id',
-                label: 'Flow',
-                renderer: (item) => (
-                  <>
-                    <div>
-                      {item.flow_id}/{item.run_number}
-                    </div>
-                    <div>{item.user_name}</div>
-                  </>
-                ),
-              },
-              {
-                key: 'ts_epoch',
-                label: 'Time',
-                renderer: (item) => (
-                  <>
-                    <div>{new Date(item.ts_epoch).toISOString()}</div>
-                    <div>Run time here</div>
-                  </>
-                ),
-              },
-              { key: 'flow_id', label: 'Errors', renderer: () => <>Possible errors here</> },
-              {
-                key: 'flow_id',
-                label: 'Actions',
-                renderer: (item) => (
-                  <div style={{ display: 'flex' }}>
-                    <Link to={`flows/${item.flow_id}/runs/${item.run_number}/timeline`}>Timeline</Link>
-                  </div>
-                ),
-              },
-            ]}
+  const runsGroupedByProperty: Record<string, IRun[]> = Object.entries(
+    runs.reduce((acc: Record<string, IRun[]>, cur) => {
+      const groupKey: keyof DefaultQuery = '_group';
+      const key: keyof IRun = cur[getQueryParam(groupKey) as string];
+      return { ...acc, [key]: key in acc ? acc[key].concat(cur) : [cur] };
+    }, {}),
+  )
+    .map(([key, val]) => {
+      const paginated = groupPages[key]?.data;
+      const keys = new Set(val.map((r) => r.run_number).concat((paginated || []).map((r) => r.run_number)));
+      const _runs = [...keys.values()]
+        .map((k) => val.find((r) => r.run_number === k) || groupPages[key].data.find((r) => r.run_number === k))
+        .filter((r) => !!r) as IRun[];
+      return [key, _runs] as [string, IRun[]];
+    })
+    .reduce((acc: Record<string, IRun[]>, cur) => {
+      return { ...acc, [cur[0]]: cur[1] };
+    }, {});
+
+  const LocalTH = (props: { label: string; queryKey: string }) => (
+    <HeaderColumn
+      {...props}
+      queryKey={props.queryKey}
+      onSort={handleOrderChange}
+      currentOrder={getDefaultedQueryParam('_order')}
+    />
+  );
+
+  const StatusField: React.FC<StatusFieldProps> = ({ value, label }) => {
+    const id = `status_${value}`;
+    const statuses = new Set(paramList(getQueryParam('status')));
+    const checked = statuses.has(value);
+
+    return (
+      <Field horizontal className={checked ? 'active' : ''} onClick={() => updateListValue('status', value)}>
+        <span className={`checkbox ${id} ${checked ? 'checked' : ''}`}>{checked && <Icon name="check" />}</span>
+        <label htmlFor={id}>{label}</label>
+      </Field>
+    );
+  };
+
+  const TagParameterList: React.FC<{
+    paramKey: string;
+    mapList?: (xs: string[]) => string[];
+    mapValue?: (x: string) => string;
+  }> = ({ paramKey, mapList = (xs) => xs, mapValue = (x) => x }) => (
+    <>
+      {mapList(paramList(getQueryParam(paramKey))).map((x, i) => (
+        <RemovableTag key={i} onClick={() => updateListValue(paramKey, mapValue(x))}>
+          {x}
+        </RemovableTag>
+      ))}
+    </>
+  );
+
+  return (
+    <Layout>
+      <Sidebar className="sidebar">
+        <Section>
+          <SectionHeader>
+            Group by
+            <SectionHeaderContent align="right">
+              <Field horizontal>
+                <select
+                  value={getDefaultedQueryParam('_group')}
+                  onChange={(e) => handleParamChange('_group', e.target.value)}
+                >
+                  <option value="flow_id">Flow</option>
+                  <option value="user_name">User</option>
+                </select>
+              </Field>
+            </SectionHeaderContent>
+          </SectionHeader>
+        </Section>
+
+        <Section>
+          <SectionHeader>Status</SectionHeader>
+          <StatusField label="Running" value="running" />
+          <StatusField label="Failed" value="failed" />
+          <StatusField label="Completed" value="completed" />
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            User
+            <SectionHeaderContent align="right">
+              <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} />
+            </SectionHeaderContent>
+          </SectionHeader>
+          <TagParameterList
+            paramKey="_tags"
+            mapList={(xs) => xs.filter((x) => x.startsWith('user:')).map((x) => x.substr('user:'.length))}
+            mapValue={(x) => `user:${x}`}
           />
-        </Content>
-      </Layout>
-    </div>
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            Flow
+            <SectionHeaderContent align="right">
+              <TagInput onSubmit={(v) => updateListValue('flow_id', v)} />
+            </SectionHeaderContent>
+          </SectionHeader>
+          <TagParameterList paramKey="flow_id" />
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            Tag
+            <SectionHeaderContent align="right">
+              <TagInput onSubmit={(v) => updateListValue('_tags', v)} />
+            </SectionHeaderContent>
+          </SectionHeader>
+          <TagParameterList paramKey="_tags" mapList={(xs) => xs.filter((x) => !/^user:|project:/.test(x))} />
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            Project
+            <SectionHeaderContent align="right">
+              <TagInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} />
+            </SectionHeaderContent>
+          </SectionHeader>
+          <TagParameterList
+            paramKey="_tags"
+            mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
+            mapValue={(x) => `project:${x}`}
+          />
+        </Section>
+
+        <button onClick={() => resetAllFilters()}>
+          <Icon name="times" /> Reset all filters
+        </button>
+      </Sidebar>
+
+      <Content>
+        {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
+        {(!runs || !runs.length) && (
+          <Section>
+            <h3>No results</h3>
+            <p>Possible tips listed here</p>
+          </Section>
+        )}
+        {!!runs &&
+          !!runs.length &&
+          Object.keys(runsGroupedByProperty).map((k) => (
+            <ResultGroup key={k}>
+              <h3>{k}</h3>
+
+              <Table cellPadding="0" cellSpacing="0">
+                <thead>
+                  <TR>
+                    <StatusColorHeaderCell />
+                    <LocalTH label="Id" queryKey="run_number" />
+                    <LocalTH label="Status" queryKey="status" />
+                    <LocalTH label="Started at" queryKey="ts_epoch" />
+                    <LocalTH label="Finished at" queryKey="finished_at" />
+                    <LocalTH label="Duration" queryKey="duration" />
+                    <LocalTH label="User" queryKey="user_name" />
+                  </TR>
+                </thead>
+                <tbody>
+                  {runsGroupedByProperty[k].map((r) => (
+                    <TR key={r.run_number} onClick={() => handleRunClick(r)}>
+                      <StatusColorCell status={r.status} />
+                      <TD>
+                        <span className="muted">#</span> <strong>{r.run_number}</strong>
+                      </TD>
+                      <TD>{r.status}</TD>
+                      <TD>{getISOString(new Date(r.ts_epoch))}</TD>
+                      <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
+                      <TD>{r.duration}</TD>
+                      <TD>{r.user_name}</TD>
+                      <TD className="timeline-link">
+                        <Link to={`/flows/${r.flow_id}/runs/${r.run_number}`}>
+                          <Icon name="timeline" size="lg" /> Timeline
+                        </Link>
+                      </TD>
+                    </TR>
+                  ))}
+                </tbody>
+              </Table>
+              {(groupPages[k]?.pages.last !== groupPages[k]?.pages.self ||
+                (!groupPages[k] && runsGroupedByProperty[k].length >= Number(getDefaultedQueryParam('_limit')))) && (
+                <>
+                  <small
+                    className="load-more"
+                    onClick={() =>
+                      loadMoreRuns(k, !!groupPages[k]?.page ? String(Number(groupPages[k].page) + 1) : '2')
+                    }
+                  >
+                    Load more runs <Icon name="arrowDown" size="sm" />
+                  </small>
+                </>
+              )}
+            </ResultGroup>
+          ))}
+      </Content>
+    </Layout>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import ResourceEvents, { Event, EventType, Unsubscribe } from '../../ws';
 import { METAFLOW_SERVICE } from '../../constants';
 
@@ -6,9 +6,9 @@ export interface HookConfig<T, U> {
   url: string;
   initialData: T | T[] | null;
   subscribeToEvents?: boolean | string;
-  queryParams?: Record<string, string | number>;
   updatePredicate?: (_: U, _l: U) => boolean;
   fetchAllData?: boolean;
+  queryParams?: Record<string, string>;
 }
 
 interface DataModel<T> {
@@ -16,7 +16,7 @@ interface DataModel<T> {
   status: number;
   links: ResourceLinks;
   pages?: ResourcePages;
-  query: object;
+  query: Record<string, unknown>;
 }
 
 interface ResourceLinks {
@@ -39,11 +39,12 @@ export interface Resource<T> {
   url: string;
   data: T;
   error: Error | null;
+  getResult: () => DataModel<T>;
 }
 
 interface CacheItem<T> {
   stale?: boolean;
-  response: Response;
+  result: DataModel<T>;
   data: T | T[] | null;
 }
 
@@ -92,26 +93,18 @@ export default function useResource<T, U>({
   const [error, setError] = useState(null);
   const [data, setData] = useState<T>(cache.get(url)?.data || initialData);
 
-  const abortCtrl = useRef(new AbortController());
-  const signal = abortCtrl.current.signal;
-
-  // Construct query parameters string and append to url
-  const queryString = Object.keys(queryParams)
-    .filter((k) => queryParams[k] && queryParams[k] !== '')
-    .map((k) => encodeURIComponent(k) + '=' + encodeURIComponent(queryParams[k]))
-    .join('&');
+  const q = new URLSearchParams(queryParams).toString();
+  const target = `${METAFLOW_SERVICE}${url}${q ? '?' + q : ''}`;
 
   useEffect(() => {
-    // Subscribe to cache events
-    const unsubCache = cache.subscribe(url, () => {
-      setData(cache.get(url).data);
+    const unsubCache = cache.subscribe(target, () => {
+      setData(cache.get(target).data);
     });
 
     return () => {
-      // Unsubscribe from cache events
       unsubCache();
     };
-  }, []); // eslint-disable-line
+  }, [target]);
 
   useEffect(() => {
     // Subscribe to Websocket events (optional)
@@ -123,10 +116,9 @@ export default function useResource<T, U>({
       unsubWebsocket = ResourceEvents.subscribe(eventResource, (event: Event<any>) => {
         if (event.type === EventType.INSERT) {
           // Get current cache and prepend to the list
-          const currentCache = cache.get(url);
+          const currentCache = cache.get(target);
 
-          // TODO: How do we handle this properly?
-          cache.set(url, {
+          cache.set(target, {
             ...currentCache,
             data: Array.isArray(currentCache.data)
               ? [event.data, ...currentCache.data]
@@ -153,48 +145,55 @@ export default function useResource<T, U>({
     };
   }, []); // eslint-disable-line
 
-  function fetchData(targeturl: string) {
-    // TODO: Always disable response cache for now
-    // because it doesn't work for query parameters
+  function fetchData(targeturl: string, signal: AbortSignal, updateFulfilled: (fulfilled: boolean) => void) {
     fetch(targeturl, { signal })
       .then((response) =>
         response.json().then((result: DataModel<T>) => ({
-          response,
+          result,
           data: result.data,
-          next: result.pages?.self !== result.pages?.last && result.links.next !== targeturl ? result.links.next : null,
         })),
       )
       .then(
         (cacheItem) => {
-          cache.set(url, cacheItem);
+          cache.set(targeturl, cacheItem);
 
-          if (fetchAllData && cacheItem.next && Array.isArray(cacheItem.data) && cacheItem.data.length > 0) {
-            fetchData(cacheItem.next);
+          if (
+            fetchAllData &&
+            cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
+            cacheItem.result.links.next !== targeturl
+          ) {
+            fetchData(cacheItem.result.links.next || targeturl, signal, updateFulfilled);
+          } else {
+            updateFulfilled(true);
           }
         },
-        (err) => {
-          if (err.name !== 'AbortError') {
-            console.error(err.name, err);
-            setError(err.toString());
+        (error) => {
+          if (error.name !== 'AbortError') {
+            setError(error.toString());
           }
+          updateFulfilled(true);
         },
       );
   }
 
   useEffect(() => {
-    let target = `${METAFLOW_SERVICE}${url}`;
-    if (queryString && queryString.length > 0) {
-      target += `?${queryString}`;
+    const cached = cache.get(target);
+    const abortCtrl = new AbortController();
+    const signal = abortCtrl.signal;
+    let fulfilled: boolean = false;
+
+    if (!cached || !cached.data || cached.stale) {
+      fetchData(target, signal, (value) => (fulfilled = value));
+    } else if (cached) {
+      setData(cached.data);
     }
 
-    fetchData(target);
-
     return () => {
-      // TODO: Abort is disabled for now.
-      // For some reason this always aborts the "upcoming" request
-      // abortCtrl.current.abort(); // eslint-disable-line
+      if (!fulfilled) {
+        abortCtrl.abort();
+      }
     };
-  }, [url, queryString]); // eslint-disable-line
+  }, [target]);
 
-  return { url, data, error };
+  return { url, data, error, getResult: () => cache.get(target)?.result };
 }

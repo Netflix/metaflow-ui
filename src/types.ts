@@ -11,12 +11,21 @@ export interface MetaDataBaseObject {
   system_tags: string[];
 }
 
-export interface Flow extends MetaDataBaseObject {}
+export type Flow = MetaDataBaseObject;
+
+export type RunStatus = {
+  [index: string]: string;
+  completed: string;
+  running: string;
+  failed: string;
+};
 
 export interface Run extends MetaDataBaseObject {
+  [index: string]: any;
   run_number: number;
-  status: string;
+  status: keyof RunStatus;
   finished_at?: number;
+  duration?: string;
 }
 
 export interface Step extends MetaDataBaseObject {
