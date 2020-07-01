@@ -4,13 +4,13 @@ import { ThemeProvider } from 'styled-components';
 
 import Root from './pages/Root';
 
-import {Page} from './components/Structure';
+import { Page } from './components/Structure';
 import AppBar from './components/AppBar';
 
 import GlobalStyle from './GlobalStyle';
 import theme from './theme';
 
-export default function App() {
+const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
@@ -22,4 +22,6 @@ export default function App() {
       </Router>
     </ThemeProvider>
   );
-}
+};
+
+export default App;

@@ -8,7 +8,7 @@ import RunPage from '../Run';
 const runPath = '/flows/:flowId/runs/:runNumber';
 const defaultRunTab = 'dag';
 
-export default function RootPage() {
+const RootPage: React.FC = () => {
   return (
     <>
       <Switch>
@@ -30,7 +30,9 @@ export default function RootPage() {
       </Switch>
     </>
   );
-}
+};
+
+export default RootPage;
 
 const DefaultSubRoute = ({ path }: { path: string }) => {
   const { url } = useRouteMatch();
