@@ -48,29 +48,34 @@ interface CacheItem<T> {
   data: T | T[] | null;
 }
 
+interface CacheInterface {
+  subscribe: (k: string, f: () => void) => () => void;
+  update: <T>(k: string, f: (prev: CacheItem<T>) => CacheItem<T>) => void;
+  get: (k: string) => CacheItem<any>;
+  set: (k: string, v: CacheItem<any>) => void;
+}
+
 let uid = 1;
 const createCacheId = () => uid++;
 
-export function createCache() {
+export function createCache(): CacheInterface {
   const cache: Record<string, CacheItem<any>> = {};
   const subscribers: Record<string, Record<number, () => void>> = {};
 
-  const update = <T,>(key: string, fn: (prev: CacheItem<T>) => CacheItem<T>) => {
+  const update: CacheInterface['update'] = (key, fn) => {
     cache[key] = fn(cache[key]);
     Object.values(subscribers[key]).forEach((f) => f());
   };
 
-  const subscribe = (key: string, fn: () => void) => {
-    if (!subscribers[key]) {
-      subscribers[key] = {};
-    }
+  const subscribe: CacheInterface['subscribe'] = (key, fn) => {
+    if (!subscribers[key]) subscribers[key] = {};
     const id = createCacheId();
     subscribers[key][id] = fn;
     return () => delete subscribers[key][id];
   };
 
-  const get = (key: string): CacheItem<any> => cache[key];
-  const set = (key: string, value: CacheItem<any>) => update(key, () => value);
+  const get: CacheInterface['get'] = (key) => cache[key];
+  const set: CacheInterface['set'] = (key, value) => update(key, () => value);
 
   return {
     subscribe,
@@ -187,7 +192,7 @@ export default function useResource<T, U>({
     const cached = cache.get(target);
     const abortCtrl = new AbortController();
     const signal = abortCtrl.signal;
-    let fulfilled: boolean = false;
+    let fulfilled = false;
 
     if (!cached || !cached.data || cached.stale) {
       fetchData(target, target, signal, (value) => (fulfilled = value));

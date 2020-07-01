@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 
 import { Run as IRun } from '../../types';
@@ -59,7 +59,7 @@ const Home: React.FC = () => {
 
   const [groupPages, setGroupPages] = useState<Record<string, GroupPaginationValueProps>>({});
 
-  const search = (qs: string) => history.push(`${location.pathname}?${qs}`);
+  const search = useCallback((qs: string) => history.push(`${location.pathname}?${qs}`), [history, location.pathname]);
 
   const handleParamChange = getParamChangeHandler(query, search, () => setGroupPages({}));
 
@@ -69,10 +69,10 @@ const Home: React.FC = () => {
 
   const parseOrderParam = (val: string): [string, string] => [val.substr(0, 1), val.substr(1)];
 
-  const resetAllFilters = () => {
+  const resetAllFilters = useCallback(() => {
     setGroupPages({});
     search(defaultQuery.toString());
-  };
+  }, [search]);
 
   const handleRunClick = (r: IRun) => history.push(`/flows/${r.flow_id}/runs/${r.run_number}`);
 
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
         (acc, cur) => ({ ...acc, [cur.propVal]: cur }),
         {},
       );
-      setGroupPages(fromPairs(Object.entries(kv)));
+      setGroupPages(fromPairs<GroupPaginationValueProps>(Object.entries(kv)));
     });
   };
 
@@ -114,7 +114,7 @@ const Home: React.FC = () => {
     handleParamChange(key, [...vals.values()].join(','));
   };
 
-  const loadMoreRuns = (val: string, page: string = '1') => {
+  const loadMoreRuns = (val: string, page = '1') => {
     const prop = getDefaultedQueryParam('_group');
     const order = getDefaultedQueryParam('_order');
 
@@ -143,10 +143,14 @@ const Home: React.FC = () => {
   }, [query, resetAllFilters]);
 
   const runsGroupedByProperty: Record<string, IRun[]> = Object.entries(
-    runs.reduce((acc: Record<string, IRun[]>, cur) => {
+    runs.reduce((acc: Record<string, IRun[]>, cur: IRun) => {
       const groupKey: keyof DefaultQuery = '_group';
-      const key: keyof IRun = cur[getQueryParam(groupKey) as string];
-      return { ...acc, [key]: key in acc ? acc[key].concat(cur) : [cur] };
+      const key: keyof IRun = getDefaultedQueryParam(groupKey);
+      const val = cur[key];
+      if (typeof val === 'string' || typeof val === 'number') {
+        return { ...acc, [val]: val in acc ? acc[val].concat(cur) : [cur] };
+      }
+      return acc;
     }, {}),
   )
     .map(([key, val]) => {

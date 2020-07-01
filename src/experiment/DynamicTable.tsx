@@ -56,7 +56,7 @@ const Row = styled.tr`
 `;
 
 const Cell = styled.td`
-  padding: ${({theme}) => theme.spacer.sm}rem ${({theme}) => theme.spacer.md}rem;
+  padding: ${({ theme }) => theme.spacer.sm}rem ${({ theme }) => theme.spacer.md}rem;
   font-size: 0.875rem;
 `;
 

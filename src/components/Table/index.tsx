@@ -15,7 +15,7 @@ export default styled.table`
   margin-bottom: ${(p) => p.theme.spacer.hg}rem;
 `;
 
-export const TH = styled.th<{active?: boolean}>`
+export const TH = styled.th<{ active?: boolean }>`
   background: #fff;
   color: ${(p) => p.theme.color.text.light};
   font-weight: 400;
@@ -34,18 +34,22 @@ export const TH = styled.th<{active?: boolean}>`
     }
   }
 
-  ${p => p.active && css`{
-    color: ${(p) => p.theme.color.text.dark};
-    font-weight: 500;
+  ${(p) =>
+    p.active &&
+    css`
+       {
+        color: ${(p) => p.theme.color.text.dark};
+        font-weight: 500;
 
-    &.up i #up {
-      color: ${(p) => p.theme.color.text.dark};
-    }
+        &.up i #up {
+          color: ${(p) => p.theme.color.text.dark};
+        }
 
-    &.down i #down {
-      color: ${(p) => p.theme.color.text.dark};
-    }
-  }`}
+        &.down i #down {
+          color: ${(p) => p.theme.color.text.dark};
+        }
+      }
+    `}
 `;
 
 export const TD = styled.td`

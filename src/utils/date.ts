@@ -1,4 +1,4 @@
-export const getISOString = (date: Date) => {
+export const getISOString = (date: Date): string => {
   return date
     .toISOString()
     .split('T')

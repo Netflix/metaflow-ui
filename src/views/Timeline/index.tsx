@@ -1,7 +1,7 @@
 import React from 'react';
 
-function Timeline() {
+const Timeline: React.FC = () => {
   return <div className="timeline">Example</div>;
-}
+};
 
 export default Timeline;

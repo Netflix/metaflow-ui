@@ -15,16 +15,16 @@ type SupportedIcons = {
   plus: FunctionComponent;
   sort: FunctionComponent;
   check: FunctionComponent;
-}
+};
 
 const icons: SupportedIcons = {
-    timeline: Timeline,
-    arrowDown: ArrowDown,
-    times: Times,
-    plus: Plus,
-    sort: Sort,
-    check: Check,
-  };
+  timeline: Timeline,
+  arrowDown: ArrowDown,
+  times: Times,
+  plus: Plus,
+  sort: Sort,
+  check: Check,
+};
 
 type SupportedSizes = {
   xs: number;
@@ -47,14 +47,16 @@ interface IconProps {
   size?: keyof SupportedSizes;
 }
 
-export default function Icon({ name, size = 'md' }: IconProps) {
+const Icon: React.FC<IconProps> = ({ name, size = 'md' }) => {
   const IconComponent = icons[name];
   return (
     <Wrapper size={size}>
       <IconComponent />
     </Wrapper>
   );
-}
+};
+
+export default Icon;
 
 const Wrapper = styled.i<{ size: keyof SupportedSizes }>`
   vertical-align: middle;
