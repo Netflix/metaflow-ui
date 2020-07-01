@@ -190,7 +190,9 @@ export const treeExampleSlide16: RunStructureTree = [
   { node_type: 'normal', step_name: 'end', type: 'normal' },
 ];
 
-function getChildrenMeasures(nodes: Array<StepTree | ParallelStep>) {
+type Measures = { width: number; height: number };
+
+function getChildrenMeasures(nodes: Array<StepTree | ParallelStep>): Measures {
   let max_width = 0,
     node_height = 0;
 
@@ -206,7 +208,7 @@ function getChildrenMeasures(nodes: Array<StepTree | ParallelStep>) {
   return { width: max_width, height: node_height };
 }
 
-function getParallelMeasures(nodes: Array<StepTree | ParallelStep>) {
+function getParallelMeasures(nodes: Array<StepTree | ParallelStep>): Measures {
   let node_width = 0,
     max_height = 0;
 
@@ -225,7 +227,7 @@ function getParallelMeasures(nodes: Array<StepTree | ParallelStep>) {
 /**
  * Find measures for given step.
  */
-export function getStepMeasures(node: StepTree | ParallelStep) {
+export function getStepMeasures(node: StepTree | ParallelStep): Measures {
   let node_width = 0,
     node_height = 0;
 

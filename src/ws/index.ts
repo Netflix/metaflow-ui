@@ -29,7 +29,11 @@ const unsubscribeMessage = (resource: string) => {
   return { type: SubscribeType.UNSUBSCRIBE, resource: resource };
 };
 
-export function createWebsocketConnection(url: string) {
+type WebSocketConnection = {
+  subscribe: <T>(resource: string, onUpdate: OnUpdate<T>) => Unsubscribe;
+};
+
+export function createWebsocketConnection(url: string): WebSocketConnection {
   const subscribers: Record<string, Array<OnUpdate<any>>> = {};
 
   const conn = new ReconnectingWebSocket(url, [], {});
@@ -59,7 +63,7 @@ export function createWebsocketConnection(url: string) {
     }
   };
 
-  const subscribe = <T>(resource: string, onUpdate: OnUpdate<T>): Unsubscribe => {
+  const subscribe: WebSocketConnection['subscribe'] = (resource, onUpdate) => {
     if (!subscribers[resource]) {
       subscribers[resource] = [];
     }
