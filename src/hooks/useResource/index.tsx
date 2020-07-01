@@ -9,6 +9,7 @@ export interface HookConfig<T, U> {
   updatePredicate?: (_: U, _l: U) => boolean;
   fetchAllData?: boolean;
   queryParams?: Record<string, string>;
+  privateCache?: boolean;
 }
 
 interface DataModel<T> {
@@ -86,7 +87,7 @@ export function createCache(): CacheInterface {
 }
 
 // default cache
-const cache = createCache();
+const singletonCache = createCache();
 
 // TODO: cache map, cache subscriptions, ws connections, cache mutations
 export default function useResource<T, U>({
@@ -96,10 +97,12 @@ export default function useResource<T, U>({
   queryParams = {},
   updatePredicate = (_a, _b) => false,
   fetchAllData = false,
+  privateCache = false
 }: HookConfig<T, U>): Resource<T> {
+  const cache = privateCache ? createCache() : singletonCache;
   const [error, setError] = useState(null);
   const [data, setData] = useState<T>(cache.get(url)?.data || initialData);
-
+  
   const q = new URLSearchParams(queryParams).toString();
   const target = `${METAFLOW_SERVICE}${url}${q ? '?' + q : ''}`;
 
@@ -152,13 +155,8 @@ export default function useResource<T, U>({
     };
   }, []); // eslint-disable-line
 
-  function fetchData(
-    targeturl: string,
-    cacheKey: string,
-    signal: AbortSignal,
-    updateFulfilled: (fulfilled: boolean) => void,
-  ) {
-    fetch(targeturl, { signal })
+  function fetchData(targetUrl: string, cacheKey: string, signal: AbortSignal, cb: () => void) {
+    fetch(targetUrl, { signal })
       .then((response) =>
         response.json().then((result: DataModel<T>) => ({
           result,
@@ -172,18 +170,18 @@ export default function useResource<T, U>({
           if (
             fetchAllData &&
             cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
-            cacheItem.result.links.next !== targeturl
+            cacheItem.result.links.next !== targetUrl
           ) {
-            fetchData(cacheItem.result.links.next || targeturl, cacheKey, signal, updateFulfilled);
+            fetchData(cacheItem.result.links.next || targetUrl, cacheKey, signal, cb);
           } else {
-            updateFulfilled(true);
+            cb();
           }
         },
         (error) => {
           if (error.name !== 'AbortError') {
             setError(error.toString());
           }
-          updateFulfilled(true);
+          cb();
         },
       );
   }
@@ -195,7 +193,9 @@ export default function useResource<T, U>({
     let fulfilled = false;
 
     if (!cached || !cached.data || cached.stale) {
-      fetchData(target, target, signal, (value) => (fulfilled = value));
+      fetchData(target, target, signal, () => {
+        fulfilled = true;
+      });
     } else if (cached) {
       setData(cached.data);
     }
