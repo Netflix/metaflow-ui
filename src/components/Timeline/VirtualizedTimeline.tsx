@@ -9,6 +9,7 @@ import useResource from '../../hooks/useResource';
 import useGraph, { GraphState } from './useGraph';
 import useRowData, { StepRowData } from './useRowData';
 import useQuery from '../../hooks/useQuery';
+import { useTranslation } from 'react-i18next';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
@@ -19,8 +20,9 @@ type StepIndex = { name: string; index: number };
 // gotten run data yet.
 //
 export const TimelineContainer: React.FC<{ run: Run }> = ({ run }) => {
+  const { t } = useTranslation();
   if (!run || !run.run_number) {
-    return <>No run data. You can wait to see if this run is to be created</>;
+    return <>{t('timeline.no-run-data')}</>;
   }
 
   return <VirtualizedTimeline run={run} />;
@@ -39,6 +41,7 @@ const VirtualizedTimeline: React.FC<{
   run: Run;
 }> = ({ run }) => {
   const params = useQuery();
+  const { t } = useTranslation();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef(null);
@@ -202,11 +205,11 @@ const VirtualizedTimeline: React.FC<{
   return (
     <VirtualizedTimelineContainer>
       <VirtualizedTimelineSubContainer>
-        <div style={{ display: 'flex' }}>
-          <button onClick={() => expandAll()}>Expand all</button>
-          <button onClick={() => collapseAll()}>Collapse all</button>
-          <button onClick={() => graphDispatch({ type: 'mode', mode: 'relative' })}>relative</button>
-          <button onClick={() => graphDispatch({ type: 'mode', mode: 'absolute' })}>absolute</button>
+        <div>
+          <button onClick={() => expandAll()}>{t('timeline.expand-all')}</button>
+          <button onClick={() => collapseAll()}>{t('timeline.collapse-all')}</button>
+          <button onClick={() => graphDispatch({ type: 'mode', mode: 'relative' })}>{t('timeline.relative')}</button>
+          <button onClick={() => graphDispatch({ type: 'mode', mode: 'absolute' })}>{t('timeline.absolute')}</button>
           <button onClick={() => graphDispatch({ type: 'zoomOut' })}>-</button>
           <button onClick={() => graphDispatch({ type: 'zoomIn' })}>+</button>
         </div>

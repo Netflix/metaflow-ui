@@ -9,8 +9,10 @@ import { Content, FixedContent, Layout } from '../../components/Structure';
 import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
 import DAG from '../../experiment/DAG';
 import { getPath } from '../../utils/routing';
+import { useTranslation } from 'react-i18next';
 
 const RunPage: React.FC = () => {
+  const { t } = useTranslation();
   const { params } = useRouteMatch<{ flowId: string; runNumber: string; viewType: string }>();
 
   const { data: run, error } = useResource<IRun, IRun>({
@@ -36,7 +38,7 @@ const RunPage: React.FC = () => {
               {run.run_number}, {!run.status ? 'Running' : run.status}
             </div>
           ) : (
-            'No run data'
+            t('No run data')
           )}
         </div>
         {error && <Notification type={NotificationType.Danger}>Error loading run: {error}</Notification>}

@@ -7,6 +7,7 @@ import { ReactComponent as Times } from '../../assets/times.svg';
 import { ReactComponent as Plus } from '../../assets/plus.svg';
 import { ReactComponent as Sort } from '../../assets/sort.svg';
 import { ReactComponent as Check } from '../../assets/check.svg';
+import { ReactComponent as Pen } from '../../assets/pen.svg';
 
 type SupportedIcons = {
   timeline: FunctionComponent;
@@ -15,6 +16,7 @@ type SupportedIcons = {
   plus: FunctionComponent;
   sort: FunctionComponent;
   check: FunctionComponent;
+  pen: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -24,6 +26,7 @@ const icons: SupportedIcons = {
   plus: Plus,
   sort: Sort,
   check: Check,
+  pen: Pen,
 };
 
 type SupportedSizes = {
