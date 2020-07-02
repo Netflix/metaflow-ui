@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { Row } from './VirtualizedTimeline';
 import { GraphState } from './useGraph';
+import { Link } from 'react-router-dom';
 
 type TimelineRowProps = {
   // Row type and data
@@ -63,7 +64,15 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, sticky, 
             color: item.type === 'step' ? '#146ee6' : 'gray',
           }}
         >
-          {item.type === 'task' ? item.data.task_id : dataItem.step_name}
+          {item.type === 'task' ? (
+            <Link
+              to={`/flows/${item.data.flow_id}/runs/${item.data.run_number}/${item.data.step_name}/${item.data.task_id}`}
+            >
+              {item.data.task_id}
+            </Link>
+          ) : (
+            dataItem.step_name
+          )}
         </RowLabel>
         <RowGraphContainer>
           <BoxGraphic
@@ -118,6 +127,11 @@ const RowLabel = styled.div`
   text-align: right;
   padding: 10px 10px 0;
   font-size: 14px;
+
+  a {
+    color: gray;
+    text-decoration: none;
+  }
 `;
 
 const RowGraphContainer = styled.div`

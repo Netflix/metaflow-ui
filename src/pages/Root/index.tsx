@@ -16,6 +16,10 @@ const RootPage: React.FC = () => {
           <HomePage />
         </Route>
 
+        <Route path={`${runPath}/:stepName/:taskid`}>
+          <div>Task view</div>
+        </Route>
+
         <Route path={`${runPath}/:viewType`}>
           <RunPage />
         </Route>
