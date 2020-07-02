@@ -68,30 +68,30 @@ function graphReducer(state: GraphState, action: GraphAction): GraphState {
       return { ...state, mode: action.mode };
 
     case 'zoomIn': {
-      const tenthOfTimeline = (state.max - state.min) / 10;
+      const change = getZoomAmount(state);
 
-      if (state.timelineEnd - tenthOfTimeline <= state.timelineStart + tenthOfTimeline) return state;
+      if (state.timelineEnd - change <= state.timelineStart + change) return state;
 
-      return { ...updateGraph(state, tenthOfTimeline, -tenthOfTimeline), controlled: true };
+      return { ...updateGraph(state, change, -change), controlled: true };
     }
 
     case 'zoomOut': {
-      const tenthOfTimeline = (state.max - state.min) / 10;
+      const change = getZoomAmount(state);
 
-      if (zoomOverTotalLength(state, tenthOfTimeline)) {
+      if (zoomOverTotalLength(state, change)) {
         return resetTimeline(state);
-      } else if (startOrEndOutOfBounds(state, -tenthOfTimeline, tenthOfTimeline)) {
+      } else if (startOrEndOutOfBounds(state, -change, change)) {
         return {
           ...state,
-          timelineStart: startOutOfBounds(state, -tenthOfTimeline)
+          timelineStart: startOutOfBounds(state, -change)
             ? state.min
-            : state.max - (state.timelineEnd - state.timelineStart + tenthOfTimeline),
-          timelineEnd: endOutOfBounds(state, tenthOfTimeline)
+            : state.max - (state.timelineEnd - state.timelineStart + change),
+          timelineEnd: endOutOfBounds(state, change)
             ? state.max
-            : state.min + (state.timelineEnd - state.timelineStart + tenthOfTimeline),
+            : state.min + (state.timelineEnd - state.timelineStart + change),
         };
       } else {
-        return updateGraph(state, -tenthOfTimeline, tenthOfTimeline);
+        return updateGraph(state, -change, change);
       }
     }
 
@@ -104,21 +104,49 @@ function graphReducer(state: GraphState, action: GraphAction): GraphState {
   return state;
 }
 
-// When if tried zoom is bigger than total length of timeline (might happen on zoom out)
+/**
+ * Returns amount we need to zoom in or out. IF current visible section is less than 21% of total length we zoom
+ * in or out only small amount. Else much more.
+ * @param state State of current graph
+ */
+function getZoomAmount(state: GraphState) {
+  const currentVisiblePortion = (state.timelineEnd - state.timelineStart) / (state.max - state.min);
+  return currentVisiblePortion < 0.21 ? (state.max - state.min) / 50 : (state.max - state.min) / 10;
+}
+
+/**
+ * When if tried zoom is bigger than total length of timeline (might happen on zoom out)
+ * @param graph State of current graph
+ * @param change Amount we are about to change visible value
+ */
 function zoomOverTotalLength(graph: GraphState, change: number) {
   return graph.timelineEnd + change - (graph.timelineStart - change) >= graph.max - graph.min;
 }
 
-// Check if scrollbar is going backwards too much
+/**
+ * Check if scrollbar is going backwards too much
+ * @param graph State of current graph
+ * @param change Amount we are about to change visible value
+ */
 function startOutOfBounds(graph: GraphState, change: number) {
   return graph.timelineStart + change < graph.min;
 }
 
-// Check if scrollbar is going forward too much
+/**
+ * Check if scrollbar is going forward too much
+ * @param graph State of current graph
+ * @param change Amount we are about to change visible value
+ */
 function endOutOfBounds(graph: GraphState, change: number) {
   return graph.timelineEnd + change > graph.max;
 }
 
+/**
+ * Check if scrollbar is going forward and backwards too much
+ * @param graph State of current graph
+ * @param change Amount we are about to change visible value
+ * @param changeEnd We might want to move and value different direction than start (zoom events)
+ */
 function startOrEndOutOfBounds(graph: GraphState, change: number, changeEnd?: number) {
   return startOutOfBounds(graph, change) || endOutOfBounds(graph, changeEnd || change);
 }
