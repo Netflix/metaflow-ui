@@ -78,7 +78,7 @@ const Breadcrumb: React.FC = () => {
             if (e.charCode === 13) {
               const parts = e.currentTarget.value.split('/');
 
-              if (parts.length == 2) {
+              if (parts.length === 2) {
                 history.push(getPath.run(parts[0], parts[1]));
               } else if (parts.length === 3) {
                 history.push(getPath.step(parts[0], parts[1], parts[2]));
