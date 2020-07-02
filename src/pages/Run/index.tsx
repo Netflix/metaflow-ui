@@ -8,10 +8,11 @@ import Tabs from '../../components/Tabs';
 import { Content, FixedContent, Layout } from '../../components/Structure';
 import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
 import DAG from '../../experiment/DAG';
+import { getPath } from '../../utils/routing';
 
 const RunPage: React.FC = () => {
-  const { url, params } = useRouteMatch<{ flowId: string; runNumber: string; viewType: string }>();
-  const urlBase = url.split('/').slice(0, -1).join('/');
+  const { params } = useRouteMatch<{ flowId: string; runNumber: string; viewType: string }>();
+
   const { data: run, error } = useResource<IRun, IRun>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}`,
     subscribeToEvents: `/flows/${params.flowId}/runs/${params.runNumber}`,
@@ -19,12 +20,12 @@ const RunPage: React.FC = () => {
   });
 
   // Store active tab. Is defined by URL
-  const [tab, setTab] = useState('dag');
+  const [tab, setTab] = useState('timeline');
   useEffect(() => {
     if (params.viewType) {
-      setTab(params.viewType);
+      setTab(params.viewType === 'dag' ? 'dag' : 'timeline');
     }
-  }, [params]);
+  }, [params.viewType]);
 
   return (
     <FixedContent>
@@ -47,7 +48,7 @@ const RunPage: React.FC = () => {
           {
             key: 'dag',
             label: 'DAG',
-            linkTo: `${urlBase}/dag`,
+            linkTo: getPath.dag(params.flowId, params.runNumber),
             component: (
               <Layout>
                 <Content>
@@ -59,7 +60,7 @@ const RunPage: React.FC = () => {
           {
             key: 'timeline',
             label: 'Timeline',
-            linkTo: `${urlBase}/timeline`,
+            linkTo: getPath.run(params.flowId, params.runNumber),
             component: <TimelineContainer run={run} />,
           },
         ]}

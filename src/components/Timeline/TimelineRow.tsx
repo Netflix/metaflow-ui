@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Row } from './VirtualizedTimeline';
 import { GraphState } from './useGraph';
 import { Link } from 'react-router-dom';
+import { getPath } from '../../utils/routing';
 
 type TimelineRowProps = {
   // Row type and data
@@ -65,9 +66,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, sticky, 
           }}
         >
           {item.type === 'task' ? (
-            <Link
-              to={`/flows/${item.data.flow_id}/runs/${item.data.run_number}/${item.data.step_name}/${item.data.task_id}`}
-            >
+            <Link to={getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id)}>
               {item.data.task_id}
             </Link>
           ) : (
