@@ -18,6 +18,7 @@ import TagInput from '../../components/TagInput';
 import Icon from '../../components/Icon';
 
 import { ResultGroup, StatusColorCell, StatusColorHeaderCell } from './styles';
+import { useTranslation } from 'react-i18next';
 
 type QueryParam = string | null;
 
@@ -53,6 +54,7 @@ type GroupPaginationValueProps = {
 };
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
   const query = useQuery();
   const history = useHistory();
   const location = useLocation();
@@ -206,15 +208,15 @@ const Home: React.FC = () => {
       <Sidebar className="sidebar">
         <Section>
           <SectionHeader>
-            Group by
+            {t('filters.group-by')}
             <SectionHeaderContent align="right">
               <Field horizontal>
                 <select
                   value={getDefaultedQueryParam('_group')}
                   onChange={(e) => handleParamChange('_group', e.target.value)}
                 >
-                  <option value="flow_id">Flow</option>
-                  <option value="user_name">User</option>
+                  <option value="flow_id">{t('fields.flow')}</option>
+                  <option value="user_name">{t('fields.user')}</option>
                 </select>
               </Field>
             </SectionHeaderContent>
@@ -223,14 +225,14 @@ const Home: React.FC = () => {
 
         <Section>
           <SectionHeader>Status</SectionHeader>
-          <StatusField label="Running" value="running" />
-          <StatusField label="Failed" value="failed" />
-          <StatusField label="Completed" value="completed" />
+          <StatusField label={t('filters.running')} value="running" />
+          <StatusField label={t('filters.failed')} value="failed" />
+          <StatusField label={t('filters.completed')} value="completed" />
         </Section>
 
         <Section>
           <SectionHeader>
-            User
+            {t('fields.user')}
             <SectionHeaderContent align="right">
               <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} />
             </SectionHeaderContent>
@@ -244,7 +246,7 @@ const Home: React.FC = () => {
 
         <Section>
           <SectionHeader>
-            Flow
+            {t('fields.flow')}
             <SectionHeaderContent align="right">
               <TagInput onSubmit={(v) => updateListValue('flow_id', v)} />
             </SectionHeaderContent>
@@ -254,7 +256,7 @@ const Home: React.FC = () => {
 
         <Section>
           <SectionHeader>
-            Tag
+            {t('fields.tag')}
             <SectionHeaderContent align="right">
               <TagInput onSubmit={(v) => updateListValue('_tags', v)} />
             </SectionHeaderContent>
@@ -264,7 +266,7 @@ const Home: React.FC = () => {
 
         <Section>
           <SectionHeader>
-            Project
+            {t('fields.project')}
             <SectionHeaderContent align="right">
               <TagInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} />
             </SectionHeaderContent>
@@ -277,7 +279,7 @@ const Home: React.FC = () => {
         </Section>
 
         <button onClick={() => resetAllFilters()}>
-          <Icon name="times" /> Reset all filters
+          <Icon name="times" /> {t('filters.reset-all')}
         </button>
       </Sidebar>
 
@@ -285,7 +287,7 @@ const Home: React.FC = () => {
         {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
         {(!runs || !runs.length) && (
           <Section>
-            <h3>No results</h3>
+            <h3>{t('no-results')}</h3>
             <p>Possible tips listed here</p>
           </Section>
         )}
@@ -299,12 +301,12 @@ const Home: React.FC = () => {
                 <thead>
                   <TR>
                     <StatusColorHeaderCell />
-                    <LocalTH label="Id" queryKey="run_number" />
-                    <LocalTH label="Status" queryKey="status" />
-                    <LocalTH label="Started at" queryKey="ts_epoch" />
-                    <LocalTH label="Finished at" queryKey="finished_at" />
-                    <LocalTH label="Duration" queryKey="duration" />
-                    <LocalTH label="User" queryKey="user_name" />
+                    <LocalTH label={t('fields.id')} queryKey="run_number" />
+                    <LocalTH label={t('fields.status')} queryKey="status" />
+                    <LocalTH label={t('fields.started-at')} queryKey="ts_epoch" />
+                    <LocalTH label={t('fields.finished-at')} queryKey="finished_at" />
+                    <LocalTH label={t('fields.duration')} queryKey="duration" />
+                    <LocalTH label={t('fields.user')} queryKey="user_name" />
                   </TR>
                 </thead>
                 <tbody>
@@ -320,8 +322,8 @@ const Home: React.FC = () => {
                       <TD>{r.duration}</TD>
                       <TD>{r.user_name}</TD>
                       <TD className="timeline-link">
-                        <Link to={`/flows/${r.flow_id}/runs/${r.run_number}`}>
-                          <Icon name="timeline" size="lg" /> Timeline
+                        <Link to={`/flows/${r.flow_id}/runs/${r.run_number}/timeline`}>
+                          <Icon name="timeline" size="lg" /> {t('run.timeline')}
                         </Link>
                       </TD>
                     </TR>
@@ -337,7 +339,7 @@ const Home: React.FC = () => {
                       loadMoreRuns(k, !!groupPages[k]?.page ? String(Number(groupPages[k].page) + 1) : '2')
                     }
                   >
-                    Load more runs <Icon name="arrowDown" size="sm" />
+                    {t('home.load-more-runs')} <Icon name="arrowDown" size="sm" />
                   </small>
                 </>
               )}
