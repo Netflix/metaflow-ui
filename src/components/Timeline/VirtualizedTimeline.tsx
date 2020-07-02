@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createRef, useRef } from 'react';
+import React, { useEffect, useState, createRef, useRef, useCallback } from 'react';
 import { List } from 'react-virtualized';
 import { Step, Task, Run } from '../../types';
 import styled from 'styled-components';
@@ -9,6 +9,8 @@ import useResource from '../../hooks/useResource';
 import useGraph, { GraphState } from './useGraph';
 import useRowData, { StepRowData } from './useRowData';
 import useQuery from '../../hooks/useQuery';
+import { useHistory, useLocation } from 'react-router-dom';
+import { getParamChangeHandler } from '../../utils/url';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
@@ -39,6 +41,10 @@ const VirtualizedTimeline: React.FC<{
   run: Run;
 }> = ({ run }) => {
   const params = useQuery();
+  const history = useHistory();
+  const location = useLocation();
+  const search = useCallback((qs: string) => history.push(`${location.pathname}?${qs}`), [history, location.pathname]);
+  const handleParamChange = getParamChangeHandler(params, search, () => console.log('what?'));
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef(null);
@@ -95,7 +101,7 @@ const VirtualizedTimeline: React.FC<{
     if (stepFilters) {
       setFilters({ ...filters, steps: stepFilters.split(',') });
     }
-  }, []); // eslint-disable-line
+  }, [params.get('steps')]); // eslint-disable-line
 
   //
   // Graph measurements
@@ -217,9 +223,9 @@ const VirtualizedTimeline: React.FC<{
                 if (e.charCode === 13) {
                   const value = e.currentTarget.value.trim();
                   if (value) {
-                    setFilters({ ...filters, steps: value.split(',') });
+                    handleParamChange('steps', value, false);
                   } else {
-                    setFilters({ ...filters, steps: [] });
+                    handleParamChange('steps', '', false);
                   }
                 }
               }}
