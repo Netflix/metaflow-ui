@@ -74,9 +74,10 @@ const Breadcrumb: React.FC = () => {
 
       {edit && (
         <input
+          defaultValue={buttonList.map((item) => item.label).join('/')}
           onKeyPress={(e) => {
             if (e.charCode === 13) {
-              const parts = e.currentTarget.value.split('/');
+              const parts = e.currentTarget.value.split('/').filter((item) => item);
 
               if (parts.length === 2) {
                 history.push(getPath.run(parts[0], parts[1]));

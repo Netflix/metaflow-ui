@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createRef, useRef, useCallback } from 'react';
+import React, { useEffect, useState, createRef, useRef } from 'react';
 import { List } from 'react-virtualized';
 import { Step, Task, Run } from '../../types';
 import styled from 'styled-components';
@@ -9,8 +9,6 @@ import useResource from '../../hooks/useResource';
 import useGraph, { GraphState } from './useGraph';
 import useRowData, { StepRowData } from './useRowData';
 import useQuery from '../../hooks/useQuery';
-import { useHistory, useLocation } from 'react-router-dom';
-import { getParamChangeHandler } from '../../utils/url';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
@@ -41,10 +39,6 @@ const VirtualizedTimeline: React.FC<{
   run: Run;
 }> = ({ run }) => {
   const params = useQuery();
-  const history = useHistory();
-  const location = useLocation();
-  const search = useCallback((qs: string) => history.push(`${location.pathname}?${qs}`), [history, location.pathname]);
-  const handleParamChange = getParamChangeHandler(params, search, () => console.log('what?'));
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef(null);
@@ -215,22 +209,6 @@ const VirtualizedTimeline: React.FC<{
           <button onClick={() => graphDispatch({ type: 'mode', mode: 'absolute' })}>absolute</button>
           <button onClick={() => graphDispatch({ type: 'zoomOut' })}>-</button>
           <button onClick={() => graphDispatch({ type: 'zoomIn' })}>+</button>
-          <div style={{ display: 'flex' }}>
-            <label>steps</label>
-            <input
-              defaultValue={filters.steps.join(',')}
-              onKeyPress={(e) => {
-                if (e.charCode === 13) {
-                  const value = e.currentTarget.value.trim();
-                  if (value) {
-                    handleParamChange('steps', value, false);
-                  } else {
-                    handleParamChange('steps', '', false);
-                  }
-                }
-              }}
-            />
-          </div>
         </div>
         <div style={{ flex: '1' }} ref={_listContainer}>
           <FixedListContainer
