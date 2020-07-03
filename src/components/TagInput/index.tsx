@@ -50,11 +50,11 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void }> = ({ onSubmit }) => 
       </button>
       <Popover show={formActive}>
         <TextInputField
-            value={val}
-            ref={inputEl}
-            onChange={(e) => e && setVal(e.target.value)}
-            onKeyPress={(e) => handleKeyPress(e)}
-          />
+          value={val}
+          ref={inputEl}
+          onChange={(e) => e && setVal(e.target.value)}
+          onKeyPress={(e) => handleKeyPress(e)}
+        />
         <button onClick={() => handleSubmit(val)}>Add</button>
       </Popover>
     </TagInputWrapper>

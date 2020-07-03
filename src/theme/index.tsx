@@ -60,19 +60,19 @@ const defaultTheme: DefaultTheme = {
   notification: {
     success: {
       bg: bgColor.white,
-      text: '#28a745',// TODO
+      text: '#28a745', // TODO
     },
     info: {
       bg: bgColor.white,
-      text: '#107177',// TODO
+      text: '#107177', // TODO
     },
     warning: {
       bg: bgColor.white,
-      text: '#107177',// TODO
+      text: '#107177', // TODO
     },
     danger: {
       bg: bgColor.white,
-      text: '#107177',// TODO
+      text: '#107177', // TODO
     },
     default: {
       bg: bgColor.white,

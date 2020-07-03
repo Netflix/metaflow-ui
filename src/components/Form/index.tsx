@@ -125,7 +125,6 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   &.field-checkbox {
     margin-bottom: ${(p) => p.theme.spacer.xs}rem;
     cursor: pointer;
-    
     label {
       cursor: pointer;
     }

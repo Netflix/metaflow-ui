@@ -178,7 +178,14 @@ const Home: React.FC = () => {
 
   const StatusField: React.FC<StatusFieldProps> = ({ value, label }) => {
     const checked = new Set(paramList(getQueryParam('status'))).has(value);
-    return <CheckboxField label={label} className={`status-${value}`} checked={checked} onChange={() => updateListValue('status', value)} />;
+    return (
+      <CheckboxField
+        label={label}
+        className={`status-${value}`}
+        checked={checked}
+        onChange={() => updateListValue('status', value)}
+      />
+    );
   };
 
   const TagParameterList: React.FC<{
