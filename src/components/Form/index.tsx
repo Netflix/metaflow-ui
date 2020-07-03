@@ -73,18 +73,18 @@ export const CheckboxField: React.FC<
   );
 };
 
-export const TextInputField: React.FC<
-  { label?: string; ref?: Ref<HTMLInputElement> } & CommonFieldProps<HTMLInputElement>
-> = ({ label, horizontal, value, onChange, onKeyPress, ref }) => {
+export const TextInputField = React.forwardRef<
+  HTMLInputElement,
+  { label?: string } & CommonFieldProps<HTMLInputElement>
+>(({ label, horizontal, value, onChange, onKeyPress }, ref) => {
   const id = uuid();
-  const refProp = ref ? { ref } : {};
   return (
     <Field horizontal={horizontal} type="text">
       {label && <label htmlFor={id}>{label}</label>}
-      <input id={id} {...refProp} type="text" value={value} onChange={onChange} onKeyPress={onKeyPress} />
+      <input id={id} ref={ref} type="text" value={value} onChange={onChange} onKeyPress={onKeyPress} />
     </Field>
   );
-};
+});
 
 const FieldWrapper = styled.div<FieldBaseProps>`
   display: ${(p) => (p.horizontal ? 'flex' : 'block')};
