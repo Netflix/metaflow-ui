@@ -28,6 +28,7 @@ export type GraphAction =
   | { type: 'zoomIn' }
   | { type: 'zoomOut' }
   | { type: 'resetZoom' }
+  | { type: 'reset' }
   // Update zoom contol state. If controlled, we dont update zoom level.
   | { type: 'setControlled'; value: boolean };
 
@@ -100,6 +101,9 @@ function graphReducer(state: GraphState, action: GraphAction): GraphState {
 
     case 'setControlled':
       return { ...state, controlled: action.value };
+
+    case 'reset':
+      return { ...state, controlled: false, min: 0, max: 0, timelineStart: 0, timelineEnd: 0 };
   }
   return state;
 }

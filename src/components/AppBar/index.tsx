@@ -28,6 +28,7 @@ const Wrapper = styled.header`
   height: ${(p) => p.theme.layout.appbarHeight}rem;
   padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem;
   background: rgba(255, 255, 255, 0.75);
+  z-index: 1;
 `;
 
 const Logo = styled.img`

@@ -97,6 +97,8 @@ const VirtualizedTimeline: React.FC<{
 
     if (stepFilters) {
       setFilters({ ...filters, steps: stepFilters.split(',') });
+    } else {
+      setFilters({ ...filters, steps: [] });
     }
   }, [params.get('steps')]); // eslint-disable-line
 
@@ -185,6 +187,12 @@ const VirtualizedTimeline: React.FC<{
     }, []);
     setStepPositions(stepPos);
   }, [rows]);
+
+  // Reset everything if run is changed
+  useEffect(() => {
+    dispatch({ type: 'reset' });
+    graphDispatch({ type: 'reset' });
+  }, [run, dispatch, graphDispatch]);
 
   //
   // Button behaviour

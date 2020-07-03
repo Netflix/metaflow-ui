@@ -21,7 +21,8 @@ type RowDataAction =
   | { type: 'toggle'; id: string }
   | { type: 'open'; id: string }
   | { type: 'close'; id: string }
-  | { type: 'sort'; ids: string[] };
+  | { type: 'sort'; ids: string[] }
+  | { type: 'reset' };
 
 type RowDataModel = { [key: string]: StepRowData };
 
@@ -112,6 +113,8 @@ function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataMode
         return { ...state, [action.id]: { ...state[action.id], isOpen: false } };
       }
       return state;
+    case 'reset':
+      return {};
   }
 
   return state;
