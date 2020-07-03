@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Popover from '../Popover';
 import Icon from '../Icon';
-import { Field } from '../Form';
+import { TextInputField } from '../Form';
 
 const TagInputWrapper = styled.div`
   position: relative;
@@ -34,8 +34,8 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void }> = ({ onSubmit }) => 
     setVal('');
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.charCode === 13) handleSubmit(val, !e.shiftKey);
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement> | undefined) => {
+    if (e && e.charCode === 13) handleSubmit(val, !e.shiftKey);
   };
 
   const handleFormActivation = () => {
@@ -49,15 +49,12 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void }> = ({ onSubmit }) => 
         <Icon name={formActive ? 'times' : 'plus'} />
       </button>
       <Popover show={formActive}>
-        <Field>
-          <input
-            type="text"
+        <TextInputField
             value={val}
             ref={inputEl}
-            onChange={(e) => setVal(e.target.value)}
+            onChange={(e) => e && setVal(e.target.value)}
             onKeyPress={(e) => handleKeyPress(e)}
           />
-        </Field>
         <button onClick={() => handleSubmit(val)}>Add</button>
       </Popover>
     </TagInputWrapper>

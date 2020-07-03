@@ -44,7 +44,7 @@ const defaultTheme: DefaultTheme = {
   layout: {
     appbarHeight: 7,
     appbarLogoHeight: 1.5,
-    pagePaddingX: spacer.lg,
+    pagePaddingX: spacer.hg,
     pagePaddingY: spacer.lg,
     sidebarWidth: 14,
   },
@@ -60,19 +60,19 @@ const defaultTheme: DefaultTheme = {
   notification: {
     success: {
       bg: bgColor.white,
-      text: '#28a745',
+      text: '#28a745',// TODO
     },
     info: {
       bg: bgColor.white,
-      text: '#107177',
+      text: '#107177',// TODO
     },
     warning: {
       bg: bgColor.white,
-      text: '#107177',
+      text: '#107177',// TODO
     },
     danger: {
       bg: bgColor.white,
-      text: '#107177',
+      text: '#107177',// TODO
     },
     default: {
       bg: bgColor.white,

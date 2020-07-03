@@ -1,20 +1,94 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, Ref } from 'react';
 import styled from 'styled-components';
+import Icon from '../Icon';
+import { v4 as uuid } from 'uuid';
 
-type FieldProps = {
-  horizontal?: boolean;
-  children: ReactNode;
+type CommonFieldProps<T> = {
   className?: string;
-  onClick?: () => void;
+  horizontal?: boolean;
+  active?: boolean;
+  value?: string;
+  onClick?: (e?: React.MouseEvent<T>) => void;
+  onChange?: (e?: React.ChangeEvent<T>) => void;
+  onKeyPress?: (e?: React.KeyboardEvent<T>) => void;
 };
 
-export const Field: React.FC<FieldProps> = ({ children, ...rest }) => {
-  return <FieldWrapper {...rest}>{children}</FieldWrapper>;
+type FieldBaseProps = CommonFieldProps<HTMLDivElement> & {
+  children: ReactNode;
+  type: string;
+  ref?: Ref<HTMLDivElement>;
 };
 
-const FieldWrapper = styled.div<FieldProps>`
+export const Field: React.FC<FieldBaseProps> = ({ children, type, ref, className, horizontal, active, onClick }) => {
+  const props = {
+    className: `field field-${type} ${className} ${active ? 'active' : ''}`,
+    horizontal,
+    active,
+    type,
+    onClick,
+  };
+  const refProp = ref ? { ref } : {};
+  return (
+    <FieldWrapper {...props} {...refProp}>
+      {children}
+    </FieldWrapper>
+  );
+};
+
+export const SelectField: React.FC<
+  { label?: string; ref?: Ref<HTMLSelectElement>; options: [string, string][] } & CommonFieldProps<HTMLSelectElement>
+> = ({ label, options, horizontal, ...rest }) => {
+  const id = uuid();
+  return (
+    <Field horizontal={horizontal} type="select">
+      {label && <label htmlFor={id}>{label}</label>}
+      <select id={id} {...rest}>
+        {options.map((o) => (
+          <option key={o[0]} value={o[0]}>
+            {o[1]}
+          </option>
+        ))}
+      </select>
+    </Field>
+  );
+};
+
+export const CheckboxField: React.FC<
+  { label: string; ref?: Ref<HTMLDivElement>; checked: boolean } & CommonFieldProps<HTMLInputElement>
+> = ({ label, ref, checked = false, onChange = () => {}, className }) => {
+  const id = uuid();
+  const refProp = ref ? { ref } : {};
+  return (
+    <Field
+      horizontal
+      active={checked}
+      {...refProp}
+      type="checkbox"
+      className={className}
+      onClick={() => onChange !== undefined && onChange()}
+    >
+      <span className={`checkbox ${id} ${checked ? 'checked' : ''}`}>{checked && <Icon name="check" />}</span>
+      <label htmlFor={id}>{label}</label>
+    </Field>
+  );
+};
+
+export const TextInputField: React.FC<
+  { label?: string; ref?: Ref<HTMLInputElement> } & CommonFieldProps<HTMLInputElement>
+> = ({ label, horizontal, value, onChange, onKeyPress, ref }) => {
+  const id = uuid();
+  const refProp = ref ? { ref } : {};
+  return (
+    <Field horizontal={horizontal} type="text">
+      {label && <label htmlFor={id}>{label}</label>}
+      <input id={id} {...refProp} type="text" value={value} onChange={onChange} onKeyPress={onKeyPress} />
+    </Field>
+  );
+};
+
+const FieldWrapper = styled.div<FieldBaseProps>`
   display: ${(p) => (p.horizontal ? 'flex' : 'block')};
-  margin-bottom: ${(p) => p.theme.spacer.xs}rem;
+  margin-bottom: ${(p) => (p.horizontal ? 0 : p.theme.spacer.xs)}rem;
   align-items: center;
 
   label {
@@ -48,21 +122,30 @@ const FieldWrapper = styled.div<FieldProps>`
     border: 1px solid ${(p) => p.theme.color.border.light};
   }
 
+  &.field-checkbox {
+    margin-bottom: ${(p) => p.theme.spacer.xs}rem;
+    cursor: pointer;
+    
+    label {
+      cursor: pointer;
+    }
+  }
+
   &.active {
     span.checkbox.checked {
       color: #fff;
       border-color: transparent;
       background-color: ${(p) => p.theme.color.bg.blue};
+    }
 
-      &.status_running {
-        background-color: ${(p) => p.theme.color.bg.yellow};
-      }
-      &.status_failed {
-        background: ${(p) => p.theme.color.bg.red};
-      }
-      &.status_completed {
-        background: ${(p) => p.theme.color.bg.green};
-      }
+    &.status-running span.checkbox.checked {
+      background-color: ${(p) => p.theme.color.bg.yellow};
+    }
+    &.status-failed span.checkbox.checked {
+      background: ${(p) => p.theme.color.bg.red};
+    }
+    &.status-completed span.checkbox.checked {
+      background: ${(p) => p.theme.color.bg.green};
     }
   }
 
