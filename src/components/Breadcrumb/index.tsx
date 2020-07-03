@@ -118,27 +118,33 @@ const Breadcrumb: React.FC = () => {
               />
               <button onClick={() => setEdit(false)}>X</button>
             </div>
-            <div>
-              <div>Example:</div>
-              <div>
-                <div>Run</div>
-                <div>MyFlow / run_id</div>
-              </div>
-              <div>
-                <div>Step</div>
-                <div>MyFlow / run_id / step_name</div>
-              </div>
-              <div>
-                <div>Task</div>
-                <div>MyFlow / run_id / step_name / task_id</div>
-              </div>
-            </div>
+            <BreadcrumbInfo>
+              <BreadcrumbHelpLabel>Example:</BreadcrumbHelpLabel>
+              <BreadcrumbKeyValueList
+                items={[
+                  { key: 'Run', value: 'MyFlow / run_id' },
+                  { key: 'Step', value: 'MyFlow / run_id / step_name' },
+                  { key: 'Task', value: 'MyFlow / run_id / step_name / task_id' },
+                ]}
+              />
+            </BreadcrumbInfo>
           </GoToContainer>
         </GoToHolder>
       )}
     </StyledBreadcrumb>
   );
 };
+
+const BreadcrumbKeyValueList: React.FC<{ items: { key: string; value: string }[] }> = ({ items }) => (
+  <div>
+    {items.map(({ key, value }) => (
+      <KeyValueListItem key={key}>
+        <KeyValueListLabel>{key}</KeyValueListLabel>
+        <KeyValueListValue>{value}</KeyValueListValue>
+      </KeyValueListItem>
+    ))}
+  </div>
+);
 
 const StyledBreadcrumb = styled.div`
   display: flex;
@@ -149,6 +155,7 @@ const StyledBreadcrumb = styled.div`
 const StyledInput = styled.input`
   flex: 1;
   height: 38px;
+  padding: 0 5px;
   line-height: 38px;
   border: 1px solid #d7d7d7;
   background: #f6f6f6;
@@ -170,6 +177,32 @@ const GoToContainer = styled.div`
   border-radius: 4px;
   box-shadow: rgba(0, 0, 0, 0.2) 0px 2px 6px;
   padding: 10px;
+`;
+
+const BreadcrumbInfo = styled.div`
+  padding: 10px 10px;
+`;
+
+const BreadcrumbHelpLabel = styled.div`
+  font-size: 12px;
+  color: #828282;
+  padding: 10px 0;
+`;
+
+const KeyValueListLabel = styled.div`
+  color: #666;
+  font-size: 16px;
+  width: 75px;
+`;
+
+const KeyValueListValue = styled.div`
+  color: #333;
+  font-size: 16px;
+`;
+
+const KeyValueListItem = styled.div`
+  display: flex;
+  padding: 5px 0;
 `;
 
 export default Breadcrumb;
