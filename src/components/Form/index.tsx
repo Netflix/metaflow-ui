@@ -1,4 +1,4 @@
-import React, { ReactNode, Ref } from 'react';
+import React, { ReactNode} from 'react';
 import styled from 'styled-components';
 import Icon from '../Icon';
 import { v4 as uuid } from 'uuid';
@@ -16,27 +16,24 @@ type CommonFieldProps<T> = {
 type FieldBaseProps = CommonFieldProps<HTMLDivElement> & {
   children: ReactNode;
   type: string;
-  ref?: Ref<HTMLDivElement>;
 };
 
-export const Field: React.FC<FieldBaseProps> = ({ children, type, ref, className, horizontal, active, onClick }) => {
-  const props = {
-    className: `field field-${type} ${className} ${active ? 'active' : ''}`,
-    horizontal,
-    active,
-    type,
-    onClick,
-  };
-  const refProp = ref ? { ref } : {};
-  return (
-    <FieldWrapper {...props} {...refProp}>
-      {children}
-    </FieldWrapper>
-  );
-};
+export const Field: React.FC<FieldBaseProps> = ({ children, type, className, horizontal, active, onClick }) => (
+  <FieldWrapper
+    {...{
+      className: `field field-${type} ${className} ${active ? 'active' : ''}`,
+      horizontal,
+      active,
+      type,
+      onClick,
+    }}
+  >
+    {children}
+  </FieldWrapper>
+);
 
 export const SelectField: React.FC<
-  { label?: string; ref?: Ref<HTMLSelectElement>; options: [string, string][] } & CommonFieldProps<HTMLSelectElement>
+  { label?: string; options: [string, string][] } & CommonFieldProps<HTMLSelectElement>
 > = ({ label, options, horizontal, ...rest }) => {
   const id = uuid();
   return (
@@ -53,16 +50,17 @@ export const SelectField: React.FC<
   );
 };
 
-export const CheckboxField: React.FC<
-  { label: string; ref?: Ref<HTMLDivElement>; checked: boolean } & CommonFieldProps<HTMLInputElement>
-> = ({ label, ref, checked = false, onChange, className }) => {
+export const CheckboxField: React.FC<{ label: string; checked: boolean } & CommonFieldProps<HTMLInputElement>> = ({
+  label,
+  checked = false,
+  onChange,
+  className,
+}) => {
   const id = uuid();
-  const refProp = ref ? { ref } : {};
   return (
     <Field
       horizontal
       active={checked}
-      {...refProp}
       type="checkbox"
       className={className}
       onClick={() => onChange !== undefined && onChange()}
