@@ -55,7 +55,7 @@ export const SelectField: React.FC<
 
 export const CheckboxField: React.FC<
   { label: string; ref?: Ref<HTMLDivElement>; checked: boolean } & CommonFieldProps<HTMLInputElement>
-> = ({ label, ref, checked = false, onChange = () => {}, className }) => {
+> = ({ label, ref, checked = false, onChange, className }) => {
   const id = uuid();
   const refProp = ref ? { ref } : {};
   return (
