@@ -79,7 +79,8 @@ const Home: React.FC = () => {
   const { data: runs, error } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
-    subscribeToEvents: '/runs',
+    subscribeToEvents: true,
+    updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
     queryParams: getAllDefaultedQueryParams(),
   });
 

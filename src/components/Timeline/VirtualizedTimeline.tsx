@@ -66,7 +66,7 @@ const VirtualizedTimeline: React.FC<{
   // Fetch & subscribe to steps
   const { data: stepData } = useResource<Step[], Step>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
-    subscribeToEvents: `/flows/${run.flow_id}/runs/${run.run_number}/steps`,
+    subscribeToEvents: true,
     initialData: [],
     queryParams: {
       _order: '+ts_epoch',
@@ -77,7 +77,7 @@ const VirtualizedTimeline: React.FC<{
   // Fetch & subscribe to tasks
   const { data: taskData } = useResource<Task[], Task>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/tasks`,
-    subscribeToEvents: `/flows/${run.flow_id}/runs/${run.run_number}/tasks`,
+    subscribeToEvents: true,
     initialData: [],
     updatePredicate: (a, b) => a.task_id === b.task_id,
     queryParams: {
