@@ -38,6 +38,7 @@ const bgColor = {
 
 const borderColor = {
   light: '#e9e9e9',
+  normal: '#d7d7d7',
 };
 
 const defaultTheme: DefaultTheme = {

@@ -192,7 +192,7 @@ const VirtualizedTimeline: React.FC<{
   useEffect(() => {
     dispatch({ type: 'reset' });
     graphDispatch({ type: 'reset' });
-  }, [run, dispatch, graphDispatch]);
+  }, [run.run_number, dispatch, graphDispatch]);
 
   //
   // Button behaviour

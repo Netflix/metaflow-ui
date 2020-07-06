@@ -8,7 +8,6 @@ import { PATHS } from '../../utils/routing';
 const defaultRunTab = 'view/timeline';
 
 const RootPage: React.FC = () => {
-  console.log('rerender');
   return (
     <>
       <Switch>
