@@ -18,6 +18,7 @@ import TagInput from '../../components/TagInput';
 import Icon from '../../components/Icon';
 
 import { ResultGroup, StatusColorCell, StatusColorHeaderCell } from './styles';
+import { getPath } from '../../utils/routing';
 import { useTranslation } from 'react-i18next';
 
 type QueryParam = string | null;
@@ -76,7 +77,7 @@ const Home: React.FC = () => {
     search(defaultQuery.toString());
   }, [search]);
 
-  const handleRunClick = (r: IRun) => history.push(`/flows/${r.flow_id}/runs/${r.run_number}`);
+  const handleRunClick = (r: IRun) => history.push(getPath.dag(r.flow_id, r.run_number));
 
   const handleOrderChange = (value: string) => {
     let nextDir = '+';
@@ -321,8 +322,15 @@ const Home: React.FC = () => {
                       <TD>{r.duration}</TD>
                       <TD>{r.user_name}</TD>
                       <TD className="timeline-link">
-                        <Link to={`/flows/${r.flow_id}/runs/${r.run_number}/timeline`}>
-                          <Icon name="timeline" size="lg" /> {t('run.timeline')}
+                        <Link
+                          to={getPath.run(r.flow_id, r.run_number)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            history.push(getPath.run(r.flow_id, r.run_number));
+                          }}
+                        >
+                          <Icon name="timeline" size="lg" /> Timeline
                         </Link>
                       </TD>
                     </TR>

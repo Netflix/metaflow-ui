@@ -5,7 +5,16 @@ const en = {
   translation: {
     'no-results': 'No results',
 
+    items: {
+      run: 'Run',
+      step: 'Step',
+      task: 'Task',
+      artifact: 'Artifact',
+      metadata: 'Metadata',
+    },
+
     home: {
+      home: 'Home',
       'load-more-runs': 'Load more runs',
     },
 
@@ -42,6 +51,15 @@ const en = {
       'collapse-all': 'Collapse all',
       relative: 'Relative',
       absolute: 'Absolute',
+    },
+
+    breadcrumb: {
+      'no-match': "Text doesn't match known patterns.",
+      goto: 'Go to...',
+      whereto: 'Where to?',
+      'example-run': 'MyFlow / run_id',
+      'example-step': 'MyFlow / run_id / step_name',
+      'example-task': 'MyFlow / run_id / step_name / task_id',
     },
   },
 };

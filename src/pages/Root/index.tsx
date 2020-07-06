@@ -3,24 +3,27 @@ import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
 import NotFound from '../NotFound';
 import HomePage from '../Home';
 import RunPage from '../Run';
+import { PATHS } from '../../utils/routing';
 
-// TODO: constants like these could live inside a constants folder
-const runPath = '/flows/:flowId/runs/:runNumber';
-const defaultRunTab = 'dag';
+const defaultRunTab = 'view/timeline';
 
 const RootPage: React.FC = () => {
   return (
     <>
       <Switch>
-        <Route exact path="/">
+        <Route exact path={PATHS.home}>
           <HomePage />
         </Route>
 
-        <Route path={`${runPath}/:viewType`}>
+        <Route path={PATHS.task} exact>
+          <div>Task view</div>
+        </Route>
+
+        <Route path={PATHS.runSubview}>
           <RunPage />
         </Route>
 
-        <Route path={runPath}>
+        <Route path={PATHS.run} exact>
           <DefaultSubRoute path={defaultRunTab} />
         </Route>
 
@@ -37,5 +40,7 @@ export default RootPage;
 const DefaultSubRoute = ({ path }: { path: string }) => {
   const { url } = useRouteMatch();
 
-  return <Redirect to={`${url}/${path}`} />;
+  const separator = url.endsWith('/') ? '' : '/';
+
+  return <Redirect to={`${url}${separator}${path}`} />;
 };

@@ -2,3 +2,7 @@ build/*
 public/*
 src/react-app-env.d.ts
 src/serviceWorker.ts
+*.test.ts
+*.test.tsx
+*.spec.ts
+src/**/__tests__/*

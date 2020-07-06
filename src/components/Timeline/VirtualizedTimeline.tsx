@@ -8,6 +8,7 @@ import TimelineRow from './TimelineRow';
 import useResource from '../../hooks/useResource';
 import useGraph, { GraphState } from './useGraph';
 import useRowData, { StepRowData } from './useRowData';
+import useQuery from '../../hooks/useQuery';
 import { useTranslation } from 'react-i18next';
 
 export const ROW_HEIGHT = 28;
@@ -27,6 +28,11 @@ export const TimelineContainer: React.FC<{ run: Run }> = ({ run }) => {
   return <VirtualizedTimeline run={run} />;
 };
 
+type TimelineFilters = {
+  steps: string[];
+  tasks: string[];
+};
+
 //
 // Self containing component for rendering everything related to timeline. Component fetched (and subscribes for live events) steps and tasks from different
 // endpoints. View is supposed to be full page (and full page only) since component itself will use virtualised scrolling.
@@ -34,6 +40,7 @@ export const TimelineContainer: React.FC<{ run: Run }> = ({ run }) => {
 const VirtualizedTimeline: React.FC<{
   run: Run;
 }> = ({ run }) => {
+  const params = useQuery();
   const { t } = useTranslation();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
@@ -51,6 +58,10 @@ const VirtualizedTimeline: React.FC<{
   // Data about step rows and their children. Each rowDataState item is step row and in its data property you will find
   // tasks belonging to it.
   const { rows: rowDataState, dispatch } = useRowData();
+
+  //
+  // Data fetching
+  //
 
   // Fetch & subscribe to steps
   const { data: stepData } = useResource<Step[], Step>({
@@ -76,6 +87,25 @@ const VirtualizedTimeline: React.FC<{
     fetchAllData: true,
   });
 
+  //
+  // Local filterings
+  //
+
+  const [filters, setFilters] = useState<TimelineFilters>({ steps: [], tasks: [] });
+  useEffect(() => {
+    const stepFilters = params.get('steps');
+
+    if (stepFilters) {
+      setFilters({ ...filters, steps: stepFilters.split(',') });
+    } else {
+      setFilters({ ...filters, steps: [] });
+    }
+  }, [params.get('steps')]); // eslint-disable-line
+
+  //
+  // Graph measurements
+  //
+
   // Graph data. Need to know start and end time of run to render lines
   const { graph, dispatch: graphDispatch } = useGraph(run.ts_epoch, run.finished_at || Date.now());
 
@@ -97,6 +127,10 @@ const VirtualizedTimeline: React.FC<{
     }
   }, [steps]); // eslint-disable-line
 
+  //
+  // Data processing
+  //
+
   // Update steps data when they come in
   useEffect(() => {
     setSteps(stepData.sort((a, b) => a.ts_epoch - b.ts_epoch));
@@ -113,7 +147,9 @@ const VirtualizedTimeline: React.FC<{
 
   // Add tasks after step rows if they are open
   useEffect(() => {
-    const newRows: Row[] = steps.reduce((arr: Row[], current: Step): Row[] => {
+    const visibleSteps =
+      filters.steps.length === 0 ? steps : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1);
+    const newRows: Row[] = visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];
 
       if (rowData?.isOpen) {
@@ -139,7 +175,7 @@ const VirtualizedTimeline: React.FC<{
     graphDispatch({ type: 'updateMax', end: highestTimestamp });
 
     setRows(newRows);
-  }, [rowDataState, graphDispatch, steps]);
+  }, [rowDataState, graphDispatch, steps, filters.steps]);
 
   // Update step position indexes (for sticky headers)
   useEffect(() => {
@@ -151,6 +187,16 @@ const VirtualizedTimeline: React.FC<{
     }, []);
     setStepPositions(stepPos);
   }, [rows]);
+
+  // Reset everything if run is changed
+  useEffect(() => {
+    dispatch({ type: 'reset' });
+    graphDispatch({ type: 'reset' });
+  }, [run.run_number, dispatch, graphDispatch]);
+
+  //
+  // Button behaviour
+  //
 
   const expandAll = () => {
     steps.forEach((item) => {

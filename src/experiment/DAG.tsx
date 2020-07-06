@@ -89,7 +89,7 @@ export const CanvasInnerStyle = styled.div<ICanvasInnerDefaultProps>`
   cursor: move;
 `;
 
-const CanvasInnerCustom = React.forwardRef((props: ICanvasInnerDefaultProps) => {
+const CanvasInnerCustom = React.forwardRef((props: ICanvasInnerDefaultProps, _) => {
   return <CanvasInnerStyle {...(props as any)} />;
 });
 
