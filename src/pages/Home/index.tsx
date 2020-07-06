@@ -11,7 +11,7 @@ import { getParamChangeHandler } from '../../utils/url';
 
 import { RemovableTag } from '../../components/Tag';
 import Table, { HeaderColumn, TR, TD } from '../../components/Table';
-import { Field } from '../../components/Form';
+import { CheckboxField, SelectField } from '../../components/Form';
 import { Layout, Sidebar, Section, SectionHeader, SectionHeaderContent, Content } from '../../components/Structure';
 import Notification, { NotificationType } from '../../components/Notification';
 import TagInput from '../../components/TagInput';
@@ -177,15 +177,14 @@ const Home: React.FC = () => {
   );
 
   const StatusField: React.FC<StatusFieldProps> = ({ value, label }) => {
-    const id = `status_${value}`;
-    const statuses = new Set(paramList(getQueryParam('status')));
-    const checked = statuses.has(value);
-
+    const checked = new Set(paramList(getQueryParam('status'))).has(value);
     return (
-      <Field horizontal className={checked ? 'active' : ''} onClick={() => updateListValue('status', value)}>
-        <span className={`checkbox ${id} ${checked ? 'checked' : ''}`}>{checked && <Icon name="check" />}</span>
-        <label htmlFor={id}>{label}</label>
-      </Field>
+      <CheckboxField
+        label={label}
+        className={`status-${value}`}
+        checked={checked}
+        onChange={() => updateListValue('status', value)}
+      />
     );
   };
 
@@ -210,15 +209,15 @@ const Home: React.FC = () => {
           <SectionHeader>
             {t('filters.group-by')}
             <SectionHeaderContent align="right">
-              <Field horizontal>
-                <select
-                  value={getDefaultedQueryParam('_group')}
-                  onChange={(e) => handleParamChange('_group', e.target.value)}
-                >
-                  <option value="flow_id">{t('fields.flow')}</option>
-                  <option value="user_name">{t('fields.user')}</option>
-                </select>
-              </Field>
+              <SelectField
+                horizontal
+                value={getDefaultedQueryParam('_group')}
+                onChange={(e) => e && handleParamChange('_group', e.target.value)}
+                options={[
+                  ['flow_id', t('fields.flow')],
+                  ['user_name', t('fields.user')],
+                ]}
+              />
             </SectionHeaderContent>
           </SectionHeader>
         </Section>
