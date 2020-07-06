@@ -48,12 +48,13 @@ const sizeTable: SupportedSizes = {
 interface IconProps {
   name: keyof SupportedIcons;
   size?: keyof SupportedSizes;
+  rotate?: number;
 }
 
-const Icon: React.FC<IconProps> = ({ name, size = 'md' }) => {
+const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate }) => {
   const IconComponent = icons[name];
   return (
-    <Wrapper size={size}>
+    <Wrapper size={size} rotation={rotate}>
       <IconComponent />
     </Wrapper>
   );
@@ -61,7 +62,7 @@ const Icon: React.FC<IconProps> = ({ name, size = 'md' }) => {
 
 export default Icon;
 
-const Wrapper = styled.i<{ size: keyof SupportedSizes }>`
+const Wrapper = styled.i<{ size: keyof SupportedSizes; rotation?: number }>`
   vertical-align: middle;
   display: inline-block;
   margin: 0;
@@ -70,5 +71,6 @@ const Wrapper = styled.i<{ size: keyof SupportedSizes }>`
   svg {
     height: ${(p) => sizeTable[p.size]}rem;
     width: auto;
+    transform: ${(p) => (p.rotation ? `rotate(${p.rotation}deg)` : 'none')};
   }
 `;
