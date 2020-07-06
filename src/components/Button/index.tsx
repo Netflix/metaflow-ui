@@ -11,11 +11,17 @@ type ButtonProps = {
   label?: string;
   disabled?: boolean;
   tabIndex?: number;
+  testid?: string;
 };
 
-const Button: React.FC<ButtonProps> = ({ label, children, to, onClick, disabled, tabIndex = 99 }) => {
+const Button: React.FC<ButtonProps> = ({ label, children, to, onClick, disabled, tabIndex = 99, testid = '' }) => {
   const Element = () => (
-    <ButtonStyle onClick={() => (!to && onClick ? onClick() : null)} disabled={disabled} tabIndex={tabIndex}>
+    <ButtonStyle
+      onClick={() => (!to && onClick ? onClick() : null)}
+      disabled={disabled}
+      tabIndex={tabIndex}
+      data-testid={testid || label + '-button'}
+    >
       {label || children}
     </ButtonStyle>
   );

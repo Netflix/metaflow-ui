@@ -20,13 +20,15 @@ type KnownParams = {
   taskId?: string;
 };
 
+type BreadcrumbButtons = { label: string; path: string };
+
 /**
  * Find need for various buttons in breadcrumb. This is now very attached to fixed urls we have now
  * so we might need to make this more generic later.
  * @param routeMatch
  * @param location
  */
-function findAdditionalButtons(routeMatch: match<KnownParams> | null, location: string) {
+export function findAdditionalButtons(routeMatch: match<KnownParams> | null, location: string): BreadcrumbButtons[] {
   if (routeMatch === null) return [];
   const queryParams = new URLSearchParams(location);
   const buttons = [];
@@ -51,7 +53,7 @@ function findAdditionalButtons(routeMatch: match<KnownParams> | null, location: 
   if (params.flowId && params.runNumber && params.stepName && params.taskId) {
     buttons.push({
       label: params.taskId,
-      path: getPath.task(params.taskId, params.runNumber, params.stepName, params.taskId),
+      path: getPath.task(params.flowId, params.runNumber, params.stepName, params.taskId),
     });
   }
 
@@ -62,6 +64,7 @@ const Breadcrumb: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
   const history = useHistory();
+
   const routeMatch = matchPath<KnownParams>(
     location.pathname,
     Object.keys(PATHS).map((key) => PATHS[key as keyof PathDefinition]),
@@ -116,9 +119,7 @@ const Breadcrumb: React.FC = () => {
 
   return (
     <StyledBreadcrumb>
-      <Button to="/" disabled={buttonList.length === 0} tabIndex={0}>
-        {t('home.home')}
-      </Button>
+      <Button to="/" disabled={buttonList.length === 0} tabIndex={0} testid={'home-button'} label={t('home.home')} />
 
       {/* On home page, when not editing breadcrumb */}
       {buttonList.length === 0 && !edit && (
@@ -127,12 +128,13 @@ const Breadcrumb: React.FC = () => {
           onClick={() => setEdit(true)}
           onKeyPress={() => setEdit(true)}
           defaultValue={t('breadcrumb.goto') as string}
+          data-testid="breadcrumb-goto-input-inactive"
         />
       )}
 
       {/* Rendering breadcrumb items when not in home and not editing. */}
       {!edit && buttonList.length > 0 && (
-        <ButtonContainer>
+        <ButtonContainer data-testid="breadcrumb-button-container">
           {buttonList.map(({ label, path }, index) => {
             const element = <ButtonContainerItem active={index + 1 === buttonList.length}>{label}</ButtonContainerItem>;
 
@@ -165,7 +167,7 @@ const Breadcrumb: React.FC = () => {
 
       {/* Rendering edit block when active */}
       {edit && (
-        <GoToHolder>
+        <GoToHolder data-testid="breadcrumb-goto-container">
           <GoToContainer>
             <div style={{ display: 'flex' }}>
               <StyledInput
