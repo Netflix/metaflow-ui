@@ -46,7 +46,7 @@ const ButtonStyles = css`
   text-decoration: none;
   border-radius: 4px;
   margin: 0 5px;
-  border: ${({ theme }) => '1px solid ' + theme.color.border.normal};
+  border: ${({ theme }) => '1px solid ' + theme.color.border.light};
 `;
 
 const ButtonStyle = styled.div<{ disabled?: boolean }>`
@@ -76,7 +76,7 @@ export const ButtonContainerHighlightedItem = styled.div`
   background: #fff;
   height: 40px;
   line-height: 16px;
-  border-left: ${({ theme }) => '1px solid ' + theme.color.border.normal};
+  border-left: ${({ theme }) => '1px solid ' + theme.color.border.light};
   cursor: pointer;
 
   transition: padding 0.15s;

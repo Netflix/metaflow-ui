@@ -50,10 +50,10 @@ interface IconProps {
   size?: keyof SupportedSizes;
 }
 
-const Icon: React.FC<IconProps> = ({ name, size = 'md' }) => {
+const Icon: React.FC<IconProps> = ({ name, size = 'md', ...rest }) => {
   const IconComponent = icons[name];
   return (
-    <Wrapper size={size}>
+    <Wrapper size={size} {...rest}>
       <IconComponent />
     </Wrapper>
   );
@@ -70,5 +70,23 @@ const Wrapper = styled.i<{ size: keyof SupportedSizes }>`
   svg {
     height: ${(p) => sizeTable[p.size]}rem;
     width: auto;
+  }
+`;
+
+type SortIconProps = Omit<IconProps, 'name'> & { direction: 'up' | 'down'; active?: boolean };
+
+export const SortIcon: React.FC<SortIconProps> = ({ direction, ...rest }) => (
+  <StyledSortIcon direction={direction} name="sort" {...rest} />
+);
+
+const StyledSortIcon = styled(Icon)<SortIconProps>`
+  color: ${(p) => p.theme.color.icon.light};
+
+  #up {
+    color: ${(p) => (p.active && p.direction === 'up' ? p.theme.color.icon.dark : 'currentColor')};
+  }
+
+  #down {
+    color: ${(p) => (p.active && p.direction === 'down' ? p.theme.color.icon.dark : 'currentColor')};
   }
 `;

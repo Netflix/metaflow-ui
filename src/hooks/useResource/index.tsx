@@ -10,6 +10,7 @@ export interface HookConfig<T, U> {
   fetchAllData?: boolean;
   queryParams?: Record<string, string>;
   privateCache?: boolean;
+  pause?: boolean;
 }
 
 interface DataModel<T> {
@@ -41,6 +42,8 @@ export interface Resource<T> {
   data: T;
   error: Error | null;
   getResult: () => DataModel<T>;
+  cache: CacheInterface;
+  target: string;
 }
 
 interface CacheItem<T> {
@@ -51,9 +54,11 @@ interface CacheItem<T> {
 
 interface CacheInterface {
   subscribe: (k: string, f: () => void) => () => void;
-  update: <T>(k: string, f: (prev: CacheItem<T>) => CacheItem<T>) => void;
+  update: <T>(k: string, f: (prev: CacheItem<T>) => CacheItem<T>, silent: boolean) => void;
   get: (k: string) => CacheItem<any>;
   set: (k: string, v: CacheItem<any>) => void;
+  setInBackground: (k: string, v: CacheItem<any>) => void;
+  keys: () => string[];
 }
 
 let uid = 1;
@@ -63,9 +68,9 @@ export function createCache(): CacheInterface {
   const cache: Record<string, CacheItem<any>> = {};
   const subscribers: Record<string, Record<number, () => void>> = {};
 
-  const update: CacheInterface['update'] = (key, fn) => {
+  const update: CacheInterface['update'] = (key, fn, silent) => {
     cache[key] = fn(cache[key]);
-    Object.values(subscribers[key]).forEach((f) => f());
+    !silent && Object.values(subscribers[key]).forEach((f) => f());
   };
 
   const subscribe: CacheInterface['subscribe'] = (key, fn) => {
@@ -76,13 +81,18 @@ export function createCache(): CacheInterface {
   };
 
   const get: CacheInterface['get'] = (key) => cache[key];
-  const set: CacheInterface['set'] = (key, value) => update(key, () => value);
+  const set: CacheInterface['set'] = (key, value) => update(key, () => value, false);
+  const setInBackground: CacheInterface['set'] = (key, value) => update(key, () => value, true);
+
+  const keys: CacheInterface['keys'] = () => Object.keys(cache);
 
   return {
     subscribe,
     update,
     get,
     set,
+    setInBackground,
+    keys,
   };
 }
 
@@ -98,6 +108,7 @@ export default function useResource<T, U>({
   updatePredicate = (_a, _b) => false,
   fetchAllData = false,
   privateCache = false,
+  pause = false,
 }: HookConfig<T, U>): Resource<T> {
   const cache = useRef(privateCache ? createCache() : singletonCache).current;
   const [error, setError] = useState(null);
@@ -192,7 +203,7 @@ export default function useResource<T, U>({
     const signal = abortCtrl.signal;
     let fulfilled = false;
 
-    if (!cached || !cached.data || cached.stale) {
+    if (!pause && (!cached || !cached.data || cached.stale)) {
       fetchData(target, target, signal, () => {
         fulfilled = true;
       });
@@ -207,5 +218,5 @@ export default function useResource<T, U>({
     };
   }, [target]); // eslint-disable-line
 
-  return { url, data, error, getResult: () => cache.get(target)?.result };
+  return { url, target, data, error, getResult: () => cache.get(target)?.result, cache };
 }
