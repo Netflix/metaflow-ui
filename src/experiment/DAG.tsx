@@ -8,7 +8,7 @@ import {
   ICanvasOuterDefaultProps,
   INode,
 } from '@mrblenny/react-flow-chart';
-import { getStepMeasures, treeExampleSlide16, StepTree, ParallelStep } from './PlayingAroundWithDagDataModel';
+import { getStepMeasures, StepTree, ParallelStep, newModelTree } from './PlayingAroundWithDagDataModel';
 import styled from 'styled-components';
 import { Step } from '../types';
 
@@ -264,7 +264,7 @@ const DAG: React.FC<IDAG> = () => {
   return (
     <div>
       <FlowChartWithState
-        initialValue={makeChartFromTreeData(treeExampleSlide16)}
+        initialValue={makeChartFromTreeData(newModelTree)}
         config={chartSimple.config}
         Components={{
           Node: NodeCustom,
