@@ -221,7 +221,7 @@ const StyledInput = styled.input`
   height: 38px;
   padding: 0 10px;
   line-height: 38px;
-  border: ${({ theme }) => '1px solid ' + theme.color.border.normal};
+  border: ${({ theme }) => '1px solid ' + theme.color.border.light};
   background: ${({ theme }) => '1px solid ' + theme.color.bg.light};
   border-radius: 4px;
   font-size: 14px;
