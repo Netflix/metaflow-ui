@@ -6,25 +6,30 @@ type PropertyTableItem = {
   content: React.ReactNode;
 };
 
+type PropertyTableLayout = 'bright' | 'normal';
+
 type PropertyTableProps = {
   items: PropertyTableItem[];
+  layout?: PropertyTableLayout;
 };
 
-const PropertyTable: React.FC<PropertyTableProps> = ({ items }) => {
+const PropertyTable: React.FC<PropertyTableProps> = ({ items, layout = 'normal' }) => {
   return (
-    <PropertyTableRow>
+    <PropertyTableRow layout={layout}>
       {items.map(({ label, content }) => (
         <PropertyTableRowItem key={label}>
           <PropertyTableRowItemHeader>{label}</PropertyTableRowItemHeader>
-          <PropertyTableRowItemContent>{content}</PropertyTableRowItemContent>
+          <PropertyTableRowItemContent layout={layout}>{content}</PropertyTableRowItemContent>
         </PropertyTableRowItem>
       ))}
     </PropertyTableRow>
   );
 };
 
-const PropertyTableRow = styled.div`
+const PropertyTableRow = styled.div<{ layout: PropertyTableLayout }>`
   display: flex;
+  border-radius: 4px;
+  overflow: hidden;
 `;
 
 const PropertyTableRowItem = styled.div`
@@ -44,9 +49,10 @@ const PropertyTableRowItemHeader = styled.div`
   padding: 7px 15px;
 `;
 
-const PropertyTableRowItemContent = styled.div`
+const PropertyTableRowItemContent = styled.div<{ layout: PropertyTableLayout }>`
   padding: 15px;
   font-size: 14px;
+  background: ${(p) => (p.layout === 'bright' ? '#fff' : 'transparent')};
 `;
 
 export default PropertyTable;

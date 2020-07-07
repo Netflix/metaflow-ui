@@ -6,6 +6,7 @@ import { Run } from '../../types';
 import styled from 'styled-components';
 import { getISOString } from '../../utils/date';
 import Icon from '../../components/Icon';
+import { useTranslation } from 'react-i18next';
 
 function mergeTags(run: Run) {
   const baseTags = run.tags || [];
@@ -30,25 +31,32 @@ function formatDuration(time: number) {
 }
 
 const RunHeader: React.FC<{ run?: Run }> = ({ run }) => {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
   return (
     <RunHeaderContainer>
-      {(!run || !run.run_number) && <InformationRow>No run data</InformationRow>}
+      {(!run || !run.run_number) && <InformationRow>{t('run.no-run-data')}</InformationRow>}
 
       {run && run.run_number && (
         <div>
           <InformationRow spaceless>
             <PropertyTable
               items={[
-                { label: 'Run id:', content: run.run_number },
-                { label: 'Status:', content: run.status },
-                { label: 'User:', content: run.user_name },
-                { label: 'Project:', content: '?' },
-                { label: 'Language:', content: '?' },
-                { label: 'Started at:', content: getISOString(new Date(run.ts_epoch)) },
-                { label: 'Finished at:', content: run.finished_at ? getISOString(new Date(run.finished_at)) : '' },
-                { label: 'Duration:', content: run.finished_at ? formatDuration(run.finished_at - run.ts_epoch) : '' },
+                { label: t('fields.run-id') + ':', content: run.run_number },
+                { label: t('fields.status') + ':', content: run.status },
+                { label: t('fields.user') + ':', content: run.user_name },
+                { label: t('fields.project') + ':', content: '?' },
+                { label: t('fields.language') + ':', content: '?' },
+                { label: t('fields.started-at') + ':', content: getISOString(new Date(run.ts_epoch)) },
+                {
+                  label: t('fields.finished-at') + ':',
+                  content: run.finished_at ? getISOString(new Date(run.finished_at)) : '',
+                },
+                {
+                  label: t('fields.duration') + ':',
+                  content: run.finished_at ? formatDuration(run.finished_at - run.ts_epoch) : '',
+                },
               ]}
             />
           </InformationRow>
@@ -58,10 +66,21 @@ const RunHeader: React.FC<{ run?: Run }> = ({ run }) => {
 
           {expanded && (
             <InformationRow>
-              <ExpandLink onClick={() => setExpanded(!expanded)}>
-                <span>Hide run details</span>
-                <Icon size="lg" name="arrowDown" rotate={180} />
-              </ExpandLink>
+              <ParametersTitleRow>
+                <LabelText>{t('run.parameters') + ':'}</LabelText>
+                <ExpandLink onClick={() => setExpanded(!expanded)}>
+                  <span>{t('run.hide-run-details')}</span>
+                  <Icon size="lg" name="arrowDown" rotate={180} />
+                </ExpandLink>
+              </ParametersTitleRow>
+              <PropertyTable
+                layout="bright"
+                items={[
+                  { label: 'A:', content: '1' },
+                  { label: 'B:', content: '2' },
+                  { label: 'C:', content: '3' },
+                ]}
+              />
             </InformationRow>
           )}
         </div>
@@ -70,7 +89,7 @@ const RunHeader: React.FC<{ run?: Run }> = ({ run }) => {
       {!expanded && (
         <ShowDetailsRow>
           <ExpandLink onClick={() => setExpanded(!expanded)}>
-            <span>Show all run details</span>
+            <span>{t('run.show-run-details')}</span>
             <Icon size="lg" name="arrowDown" />
           </ExpandLink>
         </ShowDetailsRow>
@@ -96,12 +115,23 @@ const ExpandLink = styled.div`
   align-items: center;
   font-size: 12px;
   padding: 10px;
-  color: #146ee6;
+  color: ${(p) => p.theme.color.text.blue};
   cursor: pointer;
 
   span {
     margin: 0 15px;
   }
+`;
+
+const LabelText = styled.div`
+  color: ${(p) => p.theme.color.text.mid};
+  font-size: 12px;
+`;
+
+const ParametersTitleRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 //

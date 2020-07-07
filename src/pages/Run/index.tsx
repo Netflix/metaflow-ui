@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
-// import Notification, { NotificationType } from '../../components/Notification';
 import { Run as IRun } from '../../types';
-// import ResourceBar from '../../components/ResourceBar';
 import Tabs from '../../components/Tabs';
 import { Content, FixedContent, Layout } from '../../components/Structure';
 import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
 import DAG from '../../experiment/DAG';
 import RunHeader from './RunHeader';
 import { getPath } from '../../utils/routing';
-// import { useTranslation } from 'react-i18next';
 
 const RunPage: React.FC = () => {
   const { params } = useRouteMatch<{ flowId: string; runNumber: string; viewType: string }>();
