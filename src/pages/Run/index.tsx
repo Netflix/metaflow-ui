@@ -48,7 +48,7 @@ const RunPage: React.FC = () => {
           {
             key: 'timeline',
             label: 'Timeline',
-            linkTo: getPath.run(params.flowId, params.runNumber),
+            linkTo: getPath.timeline(params.flowId, params.runNumber),
             component: <TimelineContainer run={run} />,
           },
         ]}

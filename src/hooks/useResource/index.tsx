@@ -8,6 +8,7 @@ export interface HookConfig<T, U> {
   subscribeToEvents?: boolean | string;
   updatePredicate?: (_: U, _l: U) => boolean;
   fetchAllData?: boolean;
+  onUpdate?: (item: T) => void;
   queryParams?: Record<string, string>;
   privateCache?: boolean;
   pause?: boolean;
@@ -107,6 +108,7 @@ export default function useResource<T, U>({
   queryParams = {},
   updatePredicate = (_a, _b) => false,
   fetchAllData = false,
+  onUpdate,
   privateCache = false,
   pause = false,
 }: HookConfig<T, U>): Resource<T> {
@@ -135,22 +137,22 @@ export default function useResource<T, U>({
     if (subscribeToEvents) {
       const eventResource = typeof subscribeToEvents === 'string' ? subscribeToEvents : url;
       unsubWebsocket = ResourceEvents.subscribe(eventResource, (event: Event<any>) => {
-        if (event.type === EventType.INSERT) {
-          // Get current cache and prepend to the list
-          const currentCache = cache.get(target);
+        const currentCache = cache.get(target);
+        const cacheSet = onUpdate ? cache.setInBackground : cache.set;
 
-          cache.set(target, {
+        if (onUpdate) {
+          onUpdate(Array.isArray(currentCache.data) ? [event.data] : event.data);
+        }
+
+        if (event.type === EventType.INSERT) {
+          cacheSet(target, {
             ...currentCache,
             data: Array.isArray(currentCache.data)
               ? [event.data, ...currentCache.data]
               : (currentCache.data = event.data),
           });
         } else if (event.type === EventType.UPDATE) {
-          // Get current cache and prepend to the list
-          const currentCache = cache.get(target);
-
-          // TODO: How do we handle this properly?
-          cache.set(target, {
+          cacheSet(target, {
             ...currentCache,
             data: Array.isArray(currentCache.data)
               ? currentCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
@@ -166,7 +168,7 @@ export default function useResource<T, U>({
     };
   }, []); // eslint-disable-line
 
-  function fetchData(targetUrl: string, cacheKey: string, signal: AbortSignal, cb: () => void) {
+  function fetchData(targetUrl: string, signal: AbortSignal, cb: () => void, isSilent?: boolean) {
     fetch(targetUrl, { signal })
       .then((response) =>
         response.json().then((result: DataModel<T>) => ({
@@ -176,14 +178,19 @@ export default function useResource<T, U>({
       )
       .then(
         (cacheItem) => {
-          cache.set(target, cacheItem);
+          const cacheSet = isSilent ? cache.setInBackground : cache.set;
+          cacheSet(targetUrl, cacheItem);
+
+          if (onUpdate) {
+            onUpdate(cacheItem.data as T);
+          }
 
           if (
             fetchAllData &&
             cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
             cacheItem.result.links.next !== targetUrl
           ) {
-            fetchData(cacheItem.result.links.next || targetUrl, cacheKey, signal, cb);
+            fetchData(cacheItem.result.links.next || targetUrl, signal, cb, true);
           } else {
             cb();
           }
@@ -197,6 +204,16 @@ export default function useResource<T, U>({
       );
   }
 
+  function findAllRelatedDataFromCache(currentTarget: string): any {
+    const cached = cache.get(currentTarget);
+    return [
+      ...cached.data,
+      ...(cached.result.pages?.self !== cached.result.pages?.last
+        ? findAllRelatedDataFromCache(cached.result.links.next || '')
+        : []),
+    ];
+  }
+
   useEffect(() => {
     const cached = cache.get(target);
     const abortCtrl = new AbortController();
@@ -204,11 +221,18 @@ export default function useResource<T, U>({
     let fulfilled = false;
 
     if (!pause && (!cached || !cached.data || cached.stale)) {
-      fetchData(target, target, signal, () => {
+      fetchData(target, signal, () => {
         fulfilled = true;
       });
     } else if (cached) {
       setData(cached.data);
+      // If we should return all data, lets check if there is other entries in cache.
+      // Wrapped in setTimeout so it happens async.
+      if (fetchAllData && onUpdate) {
+        setTimeout(() => {
+          onUpdate(findAllRelatedDataFromCache(target));
+        }, 0);
+      }
     }
 
     return () => {

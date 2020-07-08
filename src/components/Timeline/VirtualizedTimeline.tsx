@@ -85,6 +85,9 @@ const VirtualizedTimeline: React.FC<{
       _limit: '1000',
     },
     fetchAllData: true,
+    onUpdate: (items) => {
+      dispatch({ type: 'fill', data: items });
+    },
   });
 
   //
