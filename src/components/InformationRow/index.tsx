@@ -8,7 +8,7 @@ const InformationRow: React.FC<{ spaceless?: boolean }> = ({ spaceless = false, 
 const StyledRow = styled.div<{ spaceless: boolean }>`
   overflow: hidden;
   background: ${({ theme }) => theme.color.bg.light};
-  border-bottom: ${({ theme }) => '1px solid ' + theme.color.border.normal};
+  border-bottom: ${({ theme }) => '1px solid ' + theme.color.border.light};
   padding: ${(props) => (props.spaceless ? '0px' : '10px')};
 
   &:first-of-type {
