@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useLayoutEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,6 @@ import { Run as IRun, RunStatus } from '../../../types';
 import { getISOString } from '../../../utils/date';
 import { flatten } from '../../../utils/array';
 import { omit } from '../../../utils/object';
-import { parseOrderParam } from '../../../utils/url';
 import { getPath } from '../../../utils/routing';
 
 import useResource from '../../../hooks/useResource';
@@ -66,7 +65,6 @@ const ResultGroup: React.FC<Props> = ({
     [field]: fieldValue,
     _page: String(page),
   });
-  const [direction, orderParam] = parseOrderParam(localSearchParams['_order']);
 
   const { error, getResult, cache, target } = useResource<IRun[], IRun>({
     url: resourceUrl,
@@ -76,7 +74,9 @@ const ResultGroup: React.FC<Props> = ({
     pause: page === 1,
   });
 
-  useEffect(() => setPage(1), [field, direction, orderParam]);
+  const pageInvalidationStr = new URLSearchParams(queryParams).toString();
+
+  useLayoutEffect(() => setPage(1), [pageInvalidationStr]);
 
   const { origin, pathname } = new URL(target);
   const result = getResult();
@@ -116,8 +116,8 @@ const ResultGroup: React.FC<Props> = ({
           </TR>
         </thead>
         <tbody>
-          {allRuns.map((r) => (
-            <TR key={r.run_number} onClick={() => onRunClick(r)}>
+          {allRuns.map((r, i) => (
+            <TR key={`r-${i}`} onClick={() => onRunClick(r)}>
               <StatusColorCell status={r.status} />
               <TD>
                 <span className="muted">#</span> <strong>{r.run_number}</strong>
