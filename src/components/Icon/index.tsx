@@ -54,7 +54,7 @@ interface IconProps {
 const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate, ...rest }) => {
   const IconComponent = icons[name];
   return (
-    <Wrapper {...rest} {...{size, rotate}}>
+    <Wrapper {...rest} {...{ size, rotate }}>
       <IconComponent />
     </Wrapper>
   );
@@ -71,7 +71,7 @@ const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number }>`
   svg {
     height: ${(p) => sizeTable[p.size]}rem;
     width: auto;
-    transform: ${(p) => (p.rotate? `rotate(${p.rotate}deg)` : 'none')};
+    transform: ${(p) => (p.rotate ? `rotate(${p.rotate}deg)` : 'none')};
   }
 `;
 
