@@ -63,3 +63,5 @@ export interface Artifact extends MetaDataBaseObject {
   content_type: string;
   attempt_id: number;
 }
+
+export type QueryParam = string | null;
