@@ -125,7 +125,7 @@ function makeChartFromTreeData(tree: Array<StepTree | ParallelStep>) {
         return location_x;
       };
 
-      const nodeId = `${prefix + '.' + index}`;
+      const nodeId = node.node_type === 'normal' ? node.step_name : `${prefix + '.' + index}`;
 
       // Definition for this node
       const this_node = {
@@ -162,7 +162,7 @@ function makeChartFromTreeData(tree: Array<StepTree | ParallelStep>) {
           node.steps,
           false,
           nodeId,
-          { x: location_x + parentSize.width / 2 - measurements.width / 2, y: location_y },
+          { x: location_x + parentSize.width / 2 - measurements.width / 2 - 10, y: location_y + 10 },
           measurements,
         );
       } else if (node.children && node.children.length > 0) {
@@ -184,23 +184,8 @@ function makeChartFromTreeData(tree: Array<StepTree | ParallelStep>) {
           return [];
         }
 
-        if (node.node_type === 'normal' && node.children && node.children.length > 0) {
-          if (node.children[0].node_type === 'normal') {
-            return [nodeId + '.0'];
-          } else {
-            return node.children[0].steps.map((_, nIndex) => `${nodeId}.0.${nIndex}`);
-          }
-        } else if (index < _tree.length - 1 && linear) {
-          const next_node = _tree[index + 1];
-          const nextNodeId = `${prefix}.${index + 1}`;
-
-          if (next_node.node_type === 'normal') {
-            return [nextNodeId];
-          } else {
-            return next_node.steps.map((_, nIndex) => {
-              return `${nextNodeId}.${nIndex}`;
-            });
-          }
+        if (node.original) {
+          return node.original.next;
         }
         return [];
       };

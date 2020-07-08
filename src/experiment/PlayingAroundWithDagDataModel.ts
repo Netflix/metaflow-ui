@@ -76,6 +76,7 @@ function makeItem(item: DAGModel, stepName: string, breaks: string[], inParallel
             ]
           : DAGModelToTree(item.next, breaks, false, item.box_ends)
         : [],
+    original: item,
   };
 
   return treeItem;
@@ -152,6 +153,7 @@ export type StepTree = {
   children?: RunStructureTree;
   // Name of step, we probably need some other data here as well
   step_name: string;
+  original?: DAGModel;
 };
 
 export type RunStructureTree = Array<StepTree | ParallelStep>;
@@ -361,7 +363,7 @@ function getParallelMeasures(nodes: Array<StepTree | ParallelStep>): Measures {
     nodes.forEach((item) => {
       const { width, height } = getStepMeasures(item);
 
-      max_height = height > max_height ? height : max_height;
+      max_height = (height > max_height ? height : max_height) - 50;
       node_width += width;
     });
   }
