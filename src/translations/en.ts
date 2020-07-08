@@ -29,6 +29,8 @@ const en = {
       'started-at': 'Started at',
       'finished-at': 'Finished at',
       duration: 'Duration',
+
+      'run-id': 'Run id',
     },
 
     filters: {
@@ -43,6 +45,9 @@ const en = {
       'no-run-data': 'No run data',
       DAG: 'DAG',
       timeline: 'Timeline',
+      parameters: 'Parameters',
+      'show-run-details': 'Show run details',
+      'hide-run-details': 'Hide run details',
     },
 
     timeline: {
