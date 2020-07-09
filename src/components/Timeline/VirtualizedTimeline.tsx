@@ -19,7 +19,7 @@ type StepIndex = { name: string; index: number };
 // Container component for timeline. We might wanna show different states here if we havent
 // gotten run data yet.
 //
-export const TimelineContainer: React.FC<{ run: Run }> = ({ run }) => {
+export const TimelineContainer: React.FC<{ run?: Run | null }> = ({ run }) => {
   const { t } = useTranslation();
   if (!run || !run.run_number) {
     return <>{t('timeline.no-run-data')}</>;
@@ -136,8 +136,10 @@ const VirtualizedTimeline: React.FC<{
 
   // Update steps data when they come in
   useEffect(() => {
-    setSteps(stepData.sort((a, b) => a.ts_epoch - b.ts_epoch));
-    dispatch({ type: 'init', ids: stepData.map((item) => item.step_name) });
+    if (stepData) {
+      setSteps(stepData.sort((a, b) => a.ts_epoch - b.ts_epoch));
+      dispatch({ type: 'init', ids: stepData.map((item) => item.step_name) });
+    }
   }, [stepData]); // eslint-disable-line
 
   // Update Tasks data when they come in
