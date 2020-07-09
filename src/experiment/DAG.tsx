@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   FlowChartWithState,
@@ -8,7 +8,7 @@ import {
   ICanvasOuterDefaultProps,
   INode,
 } from '@mrblenny/react-flow-chart';
-import { getStepMeasures, StepTree, ParallelStep, newModelTree } from './PlayingAroundWithDagDataModel';
+import { getStepMeasures, newModelTree, DAGStructureTree, DAGTreeNode } from './PlayingAroundWithDagDataModel';
 import styled from 'styled-components';
 import { Step } from '../types';
 
@@ -43,13 +43,21 @@ const DarkBox = styled.div<{
 
   ${(props) =>
     props.node.properties?.node_type &&
-    props.node.properties.node_type === 'parallel' &&
+    props.node.properties.node_type === 'container' &&
     `
     width: ${props.node.size?.width}px;
     height: ${props.node.size?.height}px;
     background: transparent;
     border: 3px dashed blue;
     opacity: 0.8;
+  `};
+
+  ${(props) =>
+    props.node.properties?.node_type &&
+    props.node.properties.node_type === 'normal' &&
+    `
+    width: 150px;
+    height: 100px;
   `};
 `;
 
@@ -93,13 +101,14 @@ const CanvasInnerCustom = React.forwardRef((props: ICanvasInnerDefaultProps, _) 
   return <CanvasInnerStyle {...(props as any)} />;
 });
 
-function makeChartFromTreeData(tree: Array<StepTree | ParallelStep>) {
+function makeChartFromTreeData(tree: DAGStructureTree) {
+  console.log('constructing....');
   // Use these values to track where next box should be drawn
   let links = {};
 
   // Make boxes for array of step data
   const makeBoxes = (
-    _tree: Array<StepTree | ParallelStep>,
+    _tree: DAGStructureTree,
     linear: boolean,
     prefix: string,
     position: { x: number; y: number },
@@ -115,7 +124,7 @@ function makeChartFromTreeData(tree: Array<StepTree | ParallelStep>) {
       const measurements = getStepMeasures(node);
 
       // Figure out position X for this node BOX
-      const getOwnX = (node: StepTree | ParallelStep) => {
+      const getOwnX = (node: DAGTreeNode) => {
         if (!linear || (node.node_type === 'normal' && node.children && node.children.length > 0)) {
           return location_x + measurements.width / 2 - 50;
         } else if (linear) {
@@ -157,7 +166,7 @@ function makeChartFromTreeData(tree: Array<StepTree | ParallelStep>) {
 
       // Generate child nodes
       let childNodes = {};
-      if (node.node_type === 'parallel') {
+      if (node.node_type === 'container') {
         childNodes = makeBoxes(
           node.steps,
           false,
@@ -180,7 +189,7 @@ function makeChartFromTreeData(tree: Array<StepTree | ParallelStep>) {
 
       // Figure out links that leaves from this node
       const figureOutLinkTargets = () => {
-        if (node.node_type === 'parallel') {
+        if (node.node_type === 'container') {
           return [];
         }
 
@@ -243,13 +252,14 @@ interface IDAG {
 }
 
 const DAG: React.FC<IDAG> = () => {
+  const [dagTree] = useState(makeChartFromTreeData(newModelTree));
   // NOTE We might want some click handlers here and maybe even internal state.
   // Also need to think how to keep state over tab changes. (when switching tabs and coming back to dag)
 
   return (
     <div>
       <FlowChartWithState
-        initialValue={makeChartFromTreeData(newModelTree)}
+        initialValue={dagTree}
         config={chartSimple.config}
         Components={{
           Node: NodeCustom,

@@ -6,119 +6,326 @@ type DAGModel = {
 };
 
 const data: Record<string, DAGModel> = {
-  end: {
-    box_ends: null,
-    type: 'end',
+  start: {
+    type: 'linear',
+
     box_next: false,
-    next: [],
+
+    box_ends: null,
+
+    next: ['load_artifacts'],
   },
-  branch_b: {
-    box_ends: 'join_foreach',
+
+  load_artifacts: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['split_by_csrgn'],
+  },
+
+  split_by_csrgn: {
     type: 'foreach',
+
     box_next: true,
-    next: ['foreach'],
+
+    box_ends: 'join_content_subregions',
+
+    next: ['split_by_country'],
   },
-  join: {
-    box_ends: null,
-    type: 'join',
+
+  split_by_country: {
+    type: 'foreach',
+
+    box_next: true,
+
+    box_ends: 'join_countries',
+
+    next: ['load_and_process_data'],
+  },
+
+  load_and_process_data: {
+    type: 'linear',
+
     box_next: false,
+
+    box_ends: null,
+
+    next: ['predict'],
+  },
+
+  predict: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['write_scores_country'],
+  },
+
+  write_scores_country: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['prepare_sys_writes'],
+  },
+
+  prepare_sys_writes: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['join_countries'],
+  },
+
+  join_countries: {
+    type: 'join',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['write_scores_csrgn'],
+  },
+
+  write_scores_csrgn: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['audit_csrgn_predictions'],
+  },
+
+  audit_csrgn_predictions: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['join_content_subregions'],
+  },
+
+  join_content_subregions: {
+    type: 'join',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['audit_scores_table'],
+  },
+
+  audit_scores_table: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['publish_model_info'],
+  },
+
+  publish_model_info: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['publish_to_cbl_csrgn'],
+  },
+
+  publish_to_cbl_csrgn: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['write_to_sys'],
+  },
+
+  write_to_sys: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
+    next: ['announce'],
+  },
+
+  announce: {
+    type: 'linear',
+
+    box_next: false,
+
+    box_ends: null,
+
     next: ['end'],
   },
-  join_foreach: {
-    box_ends: null,
-    type: 'join',
-    box_next: false,
-    next: ['join'],
-  },
-  start: {
-    box_ends: null,
-    type: 'linear',
-    box_next: false,
-    next: ['split'],
-  },
-  foreach: {
-    box_ends: null,
-    type: 'linear',
-    box_next: false,
-    next: ['join_foreach'],
-  },
-  branch_a: {
-    box_ends: null,
-    type: 'linear',
-    box_next: false,
-    next: ['join'],
-  },
-  split: {
-    box_ends: 'join',
-    type: 'split-and',
+
+  end: {
+    type: 'end',
+
     box_next: true,
-    next: ['branch_a', 'branch_b'],
+
+    box_ends: null,
+
+    next: [],
   },
 };
 
-function makeItem(item: DAGModel, stepName: string, breaks: string[], inParallel?: boolean): StepTree | ParallelStep {
-  const treeItem: StepTree = {
-    node_type: 'normal',
-    type: item.type === 'foreach' ? 'loop' : 'normal',
-    step_name: stepName,
-    children:
-      item.type === 'foreach' || inParallel
-        ? item.box_next
-          ? [
-              { node_type: 'parallel', steps: DAGModelToTree(item.next, breaks, true) },
-              ...(item.box_ends
-                ? DAGModelToTree(
-                    [item.box_ends],
-                    breaks.filter((str) => str !== item.box_ends),
-                    false,
-                  )
-                : []),
-            ]
-          : DAGModelToTree(item.next, breaks, false, item.box_ends)
-        : [],
-    original: item,
-  };
+/*const data: Record<string, DAGModel> = {
+  start: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['split'],
+  },
+  split: {
+    type: 'split-and',
+    box_next: true,
+    box_ends: 'join',
+    next: [
+      'wide_branch1',
+      'wide_branch2',
+      'wide_branch3',
+      'wide_branch4',
+      'wide_branch5',
+      'wide_branch6',
+      'wide_branch7',
+      'wide_branch8',
+      'wide_branch9',
+      'wide_branch0',
+    ],
+  },
 
-  return treeItem;
-}
+  wide_branch1: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
 
-function DAGModelToTree(
-  step: string[],
-  breaks: string[],
-  inParallel?: boolean,
-  additional?: string | null,
-): RunStructureTree {
-  if (step.length === 1) {
-    const stepName = step[0];
-    const item = data[step[0]];
+  wide_branch2: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  wide_branch3: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  wide_branch4: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  wide_branch5: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  wide_branch6: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  wide_branch7: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  wide_branch8: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  wide_branch9: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  wide_branch0: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  join: {
+    type: 'join',
+    box_next: false,
+    box_ends: null,
+    next: ['end'],
+  },
+
+  end: {
+    type: 'end',
+    box_next: true,
+    box_ends: null,
+    next: [],
+  },
+};*/
+
+function DAGModelToTree(items: string[], breaks: string[]): DAGStructureTree {
+  if (items.length > 1) {
+    return items.reduce<DAGStructureTree>((arr, item) => [...arr, ...(DAGModelToTree([item], breaks) as any)], []);
+  } else if (items.length === 1) {
+    const item = data[items[0]];
     const newBreaks = item.box_ends ? [...breaks, item.box_ends] : breaks;
 
-    if (breaks.indexOf(stepName) > -1) {
+    if (breaks.indexOf(items[0]) > -1) {
       return [];
     }
 
-    const treeItem = makeItem(item, stepName, newBreaks, inParallel);
-    console.log(step, item.box_next, item.type, item.box_ends, breaks, newBreaks);
     return [
-      treeItem,
-      ...(item.box_next && !inParallel
-        ? [{ node_type: 'parallel' as const, steps: DAGModelToTree(item.next, newBreaks) }]
-        : []),
-      ...(!item.box_next && !inParallel ? DAGModelToTree(item.next, breaks) : []),
-      ...(item.box_ends && !inParallel ? DAGModelToTree([item.box_ends], breaks) : []),
-      ...(additional
-        ? DAGModelToTree(
-            [additional],
-            breaks.filter((str) => str !== additional),
-            false,
-          )
-        : []),
+      {
+        node_type: 'normal',
+        type: item.type === 'foreach' ? 'loop' : 'normal',
+        step_name: items[0],
+        children:
+          item.box_next && items[0] !== 'end'
+            ? [
+                { node_type: 'container', container_type: 'parallel', steps: DAGModelToTree(item.next, newBreaks) },
+                ...(item.box_ends ? DAGModelToTree([item.box_ends], breaks) : []),
+              ]
+            : DAGModelToTree(item.next, newBreaks),
+        original: item,
+      },
     ];
-  } else if (step.length > 1) {
-    return ([] as RunStructureTree).concat(...step.map((str) => DAGModelToTree([str], breaks, true)));
+  } else {
+    return [];
   }
-
-  return [];
 }
 
 export const newModelTree = DAGModelToTree(['start'], []);
@@ -140,9 +347,10 @@ export type Step = {
  */
 
 // Presents steps that is running parallel
-export type ParallelStep = {
-  node_type: 'parallel';
-  steps: RunStructureTree;
+export type ContainerStep = {
+  node_type: 'container';
+  container_type: 'parallel' | 'foreach';
+  steps: DAGStructureTree;
 };
 
 export type StepTree = {
@@ -150,196 +358,18 @@ export type StepTree = {
   // Was thsi step generating multiple tasks or not?
   type: 'normal' | 'loop';
   // Children presents stuff in linear order. Parallel step to be used for paralllel tasks
-  children?: RunStructureTree;
+  children?: DAGStructureTree;
   // Name of step, we probably need some other data here as well
   step_name: string;
   original?: DAGModel;
 };
 
-export type RunStructureTree = Array<StepTree | ParallelStep>;
-
-/**
- * Examples
- */
-
-// Array presents linear order of steps. start -> a -> join -> end
-export const newExample: RunStructureTree = [
-  { node_type: 'normal', step_name: 'start', type: 'normal' },
-  {
-    node_type: 'parallel',
-    steps: [
-      { node_type: 'normal', step_name: 'branch_a', type: 'normal' },
-      {
-        node_type: 'normal',
-        step_name: 'branch_b',
-        type: 'normal',
-        children: [
-          { node_type: 'normal', step_name: 'foreach', type: 'loop' },
-          { node_type: 'normal', step_name: 'join_foreach', type: 'normal' },
-        ],
-      },
-    ],
-  },
-  { node_type: 'normal', step_name: 'join', type: 'normal' },
-  { node_type: 'normal', step_name: 'end', type: 'normal' },
-];
-
-export const treeExampleSlide12: RunStructureTree = [
-  { node_type: 'normal', step_name: 'Start', type: 'normal' },
-  { node_type: 'normal', step_name: 'a', type: 'normal' },
-  { node_type: 'normal', step_name: 'join', type: 'normal' },
-  { node_type: 'normal', step_name: 'end', type: 'normal' },
-];
-
-export const treeExampleSlide13: RunStructureTree = [
-  { node_type: 'normal', step_name: 'start', type: 'normal' },
-  // ParallelStep structure defines here that a and b happens in parallel.
-  // Steps in this array is not
-  {
-    node_type: 'parallel',
-    steps: [
-      { node_type: 'normal', step_name: 'a', type: 'normal' },
-      { node_type: 'normal', step_name: 'b', type: 'normal' },
-    ],
-  },
-  // And after those steps are gone we continue in root level with join
-  { node_type: 'normal', step_name: 'join', type: 'normal' },
-  { node_type: 'normal', step_name: 'end', type: 'normal' },
-];
-
-export const treeExampleSlide14: RunStructureTree = [
-  { node_type: 'normal', step_name: 'start', type: 'normal' },
-  // B is here created by A so it will be defined in children array of A
-  {
-    node_type: 'normal',
-    step_name: 'A',
-    type: 'loop',
-    children: [{ node_type: 'normal', step_name: 'B', type: 'normal' }],
-  },
-  { node_type: 'normal', step_name: 'join', type: 'normal' },
-  { node_type: 'normal', step_name: 'end', type: 'normal' },
-];
-
-export const treeExampleSlide15: RunStructureTree = [
-  { node_type: 'normal', step_name: 'start', type: 'normal' },
-  // Again B and joinB are spawned by A so they will be presented in children array of A
-  // Children array is also linear presentation of child steps of parent. Here we define order (A, parent ->) B -> joinb
-  {
-    node_type: 'normal',
-    step_name: 'A',
-    type: 'loop',
-    children: [
-      { node_type: 'normal', step_name: 'B', type: 'loop' },
-      { node_type: 'normal', step_name: 'joinb', type: 'normal' },
-    ],
-  },
-  // joina defined in root level since it happens after whole A and its children has happened
-  { node_type: 'normal', step_name: 'joina', type: 'normal' },
-  { node_type: 'normal', step_name: 'end', type: 'normal' },
-];
-
-export const treeExampleSlide16: RunStructureTree = [
-  { node_type: 'normal', step_name: 'start', type: 'normal' },
-  // Use steps object to define parallel steps again
-  {
-    node_type: 'parallel',
-    steps: [
-      { node_type: 'normal', step_name: 'a', type: 'normal' },
-      {
-        node_type: 'normal',
-        step_name: 'b',
-        type: 'normal',
-        // Use children again to present steps spawned by B in linear order. parallel steps -> join1 -> c
-        children: [
-          {
-            node_type: 'parallel',
-            steps: [
-              {
-                node_type: 'normal',
-                step_name: 'b1',
-                type: 'normal',
-                children: [
-                  {
-                    node_type: 'parallel',
-                    steps: [
-                      { node_type: 'normal', step_name: 'b11', type: 'normal' },
-                      {
-                        node_type: 'normal',
-                        step_name: 'b12',
-                        type: 'normal',
-                        children: [
-                          {
-                            node_type: 'parallel',
-                            steps: [
-                              {
-                                node_type: 'normal',
-                                step_name: 'b121',
-                                type: 'normal',
-                                children: [
-                                  {
-                                    node_type: 'normal',
-                                    step_name: 'b1211',
-                                    type: 'normal',
-                                    children: [
-                                      {
-                                        node_type: 'parallel',
-                                        steps: [
-                                          { node_type: 'normal', step_name: 'b12111', type: 'normal' },
-                                          { node_type: 'normal', step_name: 'b12112', type: 'normal' },
-                                        ],
-                                      },
-                                    ],
-                                  },
-                                  { node_type: 'normal', step_name: 'b1212', type: 'normal' },
-                                ],
-                              },
-                              { node_type: 'normal', step_name: 'b122', type: 'normal' },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                ],
-              },
-              {
-                node_type: 'normal',
-                step_name: 'b2',
-                type: 'normal',
-                children: [
-                  { node_type: 'normal', step_name: 'b21', type: 'normal' },
-                  { node_type: 'normal', step_name: 'b22', type: 'normal' },
-                ],
-              },
-              {
-                node_type: 'normal',
-                step_name: 'b3',
-                type: 'normal',
-                children: [
-                  {
-                    node_type: 'parallel',
-                    steps: [
-                      { node_type: 'normal', step_name: 'b31', type: 'normal' },
-                      { node_type: 'normal', step_name: 'b32', type: 'normal' },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-          { node_type: 'normal', step_name: 'join1', type: 'normal' },
-          { node_type: 'normal', step_name: 'c', type: 'normal' },
-        ],
-      },
-    ],
-  },
-  { node_type: 'normal', step_name: 'join', type: 'normal' },
-  { node_type: 'normal', step_name: 'end', type: 'normal' },
-];
+export type DAGTreeNode = StepTree | ContainerStep;
+export type DAGStructureTree = DAGTreeNode[];
 
 type Measures = { width: number; height: number };
 
-function getChildrenMeasures(nodes: Array<StepTree | ParallelStep>): Measures {
+function getChildrenMeasures(nodes: DAGStructureTree): Measures {
   let max_width = 0,
     node_height = 0;
 
@@ -355,7 +385,7 @@ function getChildrenMeasures(nodes: Array<StepTree | ParallelStep>): Measures {
   return { width: max_width, height: node_height };
 }
 
-function getParallelMeasures(nodes: Array<StepTree | ParallelStep>): Measures {
+function getParallelMeasures(nodes: DAGStructureTree): Measures {
   let node_width = 0,
     max_height = 0;
 
@@ -374,7 +404,7 @@ function getParallelMeasures(nodes: Array<StepTree | ParallelStep>): Measures {
 /**
  * Find measures for given step.
  */
-export function getStepMeasures(node: StepTree | ParallelStep): Measures {
+export function getStepMeasures(node: DAGTreeNode): Measures {
   let node_width = 0,
     node_height = 0;
 
