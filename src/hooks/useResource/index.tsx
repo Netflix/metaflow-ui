@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import ResourceEvents, { Event, EventType, Unsubscribe } from '../../ws';
 import { METAFLOW_SERVICE } from '../../constants';
+import { Event, EventType } from '../../ws';
+import useWebsocket from '../useWebsocket';
 
 export interface HookConfig<T, U> {
   // URL for fetch request
@@ -9,7 +10,7 @@ export interface HookConfig<T, U> {
   queryParams?: Record<string, string>;
   initialData: T | null;
   // URL for websockets / flag to use url instead
-  subscribeToEvents?: boolean | string;
+  subscribeToEvents?: boolean;
   // Function for websocket update messages. Used to define if existing value should be updated
   updatePredicate?: (_: U, _l: U) => boolean;
   // Flag to fetch all available data for given query. Will fetch every paginated page until fetched last page.
@@ -142,47 +143,38 @@ export default function useResource<T, U>({
     };
   }, [target, cache]);
 
-  useEffect(() => {
-    // Subscribe to Websocket events (optional)
-    // `subscribeToEvents` = true    = Subscribe to `url`
-    // `subscribeToEvents` = string  = Subscribe to `event`
-    let unsubWebsocket: Unsubscribe | null = null;
-    if (subscribeToEvents) {
-      const eventResource = typeof subscribeToEvents === 'string' ? subscribeToEvents : url;
-      unsubWebsocket = ResourceEvents.subscribe(eventResource, (event: Event<any>) => {
-        // TODO: Create cache item if it doesn't exist (How though? We have only partial data available.)
-        const currentCache = cache.get(target);
-        // If we have onUpdate function, lets update cache wihtout triggering update loop...
-        const cacheSet = onUpdate ? cache.setInBackground : cache.set;
-        // ..and update new data to component manually. This way we only send updated value to component instead of whole batch
-        if (onUpdate) {
-          onUpdate(Array.isArray(currentCache.data) ? [event.data] : event.data);
-        }
+  useWebsocket<U>({
+    url: url,
+    queryParams: queryParams,
+    enabled: subscribeToEvents,
+    onUpdate: (event: Event<any>) => {
+      // TODO: Create cache item if it doesn't exist (How though? We have only partial data available.)
+      const currentCache = cache.get(target);
+      // If we have onUpdate function, lets update cache wihtout triggering update loop...
+      const cacheSet = onUpdate ? cache.setInBackground : cache.set;
+      // ..and update new data to component manually. This way we only send updated value to component instead of whole batch
+      if (onUpdate) {
+        onUpdate(Array.isArray(currentCache.data) ? [event.data] : event.data);
+      }
 
-        if (event.type === EventType.INSERT) {
-          cacheSet(target, {
-            ...currentCache,
-            data: Array.isArray(currentCache.data)
-              ? [event.data, ...currentCache.data]
-              : (currentCache.data = event.data),
-          });
-        } else if (event.type === EventType.UPDATE) {
-          // On update we need to use updatePredicate to update items in cache.
-          cacheSet(target, {
-            ...currentCache,
-            data: Array.isArray(currentCache.data)
-              ? currentCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
-              : (currentCache.data = event.data),
-          });
-        }
-      });
-    }
-
-    return () => {
-      // Unsubscribe from Websocket events
-      unsubWebsocket !== null && unsubWebsocket();
-    };
-  }, []); // eslint-disable-line
+      if (event.type === EventType.INSERT) {
+        cacheSet(target, {
+          ...currentCache,
+          data: Array.isArray(currentCache.data)
+            ? [event.data, ...currentCache.data]
+            : (currentCache.data = event.data),
+        });
+      } else if (event.type === EventType.UPDATE) {
+        // On update we need to use updatePredicate to update items in cache.
+        cacheSet(target, {
+          ...currentCache,
+          data: Array.isArray(currentCache.data)
+            ? currentCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
+            : (currentCache.data = event.data),
+        });
+      }
+    },
+  });
 
   function fetchData(targetUrl: string, signal: AbortSignal, cb: () => void, isSilent?: boolean) {
     fetch(targetUrl, { signal })

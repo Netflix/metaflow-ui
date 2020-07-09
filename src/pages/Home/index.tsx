@@ -27,7 +27,7 @@ interface DefaultQuery {
 
 export const defaultQuery = new URLSearchParams({
   _group: 'flow_id',
-  _order: '+run_number',
+  _order: '-run_number',
   _limit: '10',
   status: 'running,completed,failed',
 });
@@ -79,7 +79,8 @@ const Home: React.FC = () => {
   const { data: runs, error } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
-    subscribeToEvents: '/runs',
+    subscribeToEvents: true,
+    updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
     queryParams: getAllDefaultedQueryParams(),
   });
 

@@ -69,7 +69,8 @@ const ResultGroup: React.FC<Props> = ({
   const { error, getResult, cache, target } = useResource<IRun[], IRun>({
     url: resourceUrl,
     initialData,
-    subscribeToEvents: resourceUrl,
+    subscribeToEvents: true,
+    updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
     queryParams: localSearchParams,
     pause: page === 1,
   });
