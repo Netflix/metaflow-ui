@@ -27,7 +27,7 @@ interface DefaultQuery {
 
 export const defaultQuery = new URLSearchParams({
   _group: 'flow_id',
-  _order: '+run_number',
+  _order: '-run_number',
   _limit: '10',
   status: 'running,completed,failed',
 });
