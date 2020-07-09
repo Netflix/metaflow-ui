@@ -89,9 +89,11 @@ const Home: React.FC = () => {
     }
   }, [query, resetAllFilters]);
 
-  const runsGroupedByProperty = fromPairs<IRun[]>(
-    pluck<IRun, string>(groupField, runs).map((val: string) => [val, runs.filter((r) => r[groupField] === val)]),
-  );
+  const runsGroupedByProperty = runs
+    ? fromPairs<IRun[]>(
+        pluck(groupField, runs).map((val) => [val as string, runs.filter((r) => r[groupField] === val)]),
+      )
+    : {};
 
   const StatusCheckboxField: React.FC<{ value: string; label: string }> = ({ value, label }) => {
     const checked = new Set(paramList(getQueryParam('status'))).has(value);

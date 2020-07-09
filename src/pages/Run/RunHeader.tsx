@@ -30,7 +30,7 @@ function formatDuration(time: number) {
   return str;
 }
 
-const RunHeader: React.FC<{ run?: Run }> = ({ run }) => {
+const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
 
