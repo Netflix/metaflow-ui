@@ -51,10 +51,10 @@ interface IconProps {
   rotate?: number;
 }
 
-const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate }) => {
+const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate, ...rest }) => {
   const IconComponent = icons[name];
   return (
-    <Wrapper size={size} rotation={rotate}>
+    <Wrapper {...rest} {...{ size, rotate }}>
       <IconComponent />
     </Wrapper>
   );
@@ -62,7 +62,7 @@ const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate }) => {
 
 export default Icon;
 
-const Wrapper = styled.i<{ size: keyof SupportedSizes; rotation?: number }>`
+const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number }>`
   vertical-align: middle;
   display: inline-block;
   margin: 0;
@@ -71,6 +71,24 @@ const Wrapper = styled.i<{ size: keyof SupportedSizes; rotation?: number }>`
   svg {
     height: ${(p) => sizeTable[p.size]}rem;
     width: auto;
-    transform: ${(p) => (p.rotation ? `rotate(${p.rotation}deg)` : 'none')};
+    transform: ${(p) => (p.rotate ? `rotate(${p.rotate}deg)` : 'none')};
+  }
+`;
+
+type SortIconProps = Omit<IconProps, 'name'> & { direction: 'up' | 'down'; active?: boolean };
+
+export const SortIcon: React.FC<SortIconProps> = ({ direction, ...rest }) => (
+  <StyledSortIcon direction={direction} name="sort" {...rest} />
+);
+
+const StyledSortIcon = styled(Icon)<SortIconProps>`
+  color: ${(p) => p.theme.color.icon.light};
+
+  #up {
+    color: ${(p) => (p.active && p.direction === 'up' ? p.theme.color.icon.dark : 'currentColor')};
+  }
+
+  #down {
+    color: ${(p) => (p.active && p.direction === 'down' ? p.theme.color.icon.dark : 'currentColor')};
   }
 `;

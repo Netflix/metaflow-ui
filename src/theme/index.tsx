@@ -41,6 +41,12 @@ const borderColor = {
   normal: '#d7d7d7',
 };
 
+const iconColor = {
+  light: '#d9d9d9',
+  mid: textColor.mid,
+  dark: textColor.dark,
+};
+
 const defaultTheme: DefaultTheme = {
   layout: {
     appbarHeight: 7,
@@ -56,6 +62,7 @@ const defaultTheme: DefaultTheme = {
     text: textColor,
     bg: bgColor,
     border: borderColor,
+    icon: iconColor,
   },
 
   notification: {

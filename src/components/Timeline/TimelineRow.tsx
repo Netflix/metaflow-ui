@@ -123,6 +123,8 @@ const StickyStyledRow = styled(StyledRow)`
 
 const RowLabel = styled.div`
   flex: 0 0 150px;
+  max-width: 150px;
+  overflow: hidden;
   text-align: right;
   padding: 10px 10px 0;
   font-size: 14px;

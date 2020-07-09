@@ -1,7 +1,8 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { lighten } from 'polished';
-import Icon from '../Icon';
+import { SortIcon } from '../Icon';
+import { parseOrderParam } from '../../utils/url';
 
 const cell = css`
   padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.md}rem;
@@ -40,14 +41,6 @@ export const TH = styled.th<{ active?: boolean }>`
        {
         color: ${(p) => p.theme.color.text.dark};
         font-weight: 500;
-
-        &.up i #up {
-          color: ${(p) => p.theme.color.text.dark};
-        }
-
-        &.down i #down {
-          color: ${(p) => p.theme.color.text.dark};
-        }
       }
     `}
 `;
@@ -77,15 +70,14 @@ interface HeaderColumnProps {
   onSort: (ord: string) => void;
 }
 
-export const HeaderColumn: React.FC<HeaderColumnProps> = ({ label, queryKey, currentOrder: co, onSort, ...rest }) => {
-  const [currentKey, currentDirection] = [co.substr(1), co.substr(0, 1)];
-  const active: boolean = queryKey === currentKey;
-  const dirClass = !active ? '' : currentDirection === '+' ? 'down' : 'up';
+export const HeaderColumn: React.FC<HeaderColumnProps> = ({ label, queryKey, currentOrder, onSort, ...rest }) => {
+  const [direction, orderParam] = parseOrderParam(currentOrder);
+  const active: boolean = queryKey === orderParam;
 
   return (
-    <TH active={active} className={dirClass} onClick={() => onSort(queryKey)} {...rest}>
+    <TH active={active} onClick={() => onSort(queryKey)} {...rest}>
       {label}
-      <Icon name="sort" />
+      <SortIcon active={active} direction={direction} />
     </TH>
   );
 };
