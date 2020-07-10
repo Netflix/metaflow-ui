@@ -41,10 +41,9 @@ function getChildrenMeasures(nodes: DAGStructureTree): Measures {
 
       max_width = width > max_width ? width : max_width;
       node_height += height;
+      node_height += MARGIN.y;
     });
   }
-
-  node_height += MARGIN.y;
 
   return { width: max_width, height: node_height };
 }
@@ -110,38 +109,51 @@ export type DAGModelItem = {
 
 export type DAGModel = Record<string, DAGModelItem>;
 
-function DAGModelToTree(data: DAGModel, items: string[], breaks: string[]): DAGStructureTree {
+function DAGModelToTree(data: DAGModel, items: string[], breaks: string[], inContainer?: boolean): DAGStructureTree {
   if (items.length > 1) {
     return items.reduce<DAGStructureTree>(
-      (arr, item) => [...arr, ...(DAGModelToTree(data, [item], breaks) as any)],
+      (arr, item) => [...arr, ...(DAGModelToTree(data, [item], breaks, inContainer) as any)],
       [],
     );
   } else if (items.length === 1) {
     const item = data[items[0]];
-    const newBreaks = item.box_ends ? [...breaks, item.box_ends] : breaks;
 
+    const newBreaks = item.box_ends ? [...breaks, item.box_ends] : breaks;
     if (breaks.indexOf(items[0]) > -1) {
       return [];
     }
-
+    console.log(items[0], item.type, inContainer);
     return [
       {
         node_type: 'normal',
         type: item.type === 'foreach' ? 'loop' : 'normal',
         step_name: items[0],
         children:
-          item.box_next && items[0] !== 'end'
+          inContainer && item.box_next && items[0] !== 'end'
             ? [
                 {
                   node_type: 'container',
-                  container_type: 'parallel',
-                  steps: DAGModelToTree(data, item.next, newBreaks),
+                  container_type: item.type === 'foreach' ? ('foreach' as const) : ('parallel' as const),
+                  steps: DAGModelToTree(data, item.next, newBreaks, true),
                 },
-                ...(item.box_ends ? DAGModelToTree(data, [item.box_ends], breaks) : []),
+                ...(inContainer && item.box_ends ? DAGModelToTree(data, [item.box_ends], breaks) : []),
               ]
-            : DAGModelToTree(data, item.next, newBreaks),
+            : inContainer && !item.box_next
+            ? DAGModelToTree(data, item.next, newBreaks)
+            : [],
         original: item,
       },
+      ...(!inContainer && item.box_ends
+        ? [
+            {
+              node_type: 'container' as const,
+              container_type: item.type === 'foreach' ? ('foreach' as const) : ('parallel' as const),
+              steps: DAGModelToTree(data, item.next, newBreaks, true),
+            },
+            ...DAGModelToTree(data, [item.box_ends], breaks),
+          ]
+        : []),
+      ...(!inContainer && !item.box_ends ? DAGModelToTree(data, item.next, newBreaks) : []),
     ];
   } else {
     return [];
@@ -153,7 +165,10 @@ export function convertDAGModelToTree(data: DAGModel): DAGStructureTree {
 }
 
 export function convertDAGModelToIChart(data: DAGModel): IChart {
-  return convertTreeToIChart(convertDAGModelToTree(data));
+  const a = Date.now();
+  const chartData = convertTreeToIChart(convertDAGModelToTree(data));
+  console.log(Date.now() - a);
+  return chartData;
 }
 
 //
@@ -219,9 +234,7 @@ export function convertTreeToIChart(tree: DAGStructureTree): IChart {
 
       const measurements = getStepMeasures(node);
 
-      // Figure out position X for this node BOX
-
-      const getHorizontalPosition = (_node: DAGTreeNode) => {
+      const getHorizontalPosition = (node: DAGTreeNode) => {
         if (!vertical || (node.node_type === 'normal' && node.children && node.children.length > 0)) {
           return location_x + measurements.width / 2 - BOX_SIZE.width / 2;
         } else if (vertical) {
@@ -238,7 +251,7 @@ export function convertTreeToIChart(tree: DAGStructureTree): IChart {
         y: location_y,
       };
 
-      console.log(nodePosition);
+      //console.log(nodePosition);
 
       const size = {
         width: measurements.width + (node.node_type === 'container' ? MARGIN.x : 0),
@@ -287,7 +300,7 @@ export function convertTreeToIChart(tree: DAGStructureTree): IChart {
           false,
           nodeId,
           {
-            x: location_x + 10,
+            x: location_x + parentSize.width / 2 - measurements.width / 2 + MARGIN.x / 2,
             y: location_y + MARGIN.x / 2,
           },
           measurements,
@@ -325,7 +338,14 @@ export function convertTreeToIChart(tree: DAGStructureTree): IChart {
     return nodes;
   };
 
-  const nodelist = makeBoxes(tree, true, 'node', { x: 0, y: 0 }, { width: 800, height: 600 });
+  const measurementsForFullTree = getStepMeasures({
+    node_type: 'normal',
+    type: 'normal',
+    step_name: 'any',
+    children: tree,
+  });
+
+  const nodelist = makeBoxes(tree, true, 'node', { x: 0, y: 0 }, measurementsForFullTree);
 
   return { ...defaultChartConfig, nodes: nodelist, links };
 }

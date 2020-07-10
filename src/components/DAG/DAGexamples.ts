@@ -154,6 +154,13 @@ export const dagexample2: DAGModel = {
     type: 'linear',
     box_next: false,
     box_ends: null,
+    next: ['wide_branch31'],
+  },
+
+  wide_branch31: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
     next: ['join'],
   },
 
@@ -267,6 +274,72 @@ export const dagexample3: DAGModel = {
   end: {
     type: 'end',
     box_next: true,
+    box_ends: null,
+    next: [],
+  },
+};
+
+export const dagHugeflow: DAGModel = {
+  start: {
+    type: 'split-and',
+    box_next: true,
+    box_ends: 'join',
+    next: ['regular_step', 'prepare_foreach'],
+  },
+
+  regular_step: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['prepare_another_foreach'],
+  },
+  prepare_another_foreach: {
+    type: 'foreach',
+    box_next: true,
+    box_ends: 'join_another_foreach',
+    next: ['another_foreach'],
+  },
+  another_foreach: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join_another_foreach'],
+  },
+  join_another_foreach: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+
+  prepare_foreach: {
+    type: 'foreach',
+    box_next: true,
+    box_ends: 'join_foreach',
+    next: ['process_foreach'],
+  },
+  process_foreach: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join_foreach'],
+  },
+  join_foreach: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['join'],
+  },
+  join: {
+    type: 'linear',
+    box_next: false,
+    box_ends: null,
+    next: ['end'],
+  },
+
+  end: {
+    type: 'end',
+    box_next: false,
     box_ends: null,
     next: [],
   },
