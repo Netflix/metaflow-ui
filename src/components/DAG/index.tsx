@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-/*
+
 import {
-  
   FlowChartWithState,
   INodeDefaultProps,
   INodeInnerDefaultProps,
@@ -10,10 +9,11 @@ import {
   INode,
   IChart,
 } from '@mrblenny/react-flow-chart';
-*/
+
 import {
   DAGModel,
-  //convertDAGModelToIChart /*defaultChartConfig*/,
+  convertDAGModelToIChart,
+  defaultChartConfig,
   convertDAGModelToTree,
   DAGStructureTree,
   DAGTreeNode,
@@ -22,11 +22,12 @@ import {
 import { Step } from '../../types';
 import { dagexample1, dagexample2, dagexample3, dagHugeflow } from './DAGexamples';
 import styled from 'styled-components';
+import Button from '../Button';
 
 //
 // Node
 //
-/*
+
 const Box = styled.div<{
   node: INode;
 }>`
@@ -99,7 +100,7 @@ export const CanvasInnerStyle = styled.div<ICanvasInnerDefaultProps>`
 
 const CanvasInnerCustom = React.forwardRef((props: ICanvasInnerDefaultProps, _) => {
   return <CanvasInnerStyle {...(props as any)} />;
-});*/
+});
 
 //
 // DAG
@@ -111,28 +112,37 @@ interface IDAG {
 
 const DAG: React.FC<IDAG> = () => {
   const [dagTree, setDagTree] = useState<DAGStructureTree>([]);
+  const [dagChart, setChart] = useState<IChart | null>(null);
   const [dataSet, setDataSet] = useState<DAGModel | null>(null);
+  const [mode, setmode] = useState<'fancy' | 'simple'>('simple');
 
   useEffect(() => {
-    setDagTree([]);
     if (dataSet) {
-      setTimeout(() => {
+      if (mode === 'simple') {
         setDagTree(convertDAGModelToTree(dataSet));
-      }, 1);
+      } else {
+        setChart(null);
+        setTimeout(() => {
+          setChart(convertDAGModelToIChart(dataSet));
+        }, 1);
+      }
     }
-  }, [dataSet]);
-  console.log(dagTree);
+  }, [dataSet, mode]);
+
   return (
     <div>
-      <div style={{ display: 'flex' }}>
-        <button onClick={() => setDataSet(dagexample1)}>example1</button>
-        <button onClick={() => setDataSet(dagexample2)}>example2</button>
-        <button onClick={() => setDataSet(dagexample3)}>example3</button>
-        <button onClick={() => setDataSet(dagHugeflow)}>hugeflow</button>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '10px 0' }}>
+        <Button onClick={() => setDataSet(dagexample1)}>example1</Button>
+        <Button onClick={() => setDataSet(dagexample2)}>example2</Button>
+        <Button onClick={() => setDataSet(dagexample3)}>example3</Button>
+        <Button onClick={() => setDataSet(dagHugeflow)}>hugeflow</Button>
+        <label>Rendering mode</label>
+        <Button onClick={() => setmode('fancy')}>fancy{mode === 'fancy' ? ' ✓' : ''}</Button>
+        <Button onClick={() => setmode('simple')}>simple{mode === 'simple' ? ' ✓' : ''}</Button>
       </div>
-      {/*dagTree && (
+      {dagChart && mode === 'fancy' && (
         <FlowChartWithState
-          initialValue={dagTree}
+          initialValue={dagChart}
           config={defaultChartConfig.config}
           Components={{
             Node: NodeCustom,
@@ -141,9 +151,9 @@ const DAG: React.FC<IDAG> = () => {
             CanvasOuter: CanvasOuterCustom,
           }}
         />
-        )*/}
+      )}
 
-      {dagTree && (
+      {dagTree && mode === 'simple' && (
         <DAGContainer>
           <div style={{ display: 'flex' }}>
             <NormalItemContainer>

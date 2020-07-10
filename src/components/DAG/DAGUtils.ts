@@ -122,7 +122,7 @@ function DAGModelToTree(data: DAGModel, items: string[], breaks: string[], inCon
     if (breaks.indexOf(items[0]) > -1) {
       return [];
     }
-    console.log(items[0], item.type, inContainer);
+
     return [
       {
         node_type: 'normal',
@@ -165,10 +165,7 @@ export function convertDAGModelToTree(data: DAGModel): DAGStructureTree {
 }
 
 export function convertDAGModelToIChart(data: DAGModel): IChart {
-  const a = Date.now();
-  const chartData = convertTreeToIChart(convertDAGModelToTree(data));
-  console.log(Date.now() - a);
-  return chartData;
+  return convertTreeToIChart(convertDAGModelToTree(data));
 }
 
 //
@@ -250,8 +247,6 @@ export function convertTreeToIChart(tree: DAGStructureTree): IChart {
         x: getHorizontalPosition(node),
         y: location_y,
       };
-
-      //console.log(nodePosition);
 
       const size = {
         width: measurements.width + (node.node_type === 'container' ? MARGIN.x : 0),
