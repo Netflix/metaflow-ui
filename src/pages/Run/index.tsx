@@ -40,7 +40,7 @@ const RunPage: React.FC = () => {
             component: (
               <Layout>
                 <Content>
-                  <DAG steps={[]} />
+                  <DAG run={run} />
                 </Content>
               </Layout>
             ),
