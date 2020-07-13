@@ -17,6 +17,7 @@ import {
   convertDAGModelToTree,
   DAGStructureTree,
   DAGTreeNode,
+  StepTree,
 } from './DAGUtils';
 import { Run, Step } from '../../types';
 import { dagexample1, dagexample2, dagexample3, dagHugeflow } from './DAGexamples';
@@ -193,6 +194,17 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   );
 };
 
+function stateOfStep(item: StepTree, stepIds: string[]) {
+  if (stepIds.indexOf(item.step_name) > -1) {
+    if (item.original && (stepIds.indexOf(item.original.next[0]) > -1 || item.original?.next.length === 0)) {
+      return 'ok';
+    }
+    return 'running';
+  }
+
+  return 'warning';
+}
+
 const RenderStep: React.FC<{ item: DAGTreeNode; isLast?: boolean; inContainer?: boolean; stepIds: string[] }> = ({
   item,
   isLast,
@@ -204,9 +216,11 @@ const RenderStep: React.FC<{ item: DAGTreeNode; isLast?: boolean; inContainer?: 
       ? (item.children?.length || 0) > 0
       : !isLast || (isLast && (item.children?.length || 0) > 0);
 
+    const stepState = stateOfStep(item, stepIds);
+
     return (
       <NormalItemContainer className="itemcontainer">
-        <NormalItem state={stepIds.indexOf(item.step_name) > -1 ? 'ok' : 'warning'}>
+        <NormalItem state={stepState}>
           {item.step_name}
           {shouldLine && (
             <LineContainer>
@@ -258,8 +272,8 @@ const NormalItemContainer = styled.div`
   margin: 0 auto;
 `;
 
-const NormalItem = styled.div<{ state: 'ok' | 'warning' }>`
-  border: 1px solid ${(props) => (props.state === 'ok' ? '#4bd14b' : '#ff7e31')};
+const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
+  border: 1px solid ${(props) => (props.state === 'ok' ? '#4bd14b' : props.state === 'running' ? '#ff7e31' : 'gray')};
   max-width: 200px;
   padding: 10px;
   position: relative;
