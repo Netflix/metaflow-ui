@@ -14,7 +14,7 @@ const RunPage: React.FC = () => {
 
   const { data: run } = useResource<IRun, IRun>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}`,
-    subscribeToEvents: `/flows/${params.flowId}/runs/${params.runNumber}`,
+    subscribeToEvents: true,
     initialData: null,
   });
 
