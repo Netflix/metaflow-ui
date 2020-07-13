@@ -5,7 +5,7 @@ import { Run as IRun } from '../../types';
 import Tabs from '../../components/Tabs';
 import { Content, FixedContent, Layout } from '../../components/Structure';
 import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
-import DAG from '../../experiment/DAG';
+import DAG from '../../components/DAG';
 import RunHeader from './RunHeader';
 import { getPath } from '../../utils/routing';
 
@@ -40,7 +40,7 @@ const RunPage: React.FC = () => {
             component: (
               <Layout>
                 <Content>
-                  <DAG steps={[]} />
+                  <DAG run={run} />
                 </Content>
               </Layout>
             ),
