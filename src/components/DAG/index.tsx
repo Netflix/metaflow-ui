@@ -26,7 +26,7 @@ const DAGContainer: React.FC<IDAG> = ({ run }) => {
 const DAG: React.FC<{ run: Run }> = ({ run }) => {
   const { data: stepData } = useResource<Step[], Step>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
-    subscribeToEvents: `/flows/${run.flow_id}/runs/${run.run_number}/steps`,
+    subscribeToEvents: true,
     initialData: [],
     queryParams: {
       _order: '+ts_epoch',
