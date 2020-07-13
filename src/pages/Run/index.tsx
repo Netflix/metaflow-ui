@@ -6,11 +6,18 @@ import Tabs from '../../components/Tabs';
 import { Content, FixedContent, Layout } from '../../components/Structure';
 import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
 import DAG from '../../experiment/DAG';
+import TaskView from '../Task';
 import RunHeader from './RunHeader';
 import { getPath } from '../../utils/routing';
 
 const RunPage: React.FC = () => {
-  const { params } = useRouteMatch<{ flowId: string; runNumber: string; viewType: string }>();
+  const { params } = useRouteMatch<{
+    flowId: string;
+    runNumber: string;
+    viewType?: string;
+    stepName?: string;
+    taskId?: string;
+  }>();
 
   const { data: run } = useResource<IRun, IRun>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}`,
@@ -23,9 +30,11 @@ const RunPage: React.FC = () => {
   useEffect(() => {
     if (params.viewType) {
       setTab(params.viewType === 'dag' ? 'dag' : 'timeline');
+    } else if (params.stepName && params.taskId) {
+      setTab('task');
     }
-  }, [params.viewType]);
-
+  }, [params.viewType, params.stepName, params.taskId]);
+  console.log(tab, params);
   return (
     <FixedContent>
       <RunHeader run={run} />
@@ -51,6 +60,16 @@ const RunPage: React.FC = () => {
             linkTo: getPath.timeline(params.flowId, params.runNumber),
             component: <TimelineContainer run={run} />,
           },
+          ...(params.stepName && params.taskId
+            ? [
+                {
+                  key: 'task',
+                  label: 'Task:' + params.taskId,
+                  linkTo: getPath.task(params.flowId, params.runNumber, params.stepName, params.taskId),
+                  component: <TaskView />,
+                },
+              ]
+            : []),
         ]}
       />
     </FixedContent>
