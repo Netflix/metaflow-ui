@@ -19,11 +19,12 @@ export default function useWebsocket<T>({
 }: HookConfig<T>): void {
   const uniqueId = uuid || generateIdentifier();
   const resource = new URL(url, document.baseURI).pathname;
+  const qs = new URLSearchParams(queryParams).toString();
 
   useEffect(() => {
     const unsubWebsocket = enabled && ResourceEvents.subscribe(uniqueId, resource, queryParams, onUpdate);
     return () => {
       unsubWebsocket && unsubWebsocket();
     };
-  }, [url, queryParams]); // eslint-disable-line
+  }, [url, qs]); // eslint-disable-line
 }
