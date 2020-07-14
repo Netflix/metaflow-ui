@@ -3,101 +3,145 @@ import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
+import { Run as IRun, Task as ITask } from '../../types';
+import useResource from '../../hooks/useResource';
+import { formatDuration } from '../../utils/format';
+import { getISOString } from '../../utils/date';
+import StatusField from '../../components/Status';
 
-const Task: React.FC = () => {
+//
+// View container
+//
+
+type TaskViewContainer = { run: IRun | null; stepName?: string; taskId?: string };
+
+const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId }) => {
+  if (!run?.run_number || !stepName || !taskId) {
+    return <>No run data</>;
+  }
+
+  return <Task run={run} stepName={stepName} taskId={taskId} />;
+};
+
+//
+// Task view
+//
+
+type TaskViewProps = { run: IRun; stepName: string; taskId: string };
+
+const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
   const { t } = useTranslation();
+  const { data: task } = useResource<ITask, ITask>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
+    subscribeToEvents: true,
+    initialData: null,
+  });
+
   return (
     <TaskContainer>
-      <AnchoredView
-        sections={[
-          {
-            key: 'taskinfo',
-            label: t('task.task-info'),
-            component: (
-              <InformationRow spaceless>
-                <PropertyTable
+      {!task && 'loading'}
+      {task && (
+        <AnchoredView
+          sections={[
+            {
+              key: 'taskinfo',
+              label: t('task.task-info'),
+              component: (
+                <InformationRow spaceless>
+                  <PropertyTable
+                    items={[
+                      { label: t('fields.task-id') + ':', content: task.task_id },
+                      { label: t('fields.status') + ':', content: <StatusField status={'completed'} /> },
+                      { label: t('fields.started-at') + ':', content: getISOString(new Date(task.ts_epoch)) },
+                      {
+                        label: t('fields.finished-at') + ':',
+                        content: task.finished_at ? getISOString(new Date(task.finished_at)) : '',
+                      },
+                      {
+                        label: t('fields.duration') + ':',
+                        content: task.duration ? formatDuration(task.duration) : '',
+                      },
+                    ]}
+                  />
+                </InformationRow>
+              ),
+            },
+            {
+              key: 'links',
+              label: t('task.links'),
+              component: (
+                <KeyValueList
                   items={[
-                    { label: t('fields.task-id') + ':', content: '115' },
-                    { label: t('fields.status') + ':', content: 'Completed' },
-                    { label: t('fields.started-at') + ':', content: '115' },
-                    { label: t('fields.finished-at') + ':', content: '115' },
-                    { label: t('fields.duration') + ':', content: '13m 45s' },
+                    { label: 'Weather report', content: <a href="https://www.google.com/search?q=weather">Test</a> },
                   ]}
                 />
-              </InformationRow>
-            ),
-          },
-          {
-            key: 'links',
-            label: t('task.links'),
-            component: (
-              <KeyValueList
-                items={[
-                  { label: 'Weather report', content: <a href="https://www.google.com/search?q=weather">Test</a> },
-                ]}
-              />
-            ),
-          },
-          {
-            key: 'stdout',
-            label: t('task.std-out'),
-            component: (
-              <StyledCodeBlock>
-                {`metadata_service_ui_backend | [BUILTIN] '' VALUES: ''
+              ),
+            },
+            {
+              key: 'stdout',
+              label: t('task.std-out'),
+              component: (
+                <StyledCodeBlock>
+                  {`metadata_service_ui_backend | [BUILTIN] '' VALUES: ''
 metadata_service_ui_backend | [CUSTOM] '' VALUES: ''
 metadata_service_ui_backend | Results: DBResponse(response_code=200, body={'flow_id': 'HugeFlow', 'run_number': 19, 'user_name': 'SanteriCM', 'status': 'completed', 'ts_epoch': 1594632036342, 'finished_at': 1594632067962, 'duration': 31620, 'tags': [], 'system_tags': ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-13', 'metaflow_version:2.0.5']}) DBPagination(limit=10, offset=0, count=1, count_total=1, page=1, pages_total=1)
 metadata_service_ui_backend | Unsubscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7
 metadata_service_ui_backend | Subscriptions: []
 metadata_service_ui_backend | Subscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7 /flows/HugeFlow/runs/19`}
-              </StyledCodeBlock>
-            ),
-          },
-          {
-            key: 'stderr',
-            label: t('task.std-err'),
-            component: (
-              <StyledCodeBlock>
-                {`metadata_service_ui_backend | [BUILTIN] '' VALUES: ''
+                </StyledCodeBlock>
+              ),
+            },
+            {
+              key: 'stderr',
+              label: t('task.std-err'),
+              component: (
+                <StyledCodeBlock>
+                  {`metadata_service_ui_backend | [BUILTIN] '' VALUES: ''
 metadata_service_ui_backend | [CUSTOM] '' VALUES: ''
 metadata_service_ui_backend | Results: DBResponse(response_code=200, body={'flow_id': 'HugeFlow', 'run_number': 19, 'user_name': 'SanteriCM', 'status': 'completed', 'ts_epoch': 1594632036342, 'finished_at': 1594632067962, 'duration': 31620, 'tags': [], 'system_tags': ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-13', 'metaflow_version:2.0.5']}) DBPagination(limit=10, offset=0, count=1, count_total=1, page=1, pages_total=1)
 metadata_service_ui_backend | Unsubscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7
 metadata_service_ui_backend | Subscriptions: []
 metadata_service_ui_backend | Subscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7 /flows/HugeFlow/runs/19`}
-              </StyledCodeBlock>
-            ),
-          },
-          {
-            key: 'artifacts',
-            label: t('task.artifacts'),
-            component: (
-              <InformationRow spaceless>
-                <PropertyTable
-                  items={[
-                    { label: t('fields.artifact-name') + ':', content: '_foreach_stack' },
-                    { label: t('fields.location') + ':', content: 'https://something' },
-                    { label: t('fields.datastore-type') + ':', content: 'Remote' },
-                    { label: t('fields.type') + ':', content: 'metaflow.artifact' },
-                    { label: t('fields.content-type') + ':', content: 'gzip+pickle-v2' },
-                  ]}
-                />
-                <PropertyTable
-                  noHeader
-                  items={[
-                    { label: t('fields.artifact-name') + ':', content: '_foreach_stack' },
-                    { label: t('fields.location') + ':', content: 'https://something' },
-                    { label: t('fields.datastore-type') + ':', content: 'Remote' },
-                    { label: t('fields.type') + ':', content: 'metaflow.artifact' },
-                    { label: t('fields.content-type') + ':', content: 'gzip+pickle-v2' },
-                  ]}
-                />
-              </InformationRow>
-            ),
-          },
-        ]}
-      />
+                </StyledCodeBlock>
+              ),
+            },
+            {
+              key: 'artifacts',
+              label: t('task.artifacts'),
+              component: (
+                <InformationRow spaceless>
+                  <PropertyTable
+                    items={[
+                      { label: t('fields.artifact-name') + ':', content: '_foreach_stack' },
+                      { label: t('fields.location') + ':', content: 'https://something' },
+                      { label: t('fields.datastore-type') + ':', content: 'Remote' },
+                      { label: t('fields.type') + ':', content: 'metaflow.artifact' },
+                      { label: t('fields.content-type') + ':', content: 'gzip+pickle-v2' },
+                    ]}
+                  />
+                  <PropertyTable
+                    noHeader
+                    items={[
+                      { label: t('fields.artifact-name') + ':', content: '_foreach_stack' },
+                      { label: t('fields.location') + ':', content: 'https://something' },
+                      { label: t('fields.datastore-type') + ':', content: 'Remote' },
+                      { label: t('fields.type') + ':', content: 'metaflow.artifact' },
+                      { label: t('fields.content-type') + ':', content: 'gzip+pickle-v2' },
+                    ]}
+                  />
+                </InformationRow>
+              ),
+            },
+          ]}
+        />
+      )}
     </TaskContainer>
   );
 };
+
+//
+// Anchored View
+//
 
 type AnchoredViewSection = {
   key: string;
@@ -164,6 +208,7 @@ const StyledCodeBlock = styled.div`
   padding: 1rem;
   background: ${(props) => props.theme.color.bg.light};
   border-bottom: 1px solid ${(props) => props.theme.color.border.light};
+  font-family: monospace;
   border-radius: 4px;
   font-size: 14px;
   white-space: pre-wrap;
@@ -309,4 +354,4 @@ const AnchorMenuItem = styled.div<{ active?: boolean }>`
   transition: 0.15s border;
 `;
 
-export default Task;
+export default TaskViewContainer;

@@ -52,7 +52,8 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, sticky, 
           background:
             item.type === 'step'
               ? '#fff'
-              : item.data.ts_epoch > graph.timelineEnd || item.data.finished_at < graph.timelineStart
+              : item.data.ts_epoch > graph.timelineEnd ||
+                (item.data.finished_at && item.data.finished_at < graph.timelineStart)
               ? '#f8f8f8'
               : '#fff',
         }}

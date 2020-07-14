@@ -7,27 +7,14 @@ import styled from 'styled-components';
 import { getISOString } from '../../utils/date';
 import Icon from '../../components/Icon';
 import { useTranslation } from 'react-i18next';
+import { formatDuration } from '../../utils/format';
+import StatusField from '../../components/Status';
 
 function mergeTags(run: Run) {
   const baseTags = run.tags || [];
   const sysTags = run.system_tags || [];
 
   return [...baseTags, ...sysTags];
-}
-
-function formatDuration(time: number) {
-  const secs = time / 1000;
-  const hours = Math.floor(secs / 3600);
-  const minutes = Math.floor((secs - hours * 3600) / 60);
-  const seconds = secs - hours * 3600 - minutes * 60;
-
-  let str = '';
-
-  if (hours > 0) str += hours + 'h ';
-  if (minutes > 0) str += minutes + 'm ';
-  if (seconds > 0) str += seconds.toFixed(2) + 's';
-
-  return str;
 }
 
 const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
@@ -44,7 +31,7 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
               layout="dark"
               items={[
                 { label: t('fields.run-id') + ':', content: run.run_number },
-                { label: t('fields.status') + ':', content: run.status },
+                { label: t('fields.status') + ':', content: <StatusField status={run.status} /> },
                 { label: t('fields.user') + ':', content: run.user_name },
                 { label: t('fields.project') + ':', content: '?' },
                 { label: t('fields.language') + ':', content: '?' },

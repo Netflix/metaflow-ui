@@ -14,7 +14,6 @@ export interface MetaDataBaseObject {
 export type Flow = MetaDataBaseObject;
 
 export type RunStatus = {
-  [index: string]: string;
   completed: string;
   running: string;
   failed: string;
@@ -38,7 +37,8 @@ export interface Task extends MetaDataBaseObject {
   run_number: number;
   step_name: string;
   task_id: number;
-  finished_at: number;
+  finished_at?: number;
+  duration?: number;
 }
 
 export interface Metadata extends MetaDataBaseObject {
