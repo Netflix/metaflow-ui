@@ -37,7 +37,6 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
   return (
     <RunHeaderContainer>
       {(!run || !run.run_number) && <InformationRow>{t('run.no-run-data')}</InformationRow>}
-
       {run && run.run_number && (
         <div>
           <InformationRow spaceless>
@@ -69,10 +68,6 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
             <InformationRow>
               <ParametersTitleRow>
                 <LabelText>{t('run.parameters') + ':'}</LabelText>
-                <ExpandLink onClick={() => setExpanded(!expanded)}>
-                  <span>{t('run.hide-run-details')}</span>
-                  <Icon size="lg" name="arrowDown" rotate={180} />
-                </ExpandLink>
               </ParametersTitleRow>
               <PropertyTable
                 layout="bright"
@@ -87,40 +82,35 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
         </div>
       )}
 
-      {!expanded && (
-        <ShowDetailsRow>
-          <ExpandLink onClick={() => setExpanded(!expanded)}>
-            <span>{t('run.show-run-details')}</span>
-            <Icon size="lg" name="arrowDown" />
-          </ExpandLink>
-        </ShowDetailsRow>
-      )}
+      <ShowDetailsRow>
+        <ExpandLink onClick={() => setExpanded(!expanded)}>
+          <span>{expanded ? t('run.hide-run-details') : t('run.show-run-details')}</span>
+          <Icon size="lg" name="arrowDown" rotate={expanded ? 180 : 0} />
+        </ExpandLink>
+      </ShowDetailsRow>
     </RunHeaderContainer>
   );
 };
 
 const RunHeaderContainer = styled.div`
   position: relative;
-  margin: 0 0 15px 0;
 `;
 
 const ShowDetailsRow = styled.div`
   display: flex;
   justify-content: flex-end;
-  position: absolute;
-  right: 0;
 `;
 
 const ExpandLink = styled.div`
   display: flex;
   align-items: center;
   font-size: 12px;
-  padding: 10px;
+  padding: 0.5rem;
   color: ${(p) => p.theme.color.text.blue};
   cursor: pointer;
 
   span {
-    margin: 0 15px;
+    margin: 0 1rem;
   }
 `;
 

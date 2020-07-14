@@ -36,7 +36,6 @@ const PropertyTableRow = styled.div<{ layout: PropertyTableLayout }>`
 const PropertyTableRowItem = styled.div`
   flex: 1;
   white-space: pre;
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
 
   &:last-child {
     border-right: none;
@@ -45,7 +44,8 @@ const PropertyTableRowItem = styled.div`
 
 const PropertyTableRowItemHeader = styled.div<{ layout: PropertyTableLayout }>`
   background: ${(p) => (p.layout === 'dark' ? p.theme.color.bg.dark : p.theme.color.bg.blueGray)};
-  color: ${(p) => (p.layout === 'dark' ? '#fff' : p.theme.color.text.mid)};
+  color: ${(p) => (p.layout === 'dark' ? '#fff' : p.theme.color.text.dark)};
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
   font-size: 12px;
   padding: 0.4rem 1rem;
 `;
@@ -53,6 +53,7 @@ const PropertyTableRowItemHeader = styled.div<{ layout: PropertyTableLayout }>`
 const PropertyTableRowItemContent = styled.div<{ layout: PropertyTableLayout }>`
   padding: 0.75rem 1rem;
   font-size: 14px;
+  border-right: 1px solid rgba(0, 0, 0, 0.06);
   background: ${(p) => (p.layout === 'bright' ? '#fff' : 'transparent')};
 `;
 

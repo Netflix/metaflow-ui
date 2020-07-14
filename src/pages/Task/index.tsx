@@ -108,18 +108,32 @@ type AnchoredViewProps = {
 };
 
 const AnchoredView: React.FC<AnchoredViewProps> = ({ sections }) => {
+  const [sectionPositions, setSectionPositions] = useState<Record<number, number>>({});
+
   return (
     <AnchoredViewContainer>
       <TaskContent>
-        {sections.map((section) => (
-          <TaskSection key={section.key} label={section.label} sectionkey={section.key}>
+        {sections.map((section, index) => (
+          <TaskSection
+            key={section.key}
+            label={section.label}
+            sectionkey={section.key}
+            updatePosition={(offsetTop) => {
+              const exists = sectionPositions[index];
+              if (!exists || (exists && exists !== offsetTop)) {
+                setSectionPositions((cur) => ({ ...cur, [index]: offsetTop }));
+              }
+            }}
+          >
             {section.component}
           </TaskSection>
         ))}
       </TaskContent>
 
       <TaskSidebar>
-        <AnchorMenu active="taskinfo" items={sections.map(({ key, label }) => ({ key, label }))} />
+        <AnchorMenu
+          items={sections.map(({ key, label }, index) => ({ key, label, position: sectionPositions[index] }))}
+        />
       </TaskSidebar>
     </AnchoredViewContainer>
   );
@@ -157,10 +171,20 @@ const StyledCodeBlock = styled.div`
 // Task section presents one title section of task view
 //
 
-const TaskSection: React.FC<{ label: string; sectionkey: string }> = ({ label, sectionkey, children }) => {
+const TaskSection: React.FC<{ label: string; sectionkey: string; updatePosition: (offsetTop: number) => void }> = ({
+  label,
+  sectionkey,
+  updatePosition,
+  children,
+}) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  console.log(ref?.current?.offsetTop);
+  useEffect(() => {
+    if (ref?.current?.offsetTop) {
+      updatePosition(ref.current.offsetTop);
+    }
+  }, [updatePosition, ref?.current?.offsetTop]);
+
   return (
     <TaskSectionContainer ref={ref} id={sectionkey}>
       <TaskSectionHeader>
@@ -218,55 +242,69 @@ const KeyValueListLabel = styled.div`
 type AnchorItem = {
   key: string;
   label: string;
+  position?: number;
 };
 
 type AnchorMenuProps = {
   items: AnchorItem[];
-  active?: string;
 };
 
-const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, active }) => {
+const AnchorMenu: React.FC<AnchorMenuProps> = ({ items }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
+  const [active, setActive] = useState<string | undefined>(items[0]?.key);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const listener = () => setScrollTop(window.scrollY);
+    const listener = () => {
+      setScrollTop(window.scrollY);
+      const current = [...items].reverse().find((item) => item.position && item.position < window.scrollY + 112);
+      setActive((current && current.key) || items[0]?.key);
+    };
 
     window.addEventListener('scroll', listener);
 
     return () => window.removeEventListener('scroll', listener);
-  }, []);
+  }, [items]);
 
   return (
     <div ref={ref}>
-      <AnchorMenuContainer
-        offset={
+      <div
+        style={
           // Adding header height here manually. We need to think it makes sense to have sticky header
-          ref && ref.current && viewScrollTop + 112 > ref.current.offsetTop
-            ? viewScrollTop + 112 - ref.current.offsetTop
-            : 0
+          {
+            transform: `translateY(${
+              ref && ref.current && viewScrollTop + 112 > ref.current.offsetTop
+                ? viewScrollTop + 112 - ref.current.offsetTop
+                : 0
+            }px)`,
+          }
         }
       >
-        {items.map(({ key, label }) => (
-          <AnchorMenuItem key={key} active={active === key}>
+        {items.map(({ key, label, position }) => (
+          <AnchorMenuItem
+            key={key}
+            active={key === active}
+            onClick={() => {
+              if (position) {
+                window.scroll({ top: position - 111 });
+              }
+            }}
+          >
             {label}
           </AnchorMenuItem>
         ))}
-      </AnchorMenuContainer>
+      </div>
     </div>
   );
 };
 
-const AnchorMenuContainer = styled.div<{ offset: number }>`
-  padding-top: ${(p) => p.offset}px;
-`;
-
-const AnchorMenuItem = styled.div<{ active: boolean }>`
+const AnchorMenuItem = styled.div<{ active?: boolean }>`
   cursor: pointer;
   line-height: 2rem;
   padding: 0 1rem;
   margin-bottom 0.5rem;
   border-left: 2px solid ${(p) => (p.active ? p.theme.color.text.blue : p.theme.color.border.light)};
+  transition: 0.15s border;
 `;
 
 export default Task;
