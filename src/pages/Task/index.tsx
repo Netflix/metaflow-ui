@@ -2,24 +2,26 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
+import { useTranslation } from 'react-i18next';
 
 const Task: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <TaskContainer>
       <AnchoredView
         sections={[
           {
             key: 'taskinfo',
-            label: 'Task info',
+            label: t('task.task-info'),
             component: (
               <InformationRow spaceless>
                 <PropertyTable
                   items={[
-                    { label: 'Task id:', content: '115' },
-                    { label: 'Status:', content: 'Completed' },
-                    { label: 'Started at:', content: '115' },
-                    { label: 'Finished at:', content: '115' },
-                    { label: 'Duration:', content: '13m 45s' },
+                    { label: t('fields.task-id') + ':', content: '115' },
+                    { label: t('fields.status') + ':', content: 'Completed' },
+                    { label: t('fields.started-at') + ':', content: '115' },
+                    { label: t('fields.finished-at') + ':', content: '115' },
+                    { label: t('fields.duration') + ':', content: '13m 45s' },
                   ]}
                 />
               </InformationRow>
@@ -27,7 +29,7 @@ const Task: React.FC = () => {
           },
           {
             key: 'links',
-            label: 'Links',
+            label: t('task.links'),
             component: (
               <KeyValueList
                 items={[
@@ -38,7 +40,7 @@ const Task: React.FC = () => {
           },
           {
             key: 'stdout',
-            label: 'Std out',
+            label: t('task.std-out'),
             component: (
               <StyledCodeBlock>
                 {`metadata_service_ui_backend | [BUILTIN] '' VALUES: ''
@@ -52,7 +54,7 @@ metadata_service_ui_backend | Subscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7 /fl
           },
           {
             key: 'stderr',
-            label: 'Std err',
+            label: t('task.std-err'),
             component: (
               <StyledCodeBlock>
                 {`metadata_service_ui_backend | [BUILTIN] '' VALUES: ''
@@ -66,26 +68,26 @@ metadata_service_ui_backend | Subscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7 /fl
           },
           {
             key: 'artifacts',
-            label: 'Artifacts',
+            label: t('task.artifacts'),
             component: (
               <InformationRow spaceless>
                 <PropertyTable
                   items={[
-                    { label: 'Artifact name:', content: '_foreach_stack' },
-                    { label: 'Location:', content: 'https://something' },
-                    { label: 'Datastore type:', content: 'Remote' },
-                    { label: 'Type:', content: 'metaflow.artifact' },
-                    { label: 'Content type:', content: 'gzip+pickle-v2' },
+                    { label: t('fields.artifact-name') + ':', content: '_foreach_stack' },
+                    { label: t('fields.location') + ':', content: 'https://something' },
+                    { label: t('fields.datastore-type') + ':', content: 'Remote' },
+                    { label: t('fields.type') + ':', content: 'metaflow.artifact' },
+                    { label: t('fields.content-type') + ':', content: 'gzip+pickle-v2' },
                   ]}
                 />
                 <PropertyTable
                   noHeader
                   items={[
-                    { label: 'Artifact name:', content: '_foreach_stack' },
-                    { label: 'Location:', content: 'https://something' },
-                    { label: 'Datastore type:', content: 'Remote' },
-                    { label: 'Type:', content: 'metaflow.artifact' },
-                    { label: 'Content type:', content: 'gzip+pickle-v2' },
+                    { label: t('fields.artifact-name') + ':', content: '_foreach_stack' },
+                    { label: t('fields.location') + ':', content: 'https://something' },
+                    { label: t('fields.datastore-type') + ':', content: 'Remote' },
+                    { label: t('fields.type') + ':', content: 'metaflow.artifact' },
+                    { label: t('fields.content-type') + ':', content: 'gzip+pickle-v2' },
                   ]}
                 />
               </InformationRow>

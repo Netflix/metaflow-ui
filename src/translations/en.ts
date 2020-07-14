@@ -28,9 +28,17 @@ const en = {
       status: 'Status',
       'started-at': 'Started at',
       'finished-at': 'Finished at',
+      language: 'Language',
       duration: 'Duration',
 
+      'artifact-name': 'Artifact name',
+      location: 'Location',
+      'datastore-type': 'Datastore type',
+      type: 'Type',
+      'content-type': 'Content type',
+
       'run-id': 'Run id',
+      'task-id': 'Task id',
     },
 
     filters: {
@@ -56,6 +64,14 @@ const en = {
       'collapse-all': 'Collapse all',
       relative: 'Relative',
       absolute: 'Absolute',
+    },
+
+    task: {
+      'task-info': 'Task info',
+      links: 'Links',
+      'std-out': 'Std out',
+      'std-err': 'Std err',
+      artifacts: 'Artifacts',
     },
 
     breadcrumb: {

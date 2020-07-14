@@ -9,8 +9,10 @@ import DAG from '../../components/DAG';
 import TaskView from '../Task';
 import RunHeader from './RunHeader';
 import { getPath } from '../../utils/routing';
+import { useTranslation } from 'react-i18next';
 
 const RunPage: React.FC = () => {
+  const { t } = useTranslation();
   const { params } = useRouteMatch<{
     flowId: string;
     runNumber: string;
@@ -45,7 +47,7 @@ const RunPage: React.FC = () => {
         tabs={[
           {
             key: 'dag',
-            label: 'DAG',
+            label: t('run.DAG'),
             linkTo: getPath.dag(params.flowId, params.runNumber),
             component: (
               <Layout>
@@ -57,7 +59,7 @@ const RunPage: React.FC = () => {
           },
           {
             key: 'timeline',
-            label: 'Timeline',
+            label: t('run.timeline'),
             linkTo: getPath.timeline(params.flowId, params.runNumber),
             component: <TimelineContainer run={run} />,
           },
@@ -65,7 +67,7 @@ const RunPage: React.FC = () => {
             ? [
                 {
                   key: 'task',
-                  label: 'Task:' + params.taskId,
+                  label: `${t('items.task')}: ${params.taskId}`,
                   linkTo: getPath.task(params.flowId, params.runNumber, params.stepName, params.taskId),
                   temporary: true,
                   component: <TaskView />,
