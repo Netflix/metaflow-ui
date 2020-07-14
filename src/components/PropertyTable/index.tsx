@@ -57,6 +57,8 @@ const PropertyTableRowItemHeader = styled.th<{ layout: PropertyTableLayout }>`
   border-right: 1px solid rgba(0, 0, 0, 0.06);
   font-size: 12px;
   padding: 0.4rem 1rem;
+  font-weight: 500;
+  text-align: left;
 `;
 
 const PropertyTableRowItemContent = styled.td<{ layout: PropertyTableLayout }>`

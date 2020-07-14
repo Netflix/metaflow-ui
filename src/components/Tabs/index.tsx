@@ -96,7 +96,7 @@ const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean }>`
 
   border-bottom: 2px solid ${(p) => (p.active ? p.theme.color.text.blue : p.theme.color.text.mid)};
   background: ${(p) => (p.temporary ? p.theme.color.bg.blueLight : 'transparent')};
-  font-weight: ${(p) => (p.active ? 'bold' : 'normal')};
+  font-weight: ${(p) => (p.active ? '600' : 'normal')};
 `;
 
 const ActiveTab = styled.div`
