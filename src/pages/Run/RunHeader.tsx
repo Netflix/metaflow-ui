@@ -42,6 +42,7 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
         <div>
           <InformationRow spaceless>
             <PropertyTable
+              layout="dark"
               items={[
                 { label: t('fields.run-id') + ':', content: run.run_number },
                 { label: t('fields.status') + ':', content: run.status },

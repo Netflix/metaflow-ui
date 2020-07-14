@@ -31,6 +31,7 @@ declare module 'styled-components' {
         dark: string;
         blue: string;
         blueLight: string;
+        blueGray: string;
         teal: string;
         yellow: string;
         red: string;
@@ -46,6 +47,7 @@ declare module 'styled-components' {
       };
       border: {
         light: string;
+        normal: string;
       };
       icon: {
         light: string;

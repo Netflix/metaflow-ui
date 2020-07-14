@@ -34,12 +34,13 @@ const RunPage: React.FC = () => {
       setTab('task');
     }
   }, [params.viewType, params.stepName, params.taskId]);
-  console.log(tab, params);
+
   return (
     <FixedContent>
       <RunHeader run={run} />
 
       <Tabs
+        widen
         activeTab={tab}
         tabs={[
           {
@@ -66,6 +67,7 @@ const RunPage: React.FC = () => {
                   key: 'task',
                   label: 'Task:' + params.taskId,
                   linkTo: getPath.task(params.flowId, params.runNumber, params.stepName, params.taskId),
+                  temporary: true,
                   component: <TaskView />,
                 },
               ]
