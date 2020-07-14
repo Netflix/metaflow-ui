@@ -226,12 +226,13 @@ const TaskSection: React.FC<{ label: string; sectionkey: string; updatePosition:
   children,
 }) => {
   const ref = useRef<HTMLDivElement>(null);
+  const offset = ref?.current?.offsetTop;
 
   useEffect(() => {
-    if (ref?.current?.offsetTop) {
-      updatePosition(ref.current.offsetTop);
+    if (offset) {
+      updatePosition(offset);
     }
-  }, [updatePosition, ref?.current?.offsetTop]);
+  }, [updatePosition, offset]);
 
   return (
     <TaskSectionContainer ref={ref} id={sectionkey}>
