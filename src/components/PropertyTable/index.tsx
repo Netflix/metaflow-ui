@@ -1,48 +1,57 @@
 import React from 'react';
 import styled from 'styled-components';
 
-type PropertyTableItem = {
-  label: string;
-  content: React.ReactNode;
-};
-
 type PropertyTableLayout = 'dark' | 'bright' | 'normal';
 
-type PropertyTableProps = {
-  items: PropertyTableItem[];
+type PropertyTableColumns<T> = {
+  label: React.ReactNode;
+  prop?: keyof T;
+  accessor?: (item: T) => React.ReactNode;
+};
+
+type PropertyTableProps<T> = {
+  columns: PropertyTableColumns<T>[];
+  items: T[];
   layout?: PropertyTableLayout;
-  noHeader?: boolean;
 };
 
-const PropertyTable: React.FC<PropertyTableProps> = ({ items, layout = 'normal', noHeader }) => {
+function PropertyTable<T>({ items, columns, layout = 'normal' }: PropertyTableProps<T>): JSX.Element {
   return (
-    <PropertyTableRow layout={layout}>
-      {items.map(({ label, content }) => (
-        <PropertyTableRowItem key={label}>
-          {!noHeader && <PropertyTableRowItemHeader layout={layout}>{label}</PropertyTableRowItemHeader>}
-          <PropertyTableRowItemContent layout={layout}>{content}</PropertyTableRowItemContent>
-        </PropertyTableRowItem>
-      ))}
-    </PropertyTableRow>
-  );
-};
+    <PropertyTableContainer>
+      <thead>
+        <tr>
+          {columns.map((col, index) => (
+            <PropertyTableRowItemHeader key={index} layout={layout}>
+              {col.label}
+            </PropertyTableRowItemHeader>
+          ))}
+        </tr>
+      </thead>
 
-const PropertyTableRow = styled.div<{ layout: PropertyTableLayout }>`
-  display: flex;
+      <tbody>
+        {items.map((row, index) => (
+          <tr key={index}>
+            {columns.map((col, index) => (
+              <PropertyTableRowItemContent key={index} layout={layout}>
+                {col.accessor ? col.accessor(row) : col.prop ? row[col.prop] : ''}
+              </PropertyTableRowItemContent>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </PropertyTableContainer>
+  );
+}
+
+const PropertyTableContainer = styled.table`
   border-radius: 4px;
   overflow: hidden;
+  border-spacing: 0px;
+  border-collapse: collapse;
+  width: 100%;
 `;
 
-const PropertyTableRowItem = styled.div`
-  flex: 1;
-  white-space: pre;
-
-  &:last-child {
-    border-right: none;
-  }
-`;
-
-const PropertyTableRowItemHeader = styled.div<{ layout: PropertyTableLayout }>`
+const PropertyTableRowItemHeader = styled.th<{ layout: PropertyTableLayout }>`
   background: ${(p) => (p.layout === 'dark' ? p.theme.color.bg.dark : p.theme.color.bg.blueGray)};
   color: ${(p) => (p.layout === 'dark' ? '#fff' : p.theme.color.text.dark)};
   border-right: 1px solid rgba(0, 0, 0, 0.06);
@@ -50,7 +59,7 @@ const PropertyTableRowItemHeader = styled.div<{ layout: PropertyTableLayout }>`
   padding: 0.4rem 1rem;
 `;
 
-const PropertyTableRowItemContent = styled.div<{ layout: PropertyTableLayout }>`
+const PropertyTableRowItemContent = styled.td<{ layout: PropertyTableLayout }>`
   padding: 0.75rem 1rem;
   font-size: 14px;
   border-right: 1px solid rgba(0, 0, 0, 0.06);

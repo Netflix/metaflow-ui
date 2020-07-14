@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
-import { Run as IRun, Task as ITask } from '../../types';
+import { Run as IRun, Task as ITask, Artifact } from '../../types';
 import useResource from '../../hooks/useResource';
 import { formatDuration } from '../../utils/format';
 import { getISOString } from '../../utils/date';
@@ -37,6 +37,12 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
     initialData: null,
   });
 
+  const { data: artifacts } = useResource<Artifact[], Artifact>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
+    subscribeToEvents: true,
+    initialData: null,
+  });
+
   return (
     <TaskContainer>
       {!task && 'loading'}
@@ -49,17 +55,21 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
               component: (
                 <InformationRow spaceless>
                   <PropertyTable
-                    items={[
-                      { label: t('fields.task-id') + ':', content: task.task_id },
-                      { label: t('fields.status') + ':', content: <StatusField status={'completed'} /> },
-                      { label: t('fields.started-at') + ':', content: getISOString(new Date(task.ts_epoch)) },
+                    items={[task]}
+                    columns={[
+                      { label: t('fields.task-id') + ':', prop: 'task_id' },
+                      { label: t('fields.status') + ':', accessor: (_item) => <StatusField status={'completed'} /> },
+                      {
+                        label: t('fields.started-at') + ':',
+                        accessor: (item) => getISOString(new Date(item.ts_epoch)),
+                      },
                       {
                         label: t('fields.finished-at') + ':',
-                        content: task.finished_at ? getISOString(new Date(task.finished_at)) : '',
+                        accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
                       },
                       {
                         label: t('fields.duration') + ':',
-                        content: task.duration ? formatDuration(task.duration) : '',
+                        accessor: (item) => (item.duration ? formatDuration(item.duration) : ''),
                       },
                     ]}
                   />
@@ -111,22 +121,13 @@ metadata_service_ui_backend | Subscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7 /fl
               component: (
                 <InformationRow spaceless>
                   <PropertyTable
-                    items={[
-                      { label: t('fields.artifact-name') + ':', content: '_foreach_stack' },
-                      { label: t('fields.location') + ':', content: 'https://something' },
-                      { label: t('fields.datastore-type') + ':', content: 'Remote' },
-                      { label: t('fields.type') + ':', content: 'metaflow.artifact' },
-                      { label: t('fields.content-type') + ':', content: 'gzip+pickle-v2' },
-                    ]}
-                  />
-                  <PropertyTable
-                    noHeader
-                    items={[
-                      { label: t('fields.artifact-name') + ':', content: '_foreach_stack' },
-                      { label: t('fields.location') + ':', content: 'https://something' },
-                      { label: t('fields.datastore-type') + ':', content: 'Remote' },
-                      { label: t('fields.type') + ':', content: 'metaflow.artifact' },
-                      { label: t('fields.content-type') + ':', content: 'gzip+pickle-v2' },
+                    items={artifacts || []}
+                    columns={[
+                      { label: t('fields.artifact-name') + ':', prop: 'name' },
+                      { label: t('fields.location') + ':', prop: 'location' },
+                      { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
+                      { label: t('fields.type') + ':', prop: 'type' },
+                      { label: t('fields.content-type') + ':', prop: 'content_type' },
                     ]}
                   />
                 </InformationRow>
