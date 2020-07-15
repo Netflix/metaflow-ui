@@ -16,6 +16,7 @@ import { Section } from '../../../components/Structure';
 import Icon from '../../../components/Icon';
 import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
 import Notification, { NotificationType } from '../../../components/Notification';
+import StatusField from '../../../components/Status';
 
 const statusColors: RunStatus = {
   completed: 'white',
@@ -123,7 +124,9 @@ const ResultGroup: React.FC<Props> = ({
               <TD>
                 <span className="muted">#</span> <strong>{r.run_number}</strong>
               </TD>
-              <TD>{r.status}</TD>
+              <TD>
+                <StatusField status={r.status} />
+              </TD>
               <TD>{getISOString(new Date(r.ts_epoch))}</TD>
               <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
               <TD>{r.duration}</TD>

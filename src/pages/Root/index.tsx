@@ -16,7 +16,7 @@ const RootPage: React.FC = () => {
         </Route>
 
         <Route path={PATHS.task} exact>
-          <div>Task view</div>
+          <RunPage />
         </Route>
 
         <Route path={PATHS.runSubview}>

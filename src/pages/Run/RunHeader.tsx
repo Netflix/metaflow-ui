@@ -7,27 +7,14 @@ import styled from 'styled-components';
 import { getISOString } from '../../utils/date';
 import Icon from '../../components/Icon';
 import { useTranslation } from 'react-i18next';
+import { formatDuration } from '../../utils/format';
+import StatusField from '../../components/Status';
 
 function mergeTags(run: Run) {
   const baseTags = run.tags || [];
   const sysTags = run.system_tags || [];
 
   return [...baseTags, ...sysTags];
-}
-
-function formatDuration(time: number) {
-  const secs = time / 1000;
-  const hours = Math.floor(secs / 3600);
-  const minutes = Math.floor((secs - hours * 3600) / 60);
-  const seconds = secs - hours * 3600 - minutes * 60;
-
-  let str = '';
-
-  if (hours > 0) str += hours + 'h ';
-  if (minutes > 0) str += minutes + 'm ';
-  if (seconds > 0) str += seconds.toFixed(2) + 's';
-
-  return str;
 }
 
 const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
@@ -37,25 +24,26 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
   return (
     <RunHeaderContainer>
       {(!run || !run.run_number) && <InformationRow>{t('run.no-run-data')}</InformationRow>}
-
       {run && run.run_number && (
         <div>
           <InformationRow spaceless>
             <PropertyTable
-              items={[
-                { label: t('fields.run-id') + ':', content: run.run_number },
-                { label: t('fields.status') + ':', content: run.status },
-                { label: t('fields.user') + ':', content: run.user_name },
-                { label: t('fields.project') + ':', content: '?' },
-                { label: t('fields.language') + ':', content: '?' },
-                { label: t('fields.started-at') + ':', content: getISOString(new Date(run.ts_epoch)) },
+              layout="dark"
+              items={[run]}
+              columns={[
+                { label: t('fields.run-id') + ':', prop: 'run_number' as const },
+                { label: t('fields.status') + ':', accessor: (item) => <StatusField status={item.status} /> },
+                { label: t('fields.user') + ':', prop: 'user_name' },
+                { label: t('fields.project') + ':', prop: '?' },
+                { label: t('fields.language') + ':', prop: '?' },
+                { label: t('fields.started-at') + ':', accessor: (item) => getISOString(new Date(item.ts_epoch)) },
                 {
                   label: t('fields.finished-at') + ':',
-                  content: run.finished_at ? getISOString(new Date(run.finished_at)) : '',
+                  accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
                 },
                 {
                   label: t('fields.duration') + ':',
-                  content: run.finished_at ? formatDuration(run.finished_at - run.ts_epoch) : '',
+                  accessor: (item) => (item.finished_at ? formatDuration(item.finished_at - item.ts_epoch) : ''),
                 },
               ]}
             />
@@ -68,17 +56,14 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
             <InformationRow>
               <ParametersTitleRow>
                 <LabelText>{t('run.parameters') + ':'}</LabelText>
-                <ExpandLink onClick={() => setExpanded(!expanded)}>
-                  <span>{t('run.hide-run-details')}</span>
-                  <Icon size="lg" name="arrowDown" rotate={180} />
-                </ExpandLink>
               </ParametersTitleRow>
               <PropertyTable
                 layout="bright"
-                items={[
-                  { label: 'A:', content: '1' },
-                  { label: 'B:', content: '2' },
-                  { label: 'C:', content: '3' },
+                items={[{ a: 1, b: 2, c: 3 }]}
+                columns={[
+                  { label: 'A:', prop: 'a' },
+                  { label: 'B:', prop: 'b' },
+                  { label: 'C:', prop: 'c' },
                 ]}
               />
             </InformationRow>
@@ -86,40 +71,35 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
         </div>
       )}
 
-      {!expanded && (
-        <ShowDetailsRow>
-          <ExpandLink onClick={() => setExpanded(!expanded)}>
-            <span>{t('run.show-run-details')}</span>
-            <Icon size="lg" name="arrowDown" />
-          </ExpandLink>
-        </ShowDetailsRow>
-      )}
+      <ShowDetailsRow>
+        <ExpandLink onClick={() => setExpanded(!expanded)}>
+          <span>{expanded ? t('run.hide-run-details') : t('run.show-run-details')}</span>
+          <Icon size="lg" name="arrowDown" rotate={expanded ? 180 : 0} />
+        </ExpandLink>
+      </ShowDetailsRow>
     </RunHeaderContainer>
   );
 };
 
 const RunHeaderContainer = styled.div`
   position: relative;
-  margin: 0 0 15px 0;
 `;
 
 const ShowDetailsRow = styled.div`
   display: flex;
   justify-content: flex-end;
-  position: absolute;
-  right: 0;
 `;
 
 const ExpandLink = styled.div`
   display: flex;
   align-items: center;
   font-size: 12px;
-  padding: 10px;
+  padding: 0.5rem;
   color: ${(p) => p.theme.color.text.blue};
   cursor: pointer;
 
   span {
-    margin: 0 15px;
+    margin: 0 1rem;
   }
 `;
 

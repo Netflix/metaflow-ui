@@ -30,6 +30,7 @@ const bgColor = {
   light: '#f6f6f6',
   blue: brandColor.blue,
   blueLight: '#e4f0ff',
+  blueGray: '#E8EAED',
   teal: brandColor.teal,
   yellow: '#E5A90C',
   red: '#EB3428',
