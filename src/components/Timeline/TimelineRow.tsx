@@ -40,16 +40,10 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
 
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
-  const LabelElement = () => (
-    <BoxGraphicValue position={labelPosition}>
-      {finishedAt ? ((finishedAt - item.data.ts_epoch) / 1000).toFixed(2) + 's' : '?'}
-    </BoxGraphicValue>
-  );
-
   return (
     <>
       <Element>
-        <RowLabel onClick={() => onOpen()} type={item.type}>
+        <RowLabel onClick={() => onOpen()} type={item.type} isOpen={isOpen}>
           {item.type === 'task' ? (
             <Link to={getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id)}>
               {item.data.task_id}
@@ -69,7 +63,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
               left: valueFromLeft + '%',
             }}
           >
-            {labelPosition !== 'none' ? <LabelElement /> : null}
+            <RowMetricLabel item={item} finishedAt={finishedAt} labelPosition={labelPosition} />
             <BoxGraphicLine grayed={item.type === 'step' && isOpen} />
             <BoxGraphicMarkerStart />
             <BoxGraphicMarkerEnd />
@@ -79,6 +73,17 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
     </>
   );
 };
+
+const RowMetricLabel: React.FC<{ item: Row; finishedAt?: number; labelPosition: LabelPosition }> = ({
+  item,
+  finishedAt,
+  labelPosition,
+}) =>
+  labelPosition === 'none' ? null : (
+    <BoxGraphicValue position={labelPosition}>
+      {finishedAt ? ((finishedAt - item.data.ts_epoch) / 1000).toFixed(2) + 's' : '?'}
+    </BoxGraphicValue>
+  );
 
 function getLengthLabelPosition(fromLeft: number, width: number): LabelPosition {
   if (fromLeft + width < 90) {
@@ -109,7 +114,7 @@ const StickyStyledRow = styled(StyledRow)`
   left: 0;
 `;
 
-const RowLabel = styled.div<{ type: 'step' | 'task' }>`
+const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean }>`
   flex: 0 0 225px;
   max-width: 225px;
   overflow: hidden;
@@ -117,7 +122,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task' }>`
   text-align: right;
   font-size: ${(p) => (p.type === 'task' ? '12px' : '14px')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
-  background: ${(p) => (p.type === 'task' ? '#fff' : '#fff')};
+  background: ${(p) => (p.type === 'step' && p.isOpen ? '#f6f6f6' : '#fff')};
   font-family: monospace;
   line-height: 27px;
   padding: 0 0.25rem;
@@ -128,7 +133,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task' }>`
     width: 50%;
     background: #f6f6f6;
     display: inline-block;
-    marign-right: -0.25rem;
+    margin-right: -0.25rem;
     padding-right: 0.25rem;
   }
 

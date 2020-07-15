@@ -228,9 +228,8 @@ const VirtualizedTimeline: React.FC<{
           <FixedListContainer
             style={{
               height:
-                (listContainer.height - ROW_HEIGHT < window.innerHeight * 0.8 &&
-                rows.length * ROW_HEIGHT > listContainer.height
-                  ? window.innerHeight * 0.8
+                (listContainer.height - ROW_HEIGHT < window.innerHeight * 0.6
+                  ? window.innerHeight * 0.6
                   : listContainer.height - ROW_HEIGHT) + 'px',
               width: listContainer.width + 'px',
             }}
@@ -294,10 +293,10 @@ const VirtualizedTimeline: React.FC<{
             graph={graph}
             updateTimeline={(value) => graphDispatch({ type: 'move', value: value })}
           />
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div>{Math.round((graph.timelineStart - graph.min) / 1000)}s</div>
-            <div>{Math.round((graph.timelineEnd - graph.min) / 1000)}s</div>
-          </div>
+          <GraphFooterMetrics>
+            <div>{((graph.timelineStart - graph.min) / 1000).toFixed(2)}s</div>
+            <div>{((graph.timelineEnd - graph.min) / 1000).toFixed(2)}s</div>
+          </GraphFooterMetrics>
         </GraphFooter>
       </VirtualizedTimelineSubContainer>
     </VirtualizedTimelineContainer>
@@ -342,6 +341,11 @@ const VirtualizedTimelineContainer = styled.div`
   display: flex;
   height: 100%;
   width: 100%;
+
+  .ReactVirtualized__List:focus  {
+    outline: none;
+    border: none;
+  }
 `;
 
 const VirtualizedTimelineSubContainer = styled.div`
@@ -362,6 +366,13 @@ const GraphFooter = styled.div`
 const FixedListContainer = styled.div`
   position: relative;
   padding-top: ${ROW_HEIGHT}px;
+`;
+
+const GraphFooterMetrics = styled.div`
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.5rem 1rem;
+  font-size: 14px;
 `;
 
 export default VirtualizedTimeline;
