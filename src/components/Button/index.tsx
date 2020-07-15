@@ -12,15 +12,26 @@ type ButtonProps = {
   disabled?: boolean;
   tabIndex?: number;
   testid?: string;
+  layout?: 'slim';
 };
 
-const Button: React.FC<ButtonProps> = ({ label, children, to, onClick, disabled, tabIndex = 99, testid = '' }) => {
+const Button: React.FC<ButtonProps> = ({
+  label,
+  children,
+  layout,
+  to,
+  onClick,
+  disabled,
+  tabIndex = 99,
+  testid = '',
+}) => {
   const Element = () => (
     <ButtonStyle
       onClick={() => (!to && onClick ? onClick() : null)}
       disabled={disabled}
       tabIndex={tabIndex}
       data-testid={testid || label + '-button'}
+      layout={layout}
     >
       {label || children}
     </ButtonStyle>
@@ -49,9 +60,15 @@ const ButtonStyles = css`
   border: ${({ theme }) => '1px solid ' + theme.color.border.light};
 `;
 
-const ButtonStyle = styled.div<{ disabled?: boolean }>`
+const ButtonStyle = styled.div<{ disabled?: boolean; layout?: 'slim' }>`
   ${ButtonStyles}
-  border-color: ${({ disabled }) => (disabled ? '#fff' : '#d7d7d7')}
+  ${(p) =>
+    p.layout === 'slim' &&
+    css`
+      height: 28px;
+      line-height: 26px;
+    `}
+  border-color: ${({ disabled }) => (disabled ? '#fff' : '#d7d7d7')};
 `;
 
 export const ButtonContainer = styled.div`

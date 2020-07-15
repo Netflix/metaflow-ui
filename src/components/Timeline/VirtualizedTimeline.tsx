@@ -10,6 +10,7 @@ import useGraph, { GraphState } from './useGraph';
 import useRowData, { StepRowData } from './useRowData';
 import useQuery from '../../hooks/useQuery';
 import { useTranslation } from 'react-i18next';
+import TimelineHeader from './TimelineHeader';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
@@ -41,7 +42,6 @@ const VirtualizedTimeline: React.FC<{
   run: Run;
 }> = ({ run }) => {
   const params = useQuery();
-  const { t } = useTranslation();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef(null);
@@ -202,7 +202,7 @@ const VirtualizedTimeline: React.FC<{
   //
   // Button behaviour
   //
-
+  /*
   const expandAll = () => {
     steps.forEach((item) => {
       dispatch({ type: 'open', id: item.step_name });
@@ -214,22 +214,24 @@ const VirtualizedTimeline: React.FC<{
       dispatch({ type: 'close', id: item.step_name });
     });
   };
-
+*/
   return (
     <VirtualizedTimelineContainer>
       <VirtualizedTimelineSubContainer>
-        <div>
-          <button onClick={() => expandAll()}>{t('timeline.expand-all')}</button>
-          <button onClick={() => collapseAll()}>{t('timeline.collapse-all')}</button>
-          <button onClick={() => graphDispatch({ type: 'mode', mode: 'relative' })}>{t('timeline.relative')}</button>
-          <button onClick={() => graphDispatch({ type: 'mode', mode: 'absolute' })}>{t('timeline.absolute')}</button>
-          <button onClick={() => graphDispatch({ type: 'zoomOut' })}>-</button>
-          <button onClick={() => graphDispatch({ type: 'zoomIn' })}>+</button>
-        </div>
+        <TimelineHeader
+          graph={graph}
+          zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
+          zoomReset={() => graphDispatch({ type: 'resetZoom' })}
+          changeMode={(mode) => graphDispatch({ type: 'mode', mode })}
+        />
         <div style={{ flex: '1' }} ref={_listContainer}>
           <FixedListContainer
             style={{
-              height: listContainer.height - ROW_HEIGHT + 'px',
+              height:
+                (listContainer.height - ROW_HEIGHT < window.innerHeight * 0.8 &&
+                rows.length * ROW_HEIGHT > listContainer.height
+                  ? window.innerHeight * 0.8
+                  : listContainer.height - ROW_HEIGHT) + 'px',
               width: listContainer.width + 'px',
             }}
           >
@@ -257,6 +259,7 @@ const VirtualizedTimeline: React.FC<{
                     <TimelineRow
                       item={row}
                       graph={graph}
+                      isOpen={row.type === 'step' && rowDataState[row.data.step_name]?.isOpen}
                       endTime={
                         row.type === 'step' && rowDataState[row.data.step_name]
                           ? rowDataState[row.data.step_name].finished_at
@@ -312,7 +315,16 @@ const StickyHeader: React.FC<{
 
   if (!item) return null;
 
-  return <TimelineRow item={item} endTime={rowData && rowData.finished_at} graph={graph} onOpen={onToggle} sticky />;
+  return (
+    <TimelineRow
+      item={item}
+      endTime={rowData && rowData.finished_at}
+      isOpen={true}
+      graph={graph}
+      onOpen={onToggle}
+      sticky
+    />
+  );
 };
 
 function timelineNeedStickyHeader(stepPositions: StepIndex[], currentIndex: number) {
@@ -344,7 +356,7 @@ const GraphFooter = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  padding-left: 150px;
+  padding-left: 225px;
 `;
 
 const FixedListContainer = styled.div`
