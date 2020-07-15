@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled, { css, DefaultTheme } from 'styled-components';
 import { Row } from './VirtualizedTimeline';
 import { GraphState } from './useGraph';
 import { Link } from 'react-router-dom';
@@ -64,7 +64,10 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
             }}
           >
             <RowMetricLabel item={item} finishedAt={finishedAt} labelPosition={labelPosition} />
-            <BoxGraphicLine grayed={item.type === 'step' && isOpen} />
+            <BoxGraphicLine
+              grayed={item.type === 'step' && isOpen}
+              state={endTime || item.data.finished_at ? 'completed' : 'running'}
+            />
             <BoxGraphicMarkerStart />
             <BoxGraphicMarkerEnd />
           </BoxGraphic>
@@ -163,9 +166,24 @@ const BoxGraphic = styled.div<{ root: boolean }>`
   line-height: 27px;
 `;
 
-const BoxGraphicLine = styled.div<{ grayed?: boolean }>`
+function lineColor(theme: DefaultTheme, grayed: boolean, state: string) {
+  if (grayed) {
+    return '#c7c7c7';
+  } else {
+    switch (state) {
+      case 'completed':
+        return theme.color.bg.green;
+      case 'running':
+        return theme.color.bg.yellow;
+      default:
+        return theme.color.bg.red;
+    }
+  }
+}
+
+const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string }>`
   position: absolute;
-  background: ${(p) => (p.grayed ? '#c7c7c7' : p.theme.color.bg.green)};
+  background: ${(p) => lineColor(p.theme, p.grayed || false, p.state)};
   width: 100%;
   height: 6px;
   top: 50%;
