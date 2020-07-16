@@ -3,7 +3,6 @@ import { List } from 'react-virtualized';
 import { Step, Task, Run } from '../../types';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
-import HorizontalScrollbar from './TimelineHorizontalScroll';
 import TimelineRow from './TimelineRow';
 import useResource from '../../hooks/useResource';
 import useGraph, { GraphState, GraphSortBy } from './useGraph';
@@ -11,6 +10,7 @@ import useRowData, { StepRowData } from './useRowData';
 import useQuery from '../../hooks/useQuery';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
+import TimelineFooter from './TimelineFooter';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
@@ -166,7 +166,6 @@ const VirtualizedTimeline: React.FC<{
     if (!Array.isArray(taskData)) return;
 
     dispatch({ type: 'fill', data: taskData });
-    // dispatch({ type: 'sort', ids: Object.keys(rowDataState) });
   }, [taskData, dispatch]);
 
   // Figure out rows that should be visible if something related to that changes
@@ -184,18 +183,15 @@ const VirtualizedTimeline: React.FC<{
           type: 'task' as const,
           data: item,
         }));
-        return [
-          ...arr,
-          // Add step if we have grouping by it
-          ...(graph.groupBy === 'step' ? [{ type: 'step' as const, data: current }] : []),
-          // Add tasks after step, sort if groupping is on
-          ...(graph.groupBy === 'step' ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks),
-        ];
+        return arr.concat(
+          graph.groupBy === 'step' ? [{ type: 'step' as const, data: current }] : [],
+          graph.groupBy === 'step' ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks,
+        );
       }
 
       // Add step if we are grouping.
       if (graph.groupBy === 'step') {
-        return [...arr, { type: 'step', data: current }];
+        return arr.concat([{ type: 'step', data: current }]);
       }
 
       return [];
@@ -210,18 +206,24 @@ const VirtualizedTimeline: React.FC<{
 
     graphDispatch({ type: 'updateMax', end: highestTimestamp });
 
+    const rowsToUpdate = graph.groupBy === 'none' ? newRows.sort(sortRows(graph.sortBy, graph.sortDir)) : newRows;
+
     // If no grouping, sort tasks here.
-    setRows(graph.groupBy === 'none' ? newRows.sort(sortRows(graph.sortBy, graph.sortDir)) : newRows);
+    setRows(rowsToUpdate);
   }, [rowDataState, graphDispatch, steps, filters.steps, graph.groupBy, graph.sortBy, graph.sortDir]);
 
-  // Update step position indexes (for sticky headers)
+  // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
-    const stepPos: StepIndex[] = rows.reduce((arr: StepIndex[], current: Row, index: number) => {
+    const stepPos: StepIndex[] = [];
+    let index = 0;
+
+    for (const current of rows) {
+      index++;
       if (current.type === 'step') {
-        return [...arr, { name: current.data.step_name, index: index }];
+        stepPos.push({ name: current.data.step_name, index });
       }
-      return arr;
-    }, []);
+    }
+
     setStepPositions(stepPos);
   }, [rows]);
 
@@ -288,28 +290,16 @@ const VirtualizedTimeline: React.FC<{
                 }
               }}
               rowHeight={ROW_HEIGHT}
-              rowRenderer={({ index, style }) => {
-                const row = rows[index];
-                return (
-                  <div key={index} style={style}>
-                    <TimelineRow
-                      item={row}
-                      graph={graph}
-                      isOpen={row.type === 'step' && rowDataState[row.data.step_name]?.isOpen}
-                      endTime={
-                        row.type === 'step' && rowDataState[row.data.step_name]
-                          ? rowDataState[row.data.step_name].finished_at
-                          : undefined
-                      }
-                      onOpen={() => {
-                        if (row.type === 'task') return;
-
-                        dispatch({ type: 'toggle', id: row.data.step_name });
-                      }}
-                    />
-                  </div>
-                );
-              }}
+              rowRenderer={({ index, style }) => (
+                <RowRenderer
+                  key={index}
+                  row={rows[index]}
+                  graph={graph}
+                  style={style}
+                  rowData={rows[index].type === 'step' ? rowDataState[rows[index].data.step_name] : undefined}
+                  toggleOpen={() => dispatch({ type: 'toggle', id: rows[index].data.step_name })}
+                />
+              )}
               height={listContainer.height - 28}
               width={listContainer.width}
             />
@@ -325,18 +315,33 @@ const VirtualizedTimeline: React.FC<{
             )}
           </FixedListContainer>
         </div>
-        <GraphFooter>
-          <HorizontalScrollbar
-            graph={graph}
-            updateTimeline={(value) => graphDispatch({ type: 'move', value: value })}
-          />
-          <GraphFooterMetrics>
-            <div>{((graph.timelineStart - graph.min) / 1000).toFixed(2)}s</div>
-            <div>{((graph.timelineEnd - graph.min) / 1000).toFixed(2)}s</div>
-          </GraphFooterMetrics>
-        </GraphFooter>
+        <TimelineFooter graph={graph} move={(value) => graphDispatch({ type: 'move', value: value })} />
       </VirtualizedTimelineSubContainer>
     </VirtualizedTimelineContainer>
+  );
+};
+
+const RowRenderer: React.FC<{
+  style: React.CSSProperties;
+  row: Row;
+  graph: GraphState;
+  rowData?: StepRowData;
+  toggleOpen?: () => void;
+}> = ({ style, row, graph, rowData, toggleOpen }) => {
+  return (
+    <div style={style}>
+      <TimelineRow
+        item={row}
+        graph={graph}
+        isOpen={rowData && rowData.isOpen}
+        endTime={row.type === 'step' && rowData ? rowData.finished_at : undefined}
+        onOpen={() => {
+          if (row.type === 'task' || !toggleOpen) return;
+
+          toggleOpen();
+        }}
+      />
+    </div>
   );
 };
 
@@ -393,23 +398,9 @@ const VirtualizedTimelineSubContainer = styled.div`
   flex-direction: column;
 `;
 
-const GraphFooter = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  padding-left: 225px;
-`;
-
 const FixedListContainer = styled.div<{ sticky?: boolean }>`
   position: relative;
   padding-top: ${(p) => (p.sticky ? ROW_HEIGHT : 0)}px;
-`;
-
-const GraphFooterMetrics = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0.5rem 1rem;
-  font-size: 14px;
 `;
 
 export default VirtualizedTimeline;
