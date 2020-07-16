@@ -4,6 +4,7 @@ import { TextInputField, CheckboxField, SelectField } from '../Form';
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
 import styled from 'styled-components';
+import Icon from '../Icon';
 
 type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
@@ -11,6 +12,7 @@ type TimelineHeaderProps = {
   changeMode: (alingment: GraphAlignment) => void;
   toggleGroupBy: (by: GraphGroupBy) => void;
   updateSortBy: (by: GraphSortBy) => void;
+  updateSortDir: () => void;
   expandAll: () => void;
   collapseAll: () => void;
   graph: GraphState;
@@ -23,6 +25,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   changeMode,
   toggleGroupBy,
   updateSortBy,
+  updateSortDir,
   expandAll,
   collapseAll,
 }) => {
@@ -58,7 +61,10 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
           <TimelineHeaderBottomActions>
-            <TimelineDirectionButton>direction</TimelineDirectionButton>
+            <TimelineDirectionButton onClick={() => updateSortDir()}>
+              <span>Direction</span>
+              <Icon name="arrowDown" rotate={graph.sortDir === 'asc' ? 0 : 180} />
+            </TimelineDirectionButton>
             <CheckboxField
               label="Left align"
               checked={graph.alignment === 'fromLeft'}
@@ -117,9 +123,14 @@ const TimelineHeaderBottomActions = styled.div`
 `;
 
 const TimelineDirectionButton = styled.div`
+  cursor: pointer;
   padding: 0.25rem 1rem 0.25rem 0.25rem;
   margin: 0 1rem 0 0;
   border-right: 1px solid ${(p) => p.theme.color.border.normal};
+
+  span {
+    margin-right: 0.5rem;
+  }
 `;
 
 const Labeled: React.FC<{ label: string }> = ({ label, children }) => (

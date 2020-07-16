@@ -34,12 +34,15 @@ type TimelineFilters = {
   tasks: string[];
 };
 
-function sortRows(sortBy: GraphSortBy) {
+function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc') {
   return (a: Row, b: Row) => {
+    const fst = sortDir === 'asc' ? a : b;
+    const snd = sortDir === 'asc' ? b : a;
+
     if (sortBy === 'startTime') {
-      return a.data.ts_epoch - b.data.ts_epoch;
+      return fst.data.ts_epoch - snd.data.ts_epoch;
     } else if (sortBy === 'duration') {
-      return taskDuration(a) - taskDuration(b);
+      return taskDuration(fst) - taskDuration(snd);
     }
 
     return 0;
@@ -122,7 +125,7 @@ const VirtualizedTimeline: React.FC<{
   }, [params.get('steps')]); // eslint-disable-line
 
   //
-  // Graph measurements
+  // Graph measurements and rendering logic
   //
 
   // Graph data. Need to know start and end time of run to render lines
@@ -166,13 +169,16 @@ const VirtualizedTimeline: React.FC<{
     // dispatch({ type: 'sort', ids: Object.keys(rowDataState) });
   }, [taskData, dispatch]);
 
-  // Add tasks after step rows if they are open
+  // Figure out rows that should be visible if something related to that changes
+  // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {
+    // Filter out steps if we have step filters on
     const visibleSteps =
       filters.steps.length === 0 ? steps : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1);
+    // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
     const newRows: Row[] = visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];
-
+      // If step row is open, add its tasks to the list.
       if (rowData?.isOpen) {
         const rowTasks = rowData.data.map((item) => ({
           type: 'task' as const,
@@ -180,14 +186,22 @@ const VirtualizedTimeline: React.FC<{
         }));
         return [
           ...arr,
+          // Add step if we have grouping by it
           ...(graph.groupBy === 'step' ? [{ type: 'step' as const, data: current }] : []),
-          ...(graph.groupBy === 'step' ? rowTasks.sort(sortRows(graph.sortBy)) : rowTasks),
+          // Add tasks after step, sort if groupping is on
+          ...(graph.groupBy === 'step' ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks),
         ];
       }
 
-      return [...arr, { type: 'step', data: current }];
+      // Add step if we are grouping.
+      if (graph.groupBy === 'step') {
+        return [...arr, { type: 'step', data: current }];
+      }
+
+      return [];
     }, []);
 
+    // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
     const highestTimestamp = Object.keys(rowDataState).reduce((val, key) => {
       const step = rowDataState[key];
       if (step.finished_at && step.finished_at > val) return step.finished_at;
@@ -196,8 +210,9 @@ const VirtualizedTimeline: React.FC<{
 
     graphDispatch({ type: 'updateMax', end: highestTimestamp });
 
-    setRows(graph.groupBy === 'none' ? newRows.sort(sortRows(graph.sortBy)) : newRows);
-  }, [rowDataState, graphDispatch, steps, filters.steps, graph.groupBy, graph.sortBy]);
+    // If no grouping, sort tasks here.
+    setRows(graph.groupBy === 'none' ? newRows.sort(sortRows(graph.sortBy, graph.sortDir)) : newRows);
+  }, [rowDataState, graphDispatch, steps, filters.steps, graph.groupBy, graph.sortBy, graph.sortDir]);
 
   // Update step position indexes (for sticky headers)
   useEffect(() => {
@@ -242,6 +257,7 @@ const VirtualizedTimeline: React.FC<{
           changeMode={(alignment) => graphDispatch({ type: 'alignment', alignment })}
           toggleGroupBy={(by) => graphDispatch({ type: 'groupBy', by })}
           updateSortBy={(by) => graphDispatch({ type: 'sortBy', by })}
+          updateSortDir={() => graphDispatch({ type: 'sortDir', dir: graph.sortDir === 'asc' ? 'desc' : 'asc' })}
           expandAll={expandAll}
           collapseAll={collapseAll}
         />
