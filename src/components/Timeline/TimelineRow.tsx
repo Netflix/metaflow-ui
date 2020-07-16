@@ -193,7 +193,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string }>`
 const BoxGraphicMarker = css`
   height: 3px;
   width: 1px;
-  background: black;
+  background: #717171;
   position: absolute;
   bottom: 0;
 `;

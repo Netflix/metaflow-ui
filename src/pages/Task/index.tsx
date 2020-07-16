@@ -42,7 +42,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
     subscribeToEvents: true,
     initialData: null,
   });
-  console.log(error);
+
   return (
     <TaskContainer>
       {!task && 'loading'}
