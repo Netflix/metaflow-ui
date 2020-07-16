@@ -30,7 +30,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
 
   // Calculate have much box needs to be pushed from left
   const valueFromLeft =
-    graph.mode === 'relative'
+    graph.alignment === 'fromLeft'
       ? 0
       : ((dataItem.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100;
 

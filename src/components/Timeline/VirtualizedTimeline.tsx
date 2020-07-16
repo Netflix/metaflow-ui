@@ -6,7 +6,7 @@ import useComponentSize from '@rehooks/component-size';
 import HorizontalScrollbar from './TimelineHorizontalScroll';
 import TimelineRow from './TimelineRow';
 import useResource from '../../hooks/useResource';
-import useGraph, { GraphState } from './useGraph';
+import useGraph, { GraphState, GraphSortBy } from './useGraph';
 import useRowData, { StepRowData } from './useRowData';
 import useQuery from '../../hooks/useQuery';
 import { useTranslation } from 'react-i18next';
@@ -33,6 +33,22 @@ type TimelineFilters = {
   steps: string[];
   tasks: string[];
 };
+
+function sortRows(sortBy: GraphSortBy) {
+  return (a: Row, b: Row) => {
+    if (sortBy === 'startTime') {
+      return a.data.ts_epoch - b.data.ts_epoch;
+    } else if (sortBy === 'duration') {
+      return taskDuration(a) - taskDuration(b);
+    }
+
+    return 0;
+  };
+}
+
+function taskDuration(a: Row): number {
+  return (a.type === 'task' && a.data.duration) || (a.data.finished_at ? a.data.finished_at - a.data.ts_epoch : 0);
+}
 
 //
 // Self containing component for rendering everything related to timeline. Component fetched (and subscribes for live events) steps and tasks from different
@@ -158,13 +174,14 @@ const VirtualizedTimeline: React.FC<{
       const rowData = rowDataState[current.step_name];
 
       if (rowData?.isOpen) {
+        const rowTasks = rowData.data.map((item) => ({
+          type: 'task' as const,
+          data: item,
+        }));
         return [
           ...arr,
-          { type: 'step', data: current },
-          ...rowData.data.map((item) => ({
-            type: 'task' as const,
-            data: item,
-          })),
+          ...(graph.groupBy === 'step' ? [{ type: 'step' as const, data: current }] : []),
+          ...(graph.groupBy === 'step' ? rowTasks.sort(sortRows(graph.sortBy)) : rowTasks),
         ];
       }
 
@@ -179,8 +196,8 @@ const VirtualizedTimeline: React.FC<{
 
     graphDispatch({ type: 'updateMax', end: highestTimestamp });
 
-    setRows(newRows);
-  }, [rowDataState, graphDispatch, steps, filters.steps]);
+    setRows(graph.groupBy === 'none' ? newRows.sort(sortRows(graph.sortBy)) : newRows);
+  }, [rowDataState, graphDispatch, steps, filters.steps, graph.groupBy, graph.sortBy]);
 
   // Update step position indexes (for sticky headers)
   useEffect(() => {
@@ -222,15 +239,17 @@ const VirtualizedTimeline: React.FC<{
           graph={graph}
           zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
           zoomReset={() => graphDispatch({ type: 'resetZoom' })}
-          changeMode={(mode) => graphDispatch({ type: 'mode', mode })}
+          changeMode={(alignment) => graphDispatch({ type: 'alignment', alignment })}
+          toggleGroupBy={(by) => graphDispatch({ type: 'groupBy', by })}
+          updateSortBy={(by) => graphDispatch({ type: 'sortBy', by })}
         />
         <div style={{ flex: '1' }} ref={_listContainer}>
           <FixedListContainer
+            sticky={!!stickyHeader && graph.groupBy !== 'none'}
             style={{
               height:
-                (listContainer.height - ROW_HEIGHT < window.innerHeight * 0.6
-                  ? window.innerHeight * 0.6
-                  : listContainer.height - ROW_HEIGHT) + 'px',
+                (listContainer.height < window.innerHeight * 0.6 ? window.innerHeight * 0.6 : listContainer.height) +
+                'px',
               width: listContainer.width + 'px',
             }}
           >
@@ -277,7 +296,7 @@ const VirtualizedTimeline: React.FC<{
               width={listContainer.width}
             />
 
-            {stickyHeader && (
+            {stickyHeader && graph.groupBy === 'step' && (
               <StickyHeader
                 stickyStep={stickyHeader}
                 items={rows}
@@ -363,9 +382,9 @@ const GraphFooter = styled.div`
   padding-left: 225px;
 `;
 
-const FixedListContainer = styled.div`
+const FixedListContainer = styled.div<{ sticky?: boolean }>`
   position: relative;
-  padding-top: ${ROW_HEIGHT}px;
+  padding-top: ${(p) => (p.sticky ? ROW_HEIGHT : 0)}px;
 `;
 
 const GraphFooterMetrics = styled.div`

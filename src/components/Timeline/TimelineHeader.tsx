@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraphState } from './useGraph';
+import { GraphState, GraphAlignment, GraphGroupBy, GraphSortBy } from './useGraph';
 import { TextInputField, CheckboxField, SelectField } from '../Form';
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
@@ -8,11 +8,20 @@ import styled from 'styled-components';
 type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
   zoomReset: () => void;
-  changeMode: (mode: 'relative' | 'absolute') => void;
+  changeMode: (alingment: GraphAlignment) => void;
+  toggleGroupBy: (by: GraphGroupBy) => void;
+  updateSortBy: (by: GraphSortBy) => void;
   graph: GraphState;
 };
 
-const TimelineHeader: React.FC<TimelineHeaderProps> = ({ graph, zoom, zoomReset, changeMode }) => {
+const TimelineHeader: React.FC<TimelineHeaderProps> = ({
+  graph,
+  zoom,
+  zoomReset,
+  changeMode,
+  toggleGroupBy,
+  updateSortBy,
+}) => {
   return (
     <TimelineHeaderContainer>
       <TimelineHeaderTop>
@@ -28,15 +37,19 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({ graph, zoom, zoomReset,
         <Labeled label="Order by:">
           <ButtonGroup
             buttons={[
-              { label: 'Started at', action: () => null },
-              { label: 'Duration', action: () => null },
+              { label: 'Started at', action: () => updateSortBy('startTime'), active: graph.sortBy === 'startTime' },
+              { label: 'Duration', action: () => updateSortBy('duration'), active: graph.sortBy === 'duration' },
             ]}
           />
         </Labeled>
       </TimelineHeaderTop>
       <TimelineHeaderBottom>
         <TimelineHeaderBottomLeft>
-          <CheckboxField label="Group by step" checked={false} />
+          <CheckboxField
+            label="Group by step"
+            checked={graph.groupBy === 'step'}
+            onChange={() => toggleGroupBy(graph.groupBy === 'step' ? 'none' : 'step')}
+          />
           <Button layout="slim">...</Button>
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
@@ -44,10 +57,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({ graph, zoom, zoomReset,
             <TimelineDirectionButton>direction</TimelineDirectionButton>
             <CheckboxField
               label="Left align"
-              checked={graph.mode === 'relative'}
-              onChange={() => {
-                changeMode(graph.mode === 'relative' ? 'absolute' : 'relative');
-              }}
+              checked={graph.alignment === 'fromLeft'}
+              onChange={() => changeMode(graph.alignment === 'fromLeft' ? 'fromStartTime' : 'fromLeft')}
             />
           </TimelineHeaderBottomActions>
 
