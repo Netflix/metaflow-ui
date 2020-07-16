@@ -1,8 +1,21 @@
 import { useReducer } from 'react';
 
+export type GraphAlignment = 'fromLeft' | 'fromStartTime';
+export type GraphGroupBy = 'step' | 'none';
+export type GraphSortBy = 'startTime' | 'duration';
+
 export type GraphState = {
   // Relative or absolute rendering? Absolute = just line length
-  mode: 'relative' | 'absolute';
+  alignment: GraphAlignment;
+  // Groupped by
+  groupBy: GraphGroupBy;
+  // Sorting for tasks
+  // Note that sorting works little differently depending on grouping. If we have grouping on, we sort
+  // tasks within the steps. Else we sort tasks as one list.
+  // NOTE: Should we sort steps as well?
+  sortBy: GraphSortBy;
+  // Sort direction
+  sortDir: 'asc' | 'desc';
   // Minimum value in graph
   min: number;
   // Maximum length of graph
@@ -22,8 +35,14 @@ export type GraphAction =
   | { type: 'move'; value: number }
   // Update maximum length of timeline (needed when new items comes from websocket)
   | { type: 'updateMax'; end: number }
-  // Update active mode. TODO: Specify more what this feature does
-  | { type: 'mode'; mode: 'relative' | 'absolute' }
+  // Update active alignment which defines where should lines start.
+  | { type: 'alignment'; alignment: GraphAlignment }
+  // Update group by method
+  | { type: 'groupBy'; by: GraphGroupBy }
+  // Update sorting method
+  | { type: 'sortBy'; by: GraphSortBy }
+  // Update sorting direction
+  | { type: 'sortDir'; dir: 'asc' | 'desc' }
   // Zoom functions manipulates timelineStart and timelineEnd values to kinda fake zooming.
   | { type: 'zoomIn' }
   | { type: 'zoomOut' }
@@ -65,8 +84,17 @@ function graphReducer(state: GraphState, action: GraphAction): GraphState {
       const val = action.end > state.max ? action.end : state.max;
       return { ...state, max: val, timelineEnd: state.controlled ? state.timelineEnd : val };
 
-    case 'mode':
-      return { ...state, mode: action.mode };
+    case 'alignment':
+      return { ...state, alignment: action.alignment };
+
+    case 'groupBy':
+      return { ...state, groupBy: action.by };
+
+    case 'sortBy':
+      return { ...state, sortBy: action.by };
+
+    case 'sortDir':
+      return { ...state, sortDir: action.dir };
 
     case 'zoomIn': {
       const change = getZoomAmount(state);
@@ -181,7 +209,10 @@ export default function useGraph(
   end: number,
 ): { graph: GraphState; dispatch: React.Dispatch<GraphAction> } {
   const [graph, dispatch] = useReducer(graphReducer, {
-    mode: 'absolute',
+    alignment: 'fromStartTime',
+    groupBy: 'step',
+    sortBy: 'startTime',
+    sortDir: 'asc',
     min: start,
     max: end,
     timelineStart: start,

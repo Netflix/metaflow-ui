@@ -31,7 +31,7 @@ type TaskViewProps = { run: IRun; stepName: string; taskId: string };
 
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
   const { t } = useTranslation();
-  const { data: task } = useResource<ITask, ITask>({
+  const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
     subscribeToEvents: true,
     initialData: null,
@@ -46,7 +46,8 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
   return (
     <TaskContainer>
       {!task && 'loading'}
-      {task && (
+      {error || (task && !task.task_id && `Could not find the task`)}
+      {task && task.task_id && (
         <AnchoredView
           sections={[
             {
@@ -61,7 +62,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
                       { label: t('fields.status') + ':', accessor: (_item) => <StatusField status={'completed'} /> },
                       {
                         label: t('fields.started-at') + ':',
-                        accessor: (item) => getISOString(new Date(item.ts_epoch)),
+                        accessor: (item) => (item.ts_epoch ? getISOString(new Date(item.ts_epoch)) : ''),
                       },
                       {
                         label: t('fields.finished-at') + ':',

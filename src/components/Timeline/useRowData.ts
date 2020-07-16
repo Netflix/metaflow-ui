@@ -39,13 +39,18 @@ function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataMode
       return { ...state, [action.id]: action.data };
     case 'fill': {
       // Group incoming tasks by step
-      const groupped = action.data.reduce((obj: { [key: string]: Task[] }, value) => {
-        const step = value.step_name;
+      const groupped: Record<string, Task[]> = {};
 
-        if (obj[step]) return { ...obj, [step]: [...obj[step], value] };
+      for (const row of action.data) {
+        const step = row.step_name;
 
-        return { ...obj, [step]: [value] };
-      }, {});
+        if (groupped[step]) {
+          groupped[step].push(row);
+        } else {
+          groupped[step] = [row];
+        }
+      }
+
       // And fill them to current state
       const newState = Object.keys(groupped).reduce((obj: RowDataModel, key: string): RowDataModel => {
         const row = obj[key];
