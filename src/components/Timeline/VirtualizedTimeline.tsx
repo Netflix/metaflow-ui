@@ -219,7 +219,7 @@ const VirtualizedTimeline: React.FC<{
   //
   // Button behaviour
   //
-  /*
+
   const expandAll = () => {
     steps.forEach((item) => {
       dispatch({ type: 'open', id: item.step_name });
@@ -231,7 +231,7 @@ const VirtualizedTimeline: React.FC<{
       dispatch({ type: 'close', id: item.step_name });
     });
   };
-*/
+
   return (
     <VirtualizedTimelineContainer>
       <VirtualizedTimelineSubContainer>
@@ -242,6 +242,8 @@ const VirtualizedTimeline: React.FC<{
           changeMode={(alignment) => graphDispatch({ type: 'alignment', alignment })}
           toggleGroupBy={(by) => graphDispatch({ type: 'groupBy', by })}
           updateSortBy={(by) => graphDispatch({ type: 'sortBy', by })}
+          expandAll={expandAll}
+          collapseAll={collapseAll}
         />
         <div style={{ flex: '1' }} ref={_listContainer}>
           <FixedListContainer

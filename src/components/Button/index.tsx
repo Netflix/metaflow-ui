@@ -49,6 +49,7 @@ const Button: React.FC<ButtonProps> = ({
 };
 
 const ButtonStyles = css`
+  cursor: pointer;
   padding: 0 10px;
   height: 40px;
   line-height: 38px;
