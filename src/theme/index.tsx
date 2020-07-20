@@ -77,11 +77,11 @@ const defaultTheme: DefaultTheme = {
     },
     warning: {
       bg: bgColor.white,
-      text: '#107177', // TODO
+      text: bgColor.yellow, // TODO
     },
     danger: {
       bg: bgColor.white,
-      text: '#107177', // TODO
+      text: bgColor.red, // TODO
     },
     default: {
       bg: bgColor.white,
