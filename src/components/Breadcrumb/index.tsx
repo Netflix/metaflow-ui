@@ -11,7 +11,6 @@ import { TextInputField } from '../Form';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
 import { ItemRow } from '../Structure';
-import { basename } from 'path';
 
 type KnownParams = {
   flowId?: string;
