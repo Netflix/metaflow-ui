@@ -6,6 +6,8 @@ import { dagexample1, dagexample2, dagexample3, dagHugeflow } from './DAGexample
 import styled, { css } from 'styled-components';
 import Button from '../Button';
 import useResource from '../../hooks/useResource';
+import { useHistory } from 'react-router-dom';
+import { getPath } from '../../utils/routing';
 
 //
 // DAG
@@ -60,6 +62,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
             <NormalItemContainer>
               {dagTree.map((elem, index) => (
                 <RenderStep
+                  run={run}
                   item={elem}
                   key={index}
                   isLast={index + 1 === dagTree.length}
@@ -85,12 +88,14 @@ function stateOfStep(item: StepTree, stepIds: string[]) {
   return 'warning';
 }
 
-const RenderStep: React.FC<{ item: DAGTreeNode; isLast?: boolean; inContainer?: boolean; stepIds: string[] }> = ({
-  item,
-  isLast,
-  inContainer,
-  stepIds,
-}) => {
+const RenderStep: React.FC<{
+  item: DAGTreeNode;
+  isLast?: boolean;
+  inContainer?: boolean;
+  stepIds: string[];
+  run: Run;
+}> = ({ item, isLast, inContainer, stepIds, run }) => {
+  const history = useHistory();
   if (item.node_type === 'normal') {
     const shouldLine = inContainer
       ? (item.children?.length || 0) > 0
@@ -100,7 +105,12 @@ const RenderStep: React.FC<{ item: DAGTreeNode; isLast?: boolean; inContainer?: 
 
     return (
       <NormalItemContainer className="itemcontainer">
-        <NormalItem state={stepState}>
+        <NormalItem
+          state={stepState}
+          onClick={() => {
+            history.push(getPath.step(run.flow_id, run.run_number, item.step_name));
+          }}
+        >
           {item.step_name}
           {shouldLine && (
             <LineContainer>
@@ -112,7 +122,13 @@ const RenderStep: React.FC<{ item: DAGTreeNode; isLast?: boolean; inContainer?: 
           <NormalItemChildContainer className="childcontainer">
             {item.children.map((child, index) => {
               return (
-                <RenderStep item={child} isLast={index + 1 === item.children?.length} key={index} stepIds={stepIds} />
+                <RenderStep
+                  run={run}
+                  item={child}
+                  isLast={index + 1 === item.children?.length}
+                  key={index}
+                  stepIds={stepIds}
+                />
               );
             })}
           </NormalItemChildContainer>
@@ -124,7 +140,7 @@ const RenderStep: React.FC<{ item: DAGTreeNode; isLast?: boolean; inContainer?: 
       <ContainerElement containerType={item.container_type}>
         {item.steps &&
           item.steps.map((child, index) => (
-            <RenderStep item={child} key={index} inContainer={true} stepIds={stepIds} />
+            <RenderStep run={run} item={child} key={index} inContainer={true} stepIds={stepIds} />
           ))}
       </ContainerElement>
     );
@@ -192,6 +208,7 @@ const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
   border-radius: 4px;
   transition: 0.15s border;
   background: #fff;
+  cursor: pointer;
 `;
 
 const NormalItemChildContainer = styled.div`
