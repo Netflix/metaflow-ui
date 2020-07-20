@@ -300,7 +300,7 @@ const VirtualizedTimeline: React.FC<{
                   toggleOpen={() => dispatch({ type: 'toggle', id: rows[index].data.step_name })}
                 />
               )}
-              height={listContainer.height - 28}
+              height={listContainer.height + (stickyHeader ? 0 : ROW_HEIGHT) - 28}
               width={listContainer.width}
             />
 
