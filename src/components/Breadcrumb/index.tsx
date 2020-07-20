@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useLocation, matchPath, Link, match, useHistory } from 'react-router-dom';
+import { useLocation, matchPath, match, useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+
 import { PATHS, PathDefinition, getPath } from '../../utils/routing';
-import Button, {
-  ButtonContainer,
-  ButtonContainerItem,
-  ButtonContainerSeparator,
-  ButtonContainerHighlightedItem,
-  ButtonLinkContainer,
-} from '../Button';
+
+import Button, { ButtonLink, ButtonCSS } from '../Button';
+import ButtonGroup from '../ButtonGroup';
+import { TextInputField } from '../Form';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
-import { useTranslation } from 'react-i18next';
+import { ItemRow } from '../Structure';
+import { basename } from 'path';
 
 type KnownParams = {
   flowId?: string;
@@ -118,22 +118,43 @@ const Breadcrumb: React.FC = () => {
   };
 
   return (
-    <StyledBreadcrumb>
-      <Button to="/" disabled={buttonList.length === 0} tabIndex={0} testid={'home-button'} label={t('home.home')} />
+    <StyledBreadcrumb pad="md">
+      <ButtonLink to="/" disabled={buttonList.length === 0} tabIndex={0} data-testid={'home-button'}>
+        {t('home.home')}
+      </ButtonLink>
 
       {/* On home page, when not editing breadcrumb */}
       {buttonList.length === 0 && !edit && (
-        <StyledInput
-          style={{ marginLeft: '10px' }}
+        <TextInputField
+          horizontal
+          placeholder={t('breadcrumb.goto')}
           onClick={() => setEdit(true)}
           onKeyPress={() => setEdit(true)}
-          defaultValue={t('breadcrumb.goto') as string}
           data-testid="breadcrumb-goto-input-inactive"
         />
       )}
 
       {/* Rendering breadcrumb items when not in home and not editing. */}
       {!edit && buttonList.length > 0 && (
+        <ButtonGroup>
+          {buttonList.map(({ label, path }, index) => (
+            <ButtonLink to={path} active={index + 1 === buttonList.length}>{label}</ButtonLink>
+          ))}
+          <EditButton
+            onClick={() => setEdit(true)}
+            onKeyPress={(e) => {
+              if (e && e.charCode === 13) {
+                setEdit(true);
+              }
+            }}
+            tabIndex={0}
+          >
+            <Icon name="pen" size="md" />
+          </EditButton>
+        </ButtonGroup>
+      )}
+
+      {/*{!edit && buttonList.length > 0 && (
         <ButtonContainer data-testid="breadcrumb-button-container">
           {buttonList.map(({ label, path }, index) => {
             const element = <ButtonContainerItem active={index + 1 === buttonList.length}>{label}</ButtonContainerItem>;
@@ -160,26 +181,26 @@ const Breadcrumb: React.FC = () => {
             }}
             tabIndex={0}
           >
-            <Icon name="pen" size="lg" />
+            <Icon name="pen" size="md" />
           </ButtonContainerHighlightedItem>
         </ButtonContainer>
-      )}
+          )}*/}
 
       {/* Rendering edit block when active */}
       {edit && (
         <GoToHolder data-testid="breadcrumb-goto-container">
           <GoToContainer>
-            <div style={{ display: 'flex' }}>
-              <StyledInput
+            <ItemRow pad="md">
+              <TextInputField
                 placeholder={t('breadcrumb.whereto')}
                 defaultValue={currentBreadcrumbPath}
                 onKeyPress={onKeyPress}
                 autoFocus={true}
               />
               <GotoClose onClick={() => closeUp()}>
-                <Icon name="times" size="lg" />
+                <Icon name="times" size="md" />
               </GotoClose>
-            </div>
+            </ItemRow>
             <BreadcrumbInfo>
               {warning && <BreadcrumbWarning>{warning}</BreadcrumbWarning>}
               <BreadcrumbHelpLabel>Example:</BreadcrumbHelpLabel>
@@ -209,39 +230,41 @@ const BreadcrumbKeyValueList: React.FC<{ items: { key: string; value: string }[]
   </div>
 );
 
-const StyledBreadcrumb = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 0 25px;
-  font-size: 14px;
+const EditButton = styled(Button)`
+  background: #fff;
+
+  .icon {
+    height: 1.5rem;
+  }
 `;
 
-const StyledInput = styled.input`
-  flex: 1;
-  height: 38px;
-  padding: 0 10px;
-  line-height: 38px;
-  border: ${({ theme }) => '1px solid ' + theme.color.border.light};
-  background: ${({ theme }) => '1px solid ' + theme.color.bg.light};
-  border-radius: 4px;
-  font-size: 14px;
+const StyledBreadcrumb = styled(ItemRow)`
+  font-size: 0.875rem;
 
-  &:focus {
-    outline: none;
+  .button {
+    line-height: 1.5rem;
+    font-size: 0.875rem;
+  }
+
+  input[type=text] {
+    line-height: 1.5rem;
+    font-size: 0.875rem;
+    width: 20rem;
   }
 `;
 
 const GoToHolder = styled.div`
   position: relative;
-  height: 38px;
-  font-size: 14px;
+  font-size: 0.875rem;
+  height: 2rem;
+  margin-top: -2px;
 `;
 
 const GoToContainer = styled.div`
   position: absolute;
-  top: -10px;
-  left: 0;
-  width: 500px;
+  top: -${(p) => p.theme.spacer.sm}rem;
+  left: -${(p) => p.theme.spacer.sm}rem;
+  width: 24rem;
   ${PopoverStyles}
 `;
 
@@ -249,37 +272,77 @@ const GotoClose = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
-  width: 40px;
   cursor: pointer;
 `;
 
 const BreadcrumbInfo = styled.div`
-  padding: 10px 10px;
+  padding: ${(p) => p.theme.spacer.sm}rem;
 `;
 
 const BreadcrumbHelpLabel = styled.div`
-  font-size: 12px;
-  color: ${({ theme }) => theme.color.text.lightest};
+  font-size: 0.75rem;
+  color: ${(p) => p.theme.color.text.lightest};
   padding: 10px 0;
 `;
 
 const BreadcrumbWarning = styled.div`
-  color: ${({ theme }) => theme.notification.danger.text};
+  color: ${(p) => p.theme.notification.danger.text};
 `;
 
 const KeyValueListLabel = styled.div`
-  color: ${({ theme }) => theme.color.text.mid};
+  color: ${(p) => p.theme.color.text.mid};
   width: 75px;
 `;
 
 const KeyValueListValue = styled.div`
-  color: ${({ theme }) => theme.color.text.dark};
+  color: ${(p) => p.theme.color.text.dark};
 `;
 
 const KeyValueListItem = styled.div`
   display: flex;
   padding: 5px 0;
+`;
+
+export const ButtonContainer = styled.div`
+  ${ButtonCSS};
+  padding: 0px;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+`;
+
+export const ButtonContainerItem = styled.div<{ active?: boolean }>`
+  padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
+  color: ${({ active, theme }) => (active ? theme.color.text.dark : theme.color.text.lightest)};
+  font-weight: ${({ active }) => (active ? '500' : '400')};
+`;
+
+export const ButtonContainerHighlightedItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${(p) => p.theme.color.text.lightest};
+  background: #fff;
+  line-height: 1.25rem;
+  border-left: ${(p) => '1px solid ' + p.theme.color.border.light};
+  cursor: pointer;
+  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
+
+  &:focus {
+    padding: 0 5px;
+  }
+`;
+
+export const ButtonContainerSeparator = styled.div`
+  display: flex;
+  align-items: center;
+  color: ${(p) => p.theme.color.text.lightest};
+`;
+
+export const ButtonLinkContainer = styled.div`
+  a {
+    color: ${(p) => p.theme.color.text.lightest};
+  }
 `;
 
 export default Breadcrumb;

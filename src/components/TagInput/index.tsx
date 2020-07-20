@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Popover from '../Popover';
 import Icon from '../Icon';
+import Button from '../Button';
 import { TextInputField } from '../Form';
 
 const TagInputWrapper = styled.div`
@@ -9,7 +10,7 @@ const TagInputWrapper = styled.div`
 
   .popover {
     left: 120%;
-    top: -0.5rem;
+    top: -0.55rem;
     display: flex;
     align-items: center;
 
@@ -45,17 +46,18 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void }> = ({ onSubmit }) => 
 
   return (
     <TagInputWrapper>
-      <button onClick={handleFormActivation} className={formActive ? 'active' : ''}>
-        <Icon name={formActive ? 'times' : 'plus'} />
-      </button>
+      <Button onClick={handleFormActivation} active={formActive}>
+        <Icon name={formActive ? 'times' : 'plus'} size='sm' />
+      </Button>
       <Popover show={formActive}>
         <TextInputField
+          horizontal
           value={val}
           ref={inputEl}
           onChange={(e) => e && setVal(e.target.value)}
           onKeyPress={(e) => handleKeyPress(e)}
         />
-        <button onClick={() => handleSubmit(val)}>Add</button>
+        <Button onClick={() => handleSubmit(val)}>Add</Button>
       </Popover>
     </TagInputWrapper>
   );

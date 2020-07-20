@@ -12,12 +12,12 @@ const StyledRow = styled.div<{ spaceless: boolean }>`
   padding: ${(props) => (props.spaceless ? '0px' : '10px')};
 
   &:first-of-type {
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
   }
   &:last-of-type {
-    border-bottom-left-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
   }
 `;
 

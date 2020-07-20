@@ -10,7 +10,7 @@ type CommonFieldProps<T> = {
   value?: string;
   onClick?: (e?: React.MouseEvent<T>) => void;
   onChange?: (e?: React.ChangeEvent<T>) => void;
-  onKeyPress?: (e?: React.KeyboardEvent<T>) => void;
+  onKeyPress?: (e: React.KeyboardEvent<T>) => void;
 };
 
 type FieldBaseProps = CommonFieldProps<HTMLDivElement> & {
@@ -65,7 +65,7 @@ export const CheckboxField: React.FC<{ label: string; checked: boolean } & Commo
       className={className}
       onClick={() => onChange !== undefined && onChange()}
     >
-      <span className={`checkbox ${id} ${checked ? 'checked' : ''}`}>{checked && <Icon name="check" />}</span>
+      <span className={`checkbox ${id} ${checked ? 'checked' : ''}`}>{checked && <Icon name="check" size='sm' />}</span>
       <label htmlFor={id}>{label}</label>
     </Field>
   );
@@ -73,13 +73,26 @@ export const CheckboxField: React.FC<{ label: string; checked: boolean } & Commo
 
 export const TextInputField = React.forwardRef<
   HTMLInputElement,
-  { label?: string } & CommonFieldProps<HTMLInputElement>
->(({ label, horizontal, value, onChange, onKeyPress }, ref) => {
+  { label?: string; defaultValue?: string; placeholder?: string; autoFocus?: boolean } & CommonFieldProps<
+    HTMLInputElement
+  >
+>(({ label, horizontal, value, placeholder, defaultValue, autoFocus, onChange, onClick, onKeyPress }, ref) => {
   const id = uuid();
+  const valueProps = defaultValue ? { defaultValue } : { value };
   return (
     <Field horizontal={horizontal} type="text">
       {label && <label htmlFor={id}>{label}</label>}
-      <input id={id} ref={ref} type="text" value={value} onChange={onChange} onKeyPress={onKeyPress} />
+      <input
+        id={id}
+        ref={ref}
+        type="text"
+        placeholder={placeholder}
+        {...valueProps}
+        onChange={onChange}
+        onClick={onClick}
+        onKeyPress={onKeyPress}
+        autoFocus={autoFocus}
+      />
     </Field>
   );
 });
@@ -102,11 +115,23 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     display: inline-block;
   }
 
+  input[type='text'],
+  select {
+    border-radius: 0.25rem;
+    outline: 0;
+    line-height: 1.25rem;
+    padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
+  }
+
   input[type='text'] {
     background: ${(p) => p.theme.color.bg.light};
-    padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
     border: 1px solid ${(p) => p.theme.color.border.light};
-    border-radius: 0.25rem;
+
+    &:focus,
+    &:hover {
+      background: ${(p) => p.theme.color.bg.white};
+      border-color: ${(p) => p.theme.color.border.dark};
+    }
   }
 
   span.checkbox {
@@ -149,5 +174,15 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   input,
   select {
     border: 0;
+  }
+
+  select {
+    line-height: 1.5rem;
+    border: 1px solid transparent;
+    padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
+
+    &:hover {
+      background: ${p => p.theme.color.bg.light};
+    }
   }
 `;

@@ -1,47 +1,44 @@
-import React from 'react';
 import styled from 'styled-components';
 
-type ButtonGroupItemProps = {
-  label: string;
-  action: () => void;
-  active?: boolean;
-};
-
-type ButtonGroupProps = {
-  buttons: ButtonGroupItemProps[];
-};
-
-const ButtonGroup: React.FC<ButtonGroupProps> = ({ buttons }) => (
-  <ButtonGroupContainer>
-    {buttons.map((item) => (
-      <ButtonGroupItem key={item.label} active={item.active} onClick={() => item.action()}>
-        {item.label}
-      </ButtonGroupItem>
-    ))}
-  </ButtonGroupContainer>
-);
-
-const ButtonGroupContainer = styled.div`
-  overflow: hidden;
-  border-radius: 4px;
-  border: 1px solid ${(p) => p.theme.color.border.normal};
+const ButtonGroup = styled.div`
   display: flex;
-`;
+  align-items: center;
 
-const ButtonGroupItem = styled.div<{ active?: boolean }>`
-  font-size: 14px;
-  line-height: 24px;
-  height: 26px;
-  padding: 0 0.8rem;
-  cursor: pointer;
-  background: ${(p) => (p.active ? p.theme.color.bg.blueGray : '#fff')};
+  > .button {
+    border-radius: 0;
+    margin-left: -1px;
 
-  &:not(:last-child) {
-    border-right: 1px solid ${(p) => p.theme.color.border.normal};
+    &:first-of-type {
+      margin-left: 0;
+      border-top-left-radius: 0.25rem;
+      border-bottom-left-radius: 0.25rem;
+    }
+
+    &:last-of-type {
+      border-top-right-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+    }
   }
 
-  &:hover {
-    background: ${(p) => (p.active ? p.theme.color.bg.blueGray : p.theme.color.bg.light)};
+  > a {
+    border-radius: 0;
+    margin-left: -1px;
+    display: inline-block;
+
+    &:first-of-type {
+      margin-left: 0;
+      border-top-left-radius: 0.25rem;
+      border-bottom-left-radius: 0.25rem;
+    }
+
+    &:last-of-type {
+      border-top-right-radius: 0.25rem;
+      border-bottom-right-radius: 0.25rem;
+    }
+
+    > .button {
+      border: 0;
+    }
   }
 `;
 

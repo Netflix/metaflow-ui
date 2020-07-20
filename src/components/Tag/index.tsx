@@ -1,40 +1,42 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import { darken } from 'polished';
 import Icon from '../Icon';
 
-const Tag = styled.span`
-  display: inline-block;
+const ActiveTagCSS = css`
+  cursor: pointer;
   background: ${(p) => p.theme.color.bg.blueLight};
   color: ${(p) => p.theme.color.text.blue};
-  margin-right: ${(p) => p.theme.spacer.xs}rem;
-  margin-bottom: ${(p) => p.theme.spacer.xs}rem;
-  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
-  border-radius: 0.25rem;
   border-bottom: 1px solid ${(p) => darken(0.1, p.theme.color.bg.blueLight)};
-  font-size: 0.875rem;
   font-weight: 500;
-  line-height: 1rem;
+  box-shadow: none;
 
   &:hover {
     background: ${(p) => darken(0.03, p.theme.color.bg.blueLight)};
   }
+`;
 
-  i {
-    margin-left: ${(p) => p.theme.spacer.xs}rem;
-    height: 1rem;
-  }
+const Tag = styled.span`
+  display: inline-flex;
+  background: ${(p) => p.theme.color.bg.white};
+  color: ${(p) => p.theme.color.text.mid};
+  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
+  border-radius: 0.25rem;
+  border: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1rem;
+  cursor: default;
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
 
-  &.removable {
-    cursor: pointer;
-  }
+  ${p => p.onClick && ActiveTagCSS};
 `;
 
 export default Tag;
 
 export const RemovableTag: React.FC<{ onClick: () => void }> = ({ children, onClick }) => (
-  <Tag className="removable" onClick={() => onClick()}>
+  <Tag onClick={onClick}>
     {children}
-    <Icon name="times" />
+    <Icon name="times" padLeft />
   </Tag>
 );
