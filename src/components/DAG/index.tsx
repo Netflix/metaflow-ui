@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { DAGModel, convertDAGModelToTree, DAGStructureTree, DAGTreeNode, StepTree } from './DAGUtils';
 import { Run, Step } from '../../types';
 import { dagexample1, dagexample2, dagexample3, dagHugeflow } from './DAGexamples';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Button from '../Button';
 import useResource from '../../hooks/useResource';
 
@@ -104,9 +104,7 @@ const RenderStep: React.FC<{ item: DAGTreeNode; isLast?: boolean; inContainer?: 
           {item.step_name}
           {shouldLine && (
             <LineContainer>
-              <svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
-                <line x1="15" y1="0" x2="15" y2="30" stroke="black" />
-              </svg>
+              <LineElement />
             </LineContainer>
           )}
         </NormalItem>
@@ -123,24 +121,51 @@ const RenderStep: React.FC<{ item: DAGTreeNode; isLast?: boolean; inContainer?: 
     );
   } else {
     return (
-      <ContainerItem containerType={item.container_type}>
+      <ContainerElement containerType={item.container_type}>
         {item.steps &&
           item.steps.map((child, index) => (
             <RenderStep item={child} key={index} inContainer={true} stepIds={stepIds} />
           ))}
-        <LineContainer>
-          <svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg">
-            <line x1="15" y1="0" x2="15" y2="30" stroke="black" />
-          </svg>
-        </LineContainer>
-      </ContainerItem>
+      </ContainerElement>
     );
   }
 };
 
+const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' }> = ({ containerType, children }) => {
+  if (containerType === 'parallel') {
+    return (
+      <ContainerItem>
+        {children}
+        <LineContainer>
+          <LineElement />
+        </LineContainer>
+      </ContainerItem>
+    );
+  } else {
+    return (
+      <ForeachContainer>
+        <ForeachItem>
+          {children}
+          <LineContainer>
+            <LineElement mode="long" />
+          </LineContainer>
+        </ForeachItem>
+      </ForeachContainer>
+    );
+  }
+};
+
+const LineElement: React.FC<{ mode?: 'short' | 'long' }> = ({ mode = 'short' }) => (
+  <svg viewBox={`0 0 30 ${mode === 'short' ? 32 : 35}`} xmlns="http://www.w3.org/2000/svg">
+    <line strokeWidth="3" x1="15" y1="2" x2="15" y2={`${mode === 'short' ? 32 : 35}`} stroke="#c0c0c0" />
+  </svg>
+);
+
 const DAGRenderingContainer = styled.div`
   margin: 0 -45px;
   overflow-x: scroll;
+  font-family: monospace;
+  font-size: 14px;
 `;
 
 const NormalItemContainer = styled.div`
@@ -153,22 +178,53 @@ const NormalItemContainer = styled.div`
 `;
 
 const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
-  border: 1px solid ${(props) => (props.state === 'ok' ? '#4bd14b' : props.state === 'running' ? '#ff7e31' : 'gray')};
-  max-width: 200px;
-  padding: 10px;
+  border: 2px solid
+    ${(p) =>
+      p.state === 'ok'
+        ? p.theme.notification.success.text
+        : p.state === 'running'
+        ? p.theme.notification.warning.text
+        : p.state === 'warning'
+        ? 'gray'
+        : 'gray'};
+  padding: 0.75rem 1.5rem;
   position: relative;
+  border-radius: 4px;
   transition: 0.15s border;
+  background: #fff;
 `;
 
 const NormalItemChildContainer = styled.div`
   margin-top: 15px;
 `;
 
-const ContainerItem = styled.div<{ containerType: 'parallel' | 'foreach' }>`
-  border: 1px solid ${(props) => (props.containerType === 'foreach' ? 'green' : 'blue')};
+const BaseContainerStyle = css`
+  border: 2px dashed #c0c0c0;
+  background: rgba(192, 192, 192, 0.1);
   display: flex;
   margin: 15px;
+  border-radius: 4px;
   position: relative;
+  z-index: 1;
+`;
+
+const ContainerItem = styled.div`
+  ${BaseContainerStyle}
+`;
+
+const ForeachContainer = styled.div`
+  ${BaseContainerStyle}
+  background: rgba(192, 192, 192, 0.3);
+  transform: translateX(-5px) translateY(-5px);
+  margin-top: 19px;
+`;
+
+const ForeachItem = styled.div`
+  ${BaseContainerStyle}
+  background: #f8f8f8;
+  margin: 0;
+  transform: translateX(5px) translateY(5px);
+  flex: 1;
 `;
 
 const LineContainer = styled.div`
