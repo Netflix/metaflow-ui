@@ -55,7 +55,7 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
             />
           </InformationRow>
           <InformationRow>
-            <ItemRow pad="md">
+            <ItemRow pad="md" style={{paddingLeft: '0.25rem'}}>
               <SmallText>Tags</SmallText>
               <ItemRow pad="xs">
                 {mergeTags(run).map((tag) => (
