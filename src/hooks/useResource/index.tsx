@@ -220,7 +220,7 @@ export default function useResource<T, U>({
    * Recursively finds all data available for current query.
    * @param currentTarget cache key (basically url of endpoint we fetched the data)
    */
-  function findAllRelatedDataFromCache(currentTarget: string): any {
+  /*function findAllRelatedDataFromCache(currentTarget: string): any {
     const cached = cache.get<T>(currentTarget);
     return [
       ...(cached.data || []),
@@ -228,19 +228,21 @@ export default function useResource<T, U>({
         ? findAllRelatedDataFromCache(cached.result.links.next || '')
         : []),
     ];
-  }
+  }*/
 
   useEffect(() => {
-    const cached = cache.get<T>(target);
+    // const cached = cache.get<T>(target);
     const abortCtrl = new AbortController();
     const signal = abortCtrl.signal;
     let fulfilled = false;
 
-    if (!pause && (!cached || !cached.data || cached.stale)) {
+    //if ((!pause && (!cached || !cached.data || cached.stale)) || true) {
+    if (!pause) {
       fetchData(target, signal, () => {
         fulfilled = true;
       });
-    } else if (cached && cached.data) {
+    }
+    /*} else if (cached && cached.data) {
       setData(cached.data);
       // If we should return all data, lets check if there is other entries in cache.
       // Wrapped in setTimeout so it doesnt block rendering on huge data masses.
@@ -249,7 +251,7 @@ export default function useResource<T, U>({
           onUpdate(findAllRelatedDataFromCache(target));
         }, 0);
       }
-    }
+    }*/
 
     return () => {
       if (!fulfilled) {
