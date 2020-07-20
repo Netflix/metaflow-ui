@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, {css} from 'styled-components';
+import styled, { css } from 'styled-components';
 import { darken } from 'polished';
 import Icon from '../Icon';
 
@@ -29,7 +29,7 @@ const Tag = styled.span`
   cursor: default;
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
 
-  ${p => p.onClick && ActiveTagCSS};
+  ${(p) => p.onClick && ActiveTagCSS};
 `;
 
 export default Tag;

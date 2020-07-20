@@ -82,7 +82,7 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({ label, queryKey, cur
     <TH active={active} onClick={() => onSort(queryKey)} {...rest}>
       <HeaderColumnWrapper>
         {label}
-        <SortIcon active={active} size='sm' direction={direction} padLeft />
+        <SortIcon active={active} size="sm" direction={direction} padLeft />
       </HeaderColumnWrapper>
     </TH>
   );

@@ -45,14 +45,14 @@ const Button: React.FC<ButtonProps> = ({
 
 export const ButtonLink: React.FC<Omit<ButtonProps, 'onClick'> & { to: string }> = ({ to, ...rest }) => {
   const history = useHistory();
-  return <Button {...rest} onClick={() => history.push(to)} />
+  return <Button {...rest} onClick={() => history.push(to)} />;
 };
 
 const DisabledButtonCSS = css`
-  border-color:  ${p => p.theme.color.bg.light} !important;
-  color: ${p => p.theme.color.text.light} !important;
+  border-color: ${(p) => p.theme.color.bg.light} !important;
+  color: ${(p) => p.theme.color.text.light} !important;
   cursor: not-allowed;
-  background: ${p => p.theme.color.bg.light} !important;
+  background: ${(p) => p.theme.color.bg.light} !important;
 `;
 
 const ActiveButtonCSS = css`

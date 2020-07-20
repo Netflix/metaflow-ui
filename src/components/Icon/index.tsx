@@ -65,14 +65,14 @@ const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate, ...rest }) => {
 
 export default Icon;
 
-const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number, padLeft?: boolean, padRight?: boolean }>`
+const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number; padLeft?: boolean; padRight?: boolean }>`
   vertical-align: text-top;
   display: inline-flex;
   align-items: center;
   margin: 0;
   padding: 0;
-  padding-left: ${p => p.padLeft ? p.theme.spacer.sm : 0}rem;
-  padding-right: ${p => p.padRight ? p.theme.spacer.sm : 0}rem;
+  padding-left: ${(p) => (p.padLeft ? p.theme.spacer.sm : 0)}rem;
+  padding-right: ${(p) => (p.padRight ? p.theme.spacer.sm : 0)}rem;
 
   svg {
     height: ${(p) => sizeTable[p.size]}rem;

@@ -65,7 +65,7 @@ export const CheckboxField: React.FC<{ label: string; checked: boolean } & Commo
       className={className}
       onClick={() => onChange !== undefined && onChange()}
     >
-      <span className={`checkbox ${id} ${checked ? 'checked' : ''}`}>{checked && <Icon name="check" size='sm' />}</span>
+      <span className={`checkbox ${id} ${checked ? 'checked' : ''}`}>{checked && <Icon name="check" size="sm" />}</span>
       <label htmlFor={id}>{label}</label>
     </Field>
   );
@@ -182,7 +182,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
 
     &:hover {
-      background: ${p => p.theme.color.bg.light};
+      background: ${(p) => p.theme.color.bg.light};
     }
   }
 `;

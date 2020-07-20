@@ -137,7 +137,9 @@ const Breadcrumb: React.FC = () => {
       {!edit && buttonList.length > 0 && (
         <ButtonGroup>
           {buttonList.map(({ label, path }, index) => (
-            <ButtonLink to={path} active={index + 1 === buttonList.length}>{label}</ButtonLink>
+            <ButtonLink key={index} to={path} active={index + 1 === buttonList.length}>
+              {label}
+            </ButtonLink>
           ))}
           <EditButton
             onClick={() => setEdit(true)}
@@ -245,7 +247,7 @@ const StyledBreadcrumb = styled(ItemRow)`
     font-size: 0.875rem;
   }
 
-  input[type=text] {
+  input[type='text'] {
     line-height: 1.5rem;
     font-size: 0.875rem;
     width: 20rem;
