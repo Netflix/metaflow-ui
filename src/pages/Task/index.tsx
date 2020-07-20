@@ -190,14 +190,17 @@ const AnchoredView: React.FC<AnchoredViewProps> = ({ sections }) => {
 const TaskContainer = styled.div`
   display: flex;
   padding: 25px 0;
+  width: 100%;
 `;
 
 const AnchoredViewContainer = styled.div`
   display: flex;
+  width 100%;
 `;
 
 const TaskContent = styled.div`
   flex: 1;
+  max-width: 80%;
   padding: 0 2rem 0 0;
 `;
 
