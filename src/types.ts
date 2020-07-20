@@ -24,7 +24,7 @@ export interface Run extends MetaDataBaseObject {
   run_number: number;
   status: keyof RunStatus;
   finished_at?: number;
-  duration?: string;
+  duration?: number;
 }
 
 export interface Step extends MetaDataBaseObject {

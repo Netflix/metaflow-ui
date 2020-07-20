@@ -17,6 +17,7 @@ import Icon from '../../../components/Icon';
 import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
 import Notification, { NotificationType } from '../../../components/Notification';
 import StatusField from '../../../components/Status';
+import { formatDuration } from '../../../utils/format';
 
 const statusColors: RunStatus = {
   completed: 'white',
@@ -129,7 +130,7 @@ const ResultGroup: React.FC<Props> = ({
               </TD>
               <TD>{getISOString(new Date(r.ts_epoch))}</TD>
               <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
-              <TD>{r.duration}</TD>
+              <TD>{r.duration ? formatDuration(r.duration) : ''}</TD>
               <TD>{r.user_name}</TD>
               <TD className="timeline-link">
                 <Link
