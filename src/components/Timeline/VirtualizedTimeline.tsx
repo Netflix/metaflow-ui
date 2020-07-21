@@ -5,12 +5,13 @@ import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
 import useResource from '../../hooks/useResource';
-import useGraph, { GraphState, GraphSortBy } from './useGraph';
+import useGraph, { GraphState, GraphSortBy, validatedParameter } from './useGraph';
 import useRowData, { StepRowData, RowDataAction, RowDataModel } from './useRowData';
 import useQuery from '../../hooks/useQuery';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
+import { useQueryParams, StringParam } from 'use-query-params';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
@@ -60,6 +61,12 @@ function taskDuration(a: Row): number {
 const VirtualizedTimeline: React.FC<{
   run: Run;
 }> = ({ run }) => {
+  const [q, sq] = useQueryParams({
+    group: StringParam,
+    order: StringParam,
+    direction: StringParam,
+    alignment: StringParam,
+  });
   const params = useQuery();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
@@ -130,6 +137,45 @@ const VirtualizedTimeline: React.FC<{
 
   // Graph data. Need to know start and end time of run to render lines
   const { graph, dispatch: graphDispatch } = useGraph(run.ts_epoch, run.finished_at || Date.now());
+
+  //
+  // Query parameters handling
+  //
+
+  useEffect(() => {
+    const sortDir = validatedParameter<'asc' | 'desc'>(q.direction, graph.sortDir, ['asc', 'desc'], 'asc');
+    if (sortDir) {
+      graphDispatch({
+        type: 'sortDir',
+        dir: sortDir,
+      });
+    }
+
+    const sortBy = validatedParameter<'startTime' | 'duration'>(
+      q.order,
+      graph.sortBy,
+      ['startTime', 'duration'],
+      'startTime',
+    );
+    if (sortBy) {
+      graphDispatch({ type: 'sortBy', by: sortBy });
+    }
+
+    const groupBy = validatedParameter<'none' | 'step'>(q.group, graph.groupBy, ['none', 'step'], 'step');
+    if (groupBy) {
+      graphDispatch({ type: 'groupBy', by: groupBy });
+    }
+
+    const alignment = validatedParameter<'fromStartTime' | 'fromLeft'>(
+      q.alignment,
+      graph.alignment,
+      ['fromStartTime', 'fromLeft'],
+      'fromStartTime',
+    );
+    if (alignment) {
+      graphDispatch({ type: 'alignment', alignment });
+    }
+  }, [q, graph, graphDispatch]);
 
   // Init graph when steps updates (do we need this?)
   useEffect(() => {
@@ -282,10 +328,10 @@ const VirtualizedTimeline: React.FC<{
           graph={graph}
           zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
           zoomReset={() => graphDispatch({ type: 'resetZoom' })}
-          changeMode={(alignment) => graphDispatch({ type: 'alignment', alignment })}
-          toggleGroupBy={(by) => graphDispatch({ type: 'groupBy', by })}
-          updateSortBy={(by) => graphDispatch({ type: 'sortBy', by })}
-          updateSortDir={() => graphDispatch({ type: 'sortDir', dir: graph.sortDir === 'asc' ? 'desc' : 'asc' })}
+          changeMode={(alignment) => sq({ alignment })}
+          toggleGroupBy={(by) => sq({ group: by })}
+          updateSortBy={(by) => sq({ order: by })}
+          updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' })}
           expandAll={expandAll}
           collapseAll={collapseAll}
         />

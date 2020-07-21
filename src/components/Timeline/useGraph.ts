@@ -200,6 +200,16 @@ function resetTimeline(graph: GraphState): GraphState {
   };
 }
 
+export function validatedParameter<X>(value: any, currentValue: any, allowed: X[], defaultValue: X): X | null {
+  if (!value && currentValue !== defaultValue) {
+    return defaultValue;
+  } else if (value && value !== currentValue && allowed.indexOf(value) > -1) {
+    return value;
+  }
+
+  return null;
+}
+
 //
 // Hook to contain timelines graphical presentation data. We would not have to use hook here but
 // we might need some extra functionality later so why not.
