@@ -143,7 +143,7 @@ export default function useResource<T, U>({
   // initialise update batcher
   useEffect(() => {
     updateBatcher[target] = [];
-  }, []);
+  }, []); // eslint-disable-line
   // Call batch update
   useInterval(() => {
     if (useBatching && onUpdate && updateBatcher[target].length > 0) {
