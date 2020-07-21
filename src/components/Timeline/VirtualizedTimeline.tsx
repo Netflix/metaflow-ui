@@ -63,7 +63,7 @@ const VirtualizedTimeline: React.FC<{
   const params = useQuery();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
-  const _listContainer = useRef(null);
+  const _listContainer = useRef<HTMLDivElement>(null);
   const listContainer = useComponentSize(_listContainer);
 
   // Rows to be iterated in timeline
@@ -252,6 +252,29 @@ const VirtualizedTimeline: React.FC<{
     });
   };
 
+  //
+  // Horizontal dragging of whole graph
+  //
+
+  const [drag, setDrag] = useState({ dragging: false, start: 0 });
+  const move = (clientX: number) => {
+    if (drag.dragging) {
+      if (_listContainer && _listContainer.current) {
+        const movement = (clientX - drag.start) / _listContainer.current?.clientWidth;
+        setDrag({ ...drag, start: clientX });
+        graphDispatch({ type: 'move', value: -((graph.max - graph.min) * movement) });
+      }
+    }
+  };
+
+  const startMove = (clientX: number) => {
+    setDrag({ ...drag, dragging: true, start: clientX });
+  };
+
+  const stopMove = () => {
+    setDrag({ dragging: false, start: 0 });
+  };
+
   return (
     <VirtualizedTimelineContainer>
       <VirtualizedTimelineSubContainer>
@@ -268,6 +291,14 @@ const VirtualizedTimeline: React.FC<{
         />
         <div style={{ flex: '1' }} ref={_listContainer}>
           <FixedListContainer
+            onMouseDown={(e) => startMove(e.clientX)}
+            onMouseUp={() => stopMove()}
+            onMouseMove={(e) => move(e.clientX)}
+            onMouseLeave={() => stopMove()}
+            onTouchStart={(e) => startMove(e.touches[0].clientX)}
+            onTouchEnd={() => stopMove()}
+            onTouchMove={(e) => move(e.touches[0].clientX)}
+            onTouchCancel={() => stopMove()}
             sticky={!!stickyHeader && graph.groupBy !== 'none'}
             style={{
               height:
@@ -397,6 +428,13 @@ const VirtualizedTimelineContainer = styled.div`
   display: flex;
   height: 100%;
   width: 100%;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
 
   .ReactVirtualized__List:focus  {
     outline: none;

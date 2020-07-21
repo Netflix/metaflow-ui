@@ -157,6 +157,10 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
   i {
     line-height: 0px;
   }
+  @media screen and (max-width: 765px) {
+    flex: 0 0 100px;
+    max-width: 100px;
+  }
 `;
 
 const RowStepName = styled.span`
@@ -174,6 +178,7 @@ const RowGraphContainer = styled.div`
   width: 100%;
   border-left: 1px solid #e8e8e8;
   overflow-x: hidden;
+  cursor: grab;
 `;
 
 const BoxGraphic = styled.div<{ root: boolean }>`
