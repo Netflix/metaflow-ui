@@ -171,9 +171,12 @@ const VirtualizedTimeline: React.FC<{
   // Figure out rows that should be visible if something related to that changes
   // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {
-    // Filter out steps if we have step filters on
-    const visibleSteps =
-      filters.steps.length === 0 ? steps : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1);
+    // Filter out steps if we have step filters on. Also filter out all steps starting with underscore (_)
+    // since they are created by metaflow and unnecessary for user
+    const visibleSteps = (filters.steps.length === 0
+      ? steps
+      : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1)
+    ).filter((item) => !item.step_name.startsWith('_'));
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
     const newRows: Row[] = visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];
