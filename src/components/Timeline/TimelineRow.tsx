@@ -28,15 +28,15 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
   const Element = sticky ? StickyStyledRow : StyledRow;
   const finishedAt = endTime || item.data.finished_at;
 
-  // Calculate have much box needs to be pushed from left
+  const visibleDuration = graph.timelineEnd - graph.timelineStart;
+
+  // Calculate have much box needs to be pushed from (or to) left
   const valueFromLeft =
     graph.alignment === 'fromLeft'
-      ? 0
-      : ((dataItem.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100;
+      ? ((graph.min - graph.timelineStart) / visibleDuration) * 100
+      : ((dataItem.ts_epoch - graph.timelineStart) / visibleDuration) * 100;
 
-  const width = finishedAt
-    ? ((finishedAt - item.data.ts_epoch) / (graph.timelineEnd - graph.timelineStart)) * 100
-    : 100 - valueFromLeft;
+  const width = finishedAt ? ((finishedAt - item.data.ts_epoch) / visibleDuration) * 100 : 100 - valueFromLeft;
 
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
