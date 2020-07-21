@@ -14,7 +14,7 @@ export type StepRowData = {
   data: Task[];
 };
 
-type RowDataAction =
+export type RowDataAction =
   | { type: 'init'; ids: string[] }
   | { type: 'add'; id: string; data: StepRowData }
   | { type: 'fill'; data: Task[] }
@@ -24,7 +24,7 @@ type RowDataAction =
   | { type: 'sort'; ids: string[] }
   | { type: 'reset' };
 
-type RowDataModel = { [key: string]: StepRowData };
+export type RowDataModel = { [key: string]: StepRowData };
 
 function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataModel {
   switch (action.type) {

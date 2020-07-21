@@ -15,6 +15,24 @@ const HorizontalScrollbar: React.FC<{ graph: GraphState; updateTimeline: (amount
   const _container = createRef<HTMLDivElement>();
   const [drag, setDrag] = useState({ dragging: false, start: 0 });
 
+  const move = (clientX: number) => {
+    if (drag.dragging) {
+      if (_container && _container.current) {
+        const movement = (clientX - drag.start) / _container.current?.clientWidth;
+        setDrag({ ...drag, start: clientX });
+        updateTimeline((graph.max - graph.min) * movement);
+      }
+    }
+  };
+
+  const startMove = (clientX: number) => {
+    setDrag({ ...drag, dragging: true, start: clientX });
+  };
+
+  const stopMove = () => {
+    setDrag({ dragging: false, start: 0 });
+  };
+
   return (
     <ScrollbarContainer ref={_container}>
       <ScrollDragContainer
@@ -24,25 +42,23 @@ const HorizontalScrollbar: React.FC<{ graph: GraphState; updateTimeline: (amount
           position: drag.dragging ? 'fixed' : 'absolute',
         }}
         onMouseMove={(e) => {
-          if (drag.dragging) {
-            if (_container && _container.current) {
-              const movement = (e.clientX - drag.start) / _container.current?.clientWidth;
-              setDrag({ ...drag, start: e.clientX });
-              updateTimeline((graph.max - graph.min) * movement);
-            }
-          }
+          move(e.clientX);
         }}
-        onMouseUp={() => {
-          setDrag({ dragging: false, start: 0 });
+        onMouseUp={stopMove}
+        onMouseLeave={stopMove}
+        onTouchMove={(e) => {
+          move(e.touches[0].clientX);
         }}
-        onMouseLeave={() => {
-          setDrag({ dragging: false, start: 0 });
-        }}
+        onTouchEnd={stopMove}
+        onTouchCancel={stopMove}
       />
 
       <ScrollBarHandle
         onMouseDown={(e) => {
-          setDrag({ ...drag, dragging: true, start: e.clientX });
+          startMove(e.clientX);
+        }}
+        onTouchStart={(e) => {
+          startMove(e.touches[0].clientX);
         }}
         style={{
           pointerEvents: drag.dragging ? 'none' : 'all',

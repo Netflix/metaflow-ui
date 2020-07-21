@@ -5,12 +5,13 @@ import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
 import useResource from '../../hooks/useResource';
-import useGraph, { GraphState, GraphSortBy } from './useGraph';
-import useRowData, { StepRowData } from './useRowData';
+import useGraph, { GraphState, GraphSortBy, validatedParameter } from './useGraph';
+import useRowData, { StepRowData, RowDataAction, RowDataModel } from './useRowData';
 import useQuery from '../../hooks/useQuery';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
+import { useQueryParams, StringParam } from 'use-query-params';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
@@ -60,10 +61,16 @@ function taskDuration(a: Row): number {
 const VirtualizedTimeline: React.FC<{
   run: Run;
 }> = ({ run }) => {
+  const [q, sq] = useQueryParams({
+    group: StringParam,
+    order: StringParam,
+    direction: StringParam,
+    alignment: StringParam,
+  });
   const params = useQuery();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
-  const _listContainer = useRef(null);
+  const _listContainer = useRef<HTMLDivElement>(null);
   const listContainer = useComponentSize(_listContainer);
 
   // Rows to be iterated in timeline
@@ -131,6 +138,45 @@ const VirtualizedTimeline: React.FC<{
   // Graph data. Need to know start and end time of run to render lines
   const { graph, dispatch: graphDispatch } = useGraph(run.ts_epoch, run.finished_at || Date.now());
 
+  //
+  // Query parameters handling
+  //
+
+  useEffect(() => {
+    const sortDir = validatedParameter<'asc' | 'desc'>(q.direction, graph.sortDir, ['asc', 'desc'], 'asc');
+    if (sortDir) {
+      graphDispatch({
+        type: 'sortDir',
+        dir: sortDir,
+      });
+    }
+
+    const sortBy = validatedParameter<'startTime' | 'duration'>(
+      q.order,
+      graph.sortBy,
+      ['startTime', 'duration'],
+      'startTime',
+    );
+    if (sortBy) {
+      graphDispatch({ type: 'sortBy', by: sortBy });
+    }
+
+    const groupBy = validatedParameter<'none' | 'step'>(q.group, graph.groupBy, ['none', 'step'], 'step');
+    if (groupBy) {
+      graphDispatch({ type: 'groupBy', by: groupBy });
+    }
+
+    const alignment = validatedParameter<'fromStartTime' | 'fromLeft'>(
+      q.alignment,
+      graph.alignment,
+      ['fromStartTime', 'fromLeft'],
+      'fromStartTime',
+    );
+    if (alignment) {
+      graphDispatch({ type: 'alignment', alignment });
+    }
+  }, [q, graph, graphDispatch]);
+
   // Init graph when steps updates (do we need this?)
   useEffect(() => {
     // Let's check start and end times for graph so we can draw proper lines
@@ -171,14 +217,17 @@ const VirtualizedTimeline: React.FC<{
   // Figure out rows that should be visible if something related to that changes
   // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {
-    // Filter out steps if we have step filters on
-    const visibleSteps =
-      filters.steps.length === 0 ? steps : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1);
+    // Filter out steps if we have step filters on. Also filter out all steps starting with underscore (_)
+    // since they are created by metaflow and unnecessary for user
+    const visibleSteps = (filters.steps.length === 0
+      ? steps
+      : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1)
+    ).filter((item) => !item.step_name.startsWith('_'));
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
     const newRows: Row[] = visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];
       // If step row is open, add its tasks to the list.
-      if (rowData?.isOpen) {
+      if (rowData?.isOpen || graph.groupBy === 'none') {
         const rowTasks = rowData.data.map((item) => ({
           type: 'task' as const,
           data: item,
@@ -249,6 +298,29 @@ const VirtualizedTimeline: React.FC<{
     });
   };
 
+  //
+  // Horizontal dragging of whole graph
+  //
+
+  const [drag, setDrag] = useState({ dragging: false, start: 0 });
+  const move = (clientX: number) => {
+    if (drag.dragging) {
+      if (_listContainer && _listContainer.current) {
+        const movement = (clientX - drag.start) / _listContainer.current?.clientWidth;
+        setDrag({ ...drag, start: clientX });
+        graphDispatch({ type: 'move', value: -((graph.max - graph.min) * movement) });
+      }
+    }
+  };
+
+  const startMove = (clientX: number) => {
+    setDrag({ ...drag, dragging: true, start: clientX });
+  };
+
+  const stopMove = () => {
+    setDrag({ dragging: false, start: 0 });
+  };
+
   return (
     <VirtualizedTimelineContainer>
       <VirtualizedTimelineSubContainer>
@@ -256,15 +328,23 @@ const VirtualizedTimeline: React.FC<{
           graph={graph}
           zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
           zoomReset={() => graphDispatch({ type: 'resetZoom' })}
-          changeMode={(alignment) => graphDispatch({ type: 'alignment', alignment })}
-          toggleGroupBy={(by) => graphDispatch({ type: 'groupBy', by })}
-          updateSortBy={(by) => graphDispatch({ type: 'sortBy', by })}
-          updateSortDir={() => graphDispatch({ type: 'sortDir', dir: graph.sortDir === 'asc' ? 'desc' : 'asc' })}
+          changeMode={(alignment) => sq({ alignment })}
+          toggleGroupBy={(by) => sq({ group: by })}
+          updateSortBy={(by) => sq({ order: by })}
+          updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' })}
           expandAll={expandAll}
           collapseAll={collapseAll}
         />
         <div style={{ flex: '1' }} ref={_listContainer}>
           <FixedListContainer
+            onMouseDown={(e) => startMove(e.clientX)}
+            onMouseUp={() => stopMove()}
+            onMouseMove={(e) => move(e.clientX)}
+            onMouseLeave={() => stopMove()}
+            onTouchStart={(e) => startMove(e.touches[0].clientX)}
+            onTouchEnd={() => stopMove()}
+            onTouchMove={(e) => move(e.touches[0].clientX)}
+            onTouchCancel={() => stopMove()}
             sticky={!!stickyHeader && graph.groupBy !== 'none'}
             style={{
               height:
@@ -290,16 +370,7 @@ const VirtualizedTimeline: React.FC<{
                 }
               }}
               rowHeight={ROW_HEIGHT}
-              rowRenderer={({ index, style }) => (
-                <RowRenderer
-                  key={index}
-                  row={rows[index]}
-                  graph={graph}
-                  style={style}
-                  rowData={rows[index].type === 'step' ? rowDataState[rows[index].data.step_name] : undefined}
-                  toggleOpen={() => dispatch({ type: 'toggle', id: rows[index].data.step_name })}
-                />
-              )}
+              rowRenderer={createRowRenderer({ rows, graph, dispatch, rowDataState })}
               height={listContainer.height + (stickyHeader ? 0 : ROW_HEIGHT) - 28}
               width={listContainer.width}
             />
@@ -320,6 +391,26 @@ const VirtualizedTimeline: React.FC<{
     </VirtualizedTimelineContainer>
   );
 };
+
+type RowRendererProps = {
+  rows: Row[];
+  graph: GraphState;
+  dispatch: (action: RowDataAction) => void;
+  rowDataState: RowDataModel;
+};
+
+function createRowRenderer({ rows, graph, dispatch, rowDataState }: RowRendererProps) {
+  return ({ index, style }: { index: number; style: React.CSSProperties }) => (
+    <RowRenderer
+      key={index}
+      row={rows[index]}
+      graph={graph}
+      style={style}
+      rowData={rows[index].type === 'step' ? rowDataState[rows[index].data.step_name] : undefined}
+      toggleOpen={() => dispatch({ type: 'toggle', id: rows[index].data.step_name })}
+    />
+  );
+}
 
 const RowRenderer: React.FC<{
   style: React.CSSProperties;
@@ -383,6 +474,13 @@ const VirtualizedTimelineContainer = styled.div`
   display: flex;
   height: 100%;
   width: 100%;
+
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Old versions of Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none;
 
   .ReactVirtualized__List:focus  {
     outline: none;

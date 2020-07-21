@@ -28,25 +28,29 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
   const Element = sticky ? StickyStyledRow : StyledRow;
   const finishedAt = endTime || item.data.finished_at;
 
-  // Calculate have much box needs to be pushed from left
+  const visibleDuration = graph.timelineEnd - graph.timelineStart;
+
+  // Calculate have much box needs to be pushed from (or to) left
   const valueFromLeft =
     graph.alignment === 'fromLeft'
-      ? 0
-      : ((dataItem.ts_epoch - graph.timelineStart) / (graph.timelineEnd - graph.timelineStart)) * 100;
+      ? ((graph.min - graph.timelineStart) / visibleDuration) * 100
+      : ((dataItem.ts_epoch - graph.timelineStart) / visibleDuration) * 100;
 
-  const width = finishedAt
-    ? ((finishedAt - item.data.ts_epoch) / (graph.timelineEnd - graph.timelineStart)) * 100
-    : 100 - valueFromLeft;
+  const width = finishedAt ? ((finishedAt - item.data.ts_epoch) / visibleDuration) * 100 : 100 - valueFromLeft;
 
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
   return (
     <>
       <Element>
-        <RowLabel onClick={() => onOpen()} type={item.type} isOpen={isOpen}>
+        <RowLabel onClick={() => onOpen()} type={item.type} isOpen={isOpen} group={graph.groupBy}>
           {item.type === 'task' ? (
             <Link to={getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id)}>
-              {item.data.task_id}
+              <RowStepName>{graph.groupBy === 'none' ? item.data.step_name : ''}</RowStepName>
+              <span>
+                {graph.groupBy === 'none' ? '/' : ''}
+                {item.data.task_id}
+              </span>
             </Link>
           ) : (
             <StepLabel>
@@ -117,7 +121,7 @@ const StickyStyledRow = styled(StyledRow)`
   left: 0;
 `;
 
-const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean }>`
+const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: 'none' | 'step' }>`
   flex: 0 0 225px;
   max-width: 225px;
   overflow: hidden;
@@ -133,16 +137,34 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean }>`
   a {
     color: gray;
     text-decoration: none;
-    width: 50%;
+    min-width: ${(p) => (p.group === 'none' ? '100%' : '50%')};
     background: #f6f6f6;
     display: inline-block;
     margin-right: -0.25rem;
+    margin-left: -0.25rem;
     padding-right: 0.25rem;
+    padding-left: 0.25rem;
+
+    ${(p) =>
+      p.group === 'none'
+        ? css`
+            display: flex;
+            justify-content: flex-end;
+          `
+        : ''}
   }
 
   i {
     line-height: 0px;
   }
+  @media screen and (max-width: 765px) {
+    flex: 0 0 100px;
+    max-width: 100px;
+  }
+`;
+
+const RowStepName = styled.span`
+  overflow: hidden;
 `;
 
 const StepLabel = styled.div`
@@ -156,6 +178,7 @@ const RowGraphContainer = styled.div`
   width: 100%;
   border-left: 1px solid #e8e8e8;
   overflow-x: hidden;
+  cursor: grab;
 `;
 
 const BoxGraphic = styled.div<{ root: boolean }>`
