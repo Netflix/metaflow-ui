@@ -43,10 +43,14 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
   return (
     <>
       <Element>
-        <RowLabel onClick={() => onOpen()} type={item.type} isOpen={isOpen}>
+        <RowLabel onClick={() => onOpen()} type={item.type} isOpen={isOpen} group={graph.groupBy}>
           {item.type === 'task' ? (
             <Link to={getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id)}>
-              {item.data.task_id}
+              <RowStepName>{graph.groupBy === 'none' ? item.data.step_name : ''}</RowStepName>
+              <span>
+                {graph.groupBy === 'none' ? '/' : ''}
+                {item.data.task_id}
+              </span>
             </Link>
           ) : (
             <StepLabel>
@@ -117,7 +121,7 @@ const StickyStyledRow = styled(StyledRow)`
   left: 0;
 `;
 
-const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean }>`
+const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: 'none' | 'step' }>`
   flex: 0 0 225px;
   max-width: 225px;
   overflow: hidden;
@@ -133,16 +137,30 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean }>`
   a {
     color: gray;
     text-decoration: none;
-    width: 50%;
+    min-width: ${(p) => (p.group === 'none' ? '100%' : '50%')};
     background: #f6f6f6;
     display: inline-block;
     margin-right: -0.25rem;
+    margin-left: -0.25rem;
     padding-right: 0.25rem;
+    padding-left: 0.25rem;
+
+    ${(p) =>
+      p.group === 'none'
+        ? css`
+            display: flex;
+            justify-content: flex-end;
+          `
+        : ''}
   }
 
   i {
     line-height: 0px;
   }
+`;
+
+const RowStepName = styled.span`
+  overflow: hidden;
 `;
 
 const StepLabel = styled.div`
