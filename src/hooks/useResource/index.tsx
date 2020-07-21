@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { METAFLOW_SERVICE } from '../../constants';
 import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
+import useInterval from '../useInterval';
 
 export interface HookConfig<T, U> {
   // URL for fetch request
@@ -22,6 +23,8 @@ export interface HookConfig<T, U> {
   privateCache?: boolean;
   // ?
   pause?: boolean;
+  fullyDisableCache?: boolean;
+  useBatching?: boolean;
 }
 
 interface DataModel<T> {
@@ -109,6 +112,11 @@ export function createCache(): CacheInterface {
 
 // default cache
 const singletonCache = createCache();
+//
+// Imperative store for some data. We want to use imperative functions like push when handling real time data
+// in some cases for maximum performance. Using state inside the hooks seemed to be very non optimal performance wise.
+//
+const updateBatcher: Record<string, any> = {};
 
 // TODO: cache map, cache subscriptions, ws connections, cache mutations
 export default function useResource<T, U>({
@@ -121,6 +129,8 @@ export default function useResource<T, U>({
   onUpdate,
   privateCache = false,
   pause = false,
+  fullyDisableCache = false,
+  useBatching = false,
 }: HookConfig<T, U>): Resource<T> {
   const cache = useRef(privateCache ? createCache() : singletonCache).current;
   const [error, setError] = useState(null);
@@ -129,6 +139,18 @@ export default function useResource<T, U>({
 
   const q = new URLSearchParams(queryParams).toString();
   const target = `${METAFLOW_SERVICE}${url}${q ? '?' + q : ''}`;
+
+  // initialise update batcher
+  useEffect(() => {
+    updateBatcher[target] = [];
+  }, []);
+  // Call batch update
+  useInterval(() => {
+    if (useBatching && onUpdate && updateBatcher[target].length > 0) {
+      onUpdate(updateBatcher[target]);
+      updateBatcher[target] = [];
+    }
+  }, 500);
 
   useEffect(() => {
     const unsubCache = cache.subscribe(target, () => {
@@ -153,25 +175,32 @@ export default function useResource<T, U>({
       // If we have onUpdate function, lets update cache wihtout triggering update loop...
       const cacheSet = onUpdate ? cache.setInBackground : cache.set;
       // ..and update new data to component manually. This way we only send updated value to component instead of whole batch
+      // Optionally we can also batch some amount of messages before sending them to component
       if (onUpdate) {
-        onUpdate(Array.isArray(currentCache.data) ? [event.data] : event.data);
+        if (useBatching) {
+          updateBatcher[target].push(event.data);
+        } else {
+          onUpdate(Array.isArray(initialData) ? [event.data] : event.data);
+        }
       }
-
-      if (event.type === EventType.INSERT) {
-        cacheSet(target, {
-          ...currentCache,
-          data: Array.isArray(currentCache.data)
-            ? [event.data, ...currentCache.data]
-            : (currentCache.data = event.data),
-        });
-      } else if (event.type === EventType.UPDATE) {
-        // On update we need to use updatePredicate to update items in cache.
-        cacheSet(target, {
-          ...currentCache,
-          data: Array.isArray(currentCache.data)
-            ? currentCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
-            : (currentCache.data = event.data),
-        });
+      // We can skip cache step if we have disabled it
+      if (!fullyDisableCache) {
+        if (event.type === EventType.INSERT) {
+          cacheSet(target, {
+            ...currentCache,
+            data: Array.isArray(currentCache.data)
+              ? [event.data].concat(currentCache.data)
+              : (currentCache.data = event.data),
+          });
+        } else if (event.type === EventType.UPDATE) {
+          // On update we need to use updatePredicate to update items in cache.
+          cacheSet(target, {
+            ...currentCache,
+            data: Array.isArray(currentCache.data)
+              ? currentCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
+              : (currentCache.data = event.data),
+          });
+        }
       }
     },
   });
@@ -187,8 +216,10 @@ export default function useResource<T, U>({
       .then(
         (cacheItem) => {
           // If silent mode, we dont want cache to trigger update cycle, but we use onUpdate function.
-          const cacheSet = isSilent ? cache.setInBackground : cache.set;
-          cacheSet(targetUrl, cacheItem);
+          if (!fullyDisableCache) {
+            const cacheSet = isSilent ? cache.setInBackground : cache.set;
+            cacheSet(targetUrl, cacheItem);
+          }
 
           if (onUpdate) {
             onUpdate(cacheItem.data as T);

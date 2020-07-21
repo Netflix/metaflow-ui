@@ -112,8 +112,10 @@ const VirtualizedTimeline: React.FC<{
     },
     fetchAllData: true,
     onUpdate: (items) => {
-      dispatch({ type: 'fill', data: items });
+      dispatch({ type: 'fill', data: items.sort((a, b) => b.ts_epoch - a.ts_epoch) });
     },
+    fullyDisableCache: true,
+    useBatching: true,
   });
 
   //
@@ -222,7 +224,7 @@ const VirtualizedTimeline: React.FC<{
     const visibleSteps = (filters.steps.length === 0
       ? steps
       : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1)
-    ).filter((item) => !item.step_name.startsWith('_'));
+    ).filter((item) => item.step_name && !item.step_name.startsWith('_'));
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
     const newRows: Row[] = visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];

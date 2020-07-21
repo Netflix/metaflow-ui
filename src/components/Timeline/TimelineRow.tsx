@@ -60,21 +60,22 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
           )}
         </RowLabel>
         <RowGraphContainer>
-          <BoxGraphic
-            root={item.type === 'step'}
-            style={{
-              width: width + '%',
-              left: valueFromLeft + '%',
-            }}
-          >
-            <RowMetricLabel item={item} finishedAt={finishedAt} labelPosition={labelPosition} />
-            <BoxGraphicLine
-              grayed={item.type === 'step' && isOpen}
-              state={endTime || item.data.finished_at ? 'completed' : 'running'}
-            />
-            <BoxGraphicMarkerStart />
-            <BoxGraphicMarkerEnd />
-          </BoxGraphic>
+          <div style={{ width: '100%', transform: `translateX(${valueFromLeft}%)` }}>
+            <BoxGraphic
+              root={item.type === 'step'}
+              style={{
+                width: width + '%',
+              }}
+            >
+              <RowMetricLabel item={item} finishedAt={finishedAt} labelPosition={labelPosition} />
+              <BoxGraphicLine
+                grayed={item.type === 'step' && isOpen}
+                state={endTime || item.data.finished_at ? 'completed' : 'running'}
+              />
+              <BoxGraphicMarkerStart />
+              <BoxGraphicMarkerEnd />
+            </BoxGraphic>
+          </div>
         </RowGraphContainer>
       </Element>
     </>
