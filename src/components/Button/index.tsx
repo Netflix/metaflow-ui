@@ -1,119 +1,119 @@
-import React from 'react';
-import styled, { css } from 'styled-components';
-import { Link } from 'react-router-dom';
+import React, { ReactNode } from 'react';
+import styled, { css, ButtonColors } from 'styled-components';
+import { useHistory } from 'react-router-dom';
+import { darken } from 'polished';
 
-type ButtonProps = {
-  // If given we will render button as link
-  to?: string;
-  // Click handler if we dont have to attr
-  onClick?: () => void;
-  // Optional label, we can also render children instead.
-  label?: string;
+export type ButtonProps = {
+  className?: string;
   disabled?: boolean;
+  active?: boolean;
+  textOnly?: boolean;
+  size?: 'sm' | 'md' | 'lg';
+  variant?: 'default' | 'text' | 'primaryText';
   tabIndex?: number;
-  testid?: string;
-  layout?: 'slim';
+  onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
+  children: ReactNode;
+};
+
+const buttonFontSizes = {
+  sm: 0.875,
+  md: 1,
+  lg: 1.25,
 };
 
 const Button: React.FC<ButtonProps> = ({
-  label,
-  children,
-  layout,
-  to,
-  onClick,
-  disabled,
+  className = '',
+  active = false,
+  disabled = false,
+  textOnly = false,
+  variant = 'default',
+  size = 'md',
   tabIndex = 99,
-  testid = '',
+  children,
+  ...rest
 }) => {
-  const Element = () => (
-    <ButtonStyle
-      onClick={() => (!to && onClick ? onClick() : null)}
-      disabled={disabled}
-      tabIndex={tabIndex}
-      data-testid={testid || label + '-button'}
-      layout={layout}
+  return (
+    <StyledButton
+      className={`button ${className} ${active ? 'active' : ''}`}
+      {...{ disabled, tabIndex, active, textOnly, variant, size, ...rest }}
     >
-      {label || children}
-    </ButtonStyle>
-  );
-
-  return to && !disabled ? (
-    <ButtonLinkContainer>
-      <Link to={to}>
-        <Element />
-      </Link>
-    </ButtonLinkContainer>
-  ) : (
-    <Element />
+      {children}
+    </StyledButton>
   );
 };
 
-const ButtonStyles = css`
+export const ButtonLink: React.FC<Omit<ButtonProps, 'onClick'> & { to: string }> = ({ to, ...rest }) => {
+  const history = useHistory();
+  return <Button {...rest} onClick={() => history.push(to)} />;
+};
+
+const DisabledButtonCSS = css`
+  border-color: ${(p) => p.theme.color.bg.light} !important;
+  color: ${(p) => p.theme.color.text.light} !important;
+  cursor: not-allowed;
+  background: ${(p) => p.theme.color.bg.light} !important;
+`;
+
+const ActiveButtonCSS = css`
+  font-weight: 500;
+`;
+
+const TextOnlyButtonCSS = css`
+  border-width: 0;
+
+  &:hover,
+  &:active,
+  .active {
+    border-width: 0;
+  }
+`;
+
+type StyledButtonProps = {
+  disabled?: boolean;
+  active?: boolean;
+  textOnly?: boolean;
+  size: NonNullable<ButtonProps['size']>;
+  variant: NonNullable<ButtonProps['variant']>;
+};
+
+const getButtonColors = (variant: ButtonColors) => css`
+  background: ${variant.bg};
+  color: ${variant.text};
+
+  &:hover {
+    background: ${darken(0.05, variant.bg === 'transparent' ? '#fff' : variant.bg)};
+  }
+
+  &:active {
+    background: ${darken(0.1, variant.bg === 'transparent' ? '#fff' : variant.bg)};
+  }
+
+  &.active {
+    background: ${variant.activeBg};
+    color: ${variant.activeText};
+  }
+`;
+
+// TODO: make padding react to the size variant
+export const ButtonCSS = css`
+  display: flex;
+  align-items: center;
+  outline: 0;
   cursor: pointer;
-  padding: 0 10px;
-  height: 40px;
-  line-height: 38px;
-  background: ${({ theme }) => theme.color.bg.light};
-  color: ${({ theme }) => theme.color.text.lightest};
+  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
   text-decoration: none;
-  border-radius: 4px;
-  margin: 0 5px;
-  border: ${({ theme }) => '1px solid ' + theme.color.border.light};
+  border-radius: 0.25rem;
+  border: 1px solid ${(p) => p.theme.color.border.light};
 `;
 
-const ButtonStyle = styled.div<{ disabled?: boolean; layout?: 'slim' }>`
-  ${ButtonStyles}
-  ${(p) =>
-    p.layout === 'slim' &&
-    css`
-      height: 28px;
-      line-height: 26px;
-    `}
-  border-color: ${({ disabled }) => (disabled ? '#fff' : '#d7d7d7')};
-`;
-
-export const ButtonContainer = styled.div`
-  ${ButtonStyles}
-  padding: 0px;
-  display: flex;
-  position: relative;
-  overflow: hidden;
-`;
-
-export const ButtonContainerItem = styled.div<{ active?: boolean }>`
-  padding: 0 10px;
-  color: ${({ active, theme }) => (active ? theme.color.text.dark : theme.color.text.lightest)};
-  font-weight: ${({ active }) => (active ? 'bold' : 'normal')};
-`;
-
-export const ButtonContainerHighlightedItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.color.text.lightest};
-  background: #fff;
-  height: 40px;
-  line-height: 16px;
-  border-left: ${({ theme }) => '1px solid ' + theme.color.border.light};
-  cursor: pointer;
-
-  transition: padding 0.15s;
-
-  &:focus {
-    padding: 0 5px;
-  }
-`;
-
-export const ButtonContainerSeparator = styled.div`
-  display: flex;
-  align-items: center;
-  height: 40px;
-`;
-
-export const ButtonLinkContainer = styled.div`
-  a {
-    color: ${({ theme }) => theme.color.text.lightest};
-  }
+const StyledButton = styled.button<StyledButtonProps>`
+  ${ButtonCSS};
+  ${(p) => getButtonColors(p.theme.color.button[p.variant])};
+  ${(p) => p.active && ActiveButtonCSS};
+  ${(p) => p.disabled && DisabledButtonCSS};
+  ${(p) => p.textOnly && TextOnlyButtonCSS};
+  font-size: ${(p) => buttonFontSizes[p.size]}rem;
 `;
 
 export default Button;

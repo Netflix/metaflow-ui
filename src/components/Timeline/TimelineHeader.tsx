@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { GraphState, GraphAlignment, GraphGroupBy, GraphSortBy } from './useGraph';
 import { TextInputField, CheckboxField, SelectField } from '../Form';
+import { ItemRow } from '../Structure';
+import { Text } from '../Text';
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
 import styled from 'styled-components';
-import Icon from '../Icon';
+import { SortIcon } from '../Icon';
 
 type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
@@ -32,24 +34,33 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   return (
     <TimelineHeaderContainer>
       <TimelineHeaderTop>
-        <TextInputField />
-        <Labeled label="Status:">
-          <SelectField
-            options={[
-              ['All', 'all'],
-              ['Completed', 'completed'],
-            ]}
-          />
-        </Labeled>
-        <Labeled label="Order by:">
-          <ButtonGroup
-            buttons={[
-              { label: 'Started at', action: () => updateSortBy('startTime'), active: graph.sortBy === 'startTime' },
-              { label: 'Duration', action: () => updateSortBy('duration'), active: graph.sortBy === 'duration' },
-            ]}
-          />
-        </Labeled>
+        <ItemRow>
+          <TimelineHeaderItem>
+            <TextInputField placeholder="Search..." />
+          </TimelineHeaderItem>
+          <TimelineHeaderItem pad="sm">
+            <Text>Status:</Text>
+            <SelectField
+              options={[
+                ['All', 'all'],
+                ['Completed', 'completed'],
+              ]}
+            />
+          </TimelineHeaderItem>
+
+          <Labeled label="Order by:">
+            <ButtonGroup>
+              <Button size="sm" onClick={() => updateSortBy('startTime')} active={graph.sortBy === 'startTime'}>
+                Started at
+              </Button>
+              <Button size="sm" onClick={() => updateSortBy('duration')} active={graph.sortBy === 'duration'}>
+                Duration
+              </Button>
+            </ButtonGroup>
+          </Labeled>
+        </ItemRow>
       </TimelineHeaderTop>
+
       <TimelineHeaderBottom>
         <TimelineHeaderBottomLeft>
           <CheckboxField
@@ -60,26 +71,35 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
           <SettingsButton expand={() => expandAll()} collapse={() => collapseAll()} />
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
-          <TimelineHeaderBottomActions>
+          <ItemRow>
             <TimelineDirectionButton onClick={() => updateSortDir()}>
               <span>Direction</span>
-              <Icon name="arrowDown" rotate={graph.sortDir === 'asc' ? 0 : 180} />
+              <SortIcon
+                size="sm"
+                active
+                direction={graph.sortDir === 'asc' ? 'up' : 'down'}
+                rotate={graph.sortDir === 'asc' ? 0 : 180}
+              />
             </TimelineDirectionButton>
             <CheckboxField
               label="Left align"
               checked={graph.alignment === 'fromLeft'}
               onChange={() => changeMode(graph.alignment === 'fromLeft' ? 'fromStartTime' : 'fromLeft')}
             />
-          </TimelineHeaderBottomActions>
+          </ItemRow>
 
           <Labeled label="Zoom:">
-            <ButtonGroup
-              buttons={[
-                { label: 'Fit to screen', action: zoomReset, active: !graph.controlled },
-                { label: '-', action: () => zoom('out') },
-                { label: '+', action: () => zoom('in') },
-              ]}
-            />
+            <ButtonGroup>
+              <Button size="sm" onClick={() => zoomReset()} active={!graph.controlled}>
+                Fit to screen
+              </Button>
+              <Button size="sm" onClick={() => zoom('out')}>
+                -
+              </Button>
+              <Button size="sm" onClick={() => zoom('in')}>
+                +
+              </Button>
+            </ButtonGroup>
           </Labeled>
         </TimelineHeaderBottomRight>
       </TimelineHeaderBottom>
@@ -88,18 +108,22 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
 };
 
 const TimelineHeaderContainer = styled.div`
-  border-bottom: 2px solid ${(p) => p.theme.color.border.normal};
+  border-bottom: 2px solid ${(p) => p.theme.color.border.mid};
   font-size: 14px;
 `;
 
 const TimelineHeaderTop = styled.div`
   padding: 0.5rem 0 1.5rem;
-  border-bottom: 1px solid ${(p) => p.theme.color.border.normal};
+  border-bottom: 1px solid ${(p) => p.theme.color.border.mid};
   display: flex;
 `;
 
 const TimelineHeaderBottom = styled.div`
   display: flex;
+
+  .field.field-checkbox {
+    margin-bottom: 0;
+  }
 `;
 
 const TimelineHeaderBottomLeft = styled.div`
@@ -107,7 +131,7 @@ const TimelineHeaderBottomLeft = styled.div`
   justify-content: space-between;
   padding: 0.75rem;
   width: 225px;
-  border-right: 1px solid ${(p) => p.theme.color.border.normal};
+  border-right: 1px solid ${(p) => p.theme.color.border.mid};
 `;
 
 const TimelineHeaderBottomRight = styled.div`
@@ -117,16 +141,11 @@ const TimelineHeaderBottomRight = styled.div`
   justify-content: space-between;
 `;
 
-const TimelineHeaderBottomActions = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
 const TimelineDirectionButton = styled.div`
   cursor: pointer;
   padding: 0.25rem 1rem 0.25rem 0.25rem;
   margin: 0 1rem 0 0;
-  border-right: 1px solid ${(p) => p.theme.color.border.normal};
+  border-right: 1px solid ${(p) => p.theme.color.border.mid};
 
   span {
     margin-right: 0.5rem;
@@ -139,6 +158,10 @@ const Labeled: React.FC<{ label: string }> = ({ label, children }) => (
     <div>{children}</div>
   </LabeledContainer>
 );
+
+const TimelineHeaderItem = styled(ItemRow)`
+  margin-right: ${(p) => p.theme.spacer.md}rem;
+`;
 
 const LabeledContainer = styled.div`
   margin: 0 1rem;
@@ -156,13 +179,12 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
   const [open, setOpen] = useState(false);
   return (
     <div style={{ position: 'relative' }}>
-      <Button layout="slim" onClick={() => setOpen(!open)}>
+      <Button active={open} onClick={() => setOpen(!open)}>
         ...
       </Button>
       {open && (
         <TemporaryPopup>
           <Button
-            layout="slim"
             onClick={() => {
               expand();
               setOpen(false);
@@ -172,7 +194,6 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
           </Button>
           <br />
           <Button
-            layout="slim"
             onClick={() => {
               collapse();
               setOpen(false);

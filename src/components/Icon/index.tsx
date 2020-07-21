@@ -38,10 +38,10 @@ type SupportedSizes = {
 };
 
 const sizeTable: SupportedSizes = {
-  xs: 0.75,
-  sm: 0.75,
-  md: 1,
-  lg: 1.5,
+  xs: 0.875,
+  sm: 1,
+  md: 1.5,
+  lg: 2,
   hg: 2.5,
 };
 
@@ -49,12 +49,15 @@ interface IconProps {
   name: keyof SupportedIcons;
   size?: keyof SupportedSizes;
   rotate?: number;
+  className?: string;
+  padLeft?: boolean;
+  padRight?: boolean;
 }
 
 const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate, ...rest }) => {
   const IconComponent = icons[name];
   return (
-    <Wrapper {...rest} {...{ size, rotate }}>
+    <Wrapper className={`icon icon-${name}`} {...rest} {...{ size, rotate }}>
       <IconComponent />
     </Wrapper>
   );
@@ -62,11 +65,14 @@ const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate, ...rest }) => {
 
 export default Icon;
 
-const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number }>`
-  vertical-align: middle;
-  display: inline-block;
+const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number; padLeft?: boolean; padRight?: boolean }>`
+  vertical-align: text-top;
+  display: inline-flex;
+  align-items: center;
   margin: 0;
   padding: 0;
+  padding-left: ${(p) => (p.padLeft ? p.theme.spacer.sm : 0)}rem;
+  padding-right: ${(p) => (p.padRight ? p.theme.spacer.sm : 0)}rem;
 
   svg {
     height: ${(p) => sizeTable[p.size]}rem;
@@ -78,7 +84,7 @@ const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number }>`
 type SortIconProps = Omit<IconProps, 'name'> & { direction: 'up' | 'down'; active?: boolean };
 
 export const SortIcon: React.FC<SortIconProps> = ({ direction, ...rest }) => (
-  <StyledSortIcon direction={direction} name="sort" {...rest} />
+  <StyledSortIcon direction={direction} name="sort" className="icon icon-sort" {...rest} />
 );
 
 const StyledSortIcon = styled(Icon)<SortIconProps>`

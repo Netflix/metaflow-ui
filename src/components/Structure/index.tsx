@@ -58,3 +58,16 @@ export const FixedContent = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
+export const ItemRow = styled.div<{ pad?: 'xs' | 'sm' | 'md' | 'lg' }>`
+  display: flex;
+  align-items: center;
+
+  > * {
+    margin-right: ${(p) => p.theme.spacer[p.pad || 'sm']}rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+`;

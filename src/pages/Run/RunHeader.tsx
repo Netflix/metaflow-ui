@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
+import styled from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
+import { Run } from '../../types';
+
+import { getISOString } from '../../utils/date';
+import { formatDuration } from '../../utils/format';
+
+import { ItemRow } from '../../components/Structure';
+import Icon from '../../components/Icon';
+import Button from '../../components/Button';
+import Tag from '../../components/Tag';
+import { SmallText } from '../../components/Text';
+import StatusField from '../../components/Status';
 import InformationRow from '../../components/InformationRow';
 import PropertyTable from '../../components/PropertyTable';
-import { Run } from '../../types';
-import styled from 'styled-components';
-import { getISOString } from '../../utils/date';
-import Icon from '../../components/Icon';
-import { useTranslation } from 'react-i18next';
-import { formatDuration } from '../../utils/format';
-import StatusField from '../../components/Status';
 
 function mergeTags(run: Run) {
   const baseTags = run.tags || [];
@@ -28,7 +34,7 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
         <div>
           <InformationRow spaceless>
             <PropertyTable
-              layout="dark"
+              scheme="dark"
               items={[run]}
               columns={[
                 { label: t('fields.run-id') + ':', prop: 'run_number' as const },
@@ -49,7 +55,14 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
             />
           </InformationRow>
           <InformationRow>
-            <TagRow run={run} />
+            <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
+              <SmallText>Tags</SmallText>
+              <ItemRow pad="xs">
+                {mergeTags(run).map((tag) => (
+                  <Tag key={tag}>{tag}</Tag>
+                ))}
+              </ItemRow>
+            </ItemRow>
           </InformationRow>
 
           {expanded && (
@@ -58,7 +71,7 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
                 <LabelText>{t('run.parameters') + ':'}</LabelText>
               </ParametersTitleRow>
               <PropertyTable
-                layout="bright"
+                scheme="bright"
                 items={[{ a: 1, b: 2, c: 3 }]}
                 columns={[
                   { label: 'A:', prop: 'a' },
@@ -72,10 +85,10 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
       )}
 
       <ShowDetailsRow>
-        <ExpandLink onClick={() => setExpanded(!expanded)}>
-          <span>{expanded ? t('run.hide-run-details') : t('run.show-run-details')}</span>
-          <Icon size="lg" name="arrowDown" rotate={expanded ? 180 : 0} />
-        </ExpandLink>
+        <Button onClick={() => setExpanded(!expanded)} textOnly variant="primaryText" size="sm">
+          {expanded ? t('run.hide-run-details') : t('run.show-run-details')}
+          <Icon size="sm" name="arrowDown" rotate={expanded ? 180 : 0} padLeft />
+        </Button>
       </ShowDetailsRow>
     </RunHeaderContainer>
   );
@@ -86,21 +99,9 @@ const RunHeaderContainer = styled.div`
 `;
 
 const ShowDetailsRow = styled.div`
+  padding-top: ${(p) => p.theme.spacer.sm}rem;
   display: flex;
   justify-content: flex-end;
-`;
-
-const ExpandLink = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 12px;
-  padding: 0.5rem;
-  color: ${(p) => p.theme.color.text.blue};
-  cursor: pointer;
-
-  span {
-    margin: 0 1rem;
-  }
 `;
 
 const LabelText = styled.div`
@@ -112,48 +113,6 @@ const ParametersTitleRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`;
-
-//
-// Tag row
-//
-const TagRow: React.FC<{ run: Run }> = ({ run }) => {
-  return (
-    <StyledTagRow>
-      <TagRowLabel>Tags</TagRowLabel>
-      <TagRowContent>
-        {mergeTags(run).map((tag) => (
-          <TagItem key={tag}>{tag}</TagItem>
-        ))}
-      </TagRowContent>
-    </StyledTagRow>
-  );
-};
-
-const StyledTagRow = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 10px 0;
-  color: ${({ theme }) => theme.color.text.mid};
-`;
-
-const TagRowLabel = styled.div`
-  font-size: 12px;
-  padding: 0 15px;
-`;
-
-const TagRowContent = styled.div`
-  display: flex;
-  flex: 1;
-`;
-
-const TagItem = styled.div`
-  background: #fff;
-  padding: 5px 10px;
-  margin: 0 3px;
-  font-size: 14px;
-  box-shadow: 0px 0.25px 1px rgba(0, 0, 0, 0.43);
-  border-radius: 4px;
 `;
 
 export default RunHeader;

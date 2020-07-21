@@ -5,6 +5,7 @@ import { Run, Step } from '../../types';
 import { dagexample1, dagexample2, dagexample3, dagHugeflow } from './DAGexamples';
 import styled, { css } from 'styled-components';
 import Button from '../Button';
+import { ItemRow } from '../Structure';
 import useResource from '../../hooks/useResource';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
@@ -49,12 +50,12 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', padding: '10px 0' }}>
+      <ItemRow pad="sm">
         <Button onClick={() => setDataSet(dagexample1)}>example1</Button>
         <Button onClick={() => setDataSet(dagexample2)}>example2</Button>
         <Button onClick={() => setDataSet(dagexample3)}>example3</Button>
         <Button onClick={() => setDataSet(dagHugeflow)}>hugeflow</Button>
-      </div>
+      </ItemRow>
 
       {dagTree && (
         <DAGRenderingContainer>

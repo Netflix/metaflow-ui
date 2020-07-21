@@ -2,10 +2,9 @@ import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 
 export const PopoverStyles = css`
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.07), 0 0px 0px 1px rgba(0, 0, 0, 0.07);
   padding: ${(p) => p.theme.spacer.sm}rem;
   background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0.25rem;
 `;
 
