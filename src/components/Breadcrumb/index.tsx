@@ -135,7 +135,7 @@ const Breadcrumb: React.FC = () => {
 
       {/* Rendering breadcrumb items when not in home and not editing. */}
       {!edit && buttonList.length > 0 && (
-        <ButtonGroup>
+        <ButtonGroup data-testid="breadcrumb-button-container">
           {buttonList.map(({ label, path }, index) => (
             <ButtonLink key={index} to={path} active={index + 1 === buttonList.length}>
               {label}

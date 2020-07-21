@@ -11,6 +11,7 @@ type CommonFieldProps<T> = {
   onClick?: (e?: React.MouseEvent<T>) => void;
   onChange?: (e?: React.ChangeEvent<T>) => void;
   onKeyPress?: (e: React.KeyboardEvent<T>) => void;
+  'data-testid'?: string;
 };
 
 type FieldBaseProps = CommonFieldProps<HTMLDivElement> & {
@@ -18,26 +19,40 @@ type FieldBaseProps = CommonFieldProps<HTMLDivElement> & {
   type: string;
 };
 
-export const Field: React.FC<FieldBaseProps> = ({ children, type, className, horizontal, active, onClick }) => (
-  <FieldWrapper
-    {...{
-      className: `field field-${type} ${className} ${active ? 'active' : ''}`,
-      horizontal,
-      active,
-      type,
-      onClick,
-    }}
-  >
-    {children}
-  </FieldWrapper>
-);
+export const Field: React.FC<FieldBaseProps> = ({
+  children,
+  type,
+  className,
+  horizontal,
+  active,
+  onClick,
+  ...rest
+}) => {
+  const testid = rest['data-testid'];
+  return (
+    <FieldWrapper
+      {...{
+        className: `field field-${type} ${className} ${active ? 'active' : ''}`,
+        horizontal,
+        active,
+        type,
+        onClick,
+      }}
+      data-testid={testid}
+    >
+      {children}
+    </FieldWrapper>
+  );
+};
 
 export const SelectField: React.FC<
   { label?: string; options: [string, string][] } & CommonFieldProps<HTMLSelectElement>
 > = ({ label, options, horizontal, ...rest }) => {
   const id = uuid();
+  const testid = rest['data-testid'];
+
   return (
-    <Field horizontal={horizontal} type="select">
+    <Field horizontal={horizontal} type="select" data-testid={testid}>
       {label && <label htmlFor={id}>{label}</label>}
       <select id={id} {...rest}>
         {options.map((o) => (
@@ -55,10 +70,13 @@ export const CheckboxField: React.FC<{ label: string; checked: boolean } & Commo
   checked = false,
   onChange,
   className,
+  ...rest
 }) => {
   const id = uuid();
+  const testid = rest['data-testid'];
   return (
     <Field
+      data-testid={testid}
       horizontal
       active={checked}
       type="checkbox"
@@ -76,11 +94,13 @@ export const TextInputField = React.forwardRef<
   { label?: string; defaultValue?: string; placeholder?: string; autoFocus?: boolean } & CommonFieldProps<
     HTMLInputElement
   >
->(({ label, horizontal, value, placeholder, defaultValue, autoFocus, onChange, onClick, onKeyPress }, ref) => {
+>(({ label, horizontal, value, placeholder, defaultValue, autoFocus, onChange, onClick, onKeyPress, ...rest }, ref) => {
   const id = uuid();
+  const testid = rest['data-testid'];
   const valueProps = defaultValue ? { defaultValue } : { value };
+
   return (
-    <Field horizontal={horizontal} type="text">
+    <Field horizontal={horizontal} type="text" data-testid={testid}>
       {label && <label htmlFor={id}>{label}</label>}
       <input
         id={id}
