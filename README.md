@@ -40,6 +40,21 @@ $ yarn build
 
 It correctly bundles React in production mode and optimizes the build for the best performance.
 
+## Docker support
+
+Dockerfile provides support for nginx container hosting the production build of the application.
+
+```sh
+# Build Docker image
+$ docker build --tag metaflow-ui:latest .
+
+# Run Docker container on port 8080
+$ docker run -p 3000:80 metaflow-ui:latest
+
+# Run Docker container using custom API endpoint
+$ docker run -p 3000:80 -e METAFLOW_SERVICE=http://custom-ui-backend/api metaflow-ui:latest
+```
+
 ## Documentation
 
 - [**Metaflow documentation**](https://docs.metaflow.org)
