@@ -6,7 +6,7 @@ import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
 import useResource from '../../hooks/useResource';
 import useGraph, { GraphState, GraphSortBy } from './useGraph';
-import useRowData, { StepRowData } from './useRowData';
+import useRowData, { StepRowData, RowDataAction, RowDataModel } from './useRowData';
 import useQuery from '../../hooks/useQuery';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
@@ -293,16 +293,7 @@ const VirtualizedTimeline: React.FC<{
                 }
               }}
               rowHeight={ROW_HEIGHT}
-              rowRenderer={({ index, style }) => (
-                <RowRenderer
-                  key={index}
-                  row={rows[index]}
-                  graph={graph}
-                  style={style}
-                  rowData={rows[index].type === 'step' ? rowDataState[rows[index].data.step_name] : undefined}
-                  toggleOpen={() => dispatch({ type: 'toggle', id: rows[index].data.step_name })}
-                />
-              )}
+              rowRenderer={createRowRenderer({ rows, graph, dispatch, rowDataState })}
               height={listContainer.height + (stickyHeader ? 0 : ROW_HEIGHT) - 28}
               width={listContainer.width}
             />
@@ -323,6 +314,26 @@ const VirtualizedTimeline: React.FC<{
     </VirtualizedTimelineContainer>
   );
 };
+
+type RowRendererProps = {
+  rows: Row[];
+  graph: GraphState;
+  dispatch: (action: RowDataAction) => void;
+  rowDataState: RowDataModel;
+};
+
+function createRowRenderer({ rows, graph, dispatch, rowDataState }: RowRendererProps) {
+  return ({ index, style }: { index: number; style: React.CSSProperties }) => (
+    <RowRenderer
+      key={index}
+      row={rows[index]}
+      graph={graph}
+      style={style}
+      rowData={rows[index].type === 'step' ? rowDataState[rows[index].data.step_name] : undefined}
+      toggleOpen={() => dispatch({ type: 'toggle', id: rows[index].data.step_name })}
+    />
+  );
+}
 
 const RowRenderer: React.FC<{
   style: React.CSSProperties;
