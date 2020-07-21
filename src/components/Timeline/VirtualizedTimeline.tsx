@@ -181,7 +181,7 @@ const VirtualizedTimeline: React.FC<{
     const newRows: Row[] = visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];
       // If step row is open, add its tasks to the list.
-      if (rowData?.isOpen) {
+      if (rowData?.isOpen || graph.groupBy === 'none') {
         const rowTasks = rowData.data.map((item) => ({
           type: 'task' as const,
           data: item,
