@@ -139,14 +139,9 @@ export default function useResource<T, U>({
 
   const q = new URLSearchParams(queryParams).toString();
   const target = `${METAFLOW_SERVICE}${url}${q ? '?' + q : ''}`;
-
-  // initialise update batcher
-  useEffect(() => {
-    updateBatcher[target] = [];
-  }, []); // eslint-disable-line
   // Call batch update
   useInterval(() => {
-    if (useBatching && onUpdate && updateBatcher[target].length > 0) {
+    if (useBatching && onUpdate && updateBatcher[target] && updateBatcher[target].length > 0) {
       onUpdate(updateBatcher[target]);
       updateBatcher[target] = [];
     }
@@ -178,6 +173,9 @@ export default function useResource<T, U>({
       // Optionally we can also batch some amount of messages before sending them to component
       if (onUpdate) {
         if (useBatching) {
+          if (!updateBatcher[target]) {
+            updateBatcher[target] = [];
+          }
           updateBatcher[target].push(event.data);
         } else {
           onUpdate(Array.isArray(initialData) ? [event.data] : event.data);
