@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PATHS, PathDefinition, getPath } from '../../utils/routing';
 
-import Button, { ButtonLink, ButtonCSS } from '../Button';
+import Button, { ButtonLink } from '../Button';
 import ButtonGroup from '../ButtonGroup';
 import { TextInputField } from '../Form';
 import Icon from '../Icon';
@@ -155,38 +155,6 @@ const Breadcrumb: React.FC = () => {
         </ButtonGroup>
       )}
 
-      {/*{!edit && buttonList.length > 0 && (
-        <ButtonContainer data-testid="breadcrumb-button-container">
-          {buttonList.map(({ label, path }, index) => {
-            const element = <ButtonContainerItem active={index + 1 === buttonList.length}>{label}</ButtonContainerItem>;
-
-            return (
-              <div key={index} style={{ display: 'flex' }}>
-                {index + 1 !== buttonList.length ? (
-                  <ButtonLinkContainer>
-                    <Link to={path}>{element}</Link>
-                  </ButtonLinkContainer>
-                ) : (
-                  element
-                )}
-                {index + 1 !== buttonList.length ? <ButtonContainerSeparator>|</ButtonContainerSeparator> : ''}
-              </div>
-            );
-          })}
-          <ButtonContainerHighlightedItem
-            onClick={() => setEdit(true)}
-            onKeyPress={(e) => {
-              if (e.charCode === 13) {
-                setEdit(true);
-              }
-            }}
-            tabIndex={0}
-          >
-            <Icon name="pen" size="md" />
-          </ButtonContainerHighlightedItem>
-        </ButtonContainer>
-          )}*/}
-
       {/* Rendering edit block when active */}
       {edit && (
         <GoToHolder data-testid="breadcrumb-goto-container">
@@ -302,48 +270,6 @@ const KeyValueListValue = styled.div`
 const KeyValueListItem = styled.div`
   display: flex;
   padding: 5px 0;
-`;
-
-export const ButtonContainer = styled.div`
-  ${ButtonCSS};
-  padding: 0px;
-  display: flex;
-  position: relative;
-  overflow: hidden;
-`;
-
-export const ButtonContainerItem = styled.div<{ active?: boolean }>`
-  padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
-  color: ${({ active, theme }) => (active ? theme.color.text.dark : theme.color.text.lightest)};
-  font-weight: ${({ active }) => (active ? '500' : '400')};
-`;
-
-export const ButtonContainerHighlightedItem = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${(p) => p.theme.color.text.lightest};
-  background: #fff;
-  line-height: 1.25rem;
-  border-left: ${(p) => '1px solid ' + p.theme.color.border.light};
-  cursor: pointer;
-  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
-
-  &:focus {
-    padding: 0 5px;
-  }
-`;
-
-export const ButtonContainerSeparator = styled.div`
-  display: flex;
-  align-items: center;
-  color: ${(p) => p.theme.color.text.lightest};
-`;
-
-export const ButtonLinkContainer = styled.div`
-  a {
-    color: ${(p) => p.theme.color.text.lightest};
-  }
 `;
 
 export default Breadcrumb;
