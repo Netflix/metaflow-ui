@@ -6,7 +6,7 @@ import { Text } from '../Text';
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
 import styled from 'styled-components';
-import { SortIcon } from '../Icon';
+import Icon, { SortIcon } from '../Icon';
 
 type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
@@ -94,10 +94,10 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 Fit to screen
               </Button>
               <Button size="sm" onClick={() => zoom('out')}>
-                -
+                <Icon name="minus" />
               </Button>
               <Button size="sm" onClick={() => zoom('in')}>
-                +
+                <Icon name="plus" />
               </Button>
             </ButtonGroup>
           </Labeled>
