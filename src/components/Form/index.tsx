@@ -46,7 +46,7 @@ export const Field: React.FC<FieldBaseProps> = ({
 };
 
 export const SelectField: React.FC<
-  { label?: string; options: [string, string][] } & CommonFieldProps<HTMLSelectElement>
+  { label?: string; options: [string, string][]; disabled?: boolean } & CommonFieldProps<HTMLSelectElement>
 > = ({ label, options, horizontal, ...rest }) => {
   const id = uuid();
   const testid = rest['data-testid'];
@@ -91,31 +91,53 @@ export const CheckboxField: React.FC<{ label: string; checked: boolean } & Commo
 
 export const TextInputField = React.forwardRef<
   HTMLInputElement,
-  { label?: string; defaultValue?: string; placeholder?: string; autoFocus?: boolean } & CommonFieldProps<
-    HTMLInputElement
-  >
->(({ label, horizontal, value, placeholder, defaultValue, autoFocus, onChange, onClick, onKeyPress, ...rest }, ref) => {
-  const id = uuid();
-  const testid = rest['data-testid'];
-  const valueProps = defaultValue ? { defaultValue } : { value };
+  {
+    label?: string;
+    defaultValue?: string;
+    placeholder?: string;
+    autoFocus?: boolean;
+    disabled?: boolean;
+  } & CommonFieldProps<HTMLInputElement>
+>(
+  (
+    {
+      label,
+      horizontal,
+      value,
+      placeholder,
+      defaultValue,
+      autoFocus,
+      onChange,
+      onClick,
+      onKeyPress,
+      disabled,
+      ...rest
+    },
+    ref,
+  ) => {
+    const id = uuid();
+    const testid = rest['data-testid'];
+    const valueProps = defaultValue ? { defaultValue } : { value };
 
-  return (
-    <Field horizontal={horizontal} type="text" data-testid={testid}>
-      {label && <label htmlFor={id}>{label}</label>}
-      <input
-        id={id}
-        ref={ref}
-        type="text"
-        placeholder={placeholder}
-        {...valueProps}
-        onChange={onChange}
-        onClick={onClick}
-        onKeyPress={onKeyPress}
-        autoFocus={autoFocus}
-      />
-    </Field>
-  );
-});
+    return (
+      <Field horizontal={horizontal} type="text" data-testid={testid}>
+        {label && <label htmlFor={id}>{label}</label>}
+        <input
+          id={id}
+          ref={ref}
+          type="text"
+          placeholder={placeholder}
+          {...valueProps}
+          onChange={onChange}
+          onClick={onClick}
+          onKeyPress={onKeyPress}
+          autoFocus={autoFocus}
+          disabled={disabled}
+        />
+      </Field>
+    );
+  },
+);
 
 const FieldWrapper = styled.div<FieldBaseProps>`
   display: ${(p) => (p.horizontal ? 'flex' : 'block')};
@@ -148,7 +170,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     border: 1px solid ${(p) => p.theme.color.border.light};
 
     &:focus,
-    &:hover {
+    &:not(:disabled):hover {
       background: ${(p) => p.theme.color.bg.white};
       border-color: ${(p) => p.theme.color.border.dark};
     }
@@ -201,7 +223,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     border: 1px solid transparent;
     padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
 
-    &:hover {
+    &:not(:disabled):hover {
       background: ${(p) => p.theme.color.bg.light};
     }
   }
