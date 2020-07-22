@@ -5,6 +5,7 @@ import { ReactComponent as Timeline } from '../../assets/timeline.svg';
 import { ReactComponent as ArrowDown } from '../../assets/arrow_down.svg';
 import { ReactComponent as Times } from '../../assets/times.svg';
 import { ReactComponent as Plus } from '../../assets/plus.svg';
+import { ReactComponent as Minus } from '../../assets/minus.svg';
 import { ReactComponent as Sort } from '../../assets/sort.svg';
 import { ReactComponent as Check } from '../../assets/check.svg';
 import { ReactComponent as Pen } from '../../assets/pen.svg';
@@ -17,6 +18,7 @@ type SupportedIcons = {
   arrowDown: FunctionComponent;
   times: FunctionComponent;
   plus: FunctionComponent;
+  minus: FunctionComponent;
   sort: FunctionComponent;
   check: FunctionComponent;
   pen: FunctionComponent;
@@ -30,6 +32,7 @@ const icons: SupportedIcons = {
   arrowDown: ArrowDown,
   times: Times,
   plus: Plus,
+  minus: Minus,
   sort: Sort,
   check: Check,
   pen: Pen,
