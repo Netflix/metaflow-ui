@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraphState, GraphAlignment, GraphGroupBy, GraphSortBy } from './useGraph';
+import { GraphState, GraphGroupBy, GraphSortBy } from './useGraph';
 import { TextInputField, CheckboxField, SelectField } from '../Form';
 import { ItemRow } from '../Structure';
 import { Text } from '../Text';
@@ -11,7 +11,6 @@ import { SortIcon } from '../Icon';
 type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
   zoomReset: () => void;
-  changeMode: (alingment: GraphAlignment) => void;
   toggleGroupBy: (by: GraphGroupBy) => void;
   updateSortBy: (by: GraphSortBy) => void;
   updateSortDir: () => void;
@@ -24,7 +23,6 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   graph,
   zoom,
   zoomReset,
-  changeMode,
   toggleGroupBy,
   updateSortBy,
   updateSortDir,
@@ -48,17 +46,6 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               ]}
             />
           </TimelineHeaderItem>
-
-          <Labeled label="Order by:">
-            <ButtonGroup>
-              <Button size="sm" onClick={() => updateSortBy('startTime')} active={graph.sortBy === 'startTime'}>
-                Started at
-              </Button>
-              <Button size="sm" onClick={() => updateSortBy('duration')} active={graph.sortBy === 'duration'}>
-                Duration
-              </Button>
-            </ButtonGroup>
-          </Labeled>
         </ItemRow>
       </TimelineHeaderTop>
 
@@ -73,20 +60,38 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
           <ItemRow>
-            <TimelineDirectionButton onClick={() => updateSortDir()}>
-              <span>Direction</span>
-              <SortIcon
-                size="sm"
-                active
-                direction={graph.sortDir === 'asc' ? 'up' : 'down'}
-                rotate={graph.sortDir === 'asc' ? 0 : 180}
-              />
-            </TimelineDirectionButton>
-            <CheckboxField
-              label="Left align"
-              checked={graph.alignment === 'fromLeft'}
-              onChange={() => changeMode(graph.alignment === 'fromLeft' ? 'fromStartTime' : 'fromLeft')}
-            />
+            <Labeled label="Order by:">
+              <ButtonGroup>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    if (graph.sortBy === 'startTime') {
+                      updateSortDir();
+                    } else {
+                      updateSortBy('startTime');
+                    }
+                  }}
+                  active={graph.sortBy === 'startTime'}
+                >
+                  Started at
+                  {graph.sortBy === 'startTime' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    if (graph.sortBy === 'duration') {
+                      updateSortDir();
+                    } else {
+                      updateSortBy('duration');
+                    }
+                  }}
+                  active={graph.sortBy === 'duration'}
+                >
+                  Duration
+                  {graph.sortBy === 'duration' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
+                </Button>
+              </ButtonGroup>
+            </Labeled>
           </ItemRow>
 
           <Labeled label="Zoom:">
@@ -107,6 +112,10 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
     </TimelineHeaderContainer>
   );
 };
+
+const HeaderSortIcon: React.FC<{ dir: 'asc' | 'desc' }> = ({ dir }) => (
+  <SortIcon padLeft size="sm" active direction={dir === 'asc' ? 'up' : 'down'} />
+);
 
 const TimelineHeaderContainer = styled.div`
   border-bottom: 2px solid ${(p) => p.theme.color.border.mid};
@@ -140,17 +149,6 @@ const TimelineHeaderBottomRight = styled.div`
   display: flex;
   flex: 1;
   justify-content: space-between;
-`;
-
-const TimelineDirectionButton = styled.div`
-  cursor: pointer;
-  padding: 0.25rem 1rem 0.25rem 0.25rem;
-  margin: 0 1rem 0 0;
-  border-right: 1px solid ${(p) => p.theme.color.border.mid};
-
-  span {
-    margin-right: 0.5rem;
-  }
 `;
 
 const Labeled: React.FC<{ label: string }> = ({ label, children }) => (

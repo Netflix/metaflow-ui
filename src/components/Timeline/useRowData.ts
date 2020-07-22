@@ -2,7 +2,7 @@
 // Row data handling
 //
 
-import { Task } from '../../types';
+import { Task, Step } from '../../types';
 import { useReducer } from 'react';
 
 export type StepRowData = {
