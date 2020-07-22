@@ -1,4 +1,5 @@
 import { DefaultTheme } from 'styled-components';
+import { rgba } from 'polished';
 
 const spacer = {
   xs: 0.25,
@@ -30,7 +31,7 @@ const bgColor = {
   light: '#f6f6f6',
   blue: brandColor.blue,
   blueLight: '#e4f0ff',
-  blueGray: '#E8EAED',
+  silver: '#E8EAED',
   teal: brandColor.teal,
   yellow: '#E5A90C',
   red: '#EB3428',
@@ -38,14 +39,36 @@ const bgColor = {
 };
 
 const borderColor = {
-  light: '#e9e9e9',
-  normal: '#d7d7d7',
+  light: rgba(0, 0, 0, 0.125),
+  mid: rgba(0, 0, 0, 0.2),
+  dark: rgba(0, 0, 0, 0.35),
 };
 
 const iconColor = {
   light: '#d9d9d9',
   mid: textColor.mid,
   dark: textColor.dark,
+};
+
+const buttonColor = {
+  default: {
+    text: textColor.mid,
+    bg: bgColor.light,
+    activeText: textColor.dark,
+    activeBg: bgColor.silver,
+  },
+  text: {
+    text: textColor.dark,
+    bg: 'transparent',
+    activeText: textColor.dark,
+    activeBg: bgColor.silver,
+  },
+  primaryText: {
+    text: textColor.blue,
+    bg: 'transparent',
+    activeText: textColor.dark,
+    activeBg: bgColor.silver,
+  },
 };
 
 const defaultTheme: DefaultTheme = {
@@ -64,6 +87,7 @@ const defaultTheme: DefaultTheme = {
     bg: bgColor,
     border: borderColor,
     icon: iconColor,
+    button: buttonColor,
   },
 
   notification: {

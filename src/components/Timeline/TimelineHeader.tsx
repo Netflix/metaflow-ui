@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { GraphState, GraphAlignment, GraphGroupBy, GraphSortBy } from './useGraph';
+import { GraphState, GraphGroupBy, GraphSortBy } from './useGraph';
 import { TextInputField, CheckboxField, SelectField } from '../Form';
+import { ItemRow } from '../Structure';
+import { Text } from '../Text';
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
 import styled from 'styled-components';
-import Icon from '../Icon';
+import Icon, { SortIcon } from '../Icon';
 
 type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
   zoomReset: () => void;
-  changeMode: (alingment: GraphAlignment) => void;
   toggleGroupBy: (by: GraphGroupBy) => void;
   updateSortBy: (by: GraphSortBy) => void;
   updateSortDir: () => void;
@@ -22,7 +23,6 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   graph,
   zoom,
   zoomReset,
-  changeMode,
   toggleGroupBy,
   updateSortBy,
   updateSortDir,
@@ -32,24 +32,23 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   return (
     <TimelineHeaderContainer>
       <TimelineHeaderTop>
-        <TextInputField />
-        <Labeled label="Status:">
-          <SelectField
-            options={[
-              ['All', 'all'],
-              ['Completed', 'completed'],
-            ]}
-          />
-        </Labeled>
-        <Labeled label="Order by:">
-          <ButtonGroup
-            buttons={[
-              { label: 'Started at', action: () => updateSortBy('startTime'), active: graph.sortBy === 'startTime' },
-              { label: 'Duration', action: () => updateSortBy('duration'), active: graph.sortBy === 'duration' },
-            ]}
-          />
-        </Labeled>
+        <ItemRow>
+          <TimelineHeaderItem>
+            <TextInputField disabled={true} placeholder="Search not implemented..." />
+          </TimelineHeaderItem>
+          <TimelineHeaderItem pad="sm">
+            <Text>Status:</Text>
+            <SelectField
+              disabled={true}
+              options={[
+                ['All', 'all'],
+                ['Completed', 'completed'],
+              ]}
+            />
+          </TimelineHeaderItem>
+        </ItemRow>
       </TimelineHeaderTop>
+
       <TimelineHeaderBottom>
         <TimelineHeaderBottomLeft>
           <CheckboxField
@@ -60,26 +59,53 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
           <SettingsButton expand={() => expandAll()} collapse={() => collapseAll()} />
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
-          <TimelineHeaderBottomActions>
-            <TimelineDirectionButton onClick={() => updateSortDir()}>
-              <span>Direction</span>
-              <Icon name="arrowDown" rotate={graph.sortDir === 'asc' ? 0 : 180} />
-            </TimelineDirectionButton>
-            <CheckboxField
-              label="Left align"
-              checked={graph.alignment === 'fromLeft'}
-              onChange={() => changeMode(graph.alignment === 'fromLeft' ? 'fromStartTime' : 'fromLeft')}
-            />
-          </TimelineHeaderBottomActions>
+          <ItemRow>
+            <Labeled label="Order by:">
+              <ButtonGroup>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    if (graph.sortBy === 'startTime') {
+                      updateSortDir();
+                    } else {
+                      updateSortBy('startTime');
+                    }
+                  }}
+                  active={graph.sortBy === 'startTime'}
+                >
+                  Started at
+                  {graph.sortBy === 'startTime' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    if (graph.sortBy === 'duration') {
+                      updateSortDir();
+                    } else {
+                      updateSortBy('duration');
+                    }
+                  }}
+                  active={graph.sortBy === 'duration'}
+                >
+                  Duration
+                  {graph.sortBy === 'duration' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
+                </Button>
+              </ButtonGroup>
+            </Labeled>
+          </ItemRow>
 
           <Labeled label="Zoom:">
-            <ButtonGroup
-              buttons={[
-                { label: 'Fit to screen', action: zoomReset, active: !graph.controlled },
-                { label: '-', action: () => zoom('out') },
-                { label: '+', action: () => zoom('in') },
-              ]}
-            />
+            <ButtonGroup>
+              <Button size="sm" onClick={() => zoomReset()} active={!graph.controlled}>
+                Fit to screen
+              </Button>
+              <Button size="sm" onClick={() => zoom('out')}>
+                <Icon name="minus" />
+              </Button>
+              <Button size="sm" onClick={() => zoom('in')}>
+                <Icon name="plus" />
+              </Button>
+            </ButtonGroup>
           </Labeled>
         </TimelineHeaderBottomRight>
       </TimelineHeaderBottom>
@@ -87,19 +113,27 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   );
 };
 
+const HeaderSortIcon: React.FC<{ dir: 'asc' | 'desc' }> = ({ dir }) => (
+  <SortIcon padLeft size="sm" active direction={dir === 'asc' ? 'up' : 'down'} />
+);
+
 const TimelineHeaderContainer = styled.div`
-  border-bottom: 2px solid ${(p) => p.theme.color.border.normal};
+  border-bottom: 2px solid ${(p) => p.theme.color.border.mid};
   font-size: 14px;
 `;
 
 const TimelineHeaderTop = styled.div`
   padding: 0.5rem 0 1.5rem;
-  border-bottom: 1px solid ${(p) => p.theme.color.border.normal};
+  border-bottom: 1px solid ${(p) => p.theme.color.border.mid};
   display: flex;
 `;
 
 const TimelineHeaderBottom = styled.div`
   display: flex;
+
+  .field.field-checkbox {
+    margin-bottom: 0;
+  }
 `;
 
 const TimelineHeaderBottomLeft = styled.div`
@@ -107,7 +141,7 @@ const TimelineHeaderBottomLeft = styled.div`
   justify-content: space-between;
   padding: 0.75rem;
   width: 225px;
-  border-right: 1px solid ${(p) => p.theme.color.border.normal};
+  border-right: 1px solid ${(p) => p.theme.color.border.mid};
 `;
 
 const TimelineHeaderBottomRight = styled.div`
@@ -117,28 +151,16 @@ const TimelineHeaderBottomRight = styled.div`
   justify-content: space-between;
 `;
 
-const TimelineHeaderBottomActions = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const TimelineDirectionButton = styled.div`
-  cursor: pointer;
-  padding: 0.25rem 1rem 0.25rem 0.25rem;
-  margin: 0 1rem 0 0;
-  border-right: 1px solid ${(p) => p.theme.color.border.normal};
-
-  span {
-    margin-right: 0.5rem;
-  }
-`;
-
 const Labeled: React.FC<{ label: string }> = ({ label, children }) => (
   <LabeledContainer>
     <label>{label}</label>
     <div>{children}</div>
   </LabeledContainer>
 );
+
+const TimelineHeaderItem = styled(ItemRow)`
+  margin-right: ${(p) => p.theme.spacer.md}rem;
+`;
 
 const LabeledContainer = styled.div`
   margin: 0 1rem;
@@ -156,13 +178,12 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
   const [open, setOpen] = useState(false);
   return (
     <div style={{ position: 'relative' }}>
-      <Button layout="slim" onClick={() => setOpen(!open)}>
-        ...
+      <Button active={open} onClick={() => setOpen(!open)}>
+        <Icon name="ellipsis" />
       </Button>
       {open && (
         <TemporaryPopup>
           <Button
-            layout="slim"
             onClick={() => {
               expand();
               setOpen(false);
@@ -172,7 +193,6 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
           </Button>
           <br />
           <Button
-            layout="slim"
             onClick={() => {
               collapse();
               setOpen(false);

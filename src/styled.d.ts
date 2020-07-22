@@ -3,6 +3,13 @@ import 'styled-components';
 type NotificationColorMap = { bg: string; text: string };
 
 declare module 'styled-components' {
+  export type ButtonColors = {
+    bg: string;
+    text: string;
+    activeText: string;
+    activeBg: string;
+  };
+
   export interface DefaultTheme {
     layout: {
       /** This value is used for both appbar height and page top padding. (rem) */
@@ -16,6 +23,7 @@ declare module 'styled-components' {
     };
 
     spacer: {
+      [index: string];
       xs: number;
       sm: number;
       md: number;
@@ -31,7 +39,7 @@ declare module 'styled-components' {
         dark: string;
         blue: string;
         blueLight: string;
-        blueGray: string;
+        silver: string;
         teal: string;
         yellow: string;
         red: string;
@@ -47,12 +55,18 @@ declare module 'styled-components' {
       };
       border: {
         light: string;
-        normal: string;
+        mid: string;
+        dark: string;
       };
       icon: {
         light: string;
         mid: string;
         dark: string;
+      };
+      button: {
+        default: ButtonColors;
+        text: ButtonColors;
+        primaryText: ButtonColors;
       };
     };
 

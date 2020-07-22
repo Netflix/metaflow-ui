@@ -5,18 +5,26 @@ import { ReactComponent as Timeline } from '../../assets/timeline.svg';
 import { ReactComponent as ArrowDown } from '../../assets/arrow_down.svg';
 import { ReactComponent as Times } from '../../assets/times.svg';
 import { ReactComponent as Plus } from '../../assets/plus.svg';
+import { ReactComponent as Minus } from '../../assets/minus.svg';
 import { ReactComponent as Sort } from '../../assets/sort.svg';
 import { ReactComponent as Check } from '../../assets/check.svg';
 import { ReactComponent as Pen } from '../../assets/pen.svg';
+import { ReactComponent as Search } from '../../assets/search.svg';
+import { ReactComponent as Ellipsis } from '../../assets/ellipsis.svg';
+import { ReactComponent as Return } from '../../assets/return.svg';
 
 type SupportedIcons = {
   timeline: FunctionComponent;
   arrowDown: FunctionComponent;
   times: FunctionComponent;
   plus: FunctionComponent;
+  minus: FunctionComponent;
   sort: FunctionComponent;
   check: FunctionComponent;
   pen: FunctionComponent;
+  search: FunctionComponent;
+  ellipsis: FunctionComponent;
+  return: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -24,9 +32,13 @@ const icons: SupportedIcons = {
   arrowDown: ArrowDown,
   times: Times,
   plus: Plus,
+  minus: Minus,
   sort: Sort,
   check: Check,
   pen: Pen,
+  search: Search,
+  ellipsis: Ellipsis,
+  return: Return,
 };
 
 type SupportedSizes = {
@@ -39,9 +51,9 @@ type SupportedSizes = {
 
 const sizeTable: SupportedSizes = {
   xs: 0.75,
-  sm: 0.75,
-  md: 1,
-  lg: 1.5,
+  sm: 1,
+  md: 1.5,
+  lg: 2,
   hg: 2.5,
 };
 
@@ -49,12 +61,15 @@ interface IconProps {
   name: keyof SupportedIcons;
   size?: keyof SupportedSizes;
   rotate?: number;
+  className?: string;
+  padLeft?: boolean;
+  padRight?: boolean;
 }
 
-const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate, ...rest }) => {
+const Icon: React.FC<IconProps> = ({ name, size = 'sm', rotate, ...rest }) => {
   const IconComponent = icons[name];
   return (
-    <Wrapper {...rest} {...{ size, rotate }}>
+    <Wrapper className={`icon icon-${name}`} {...rest} {...{ size, rotate }}>
       <IconComponent />
     </Wrapper>
   );
@@ -62,11 +77,14 @@ const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate, ...rest }) => {
 
 export default Icon;
 
-const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number }>`
-  vertical-align: middle;
-  display: inline-block;
+const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number; padLeft?: boolean; padRight?: boolean }>`
+  vertical-align: text-top;
+  display: inline-flex;
+  align-items: center;
   margin: 0;
   padding: 0;
+  padding-left: ${(p) => (p.padLeft ? p.theme.spacer.sm : 0)}rem;
+  padding-right: ${(p) => (p.padRight ? p.theme.spacer.sm : 0)}rem;
 
   svg {
     height: ${(p) => sizeTable[p.size]}rem;
@@ -78,7 +96,7 @@ const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number }>`
 type SortIconProps = Omit<IconProps, 'name'> & { direction: 'up' | 'down'; active?: boolean };
 
 export const SortIcon: React.FC<SortIconProps> = ({ direction, ...rest }) => (
-  <StyledSortIcon direction={direction} name="sort" {...rest} />
+  <StyledSortIcon direction={direction} name="sort" className="icon icon-sort" {...rest} />
 );
 
 const StyledSortIcon = styled(Icon)<SortIconProps>`

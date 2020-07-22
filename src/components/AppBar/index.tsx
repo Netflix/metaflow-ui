@@ -3,14 +3,17 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import logo from '../../assets/logo_dark_horizontal.svg';
 import Breadcrumb from '../Breadcrumb';
+import { ItemRow } from '../Structure';
 
 const AppBar: React.FC = () => {
   return (
     <Wrapper>
-      <Link to="/">
-        <Logo src={logo} />
-      </Link>
-      <Breadcrumb />
+      <ItemRow pad="lg">
+        <Link to="/">
+          <Logo src={logo} />
+        </Link>
+        <Breadcrumb />
+      </ItemRow>
     </Wrapper>
   );
 };
