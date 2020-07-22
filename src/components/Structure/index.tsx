@@ -59,7 +59,7 @@ export const FixedContent = styled.div`
   flex-direction: column;
 `;
 
-export const ItemRow = styled.div<{ pad?: 'xs' | 'sm' | 'md' | 'lg' }>`
+export const ItemRow = styled.div<{ pad?: 'xs' | 'sm' | 'md' | 'lg' | 'hg' }>`
   display: flex;
   align-items: center;
 
