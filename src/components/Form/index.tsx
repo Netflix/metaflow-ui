@@ -227,10 +227,11 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     background-size: 1rem;
     line-height: 1.5rem;
     border: 1px solid transparent;
-    padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.md}rem ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.xs}rem;
+    padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.md}rem ${(p) => p.theme.spacer.xs}rem
+      ${(p) => p.theme.spacer.xs}rem;
 
     &:hover {
-      background-color: ${p => p.theme.color.bg.light};
+      background-color: ${(p) => p.theme.color.bg.light};
     }
   }
 `;

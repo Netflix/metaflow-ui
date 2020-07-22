@@ -245,14 +245,14 @@ const StyledRemovableTag = styled(RemovableTag)`
 `;
 
 const Sidebar = styled.div`
-position: fixed;
+  position: fixed;
   width: ${(p) => p.theme.layout.sidebarWidth}rem;
-  top: ${p => p.theme.layout.appbarHeight}rem;
+  top: ${(p) => p.theme.layout.appbarHeight}rem;
 `;
 
 const Content = styled.div`
-  margin-left: ${p => p.theme.spacer.hg + p.theme.layout.sidebarWidth}rem;
-  padding-top: ${p => p.theme.spacer.md}rem;
+  margin-left: ${(p) => p.theme.spacer.hg + p.theme.layout.sidebarWidth}rem;
+  padding-top: ${(p) => p.theme.spacer.md}rem;
 
   h3:first-of-type {
     margin-top: 0;

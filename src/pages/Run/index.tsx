@@ -49,9 +49,7 @@ const RunPage: React.FC = () => {
             key: 'dag',
             label: t('run.DAG'),
             linkTo: getPath.dag(params.flowId, params.runNumber),
-            component: (
-              <DAG run={run} />
-            ),
+            component: <DAG run={run} />,
           },
           {
             key: 'timeline',
