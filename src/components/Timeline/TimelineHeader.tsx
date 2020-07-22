@@ -34,11 +34,12 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
       <TimelineHeaderTop>
         <ItemRow>
           <TimelineHeaderItem>
-            <TextInputField disabled={true} placeholder="Search not implemented..." />
+            <TextInputField disabled={true} horizontal placeholder="Search not implemented..." />
           </TimelineHeaderItem>
           <TimelineHeaderItem pad="sm">
             <Text>Status:</Text>
             <SelectField
+              horizontal
               disabled={true}
               options={[
                 ['All', 'all'],
