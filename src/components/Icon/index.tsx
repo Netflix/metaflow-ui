@@ -8,6 +8,9 @@ import { ReactComponent as Plus } from '../../assets/plus.svg';
 import { ReactComponent as Sort } from '../../assets/sort.svg';
 import { ReactComponent as Check } from '../../assets/check.svg';
 import { ReactComponent as Pen } from '../../assets/pen.svg';
+import { ReactComponent as Search } from '../../assets/search.svg';
+import { ReactComponent as Ellipsis } from '../../assets/ellipsis.svg';
+import { ReactComponent as Return } from '../../assets/return.svg';
 
 type SupportedIcons = {
   timeline: FunctionComponent;
@@ -17,6 +20,9 @@ type SupportedIcons = {
   sort: FunctionComponent;
   check: FunctionComponent;
   pen: FunctionComponent;
+  search: FunctionComponent;
+  ellipsis: FunctionComponent;
+  return: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -27,6 +33,9 @@ const icons: SupportedIcons = {
   sort: Sort,
   check: Check,
   pen: Pen,
+  search: Search,
+  ellipsis: Ellipsis,
+  return: Return,
 };
 
 type SupportedSizes = {
@@ -54,7 +63,7 @@ interface IconProps {
   padRight?: boolean;
 }
 
-const Icon: React.FC<IconProps> = ({ name, size = 'md', rotate, ...rest }) => {
+const Icon: React.FC<IconProps> = ({ name, size = 'sm', rotate, ...rest }) => {
   const IconComponent = icons[name];
   return (
     <Wrapper className={`icon icon-${name}`} {...rest} {...{ size, rotate }}>

@@ -87,7 +87,7 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
       <ShowDetailsRow>
         <Button onClick={() => setExpanded(!expanded)} textOnly variant="primaryText" size="sm">
           {expanded ? t('run.hide-run-details') : t('run.show-run-details')}
-          <Icon size="sm" name="arrowDown" rotate={expanded ? 180 : 0} padLeft />
+          <Icon name="arrowDown" rotate={expanded ? 180 : 0} padLeft />
         </Button>
       </ShowDetailsRow>
     </RunHeaderContainer>

@@ -47,7 +47,7 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void }> = ({ onSubmit }) => 
   return (
     <TagInputWrapper>
       <Button onClick={handleFormActivation} active={formActive}>
-        <Icon name={formActive ? 'times' : 'plus'} size="sm" />
+        <Icon name={formActive ? 'times' : 'plus'} />
       </Button>
       <Popover show={formActive}>
         <TextInputField
