@@ -180,7 +180,7 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
   return (
     <div style={{ position: 'relative' }}>
       <Button active={open} onClick={() => setOpen(!open)}>
-        ...
+        <Icon name="ellipsis" />
       </Button>
       {open && (
         <TemporaryPopup>
