@@ -14,7 +14,7 @@ import TimelineFooter from './TimelineFooter';
 import { useQueryParams, StringParam } from 'use-query-params';
 
 export const ROW_HEIGHT = 28;
-export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
+export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task[] };
 type StepIndex = { name: string; index: number };
 
 //
@@ -40,8 +40,8 @@ function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc') {
     const fst = sortDir === 'asc' ? a : b;
     const snd = sortDir === 'asc' ? b : a;
 
-    if (sortBy === 'startTime') {
-      return fst.data.ts_epoch - snd.data.ts_epoch;
+    if (sortBy === 'startTime' && fst.type === 'task' && snd.type === 'task') {
+      return fst.data[0].ts_epoch - snd.data[0].ts_epoch;
     } else if (sortBy === 'duration') {
       return taskDuration(fst) - taskDuration(snd);
     }
@@ -51,7 +51,10 @@ function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc') {
 }
 
 function taskDuration(a: Row): number {
-  return (a.type === 'task' && a.data.duration) || (a.data.finished_at ? a.data.finished_at - a.data.ts_epoch : 0);
+  if (a.type === 'task') {
+    return a.data[0].duration || (a.data[0].finished_at ? a.data[0].finished_at - a.data[0].ts_epoch : 0);
+  }
+  return 0;
 }
 
 //
@@ -116,16 +119,21 @@ const VirtualizedTimeline: React.FC<{
       // has finished_at value. so we don't make duplicate rows.
       // NOTE: This might not work with retry tasks since they have same task ID's. Need to find out how
       // to work with those
-      const ids: number[] = [];
+      /*const ids: number[] = [];
       const nonDuplicateitems = items.reduce((arr: Task[], current: Task) => {
-        if (ids.indexOf(current.task_id) > -1 && current.finished_at) {
+        const itemIndex = ids.indexOf(current.task_id);
+        if (
+          itemIndex > -1 &&
+          (!items[itemIndex]?.finished_at || items[itemIndex]?.finished_at === current.finished_at)
+        ) {
+          console.log('duplication');
           return arr.map((item) => (item.task_id === current.task_id ? current : item));
         }
         ids.push(current.task_id);
         return arr.concat([current]);
       }, []);
-
-      dispatch({ type: 'fill', data: nonDuplicateitems });
+*/
+      dispatch({ type: 'fill', data: items });
     },
     fullyDisableCache: true,
     useBatching: true,
@@ -243,9 +251,9 @@ const VirtualizedTimeline: React.FC<{
       const rowData = rowDataState[current.step_name];
       // If step row is open, add its tasks to the list.
       if (rowData?.isOpen || graph.groupBy === 'none') {
-        const rowTasks = rowData.data.map((item) => ({
+        const rowTasks = Object.keys(rowData.data).map((item) => ({
           type: 'task' as const,
-          data: item,
+          data: rowData.data[parseInt(item)],
         }));
         return arr.concat(
           graph.groupBy === 'step' ? [{ type: 'step' as const, data: current }] : [],
@@ -415,16 +423,19 @@ type RowRendererProps = {
 };
 
 function createRowRenderer({ rows, graph, dispatch, rowDataState }: RowRendererProps) {
-  return ({ index, style }: { index: number; style: React.CSSProperties }) => (
-    <RowRenderer
-      key={index}
-      row={rows[index]}
-      graph={graph}
-      style={style}
-      rowData={rows[index].type === 'step' ? rowDataState[rows[index].data.step_name] : undefined}
-      toggleOpen={() => dispatch({ type: 'toggle', id: rows[index].data.step_name })}
-    />
-  );
+  return ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const row = rows[index];
+    return (
+      <RowRenderer
+        key={index}
+        row={rows[index]}
+        graph={graph}
+        style={style}
+        rowData={row.type === 'step' ? rowDataState[row.data.step_name] : undefined}
+        toggleOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
+      />
+    );
+  };
 }
 
 const RowRenderer: React.FC<{

@@ -11,7 +11,7 @@ export type StepRowData = {
   // We have to compute finished_at value so let it live in here now :(
   finished_at: number;
   // Tasks for this step
-  data: Task[];
+  data: Record<number, Task[]>;
 };
 
 export type RowDataAction =
@@ -58,15 +58,26 @@ function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataMode
         const highestTime = latestTimeointOfTasks(newItems);
 
         if (row) {
-          const newData = [...row.data];
-          const existingIds = row.data.map((item) => item.task_id);
+          const newData = row.data;
 
           for (const item of newItems) {
-            const itemIndex = existingIds.indexOf(item.task_id);
-            if (itemIndex > -1) {
-              newData[itemIndex] = item;
+            if (newData[item.task_id]) {
+              const newtasks = newData[item.task_id];
+
+              let added = false;
+              for (const index in newtasks) {
+                if (!newtasks[index].finished_at || newtasks[index].finished_at === item.finished_at) {
+                  added = true;
+                  newtasks[index] = item;
+                }
+              }
+
+              if (!added) {
+                newtasks.push(item);
+              }
+              newData[item.task_id] = newtasks;
             } else {
-              newData.push(item);
+              newData[item.task_id] = [item];
             }
           }
 
@@ -85,13 +96,32 @@ function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataMode
           [key]: {
             isOpen: true,
             finished_at: highestTime,
-            data: groupped[key],
+            data: groupped[key].reduce<Record<number, Task[]>>((dataobj, item) => {
+              if (dataobj[item.task_id]) {
+                const newtasks = dataobj[item.task_id];
+
+                let added = false;
+                for (const index in newtasks) {
+                  if (!newtasks[index].finished_at || newtasks[index].finished_at === item.finished_at) {
+                    added = true;
+                    newtasks[index] = item;
+                  }
+                }
+
+                if (!added) {
+                  newtasks.push(item);
+                }
+                return { ...dataobj, [item.task_id]: newtasks };
+              } else {
+                return { ...dataobj, [item.task_id]: [item] };
+              }
+            }, {}),
           },
         };
       }, state);
 
       return newState;
-    }
+    } /*
     case 'sort':
       return Object.keys(state).reduce((obj, value) => {
         if (action.ids.indexOf(value) > -1) {
@@ -102,7 +132,7 @@ function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataMode
         }
 
         return obj;
-      }, state);
+      }, state);*/
     case 'toggle':
       if (state[action.id]) {
         return { ...state, [action.id]: { ...state[action.id], isOpen: !state[action.id].isOpen } };
