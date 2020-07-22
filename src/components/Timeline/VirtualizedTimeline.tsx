@@ -65,7 +65,6 @@ const VirtualizedTimeline: React.FC<{
     group: StringParam,
     order: StringParam,
     direction: StringParam,
-    alignment: StringParam,
   });
   const params = useQuery();
   const _listref = createRef<List>();
@@ -165,16 +164,6 @@ const VirtualizedTimeline: React.FC<{
     if (groupBy) {
       graphDispatch({ type: 'groupBy', by: groupBy });
     }
-
-    const alignment = validatedParameter<'fromStartTime' | 'fromLeft'>(
-      q.alignment,
-      graph.alignment,
-      ['fromStartTime', 'fromLeft'],
-      'fromStartTime',
-    );
-    if (alignment) {
-      graphDispatch({ type: 'alignment', alignment });
-    }
   }, [q, graph, graphDispatch]);
 
   // Init graph when steps updates (do we need this?)
@@ -249,17 +238,40 @@ const VirtualizedTimeline: React.FC<{
     // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
     const highestTimestamp = Object.keys(rowDataState).reduce((val, key) => {
       const step = rowDataState[key];
-      if (step.finished_at && step.finished_at > val) return step.finished_at;
+      // When we are sorting by start time, we can check just last step finish time
+      if (graph.sortBy === 'startTime' && step.finished_at && step.finished_at > val) return step.finished_at;
+      // When sorting by duration and grouping by step, we want to find longest step
+      if (graph.sortBy === 'duration' && graph.groupBy === 'step' && step.finished_at) {
+        const stepDataObject = stepData?.find((item) => item.step_name === key);
+        if (stepDataObject && graph.min + step.finished_at - stepDataObject.ts_epoch > val) {
+          return graph.min + step.finished_at - stepDataObject.ts_epoch;
+        }
+      }
+      // When sorting by duration and grouping by none (so just tasks) we want to find longest task
+      if (graph.sortBy === 'duration' && graph.groupBy === 'none' && step.finished_at) {
+        const longestTask = step.data.reduce((longestTaskValue, task) => {
+          if (task.finished_at && graph.min + (task.finished_at - task.ts_epoch) > longestTaskValue) {
+            return graph.min + (task.finished_at - task.ts_epoch);
+          }
+          return longestTaskValue;
+        }, 0);
+        if (longestTask > val) {
+          return longestTask;
+        }
+      }
       return val;
-    }, 0);
+    }, graph.min);
 
-    graphDispatch({ type: 'updateMax', end: highestTimestamp });
+    graphDispatch({
+      type: 'updateMax',
+      end: highestTimestamp,
+    });
 
     const rowsToUpdate = graph.groupBy === 'none' ? newRows.sort(sortRows(graph.sortBy, graph.sortDir)) : newRows;
 
     // If no grouping, sort tasks here.
     setRows(rowsToUpdate);
-  }, [rowDataState, graphDispatch, steps, filters.steps, graph.groupBy, graph.sortBy, graph.sortDir]);
+  }, [rowDataState, graphDispatch, steps, filters.steps, graph.groupBy, graph.min, graph.sortBy, graph.sortDir]); // eslint-disable-line
 
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
@@ -328,10 +340,9 @@ const VirtualizedTimeline: React.FC<{
           graph={graph}
           zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
           zoomReset={() => graphDispatch({ type: 'resetZoom' })}
-          changeMode={(alignment) => sq({ alignment })}
-          toggleGroupBy={(by) => sq({ group: by })}
-          updateSortBy={(by) => sq({ order: by })}
-          updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' })}
+          toggleGroupBy={(by) => sq({ group: by }, 'replaceIn')}
+          updateSortBy={(by) => sq({ order: by }, 'replaceIn')}
+          updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')}
           expandAll={expandAll}
           collapseAll={collapseAll}
         />
@@ -348,8 +359,9 @@ const VirtualizedTimeline: React.FC<{
             sticky={!!stickyHeader && graph.groupBy !== 'none'}
             style={{
               height:
-                (listContainer.height < window.innerHeight * 0.6 ? window.innerHeight * 0.6 : listContainer.height) +
-                'px',
+                (listContainer.height < window.innerHeight * 0.5 && rows.length * ROW_HEIGHT > window.innerHeight * 0.5
+                  ? window.innerHeight * 0.5
+                  : listContainer.height) + 'px',
               width: listContainer.width + 'px',
             }}
           >

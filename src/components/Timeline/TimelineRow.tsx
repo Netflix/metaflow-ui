@@ -2,7 +2,7 @@ import React from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { Row } from './VirtualizedTimeline';
 import { GraphState } from './useGraph';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
 import Icon from '../Icon';
 
@@ -22,8 +22,8 @@ type TimelineRowProps = {
 type LabelPosition = 'left' | 'right' | 'none';
 
 const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, sticky, endTime }) => {
+  const { push } = useHistory();
   if (!item) return null;
-
   const dataItem = item.data;
   const Element = sticky ? StickyStyledRow : StyledRow;
   const finishedAt = endTime || item.data.finished_at;
@@ -65,6 +65,11 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
             style={{
               width: width + '%',
               left: valueFromLeft + '%',
+            }}
+            onClick={() => {
+              if (item.type === 'task') {
+                push(getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id));
+              }
             }}
           >
             <RowMetricLabel item={item} finishedAt={finishedAt} labelPosition={labelPosition} />
@@ -184,6 +189,7 @@ const RowGraphContainer = styled.div`
 
 const BoxGraphic = styled.div<{ root: boolean }>`
   position: absolute;
+  cursor: pointer;
   color: ${(p) => p.theme.color.text.dark};
   min-width: 10px;
   height: 27px;
