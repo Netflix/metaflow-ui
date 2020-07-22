@@ -81,7 +81,11 @@ function graphReducer(state: GraphState, action: GraphAction): GraphState {
       }
 
     case 'updateMax':
-      return { ...state, max: action.end, timelineEnd: action.end };
+      return {
+        ...state,
+        max: action.end,
+        timelineEnd: state.controlled ? (action.end < state.timelineEnd ? action.end : state.timelineEnd) : action.end,
+      };
 
     case 'alignment':
       return { ...state, alignment: action.alignment };

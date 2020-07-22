@@ -111,8 +111,23 @@ const VirtualizedTimeline: React.FC<{
     },
     fetchAllData: true,
     onUpdate: (items) => {
-      dispatch({ type: 'fill', data: items });
+      // In some cases there is INSERT and UPDATE message in same batch. Merge them here to one that
+      // has finished_at value. so we don't make duplicate rows.
+      // NOTE: This might not work with retry tasks since they have same task ID's. Need to find out how
+      // to work with those
+      const ids: number[] = [];
+      const nonDuplicateitems = items.reduce((arr: Task[], current: Task) => {
+        if (ids.indexOf(current.task_id) > -1 && current.finished_at) {
+          return arr.map((item) => (item.task_id === current.task_id ? current : item));
+        }
+        ids.push(current.task_id);
+        return arr.concat([current]);
+      }, []);
+
+      dispatch({ type: 'fill', data: nonDuplicateitems });
     },
+    fullyDisableCache: true,
+    useBatching: true,
   });
 
   //
@@ -211,7 +226,7 @@ const VirtualizedTimeline: React.FC<{
     const visibleSteps = (filters.steps.length === 0
       ? steps
       : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1)
-    ).filter((item) => !item.step_name.startsWith('_'));
+    ).filter((item) => item.step_name && !item.step_name.startsWith('_'));
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
     const newRows: Row[] = visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];
@@ -368,7 +383,7 @@ const VirtualizedTimeline: React.FC<{
             <List
               // eslint-disable-next-line react/no-string-refs
               ref={_listref}
-              overscanRowCount={10}
+              overscanRowCount={5}
               rowCount={rows.length}
               onRowsRendered={(params) => {
                 const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
