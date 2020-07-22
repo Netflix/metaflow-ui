@@ -202,7 +202,7 @@ const Home: React.FC = () => {
 
         <Section>
           <Button onClick={() => resetAllFilters()}>
-            <Icon name="times" padRight size="sm" />
+            <Icon name="times" padRight />
             <Text>{t('filters.reset-all')}</Text>
           </Button>
         </Section>

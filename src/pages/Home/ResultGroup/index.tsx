@@ -153,7 +153,7 @@ const ResultGroup: React.FC<Props> = ({
       </Table>
       {result?.pages?.last !== page && allRuns.length >= Number(localSearchParams['_limit']) && (
         <Button className="load-more" onClick={() => loadMoreRuns()} size="sm" variant="primaryText" textOnly>
-          {t('home.load-more-runs')} <Icon name="arrowDown" size="sm" padLeft />
+          {t('home.load-more-runs')} <Icon name="arrowDown" padLeft />
         </Button>
       )}
     </StyledResultGroup>
