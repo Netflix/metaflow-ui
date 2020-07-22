@@ -171,7 +171,7 @@ const StepLabel = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-left: ${p => p.theme.spacer.sm}rem;
+  padding-left: ${(p) => p.theme.spacer.sm}rem;
 `;
 
 const RowGraphContainer = styled.div`
