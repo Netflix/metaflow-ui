@@ -112,7 +112,20 @@ const VirtualizedTimeline: React.FC<{
     },
     fetchAllData: true,
     onUpdate: (items) => {
-      dispatch({ type: 'fill', data: items.sort((a, b) => b.ts_epoch - a.ts_epoch) });
+      // In some cases there is INSERT and UPDATE message in same batch. Merge them here to one that
+      // has finished_at value. so we don't make duplicate rows.
+      // NOTE: This might not work with retry tasks since they have same task ID's. Need to find out how
+      // to work with those
+      const ids: number[] = [];
+      const nonDuplicateitems = items.reduce((arr: Task[], current: Task) => {
+        if (ids.indexOf(current.task_id) > -1 && current.finished_at) {
+          return arr.map((item) => (item.task_id === current.task_id ? current : item));
+        }
+        ids.push(current.task_id);
+        return arr.concat([current]);
+      }, []);
+
+      dispatch({ type: 'fill', data: nonDuplicateitems });
     },
     fullyDisableCache: true,
     useBatching: true,
