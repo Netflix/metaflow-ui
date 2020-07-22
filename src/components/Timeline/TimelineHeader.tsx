@@ -32,13 +32,14 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   return (
     <TimelineHeaderContainer>
       <TimelineHeaderTop>
-        <ItemRow>
+        <ItemRow pad="lg">
           <TimelineHeaderItem>
-            <TextInputField disabled={true} placeholder="Search not implemented..." />
+            <TextInputField disabled={true} horizontal placeholder="Search not implemented..." />
           </TimelineHeaderItem>
           <TimelineHeaderItem pad="sm">
             <Text>Status:</Text>
             <SelectField
+              horizontal
               disabled={true}
               options={[
                 ['All', 'all'],
@@ -60,41 +61,41 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
           <ItemRow>
-            <Labeled label="Order by:">
-              <ButtonGroup>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    if (graph.sortBy === 'startTime') {
-                      updateSortDir();
-                    } else {
-                      updateSortBy('startTime');
-                    }
-                  }}
-                  active={graph.sortBy === 'startTime'}
-                >
-                  Started at
-                  {graph.sortBy === 'startTime' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    if (graph.sortBy === 'duration') {
-                      updateSortDir();
-                    } else {
-                      updateSortBy('duration');
-                    }
-                  }}
-                  active={graph.sortBy === 'duration'}
-                >
-                  Duration
-                  {graph.sortBy === 'duration' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
-                </Button>
-              </ButtonGroup>
-            </Labeled>
+            <Text>Order by:</Text>
+            <ButtonGroup>
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (graph.sortBy === 'startTime') {
+                    updateSortDir();
+                  } else {
+                    updateSortBy('startTime');
+                  }
+                }}
+                active={graph.sortBy === 'startTime'}
+              >
+                Started at
+                {graph.sortBy === 'startTime' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => {
+                  if (graph.sortBy === 'duration') {
+                    updateSortDir();
+                  } else {
+                    updateSortBy('duration');
+                  }
+                }}
+                active={graph.sortBy === 'duration'}
+              >
+                Duration
+                {graph.sortBy === 'duration' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
+              </Button>
+            </ButtonGroup>
           </ItemRow>
 
-          <Labeled label="Zoom:">
+          <ItemRow className="">
+            <Text>Zoom:</Text>
             <ButtonGroup>
               <Button size="sm" onClick={() => zoomReset()} active={!graph.controlled}>
                 Fit to screen
@@ -106,7 +107,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 <Icon name="plus" />
               </Button>
             </ButtonGroup>
-          </Labeled>
+          </ItemRow>
         </TimelineHeaderBottomRight>
       </TimelineHeaderBottom>
     </TimelineHeaderContainer>
@@ -118,13 +119,13 @@ const HeaderSortIcon: React.FC<{ dir: 'asc' | 'desc' }> = ({ dir }) => (
 );
 
 const TimelineHeaderContainer = styled.div`
-  border-bottom: 2px solid ${(p) => p.theme.color.border.mid};
+  border-bottom: 2px solid ${(p) => p.theme.color.border.light};
   font-size: 14px;
 `;
 
 const TimelineHeaderTop = styled.div`
-  padding: 0.5rem 0 1.5rem;
-  border-bottom: 1px solid ${(p) => p.theme.color.border.mid};
+  padding-bottom: ${(p) => p.theme.spacer.md}rem;
+  border-bottom: 1px solid ${(p) => p.theme.color.border.light};
   display: flex;
 `;
 
@@ -139,40 +140,19 @@ const TimelineHeaderBottom = styled.div`
 const TimelineHeaderBottomLeft = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: 0.75rem;
+  padding: ${(p) => p.theme.spacer.md}rem;
   width: 225px;
-  border-right: 1px solid ${(p) => p.theme.color.border.mid};
+  border-right: 1px solid ${(p) => p.theme.color.border.light};
 `;
 
 const TimelineHeaderBottomRight = styled.div`
-  padding: 0.75rem;
+  padding: ${(p) => p.theme.spacer.md}rem;
   display: flex;
   flex: 1;
   justify-content: space-between;
 `;
 
-const Labeled: React.FC<{ label: string }> = ({ label, children }) => (
-  <LabeledContainer>
-    <label>{label}</label>
-    <div>{children}</div>
-  </LabeledContainer>
-);
-
-const TimelineHeaderItem = styled(ItemRow)`
-  margin-right: ${(p) => p.theme.spacer.md}rem;
-`;
-
-const LabeledContainer = styled.div`
-  margin: 0 1rem;
-  display: flex;
-  align-items: center;
-
-  > label {
-    font-size: 14px;
-    color: ${(p) => p.theme.color.text.dark};
-    margin-right: 0.5rem;
-  }
-`;
+const TimelineHeaderItem = styled(ItemRow)``;
 
 const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = ({ expand, collapse }) => {
   const [open, setOpen] = useState(false);

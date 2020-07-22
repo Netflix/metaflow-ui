@@ -1,7 +1,8 @@
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
-import Icon from '../Icon';
 import { v4 as uuid } from 'uuid';
+import Icon from '../Icon';
+import caretDownURL from '../../assets/caret_down.svg';
 
 type CommonFieldProps<T> = {
   className?: string;
@@ -219,12 +220,18 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   }
 
   select {
+    appearance: none;
+    background-image: url(${caretDownURL});
+    background-position: center right;
+    background-repeat: no-repeat;
+    background-size: 1rem;
     line-height: 1.5rem;
     border: 1px solid transparent;
-    padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
+    padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.md}rem ${(p) => p.theme.spacer.xs}rem
+      ${(p) => p.theme.spacer.xs}rem;
 
-    &:not(:disabled):hover {
-      background: ${(p) => p.theme.color.bg.light};
+    &:hover {
+      background-color: ${(p) => p.theme.color.bg.light};
     }
   }
 `;

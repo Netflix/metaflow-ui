@@ -30,6 +30,7 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void }> = ({ onSubmit }) => 
   const inputEl = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (v: string, closeForm = true) => {
+    if (v.length < 1) return;
     onSubmit(v);
     closeForm && setFormActive(false);
     setVal('');

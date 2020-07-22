@@ -14,7 +14,7 @@ import { getPath } from '../../utils/routing';
 
 import { RemovableTag } from '../../components/Tag';
 import { CheckboxField, SelectField } from '../../components/Form';
-import { Layout, Sidebar, Section, SectionHeader, SectionHeaderContent, Content } from '../../components/Structure';
+import { Section, SectionHeader, SectionHeaderContent } from '../../components/Structure';
 import Notification, { NotificationType } from '../../components/Notification';
 import TagInput from '../../components/TagInput';
 import Icon from '../../components/Icon';
@@ -126,7 +126,7 @@ const Home: React.FC = () => {
   );
 
   return (
-    <Layout>
+    <>
       <Sidebar className="sidebar">
         <Section>
           <SectionHeader>
@@ -233,7 +233,7 @@ const Home: React.FC = () => {
             );
           })}
       </Content>
-    </Layout>
+    </>
   );
 };
 
@@ -242,4 +242,19 @@ export default Home;
 const StyledRemovableTag = styled(RemovableTag)`
   margin-right: ${(p) => p.theme.spacer.xs}rem;
   margin-bottom: ${(p) => p.theme.spacer.xs}rem;
+`;
+
+const Sidebar = styled.div`
+  position: fixed;
+  width: ${(p) => p.theme.layout.sidebarWidth}rem;
+  top: ${(p) => p.theme.layout.appbarHeight}rem;
+`;
+
+const Content = styled.div`
+  margin-left: ${(p) => p.theme.spacer.hg + p.theme.layout.sidebarWidth}rem;
+  padding-top: ${(p) => p.theme.spacer.md}rem;
+
+  h3:first-of-type {
+    margin-top: 0;
+  }
 `;

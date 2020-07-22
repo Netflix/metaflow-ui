@@ -3,7 +3,7 @@ import useResource from '../../hooks/useResource';
 import { useRouteMatch } from 'react-router-dom';
 import { Run as IRun } from '../../types';
 import Tabs from '../../components/Tabs';
-import { Content, FixedContent, Layout } from '../../components/Structure';
+import { FixedContent } from '../../components/Structure';
 import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
 import DAG from '../../components/DAG';
 import TaskViewContainer from '../Task';
@@ -49,13 +49,7 @@ const RunPage: React.FC = () => {
             key: 'dag',
             label: t('run.DAG'),
             linkTo: getPath.dag(params.flowId, params.runNumber),
-            component: (
-              <Layout>
-                <Content>
-                  <DAG run={run} />
-                </Content>
-              </Layout>
-            ),
+            component: <DAG run={run} />,
           },
           {
             key: 'timeline',
