@@ -50,7 +50,7 @@ type SupportedSizes = {
 };
 
 const sizeTable: SupportedSizes = {
-  xs: 0.875,
+  xs: 0.75,
   sm: 1,
   md: 1.5,
   lg: 2,
