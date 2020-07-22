@@ -328,10 +328,10 @@ const VirtualizedTimeline: React.FC<{
           graph={graph}
           zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
           zoomReset={() => graphDispatch({ type: 'resetZoom' })}
-          changeMode={(alignment) => sq({ alignment })}
-          toggleGroupBy={(by) => sq({ group: by })}
-          updateSortBy={(by) => sq({ order: by })}
-          updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' })}
+          changeMode={(alignment) => sq({ alignment }, 'replace')}
+          toggleGroupBy={(by) => sq({ group: by }, 'replace')}
+          updateSortBy={(by) => sq({ order: by }, 'replace')}
+          updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replace')}
           expandAll={expandAll}
           collapseAll={collapseAll}
         />
