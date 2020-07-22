@@ -54,7 +54,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
             </Link>
           ) : (
             <StepLabel>
-              <Icon name="arrowDown" rotate={isOpen ? 180 : 0} />
+              <Icon name="arrowDown" size="xs" rotate={isOpen ? 0 : -90} />
               <div>{dataItem.step_name}</div>
             </StepLabel>
           )}
@@ -171,6 +171,7 @@ const StepLabel = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-left: ${p => p.theme.spacer.sm}rem;
 `;
 
 const RowGraphContainer = styled.div`
