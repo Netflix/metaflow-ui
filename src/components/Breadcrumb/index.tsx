@@ -85,7 +85,9 @@ const Breadcrumb: React.FC = () => {
         setLastRoute(e.currentTarget.value);
         const parts = e.currentTarget.value.split('/').filter((item) => item);
 
-        if (parts.length === 2) {
+        if (parts.length === 1) {
+          history.replace(getPath.home() + '?flow_id=' + parts[0]);
+        } else if (parts.length === 2) {
           history.replace(getPath.timeline(parts[0], parts[1]));
         } else if (parts.length === 3) {
           history.replace(getPath.step(parts[0], parts[1], parts[2]));
