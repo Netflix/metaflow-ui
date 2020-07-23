@@ -5,21 +5,6 @@ export const Page = styled.div`
   padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem ${(p) => p.theme.layout.pagePaddingY}rem;
 `;
 
-export const Layout = styled.main`
-  display: flex;
-  justify-content: space-between;
-`;
-
-export const Sidebar = styled.div`
-  flex: 0 0 ${(p) => p.theme.layout.sidebarWidth}rem;
-  margin-right: ${(p) => p.theme.spacer.hg}rem;
-`;
-
-export const Content = styled.div`
-  flex: 1;
-  max-width: 100%;
-`;
-
 export const Section = styled.section`
   padding: 0 ${(p) => p.theme.spacer.sm}rem;
   margin-bottom: ${(p) => p.theme.spacer.md}rem;
@@ -57,4 +42,17 @@ export const FixedContent = styled.div`
   height: calc(100vh - ${(p) => p.theme.layout.appbarHeight}rem);
   display: flex;
   flex-direction: column;
+`;
+
+export const ItemRow = styled.div<{ pad?: 'xs' | 'sm' | 'md' | 'lg' | 'hg' }>`
+  display: flex;
+  align-items: center;
+
+  > * {
+    margin-right: ${(p) => p.theme.spacer[p.pad || 'sm']}rem;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
 `;

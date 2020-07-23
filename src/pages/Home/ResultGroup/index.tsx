@@ -14,6 +14,8 @@ import useResource from '../../../hooks/useResource';
 
 import { Section } from '../../../components/Structure';
 import Icon from '../../../components/Icon';
+import Button from '../../../components/Button';
+import { Text } from '../../../components/Text';
 import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
 import Notification, { NotificationType } from '../../../components/Notification';
 import StatusField from '../../../components/Status';
@@ -141,7 +143,8 @@ const ResultGroup: React.FC<Props> = ({
                     history.push(getPath.run(r.flow_id, r.run_number));
                   }}
                 >
-                  <Icon name="timeline" size="lg" /> Timeline
+                  <Icon name="timeline" size="lg" padRight />
+                  <Text>Timeline</Text>
                 </Link>
               </TD>
             </TR>
@@ -149,11 +152,9 @@ const ResultGroup: React.FC<Props> = ({
         </tbody>
       </Table>
       {result?.pages?.last !== page && allRuns.length >= Number(localSearchParams['_limit']) && (
-        <>
-          <small className="load-more" onClick={() => loadMoreRuns()}>
-            {t('home.load-more-runs')} <Icon name="arrowDown" size="sm" />
-          </small>
-        </>
+        <Button className="load-more" onClick={() => loadMoreRuns()} size="sm" variant="primaryText" textOnly>
+          {t('home.load-more-runs')} <Icon name="arrowDown" padLeft />
+        </Button>
       )}
     </StyledResultGroup>
   );
@@ -165,23 +166,19 @@ export const StyledResultGroup = styled(Section)`
   margin-bottom: ${(p) => p.theme.spacer.hg}rem;
 
   table {
-    margin-bottom: ${(p) => p.theme.spacer.md}rem;
+    margin-bottom: ${(p) => p.theme.spacer.sm}rem;
   }
 
-  .load-more {
-    display: block;
-    color: ${(p) => p.theme.color.text.blue};
-
-    &:hover {
-      text-decoration: underline;
-      cursor: pointer;
-    }
+  td.timeline-link {
+    width: 7.4rem;
   }
 
   td.timeline-link a {
     text-decoration: none;
     color: ${(p) => p.theme.color.text.light};
     white-space: nowrap;
+    display: flex;
+    align-items: center;
   }
 
   tr:hover td.timeline-link a {

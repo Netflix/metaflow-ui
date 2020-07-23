@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
+import styled from 'styled-components';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -13,10 +14,12 @@ import { getPath } from '../../utils/routing';
 
 import { RemovableTag } from '../../components/Tag';
 import { CheckboxField, SelectField } from '../../components/Form';
-import { Layout, Sidebar, Section, SectionHeader, SectionHeaderContent, Content } from '../../components/Structure';
+import { Section, SectionHeader, SectionHeaderContent } from '../../components/Structure';
 import Notification, { NotificationType } from '../../components/Notification';
 import TagInput from '../../components/TagInput';
 import Icon from '../../components/Icon';
+import Button from '../../components/Button';
+import { Text } from '../../components/Text';
 import ResultGroup from './ResultGroup';
 
 interface DefaultQuery {
@@ -115,15 +118,15 @@ const Home: React.FC = () => {
   }> = ({ paramKey, mapList = (xs) => xs, mapValue = (x) => x }) => (
     <>
       {mapList(paramList(getQueryParam(paramKey))).map((x, i) => (
-        <RemovableTag key={i} onClick={() => updateListValue(paramKey, mapValue(x))}>
+        <StyledRemovableTag key={i} onClick={() => updateListValue(paramKey, mapValue(x))}>
           {x}
-        </RemovableTag>
+        </StyledRemovableTag>
       ))}
     </>
   );
 
   return (
-    <Layout>
+    <>
       <Sidebar className="sidebar">
         <Section>
           <SectionHeader>
@@ -197,9 +200,12 @@ const Home: React.FC = () => {
           />
         </Section>
 
-        <button onClick={() => resetAllFilters()}>
-          <Icon name="times" /> {t('filters.reset-all')}
-        </button>
+        <Section>
+          <Button onClick={() => resetAllFilters()}>
+            <Icon name="times" padRight />
+            <Text>{t('filters.reset-all')}</Text>
+          </Button>
+        </Section>
       </Sidebar>
 
       <Content>
@@ -227,8 +233,28 @@ const Home: React.FC = () => {
             );
           })}
       </Content>
-    </Layout>
+    </>
   );
 };
 
 export default Home;
+
+const StyledRemovableTag = styled(RemovableTag)`
+  margin-right: ${(p) => p.theme.spacer.xs}rem;
+  margin-bottom: ${(p) => p.theme.spacer.xs}rem;
+`;
+
+const Sidebar = styled.div`
+  position: fixed;
+  width: ${(p) => p.theme.layout.sidebarWidth}rem;
+  top: ${(p) => p.theme.layout.appbarHeight}rem;
+`;
+
+const Content = styled.div`
+  margin-left: ${(p) => p.theme.spacer.hg + p.theme.layout.sidebarWidth}rem;
+  padding-top: ${(p) => p.theme.spacer.md}rem;
+
+  h3:first-of-type {
+    margin-top: 0;
+  }
+`;

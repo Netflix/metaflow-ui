@@ -1,4 +1,19 @@
-const metaflowServiceUrl = new URL(process.env.REACT_APP_METAFLOW_SERVICE || '/api', document.baseURI);
+declare global {
+  interface Window {
+    METAFLOW_SERVICE: string;
+  }
+}
+/**
+ * Look for metaflow-service base url in following order:
+ *
+ * 1. `window.METAFLOW_SERVICE` (during runtime, inject via index.html)
+ * 2. `process.env.REACT_APP_METAFLOW_SERVICE` (during build)
+ * 3. Defaults to '/api'
+ */
+const metaflowServiceUrl = new URL(
+  window.METAFLOW_SERVICE || process.env.REACT_APP_METAFLOW_SERVICE || '/api',
+  document.baseURI,
+);
 const protocolWs = metaflowServiceUrl.protocol === 'https:' ? 'wss:' : 'ws:';
 
 export const METAFLOW_SERVICE = metaflowServiceUrl.href.replace(/\/$/, '');

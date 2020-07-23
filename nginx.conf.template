@@ -1,0 +1,26 @@
+server {
+    listen ${PORT};
+
+    root /usr/share/nginx/html;
+
+    gzip on;
+    gzip_types text/css application/javascript application/json image/svg+xml;
+    gzip_comp_level 9;
+
+    etag on;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    location /index.html {
+        sub_filter_once on;
+        sub_filter '</head>' '<script>window.METAFLOW_SERVICE="${METAFLOW_SERVICE}";</script></head>';
+        add_header Cache-Control max-age=300;
+    }
+    location /static/ {
+        add_header Cache-Control max-age=31536000;
+    }
+    location ~* \.(svg|jpg|jpeg|png|gif|ico|css|js)$ {
+        add_header Cache-Control max-age=31536000;
+    }
+}

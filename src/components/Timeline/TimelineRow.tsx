@@ -2,7 +2,7 @@ import React from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { Row } from './VirtualizedTimeline';
 import { GraphState } from './useGraph';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
 import Icon from '../Icon';
 import { Step, Task } from '../../types';
@@ -31,8 +31,8 @@ function rowEndTime(item: Row) {
 }
 */
 const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, sticky, endTime }) => {
+  // const { push } = useHistory();
   if (!item) return null;
-
   const Element = sticky ? StickyStyledRow : StyledRow;
   /*const finishedAt = endTime || rowEndTime(item);
 
@@ -69,7 +69,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
             </Link>
           ) : (
             <StepLabel>
-              <Icon name="arrowDown" rotate={isOpen ? 180 : 0} />
+              <Icon name="arrowDown" size="xs" rotate={isOpen ? 0 : -90} />
               <div>{item.data.step_name}</div>
             </StepLabel>
           )}
@@ -80,6 +80,11 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
               root={item.type === 'step'}
               style={{
                 width: width + '%',
+              }}
+              onClick={() => {
+                if (item.type === 'task') {
+                  push(getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id));
+                }
               }}
             >
               <RowMetricLabel item={item} finishedAt={finishedAt} labelPosition={labelPosition} />
@@ -95,8 +100,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
           {item.type === 'step' ? (
             <BoxGraphicElement
               graph={graph}
-              rowType="step"
-              item={item.data}
+              row={{ type: 'step', data: item.data }}
               grayed={isOpen}
               finishedAt={endTime}
               isFirst
@@ -108,8 +112,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
                 <BoxGraphicElement
                   key={task.finished_at}
                   graph={graph}
-                  rowType="task"
-                  item={task}
+                  row={{ type: 'task', data: task }}
                   isFirst={index === 0}
                   finishedAt={task.finished_at}
                 />
@@ -121,35 +124,42 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
   );
 };
 
-const BoxGraphicElement: React.FC<{
-  rowType: 'step' | 'task';
-  item: Step | Task;
+type BoxGraphicElementProps = {
+  row: { type: 'step'; data: Step } | { type: 'task'; data: Task };
   graph: GraphState;
   finishedAt: number | undefined;
   grayed?: boolean;
   isFirst: boolean;
-}> = ({ rowType, item, graph, finishedAt, grayed, isFirst }) => {
+};
+
+const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({ row, graph, finishedAt, grayed, isFirst }) => {
+  const { push } = useHistory();
   const visibleDuration = graph.timelineEnd - graph.timelineStart;
 
   // Calculate have much box needs to be pushed from (or to) left
   const valueFromLeft =
     graph.alignment === 'fromLeft'
       ? ((graph.min - graph.timelineStart) / visibleDuration) * 100
-      : ((item.ts_epoch - graph.timelineStart) / visibleDuration) * 100;
+      : ((row.data.ts_epoch - graph.timelineStart) / visibleDuration) * 100;
 
-  const width = finishedAt ? ((finishedAt - item.ts_epoch) / visibleDuration) * 100 : 100 - valueFromLeft;
+  const width = finishedAt ? ((finishedAt - row.data.ts_epoch) / visibleDuration) * 100 : 100 - valueFromLeft;
 
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
   return (
     <div style={{ width: '100%', transform: `translateX(${valueFromLeft}%)` }}>
       <BoxGraphic
-        root={rowType === 'step'}
+        root={row.type === 'step'}
         style={{
           width: width + '%',
         }}
+        onClick={() => {
+          if (row.type === 'task') {
+            push(getPath.task(row.data.flow_id, row.data.run_number, row.data.step_name, row.data.task_id));
+          }
+        }}
       >
-        {isFirst && <RowMetricLabel item={item} finishedAt={finishedAt} labelPosition={labelPosition} />}
+        {isFirst && <RowMetricLabel item={row.data} finishedAt={finishedAt} labelPosition={labelPosition} />}
         <BoxGraphicLine grayed={grayed} state={finishedAt ? 'completed' : 'running'} isFirst={isFirst} />
         <BoxGraphicMarkerStart />
         <BoxGraphicMarkerEnd />
@@ -248,6 +258,7 @@ const StepLabel = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding-left: ${(p) => p.theme.spacer.sm}rem;
 `;
 
 const RowGraphContainer = styled.div`
@@ -260,6 +271,7 @@ const RowGraphContainer = styled.div`
 
 const BoxGraphic = styled.div<{ root: boolean }>`
   position: absolute;
+  cursor: pointer;
   color: ${(p) => p.theme.color.text.dark};
   min-width: 10px;
   height: 27px;

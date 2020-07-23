@@ -73,11 +73,11 @@ const TabsContainer = styled.div`
 
 const TabsHeading = styled.div<{ widen?: boolean }>`
   display: flex;
-
-  border-bottom: 1px solid ${(p) => p.theme.color.border.normal};
-  margin: ${(p) => (p.widen ? '0 -3rem' : 'initial')};
-  padding: ${(p) => (p.widen ? '0 3rem' : 'initial')};
+  border-bottom: 2px solid ${(p) => p.theme.color.border.light};
+  margin: ${(p) => (p.widen ? `0 -${p.theme.layout.pagePaddingX}rem` : 'initial')};
+  padding: ${(p) => (p.widen ? `0 ${p.theme.layout.pagePaddingX}rem` : 'initial')};
   color: ${(p) => p.theme.color.text.mid};
+
   a {
     color: ${(p) => p.theme.color.text.mid};
     text-decoration: none;
@@ -89,18 +89,19 @@ const TabsHeading = styled.div<{ widen?: boolean }>`
 `;
 
 const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean }>`
-  margin-right: 1rem;
-  padding 1rem;
-  border-top-left-radius: ${(p) => (p.temporary ? '4px' : 'none')};
-  border-top-right-radius: ${(p) => (p.temporary ? '4px' : 'none')};
-
-  border-bottom: 2px solid ${(p) => (p.active ? p.theme.color.text.blue : p.theme.color.text.mid)};
+  margin-right: ${(p) => p.theme.spacer.md}rem;
+  margin-bottom: -2px;
+  padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.md}rem;
+  border-top-left-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
+  border-top-right-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
+  border-bottom: 2px solid ${(p) => (p.active ? p.theme.color.bg.blue : p.theme.color.border.mid)};
   background: ${(p) => (p.temporary ? p.theme.color.bg.blueLight : 'transparent')};
-  font-weight: ${(p) => (p.active ? '600' : 'normal')};
+  font-weight: ${(p) => (p.active ? '500' : '400')};
 `;
 
 const ActiveTab = styled.div`
-  padding-top: 1rem;
+  display: flex;
+  padding-top: ${(p) => p.theme.spacer.md}rem;
   flex: 1 1;
 `;
 

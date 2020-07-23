@@ -81,8 +81,11 @@ function graphReducer(state: GraphState, action: GraphAction): GraphState {
       }
 
     case 'updateMax':
-      const val = action.end > state.max ? action.end : state.max;
-      return { ...state, max: val, timelineEnd: state.controlled ? state.timelineEnd : val };
+      return {
+        ...state,
+        max: action.end,
+        timelineEnd: state.controlled ? (action.end < state.timelineEnd ? action.end : state.timelineEnd) : action.end,
+      };
 
     case 'alignment':
       return { ...state, alignment: action.alignment };
@@ -91,7 +94,7 @@ function graphReducer(state: GraphState, action: GraphAction): GraphState {
       return { ...state, groupBy: action.by };
 
     case 'sortBy':
-      return { ...state, sortBy: action.by };
+      return { ...state, sortBy: action.by, alignment: action.by === 'duration' ? 'fromLeft' : 'fromStartTime' };
 
     case 'sortDir':
       return { ...state, sortDir: action.dir };

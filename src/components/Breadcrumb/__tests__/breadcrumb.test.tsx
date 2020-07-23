@@ -98,9 +98,8 @@ describe('Breadcrumb component', () => {
 
   test('<Breadcrumb /> - Should render home and after click input field', () => {
     const { getByTestId } = render(makeBreadcrumb());
-    // Find breadcrumb input
-    const input = getByTestId('breadcrumb-goto-input-inactive');
-
+    // Find breadcrumb input. We need to query the actual input element inside fields.
+    const input = getByTestId('breadcrumb-goto-input-inactive').querySelector('input') as Element;
     fireEvent.click(input);
     // After click we should have goto container
     getByTestId('breadcrumb-goto-container');

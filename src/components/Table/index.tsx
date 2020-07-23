@@ -24,9 +24,8 @@ export const TH = styled.th<{ active?: boolean }>`
   white-space: nowrap;
   ${cell};
 
-  i {
+  .icon {
     color: #ccc;
-    margin-left: ${(p) => p.theme.spacer.xs}rem;
   }
 
   &:hover {
@@ -63,6 +62,11 @@ export const TR = styled.tr`
   }
 `;
 
+const HeaderColumnWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 interface HeaderColumnProps {
   label: string;
   queryKey: string;
@@ -76,8 +80,10 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({ label, queryKey, cur
 
   return (
     <TH active={active} onClick={() => onSort(queryKey)} {...rest}>
-      {label}
-      <SortIcon active={active} direction={direction} />
+      <HeaderColumnWrapper>
+        {label}
+        <SortIcon active={active} direction={direction} padLeft />
+      </HeaderColumnWrapper>
     </TH>
   );
 };
