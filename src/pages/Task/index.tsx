@@ -16,8 +16,9 @@ import StatusField from '../../components/Status';
 type TaskViewContainer = { run: IRun | null; stepName?: string; taskId?: string };
 
 const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId }) => {
+  const { t } = useTranslation();
   if (!run?.run_number || !stepName || !taskId) {
-    return <>No run data</>;
+    return <>{t('run.no-run-data')}</>;
   }
 
   return <Task run={run} stepName={stepName} taskId={taskId} />;
@@ -45,8 +46,8 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
 
   return (
     <TaskContainer>
-      {!task && 'loading'}
-      {error || (task && !task.task_id && `Could not find the task`)}
+      {!task && t('task.loading')}
+      {error || (task && !task.task_id && t('task.could-not-find-task'))}
       {task && task.task_id && (
         <AnchoredView
           sections={[
@@ -80,41 +81,17 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
             {
               key: 'links',
               label: t('task.links'),
-              component: (
-                <KeyValueList
-                  items={[
-                    { label: 'Weather report', content: <a href="https://www.google.com/search?q=weather">Test</a> },
-                  ]}
-                />
-              ),
+              component: <KeyValueList items={[]} />,
             },
             {
               key: 'stdout',
               label: t('task.std-out'),
-              component: (
-                <StyledCodeBlock>
-                  {`metadata_service_ui_backend | [BUILTIN] '' VALUES: ''
-metadata_service_ui_backend | [CUSTOM] '' VALUES: ''
-metadata_service_ui_backend | Results: DBResponse(response_code=200, body={'flow_id': 'HugeFlow', 'run_number': 19, 'user_name': 'SanteriCM', 'status': 'completed', 'ts_epoch': 1594632036342, 'finished_at': 1594632067962, 'duration': 31620, 'tags': [], 'system_tags': ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-13', 'metaflow_version:2.0.5']}) DBPagination(limit=10, offset=0, count=1, count_total=1, page=1, pages_total=1)
-metadata_service_ui_backend | Unsubscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7
-metadata_service_ui_backend | Subscriptions: []
-metadata_service_ui_backend | Subscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7 /flows/HugeFlow/runs/19`}
-                </StyledCodeBlock>
-              ),
+              component: <StyledCodeBlock>{`Std out is not available yet`}</StyledCodeBlock>,
             },
             {
               key: 'stderr',
               label: t('task.std-err'),
-              component: (
-                <StyledCodeBlock>
-                  {`metadata_service_ui_backend | [BUILTIN] '' VALUES: ''
-metadata_service_ui_backend | [CUSTOM] '' VALUES: ''
-metadata_service_ui_backend | Results: DBResponse(response_code=200, body={'flow_id': 'HugeFlow', 'run_number': 19, 'user_name': 'SanteriCM', 'status': 'completed', 'ts_epoch': 1594632036342, 'finished_at': 1594632067962, 'duration': 31620, 'tags': [], 'system_tags': ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-13', 'metaflow_version:2.0.5']}) DBPagination(limit=10, offset=0, count=1, count_total=1, page=1, pages_total=1)
-metadata_service_ui_backend | Unsubscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7
-metadata_service_ui_backend | Subscriptions: []
-metadata_service_ui_backend | Subscribe f0ee3489-1824-49bb-8ba1-50de4b8188c7 /flows/HugeFlow/runs/19`}
-                </StyledCodeBlock>
-              ),
+              component: <StyledCodeBlock>{`Std err is not available yet`}</StyledCodeBlock>,
             },
             {
               key: 'artifacts',

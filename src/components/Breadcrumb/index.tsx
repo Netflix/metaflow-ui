@@ -174,7 +174,7 @@ const Breadcrumb: React.FC = () => {
             </ItemRow>
             <BreadcrumbInfo>
               {warning && <BreadcrumbWarning>{warning}</BreadcrumbWarning>}
-              <BreadcrumbHelpLabel>Example:</BreadcrumbHelpLabel>
+              <BreadcrumbHelpLabel>{t('breadcrumb.example')}:</BreadcrumbHelpLabel>
               <BreadcrumbKeyValueList
                 items={[
                   { key: t('items.run'), value: t('breadcrumb.example-run') },
