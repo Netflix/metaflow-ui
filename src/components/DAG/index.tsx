@@ -49,7 +49,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   }, [dataSet]);
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       <ItemRow pad="sm">
         <Button onClick={() => setDataSet(dagexample1)}>example1</Button>
         <Button onClick={() => setDataSet(dagexample2)}>example2</Button>
