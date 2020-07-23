@@ -218,20 +218,22 @@ const Home: React.FC = () => {
         )}
         {!!runs &&
           !!runs.length &&
-          Object.keys(runsGroupedByProperty).map((k) => {
-            return (
-              <ResultGroup
-                key={k}
-                field={getDefaultedQueryParam('_group')}
-                fieldValue={k}
-                initialData={runsGroupedByProperty[k]}
-                queryParams={getAllDefaultedQueryParams()}
-                onOrderChange={handleOrderChange}
-                onRunClick={handleRunClick}
-                resourceUrl="/runs"
-              />
-            );
-          })}
+          Object.keys(runsGroupedByProperty)
+            .sort()
+            .map((k) => {
+              return (
+                <ResultGroup
+                  key={k}
+                  field={getDefaultedQueryParam('_group')}
+                  fieldValue={k}
+                  initialData={runsGroupedByProperty[k]}
+                  queryParams={getAllDefaultedQueryParams()}
+                  onOrderChange={handleOrderChange}
+                  onRunClick={handleRunClick}
+                  resourceUrl="/runs"
+                />
+              );
+            })}
       </Content>
     </>
   );
