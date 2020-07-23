@@ -7,14 +7,13 @@ import TimelineRow from './TimelineRow';
 import useResource from '../../hooks/useResource';
 import useGraph, { GraphState, GraphSortBy, validatedParameter } from './useGraph';
 import useRowData, { StepRowData, RowDataAction, RowDataModel } from './useRowData';
-import useQuery from '../../hooks/useQuery';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
 import { useQueryParams, StringParam } from 'use-query-params';
 
 export const ROW_HEIGHT = 28;
-export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task };
+export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task[] };
 type StepIndex = { name: string; index: number };
 
 //
@@ -35,25 +34,6 @@ type TimelineFilters = {
   tasks: string[];
 };
 
-function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc') {
-  return (a: Row, b: Row) => {
-    const fst = sortDir === 'asc' ? a : b;
-    const snd = sortDir === 'asc' ? b : a;
-
-    if (sortBy === 'startTime') {
-      return fst.data.ts_epoch - snd.data.ts_epoch;
-    } else if (sortBy === 'duration') {
-      return taskDuration(fst) - taskDuration(snd);
-    }
-
-    return 0;
-  };
-}
-
-function taskDuration(a: Row): number {
-  return (a.type === 'task' && a.data.duration) || (a.data.finished_at ? a.data.finished_at - a.data.ts_epoch : 0);
-}
-
 //
 // Self containing component for rendering everything related to timeline. Component fetched (and subscribes for live events) steps and tasks from different
 // endpoints. View is supposed to be full page (and full page only) since component itself will use virtualised scrolling.
@@ -65,8 +45,8 @@ const VirtualizedTimeline: React.FC<{
     group: StringParam,
     order: StringParam,
     direction: StringParam,
+    steps: StringParam,
   });
-  const params = useQuery();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef<HTMLDivElement>(null);
@@ -74,8 +54,6 @@ const VirtualizedTimeline: React.FC<{
 
   // Rows to be iterated in timeline
   const [rows, setRows] = useState<Row[]>([]);
-  // Actual step data.
-  const [steps, setSteps] = useState<Step[]>([]);
   // Position of each step in timeline. Used to track if we should use sticky header (move to rowDataState?)
   const [stepPositions, setStepPositions] = useState<StepIndex[]>([]);
   // Name of sticky header (if should be visible)
@@ -89,18 +67,22 @@ const VirtualizedTimeline: React.FC<{
   //
 
   // Fetch & subscribe to steps
-  const { data: stepData } = useResource<Step[], Step>({
+  useResource<Step[], Step>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
     subscribeToEvents: true,
     initialData: [],
+    onUpdate: (items) => {
+      dispatch({ type: 'fillStep', data: items });
+    },
     queryParams: {
       _order: '+ts_epoch',
       _limit: '1000',
     },
+    fullyDisableCache: true,
   });
 
   // Fetch & subscribe to tasks
-  const { data: taskData } = useResource<Task[], Task>({
+  useResource<Task[], Task>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/tasks`,
     subscribeToEvents: true,
     initialData: [],
@@ -111,20 +93,7 @@ const VirtualizedTimeline: React.FC<{
     },
     fetchAllData: true,
     onUpdate: (items) => {
-      // In some cases there is INSERT and UPDATE message in same batch. Merge them here to one that
-      // has finished_at value. so we don't make duplicate rows.
-      // NOTE: This might not work with retry tasks since they have same task ID's. Need to find out how
-      // to work with those
-      const ids: number[] = [];
-      const nonDuplicateitems = items.reduce((arr: Task[], current: Task) => {
-        if (ids.indexOf(current.task_id) > -1 && current.finished_at) {
-          return arr.map((item) => (item.task_id === current.task_id ? current : item));
-        }
-        ids.push(current.task_id);
-        return arr.concat([current]);
-      }, []);
-
-      dispatch({ type: 'fill', data: nonDuplicateitems });
+      dispatch({ type: 'fillTasks', data: items });
     },
     fullyDisableCache: true,
     useBatching: true,
@@ -136,14 +105,14 @@ const VirtualizedTimeline: React.FC<{
 
   const [filters, setFilters] = useState<TimelineFilters>({ steps: [], tasks: [] });
   useEffect(() => {
-    const stepFilters = params.get('steps');
+    const stepFilters = q.steps;
 
     if (stepFilters) {
       setFilters({ ...filters, steps: stepFilters.split(',') });
     } else {
       setFilters({ ...filters, steps: [] });
     }
-  }, [params.get('steps')]); // eslint-disable-line
+  }, [q.steps]); // eslint-disable-line
 
   //
   // Graph measurements and rendering logic
@@ -181,112 +150,41 @@ const VirtualizedTimeline: React.FC<{
     }
   }, [q, graph, graphDispatch]);
 
-  // Init graph when steps updates (do we need this?)
-  useEffect(() => {
-    // Let's check start and end times for graph so we can draw proper lines
-    if (steps.length > 1) {
-      const start = steps[0].ts_epoch;
-
-      const highestTimestamp = steps.reduce((val, step) => {
-        if (step.ts_epoch > val) return step.ts_epoch;
-        return val;
-      }, graph.max);
-
-      graphDispatch({ type: 'init', start, end: highestTimestamp });
-    } else if (steps && steps.length === 1) {
-      // If only one step, lets just add some time
-      graphDispatch({ type: 'init', start: steps[0].ts_epoch, end: steps[0].ts_epoch + 2000 });
-    }
-  }, [steps]); // eslint-disable-line
-
   //
   // Data processing
   //
 
-  // Update steps data when they come in
-  useEffect(() => {
-    if (stepData) {
-      setSteps(stepData.sort((a, b) => a.ts_epoch - b.ts_epoch));
-      dispatch({ type: 'init', ids: stepData.map((item) => item.step_name) });
-    }
-  }, [stepData]); // eslint-disable-line
-
-  // Update Tasks data when they come in
-  useEffect(() => {
-    if (!Array.isArray(taskData)) return;
-
-    dispatch({ type: 'fill', data: taskData });
-  }, [taskData, dispatch]);
-
   // Figure out rows that should be visible if something related to that changes
   // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {
-    // Filter out steps if we have step filters on. Also filter out all steps starting with underscore (_)
-    // since they are created by metaflow and unnecessary for user
-    const visibleSteps = (filters.steps.length === 0
-      ? steps
-      : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1)
-    ).filter((item) => item.step_name && !item.step_name.startsWith('_'));
+    // Filter out steps if we have step filters on.
+    const visibleSteps: Step[] = Object.keys(rowDataState)
+      .map((key) => rowDataState[key].step)
+      .filter(
+        (item): item is Step =>
+          // Filter out possible undefined (should not really happen, might though if there is some timing issues with REST and websocket)
+          item !== undefined &&
+          // Check if step filter is active. Show only selected steps
+          (filters.steps.length === 0 || filters.steps.indexOf(item.step_name) > -1) &&
+          // Filter out steps starting with _ since they are not interesting to user
+          !item.step_name.startsWith('_'),
+      );
+
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
-    const newRows: Row[] = visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
-      const rowData = rowDataState[current.step_name];
-      // If step row is open, add its tasks to the list.
-      if (rowData?.isOpen || graph.groupBy === 'none') {
-        const rowTasks = rowData.data.map((item) => ({
-          type: 'task' as const,
-          data: item,
-        }));
-        return arr.concat(
-          graph.groupBy === 'step' ? [{ type: 'step' as const, data: current }] : [],
-          graph.groupBy === 'step' ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks,
-        );
-      }
+    const newRows: Row[] = makeVisibleRows(rowDataState, graph, visibleSteps);
 
-      // Add step if we are grouping.
-      if (graph.groupBy === 'step') {
-        return arr.concat([{ type: 'step', data: current }]);
-      }
+    if (visibleSteps.length > 0) {
+      // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
+      const highestTimestamp = findHighestTimestampForGraph(rowDataState, graph, visibleSteps);
 
-      return [];
-    }, []);
-
-    // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
-    const highestTimestamp = Object.keys(rowDataState).reduce((val, key) => {
-      const step = rowDataState[key];
-      // When we are sorting by start time, we can check just last step finish time
-      if (graph.sortBy === 'startTime' && step.finished_at && step.finished_at > val) return step.finished_at;
-      // When sorting by duration and grouping by step, we want to find longest step
-      if (graph.sortBy === 'duration' && graph.groupBy === 'step' && step.finished_at) {
-        const stepDataObject = stepData?.find((item) => item.step_name === key);
-        if (stepDataObject && graph.min + step.finished_at - stepDataObject.ts_epoch > val) {
-          return graph.min + step.finished_at - stepDataObject.ts_epoch;
-        }
-      }
-      // When sorting by duration and grouping by none (so just tasks) we want to find longest task
-      if (graph.sortBy === 'duration' && graph.groupBy === 'none' && step.finished_at) {
-        const longestTask = step.data.reduce((longestTaskValue, task) => {
-          if (task.finished_at && graph.min + (task.finished_at - task.ts_epoch) > longestTaskValue) {
-            return graph.min + (task.finished_at - task.ts_epoch);
-          }
-          return longestTaskValue;
-        }, 0);
-        if (longestTask > val) {
-          return longestTask;
-        }
-      }
-      return val;
-    }, graph.min);
-
-    graphDispatch({
-      type: 'updateMax',
-      end: highestTimestamp,
-    });
+      graphDispatch({ type: 'init', start: visibleSteps[0].ts_epoch, end: highestTimestamp });
+    }
 
     const rowsToUpdate = graph.groupBy === 'none' ? newRows.sort(sortRows(graph.sortBy, graph.sortDir)) : newRows;
 
     // If no grouping, sort tasks here.
     setRows(rowsToUpdate);
-  }, [rowDataState, graphDispatch, steps, filters.steps, graph.groupBy, graph.min, graph.sortBy, graph.sortDir]); // eslint-disable-line
+  }, [rowDataState, graphDispatch, filters.steps, graph.groupBy, graph.min, graph.sortBy, graph.sortDir]); // eslint-disable-line
 
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
@@ -314,14 +212,14 @@ const VirtualizedTimeline: React.FC<{
   //
 
   const expandAll = () => {
-    steps.forEach((item) => {
-      dispatch({ type: 'open', id: item.step_name });
+    Object.keys(rowDataState).forEach((stepName) => {
+      dispatch({ type: 'open', id: stepName });
     });
   };
 
   const collapseAll = () => {
-    steps.forEach((item) => {
-      dispatch({ type: 'close', id: item.step_name });
+    Object.keys(rowDataState).forEach((stepName) => {
+      dispatch({ type: 'close', id: stepName });
     });
   };
 
@@ -427,16 +325,19 @@ type RowRendererProps = {
 };
 
 function createRowRenderer({ rows, graph, dispatch, rowDataState }: RowRendererProps) {
-  return ({ index, style }: { index: number; style: React.CSSProperties }) => (
-    <RowRenderer
-      key={index}
-      row={rows[index]}
-      graph={graph}
-      style={style}
-      rowData={rows[index].type === 'step' ? rowDataState[rows[index].data.step_name] : undefined}
-      toggleOpen={() => dispatch({ type: 'toggle', id: rows[index].data.step_name })}
-    />
-  );
+  return ({ index, style }: { index: number; style: React.CSSProperties }) => {
+    const row = rows[index];
+    return (
+      <RowRenderer
+        key={index}
+        row={rows[index]}
+        graph={graph}
+        style={style}
+        rowData={row.type === 'step' ? rowDataState[row.data.step_name] : undefined}
+        toggleOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
+      />
+    );
+  };
 }
 
 const RowRenderer: React.FC<{
@@ -486,17 +387,6 @@ const StickyHeader: React.FC<{
   );
 };
 
-function timelineNeedStickyHeader(stepPositions: StepIndex[], currentIndex: number) {
-  return stepPositions.find((item, index) => {
-    const isLast = index + 1 === stepPositions.length;
-
-    if (item.index < currentIndex && (isLast || stepPositions[index + 1].index > currentIndex + 1)) {
-      return true;
-    }
-    return false;
-  });
-}
-
 const VirtualizedTimelineContainer = styled.div`
   display: flex;
   height: 100%;
@@ -527,5 +417,110 @@ const FixedListContainer = styled.div<{ sticky?: boolean }>`
   position: relative;
   padding-top: ${(p) => (p.sticky ? ROW_HEIGHT : 0)}px;
 `;
+
+//
+// Utils
+//
+
+function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc') {
+  return (a: Row, b: Row) => {
+    const fst = sortDir === 'asc' ? a : b;
+    const snd = sortDir === 'asc' ? b : a;
+
+    if (sortBy === 'startTime' && fst.type === 'task' && snd.type === 'task') {
+      return fst.data[0].ts_epoch - snd.data[0].ts_epoch;
+    } else if (sortBy === 'duration') {
+      return taskDuration(fst) - taskDuration(snd);
+    }
+
+    return 0;
+  };
+}
+
+function taskDuration(a: Row): number {
+  if (a.type === 'task') {
+    return a.data[0].duration || (a.data[0].finished_at ? a.data[0].finished_at - a.data[0].ts_epoch : 0);
+  }
+  return 0;
+}
+
+function findLongestTaskOfRow(step: StepRowData, graph: GraphState): number {
+  return Object.keys(step.data).reduce((longestTaskValue, taskid) => {
+    // There might be multiple tasks in same row since there might be retries. Find longest.
+    const durationOfTasksInSameRow = step.data[parseInt(taskid)].reduce((value, task) => {
+      return task.finished_at
+        ? task.finished_at - task.ts_epoch > value
+          ? task.finished_at - task.ts_epoch
+          : value
+        : value;
+    }, 0);
+    // Compare longest task to current longest
+    if (graph.min + durationOfTasksInSameRow > longestTaskValue) {
+      return graph.min + durationOfTasksInSameRow;
+    }
+    return longestTaskValue;
+  }, 0);
+}
+
+function findHighestTimestampForGraph(rowDataState: RowDataModel, graph: GraphState, visibleSteps: Step[]): number {
+  const visibleStepNames = visibleSteps.map((item) => item.step_name);
+  return Object.keys(rowDataState).reduce((val, key) => {
+    const step = rowDataState[key];
+    // When we are sorting by start time, we can check just last step finish time
+    if (graph.sortBy === 'startTime' && step.finished_at && step.finished_at > val) {
+      if (visibleStepNames.indexOf(key) === -1) return val;
+      return step.finished_at;
+    }
+    // When sorting by duration and grouping by step, we want to find longest step
+    if (graph.sortBy === 'duration' && graph.groupBy === 'step' && step.finished_at) {
+      if (visibleStepNames.indexOf(key) === -1) return val;
+      return graph.min + step.duration > val ? graph.min + step.duration : val;
+    }
+    // When sorting by duration and grouping by none (so just tasks) we want to find longest task
+    if (graph.sortBy === 'duration' && graph.groupBy === 'none' && step.finished_at) {
+      const longestTask = findLongestTaskOfRow(step, graph);
+
+      if (longestTask > val) {
+        return longestTask;
+      }
+    }
+    return val;
+  }, graph.min);
+}
+
+function makeVisibleRows(rowDataState: RowDataModel, graph: GraphState, visibleSteps: Step[]) {
+  return visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
+    const rowData = rowDataState[current.step_name];
+    // If step row is open, add its tasks to the list.
+    if (rowData?.isOpen || graph.groupBy === 'none') {
+      const rowTasks = Object.keys(rowData.data).map((item) => ({
+        type: 'task' as const,
+        data: rowData.data[parseInt(item)],
+      }));
+      return arr.concat(
+        graph.groupBy === 'step' ? [{ type: 'step' as const, data: current }] : [],
+        graph.groupBy === 'step' ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks,
+      );
+    }
+
+    // Add step if we are grouping.
+    if (graph.groupBy === 'step') {
+      return arr.concat([{ type: 'step', data: current }]);
+    }
+
+    return [];
+  }, []);
+}
+
+function timelineNeedStickyHeader(stepPositions: StepIndex[], currentIndex: number) {
+  return stepPositions.find((item, index) => {
+    const isLast = index + 1 === stepPositions.length;
+
+    if (item.index < currentIndex && (isLast || stepPositions[index + 1].index > currentIndex + 1)) {
+      return true;
+    }
+    return false;
+  });
+}
 
 export default VirtualizedTimeline;
