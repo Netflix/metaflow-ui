@@ -7,7 +7,6 @@ import TimelineRow from './TimelineRow';
 import useResource from '../../hooks/useResource';
 import useGraph, { GraphState, GraphSortBy, validatedParameter } from './useGraph';
 import useRowData, { StepRowData, RowDataAction, RowDataModel } from './useRowData';
-import useQuery from '../../hooks/useQuery';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
@@ -69,8 +68,8 @@ const VirtualizedTimeline: React.FC<{
     order: StringParam,
     direction: StringParam,
     alignment: StringParam,
+    steps: StringParam,
   });
-  const params = useQuery();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef<HTMLDivElement>(null);
@@ -79,7 +78,7 @@ const VirtualizedTimeline: React.FC<{
   // Rows to be iterated in timeline
   const [rows, setRows] = useState<Row[]>([]);
   // Actual step data.
-  const [steps, setSteps] = useState<Step[]>([]);
+  // const [steps, setSteps] = useState<Step[]>([]);
   // Position of each step in timeline. Used to track if we should use sticky header (move to rowDataState?)
   const [stepPositions, setStepPositions] = useState<StepIndex[]>([]);
   // Name of sticky header (if should be visible)
@@ -93,18 +92,22 @@ const VirtualizedTimeline: React.FC<{
   //
 
   // Fetch & subscribe to steps
-  const { data: stepData } = useResource<Step[], Step>({
+  useResource<Step[], Step>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
     subscribeToEvents: true,
     initialData: [],
+    onUpdate: (items) => {
+      dispatch({ type: 'fillStep', data: items });
+    },
     queryParams: {
       _order: '+ts_epoch',
       _limit: '1000',
     },
+    fullyDisableCache: true,
   });
 
   // Fetch & subscribe to tasks
-  const { data: taskData } = useResource<Task[], Task>({
+  useResource<Task[], Task>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/tasks`,
     subscribeToEvents: true,
     initialData: [],
@@ -115,25 +118,7 @@ const VirtualizedTimeline: React.FC<{
     },
     fetchAllData: true,
     onUpdate: (items) => {
-      // In some cases there is INSERT and UPDATE message in same batch. Merge them here to one that
-      // has finished_at value. so we don't make duplicate rows.
-      // NOTE: This might not work with retry tasks since they have same task ID's. Need to find out how
-      // to work with those
-      /*const ids: number[] = [];
-      const nonDuplicateitems = items.reduce((arr: Task[], current: Task) => {
-        const itemIndex = ids.indexOf(current.task_id);
-        if (
-          itemIndex > -1 &&
-          (!items[itemIndex]?.finished_at || items[itemIndex]?.finished_at === current.finished_at)
-        ) {
-          console.log('duplication');
-          return arr.map((item) => (item.task_id === current.task_id ? current : item));
-        }
-        ids.push(current.task_id);
-        return arr.concat([current]);
-      }, []);
-*/
-      dispatch({ type: 'fill', data: items });
+      dispatch({ type: 'fillTasks', data: items });
     },
     fullyDisableCache: true,
     useBatching: true,
@@ -145,14 +130,14 @@ const VirtualizedTimeline: React.FC<{
 
   const [filters, setFilters] = useState<TimelineFilters>({ steps: [], tasks: [] });
   useEffect(() => {
-    const stepFilters = params.get('steps');
+    const stepFilters = q.steps;
 
     if (stepFilters) {
       setFilters({ ...filters, steps: stepFilters.split(',') });
     } else {
       setFilters({ ...filters, steps: [] });
     }
-  }, [params.get('steps')]); // eslint-disable-line
+  }, [q.steps]); // eslint-disable-line
 
   //
   // Graph measurements and rendering logic
@@ -201,6 +186,7 @@ const VirtualizedTimeline: React.FC<{
   }, [q, graph, graphDispatch]);
 
   // Init graph when steps updates (do we need this?)
+  /*
   useEffect(() => {
     // Let's check start and end times for graph so we can draw proper lines
     if (steps.length > 1) {
@@ -217,35 +203,24 @@ const VirtualizedTimeline: React.FC<{
       graphDispatch({ type: 'init', start: steps[0].ts_epoch, end: steps[0].ts_epoch + 2000 });
     }
   }, [steps]); // eslint-disable-line
-
+*/
   //
   // Data processing
   //
-
-  // Update steps data when they come in
-  useEffect(() => {
-    if (stepData) {
-      setSteps(stepData.sort((a, b) => a.ts_epoch - b.ts_epoch));
-      dispatch({ type: 'init', ids: stepData.map((item) => item.step_name) });
-    }
-  }, [stepData]); // eslint-disable-line
-
-  // Update Tasks data when they come in
-  useEffect(() => {
-    if (!Array.isArray(taskData)) return;
-
-    dispatch({ type: 'fill', data: taskData });
-  }, [taskData, dispatch]);
 
   // Figure out rows that should be visible if something related to that changes
   // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {
     // Filter out steps if we have step filters on. Also filter out all steps starting with underscore (_)
     // since they are created by metaflow and unnecessary for user
+    const steps: Step[] = Object.keys(rowDataState)
+      .map((key) => rowDataState[key].step)
+      .filter((item): item is Step => item !== undefined);
     const visibleSteps = (filters.steps.length === 0
       ? steps
       : steps.filter((step) => filters.steps.indexOf(step.step_name) > -1)
     ).filter((item) => item.step_name && !item.step_name.startsWith('_'));
+
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
     const newRows: Row[] = visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
       const rowData = rowDataState[current.step_name];
@@ -269,20 +244,22 @@ const VirtualizedTimeline: React.FC<{
       return [];
     }, []);
 
-    // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
-    const highestTimestamp = Object.keys(rowDataState).reduce((val, key) => {
-      const step = rowDataState[key];
-      if (step.finished_at && step.finished_at > val) return step.finished_at;
-      return val;
-    }, 0);
+    if (visibleSteps.length > 0) {
+      // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
+      const highestTimestamp = Object.keys(rowDataState).reduce((val, key) => {
+        const step = rowDataState[key];
+        if (step.finished_at && step.finished_at > val) return step.finished_at;
+        return val;
+      }, 0);
 
-    graphDispatch({ type: 'updateMax', end: highestTimestamp });
+      graphDispatch({ type: 'init', start: visibleSteps[0].ts_epoch, end: highestTimestamp });
+    }
 
     const rowsToUpdate = graph.groupBy === 'none' ? newRows.sort(sortRows(graph.sortBy, graph.sortDir)) : newRows;
 
     // If no grouping, sort tasks here.
     setRows(rowsToUpdate);
-  }, [rowDataState, graphDispatch, steps, filters.steps, graph.groupBy, graph.sortBy, graph.sortDir]);
+  }, [rowDataState, graphDispatch, filters.steps, graph.groupBy, graph.sortBy, graph.sortDir]);
 
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
@@ -310,14 +287,14 @@ const VirtualizedTimeline: React.FC<{
   //
 
   const expandAll = () => {
-    steps.forEach((item) => {
-      dispatch({ type: 'open', id: item.step_name });
+    Object.keys(rowDataState).forEach((stepName) => {
+      dispatch({ type: 'open', id: stepName });
     });
   };
 
   const collapseAll = () => {
-    steps.forEach((item) => {
-      dispatch({ type: 'close', id: item.step_name });
+    Object.keys(rowDataState).forEach((stepName) => {
+      dispatch({ type: 'close', id: stepName });
     });
   };
 

@@ -2,7 +2,7 @@
 // Row data handling
 //
 
-import { Task } from '../../types';
+import { Task, Step } from '../../types';
 import { useReducer } from 'react';
 
 export type StepRowData = {
@@ -10,14 +10,15 @@ export type StepRowData = {
   isOpen: boolean;
   // We have to compute finished_at value so let it live in here now :(
   finished_at: number;
+  step?: Step;
   // Tasks for this step
   data: Record<number, Task[]>;
 };
 
 export type RowDataAction =
-  | { type: 'init'; ids: string[] }
+  | { type: 'fillStep'; data: Step[] }
   | { type: 'add'; id: string; data: StepRowData }
-  | { type: 'fill'; data: Task[] }
+  | { type: 'fillTasks'; data: Task[] }
   | { type: 'toggle'; id: string }
   | { type: 'open'; id: string }
   | { type: 'close'; id: string }
@@ -26,18 +27,40 @@ export type RowDataAction =
 
 export type RowDataModel = { [key: string]: StepRowData };
 
+function createNewStepRowTasks(currentData: Record<number, Task[]>, item: Task) {
+  if (currentData[item.task_id]) {
+    const newtasks = currentData[item.task_id];
+
+    let added = false;
+    for (const index in newtasks) {
+      if (!newtasks[index].finished_at || newtasks[index].finished_at === item.finished_at) {
+        added = true;
+        newtasks[index] = item;
+      }
+    }
+
+    if (!added) {
+      newtasks.push(item);
+    }
+    return newtasks;
+  } else {
+    return [item];
+  }
+}
+
 function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataModel {
   switch (action.type) {
-    case 'init':
-      return action.ids.reduce((obj, id) => {
-        if (state[id]) {
-          return { ...obj, [id]: { ...state[id], isOpen: true } };
+    case 'fillStep':
+      const steprows = action.data.reduce((obj, step) => {
+        if (obj[step.step_name]) {
+          return { ...obj, [step.step_name]: { ...state[step.step_name], step: step, isOpen: true } };
         }
-        return { ...obj, [id]: { isOpen: true, data: [] } };
-      }, {});
+        return { ...obj, [step.step_name]: { step: step, isOpen: true, finished_at: 0, data: [] } };
+      }, state);
+      return steprows;
     case 'add':
       return { ...state, [action.id]: action.data };
-    case 'fill': {
+    case 'fillTasks': {
       // Group incoming tasks by step
       const groupped: Record<string, Task[]> = {};
 
@@ -61,24 +84,7 @@ function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataMode
           const newData = row.data;
 
           for (const item of newItems) {
-            if (newData[item.task_id]) {
-              const newtasks = newData[item.task_id];
-
-              let added = false;
-              for (const index in newtasks) {
-                if (!newtasks[index].finished_at || newtasks[index].finished_at === item.finished_at) {
-                  added = true;
-                  newtasks[index] = item;
-                }
-              }
-
-              if (!added) {
-                newtasks.push(item);
-              }
-              newData[item.task_id] = newtasks;
-            } else {
-              newData[item.task_id] = [item];
-            }
+            newData[item.task_id] = createNewStepRowTasks(newData, item);
           }
 
           return {
@@ -97,42 +103,14 @@ function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataMode
             isOpen: true,
             finished_at: highestTime,
             data: groupped[key].reduce<Record<number, Task[]>>((dataobj, item) => {
-              if (dataobj[item.task_id]) {
-                const newtasks = dataobj[item.task_id];
-
-                let added = false;
-                for (const index in newtasks) {
-                  if (!newtasks[index].finished_at || newtasks[index].finished_at === item.finished_at) {
-                    added = true;
-                    newtasks[index] = item;
-                  }
-                }
-
-                if (!added) {
-                  newtasks.push(item);
-                }
-                return { ...dataobj, [item.task_id]: newtasks };
-              } else {
-                return { ...dataobj, [item.task_id]: [item] };
-              }
+              return { ...dataobj, [item.task_id]: createNewStepRowTasks(dataobj, item) };
             }, {}),
           },
         };
       }, state);
 
       return newState;
-    } /*
-    case 'sort':
-      return Object.keys(state).reduce((obj, value) => {
-        if (action.ids.indexOf(value) > -1) {
-          return {
-            ...obj,
-            [value]: { ...state[value], data: state[value].data.sort((a, b) => a.ts_epoch - b.ts_epoch) },
-          };
-        }
-
-        return obj;
-      }, state);*/
+    }
     case 'toggle':
       if (state[action.id]) {
         return { ...state, [action.id]: { ...state[action.id], isOpen: !state[action.id].isOpen } };
