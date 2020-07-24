@@ -146,7 +146,7 @@ const Home: React.FC = () => {
         </Section>
 
         <Section>
-          <SectionHeader>Status</SectionHeader>
+          <SectionHeader>{t('fields.status')}</SectionHeader>
           <StatusCheckboxField label={t('filters.running')} value="running" />
           <StatusCheckboxField label={t('filters.failed')} value="failed" />
           <StatusCheckboxField label={t('filters.completed')} value="completed" />
@@ -213,25 +213,27 @@ const Home: React.FC = () => {
         {(!runs || !runs.length) && (
           <Section>
             <h3>{t('no-results')}</h3>
-            <p>Possible tips listed here</p>
+            <p></p>
           </Section>
         )}
         {!!runs &&
           !!runs.length &&
-          Object.keys(runsGroupedByProperty).map((k) => {
-            return (
-              <ResultGroup
-                key={k}
-                field={getDefaultedQueryParam('_group')}
-                fieldValue={k}
-                initialData={runsGroupedByProperty[k]}
-                queryParams={getAllDefaultedQueryParams()}
-                onOrderChange={handleOrderChange}
-                onRunClick={handleRunClick}
-                resourceUrl="/runs"
-              />
-            );
-          })}
+          Object.keys(runsGroupedByProperty)
+            .sort()
+            .map((k) => {
+              return (
+                <ResultGroup
+                  key={k}
+                  field={getDefaultedQueryParam('_group')}
+                  fieldValue={k}
+                  initialData={runsGroupedByProperty[k]}
+                  queryParams={getAllDefaultedQueryParams()}
+                  onOrderChange={handleOrderChange}
+                  onRunClick={handleRunClick}
+                  resourceUrl="/runs"
+                />
+              );
+            })}
       </Content>
     </>
   );

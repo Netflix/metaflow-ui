@@ -9,6 +9,7 @@ import { ItemRow } from '../Structure';
 import useResource from '../../hooks/useResource';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
+import Notification, { NotificationType } from '../Notification';
 
 //
 // DAG
@@ -49,7 +50,12 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   }, [dataSet]);
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
+      <div style={{ padding: '0 0 10px 0' }}>
+        <Notification type={NotificationType.Info}>
+          Note! These examples are hardcoded and they do not present the state of your run.
+        </Notification>
+      </div>
       <ItemRow pad="sm">
         <Button onClick={() => setDataSet(dagexample1)}>example1</Button>
         <Button onClick={() => setDataSet(dagexample2)}>example2</Button>

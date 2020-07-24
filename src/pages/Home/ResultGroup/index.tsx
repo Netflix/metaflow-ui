@@ -113,6 +113,7 @@ const ResultGroup: React.FC<Props> = ({
           <TR>
             <StatusColorHeaderCell />
             <HeaderColumn label={t('fields.id')} queryKey="run_number" />
+            {field !== 'flow_id' && <HeaderColumn label={t('fields.flow_id')} queryKey="flow_id" />}
             <HeaderColumn label={t('fields.status')} queryKey="status" />
             <HeaderColumn label={t('fields.started-at')} queryKey="ts_epoch" />
             <HeaderColumn label={t('fields.finished-at')} queryKey="finished_at" />
@@ -127,6 +128,7 @@ const ResultGroup: React.FC<Props> = ({
               <TD>
                 <span className="muted">#</span> <strong>{r.run_number}</strong>
               </TD>
+              {field !== 'flow_id' && <TD>{r.flow_id}</TD>}
               <TD>
                 <StatusField status={r.status} />
               </TD>
