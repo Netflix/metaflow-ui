@@ -165,6 +165,7 @@ export default function useResource<T, U>({
     queryParams: queryParams,
     enabled: subscribeToEvents,
     onUpdate: (event: Event<any>) => {
+      if (pause) return;
       // TODO: Create cache item if it doesn't exist (How though? We have only partial data available.)
       const currentCache = cache.get(target);
       // If we have onUpdate function, lets update cache wihtout triggering update loop...
@@ -183,20 +184,22 @@ export default function useResource<T, U>({
       }
       // We can skip cache step if we have disabled it
       if (!fullyDisableCache) {
+        const safeCache = currentCache || { data: initialData };
+        console.log(target, pause);
         if (event.type === EventType.INSERT) {
+          console.log('test');
           cacheSet(target, {
-            ...currentCache,
-            data: Array.isArray(currentCache.data)
-              ? [event.data].concat(currentCache.data)
-              : (currentCache.data = event.data),
+            ...safeCache,
+            data: Array.isArray(safeCache.data) ? [event.data].concat(safeCache.data) : (safeCache.data = event.data),
           });
         } else if (event.type === EventType.UPDATE) {
+          console.log('test2');
           // On update we need to use updatePredicate to update items in cache.
           cacheSet(target, {
-            ...currentCache,
-            data: Array.isArray(currentCache.data)
-              ? currentCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
-              : (currentCache.data = event.data),
+            ...safeCache,
+            data: Array.isArray(safeCache.data)
+              ? safeCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
+              : (safeCache.data = event.data),
           });
         }
       }
