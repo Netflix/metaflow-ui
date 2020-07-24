@@ -34,13 +34,13 @@ type TaskViewProps = { run: IRun; stepName: string; taskId: string };
 
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
   const { t } = useTranslation();
-  const { data: _task, error } = useResource<ITask, ITask>({
+  const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
     subscribeToEvents: true,
     initialData: null,
   });
 
-  const { data: _artifacts } = useResource<Artifact[], Artifact>({
+  const { data: artifacts } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     subscribeToEvents: true,
     initialData: null,
@@ -49,30 +49,12 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
   /**
    * Plugins helpers begin
    */
-  const transformPlugins = useMemo(() => Plugins.all().filter((plugin) => plugin.task?.transform), []);
-  const sectionPlugins = useMemo(() => Plugins.all().filter((plugin) => plugin.task?.sections), []);
-
-  const { task, artifacts } = useMemo(
-    () =>
-      transformPlugins.reduce(
-        ({ task, artifacts }, plugin) => {
-          if (plugin.task?.transform) {
-            return plugin.task.transform(task, artifacts);
-          }
-          return { task, artifacts };
-        },
-        {
-          task: _task,
-          artifacts: _artifacts,
-        },
-      ),
-    [_task, _artifacts, transformPlugins],
-  );
+  const sectionPlugins = useMemo(() => Plugins.all().filter((plugin) => plugin['task-view']?.sections), []);
 
   const pluginComponentsForSection = useMemo(
     () => (sectionKey: string) =>
       sectionPlugins.reduce((components: PluginTaskSection[], plugin: Plugin) => {
-        const sectionMatches = (plugin.task?.sections || []).filter((section) => section.key === sectionKey);
+        const sectionMatches = (plugin['task-view']?.sections || []).filter((section) => section.key === sectionKey);
         return [...components, ...sectionMatches];
       }, []),
     [sectionPlugins],
@@ -88,7 +70,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
     () =>
       sectionPlugins
         .reduce((sections: string[], plugin: Plugin) => {
-          const sectionKeys = (plugin.task?.sections || []).map((section) => section.key);
+          const sectionKeys = (plugin['task-view']?.sections || []).map((section) => section.key);
           return [...sections, ...sectionKeys];
         }, []) // Find section keys from plugins
         .filter((v, i, a) => a.indexOf(v) === i) // Remove duplicates

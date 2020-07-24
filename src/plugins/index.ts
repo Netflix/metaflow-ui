@@ -16,11 +16,10 @@ interface RegisterProps {
 }
 
 export interface Plugin {
-  task?: PluginTask;
+  'task-view'?: PluginTask;
 }
 
 interface PluginTask {
-  transform?: (task: Task | null, artifacts: Artifact[] | null) => { task: Task | null; artifacts: Artifact[] | null };
   sections?: PluginTaskSection[];
 }
 

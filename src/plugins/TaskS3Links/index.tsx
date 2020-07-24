@@ -13,7 +13,7 @@ const extractBucketAndPath = (s3Url: string) => {
 
 const plugin: PluginInit = ({ t }): Plugin => {
   return {
-    task: {
+    'task-view': {
       sections: [
         {
           key: 'links',
