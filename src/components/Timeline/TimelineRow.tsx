@@ -37,6 +37,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
                 item.data[0].step_name,
                 item.data[0].task_id,
               )}
+              data-testid="timeline-row-link"
             >
               <RowStepName>{graph.groupBy === 'none' ? item.data[0].step_name : ''}</RowStepName>
               <span>
@@ -46,12 +47,12 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
             </Link>
           ) : (
             <StepLabel>
-              <Icon name="arrowDown" size="xs" rotate={isOpen ? 0 : -90} />
-              <div>{item.data.step_name}</div>
+              <Icon name="arrowDown" size="xs" rotate={isOpen ? 0 : -90} data-testid="timeline-row-icon" />
+              <div data-testid="timeline-row-label">{item.data.step_name}</div>
             </StepLabel>
           )}
         </RowLabel>
-        <RowGraphContainer>
+        <RowGraphContainer data-testid="timeline-row-graphic-container">
           {item.type === 'step' ? (
             <BoxGraphicElement
               graph={graph}
@@ -87,7 +88,7 @@ type BoxGraphicElementProps = {
   isFirst: boolean;
 };
 
-const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({ row, graph, finishedAt, grayed, isFirst }) => {
+export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({ row, graph, finishedAt, grayed, isFirst }) => {
   const { push } = useHistory();
   const visibleDuration = graph.timelineEnd - graph.timelineStart;
 
@@ -102,7 +103,7 @@ const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({ row, graph, finis
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
   return (
-    <div style={{ width: '100%', transform: `translateX(${valueFromLeft}%)` }}>
+    <div style={{ width: '100%', transform: `translateX(${valueFromLeft}%)` }} data-testid="boxgraphic-container">
       <BoxGraphic
         root={row.type === 'step'}
         style={{
@@ -113,8 +114,16 @@ const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({ row, graph, finis
             push(getPath.task(row.data.flow_id, row.data.run_number, row.data.step_name, row.data.task_id));
           }
         }}
+        data-testid="boxgraphic"
       >
-        {isFirst && <RowMetricLabel item={row.data} finishedAt={finishedAt} labelPosition={labelPosition} />}
+        {isFirst && (
+          <RowMetricLabel
+            item={row.data}
+            finishedAt={finishedAt}
+            labelPosition={labelPosition}
+            data-testid="boxgraphic-label"
+          />
+        )}
         <BoxGraphicLine grayed={grayed} state={finishedAt ? 'completed' : 'running'} isFirst={isFirst} />
         <BoxGraphicMarkerStart />
         <BoxGraphicMarkerEnd />
@@ -123,13 +132,14 @@ const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({ row, graph, finis
   );
 };
 
-const RowMetricLabel: React.FC<{ item: Task | Step; finishedAt?: number; labelPosition: LabelPosition }> = ({
-  item,
-  finishedAt,
-  labelPosition,
-}) =>
+const RowMetricLabel: React.FC<{
+  item: Task | Step;
+  finishedAt?: number;
+  labelPosition: LabelPosition;
+  'data-testid'?: string;
+}> = ({ item, finishedAt, labelPosition, ...rest }) =>
   labelPosition === 'none' ? null : (
-    <BoxGraphicValue position={labelPosition}>
+    <BoxGraphicValue position={labelPosition} {...rest}>
       {finishedAt ? ((finishedAt - item.ts_epoch) / 1000).toFixed(2) + 's' : '?'}
     </BoxGraphicValue>
   );

@@ -65,6 +65,7 @@ const HorizontalScrollbar: React.FC<{ graph: GraphState; updateTimeline: (amount
           width: ((graph.timelineEnd - graph.timelineStart) / (graph.max - graph.min)) * 100 + '%',
           left: ((graph.timelineStart - graph.min) / (graph.max - graph.min)) * 100 + '%',
         }}
+        data-testid="timeline-scrollbar"
       />
     </ScrollbarContainer>
   );
