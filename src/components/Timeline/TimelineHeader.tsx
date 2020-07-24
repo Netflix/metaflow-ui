@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import Icon, { SortIcon } from '../Icon';
 import { useTranslation } from 'react-i18next';
 
-type TimelineHeaderProps = {
+export type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
   zoomReset: () => void;
   toggleGroupBy: (by: GraphGroupBy) => void;
@@ -58,6 +58,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             label={t('timeline.group-by-step')}
             checked={graph.groupBy === 'step'}
             onChange={() => toggleGroupBy(graph.groupBy === 'step' ? 'none' : 'step')}
+            data-testid="timeline-header-groupby-step"
           />
           <SettingsButton expand={() => expandAll()} collapse={() => collapseAll()} />
         </TimelineHeaderBottomLeft>
@@ -75,6 +76,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                   }
                 }}
                 active={graph.sortBy === 'startTime'}
+                data-testid="timeline-header-orderby-startedat"
               >
                 {t('timeline.started-at')}
                 {graph.sortBy === 'startTime' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
@@ -89,6 +91,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                   }
                 }}
                 active={graph.sortBy === 'duration'}
+                data-testid="timeline-header-orderby-duration"
               >
                 {t('timeline.duration')}
                 {graph.sortBy === 'duration' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
@@ -99,13 +102,18 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
           <ItemRow className="">
             <Text>{t('timeline.zoom')}:</Text>
             <ButtonGroup>
-              <Button size="sm" onClick={() => zoomReset()} active={!graph.controlled}>
+              <Button
+                size="sm"
+                onClick={() => zoomReset()}
+                active={!graph.controlled}
+                data-testid="timeline-header-zoom-fit"
+              >
                 {t('timeline.fit-to-screen')}
               </Button>
-              <Button size="sm" onClick={() => zoom('out')}>
+              <Button size="sm" onClick={() => zoom('out')} data-testid="timeline-header-zoom-out">
                 <Icon name="minus" />
               </Button>
-              <Button size="sm" onClick={() => zoom('in')}>
+              <Button size="sm" onClick={() => zoom('in')} data-testid="timeline-header-zoom-in">
                 <Icon name="plus" />
               </Button>
             </ButtonGroup>
@@ -161,7 +169,7 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
   const [open, setOpen] = useState(false);
   return (
     <div style={{ position: 'relative' }}>
-      <Button active={open} onClick={() => setOpen(!open)}>
+      <Button active={open} onClick={() => setOpen(!open)} data-testid="timeline-settings-button">
         <Icon name="ellipsis" />
       </Button>
       {open && (
@@ -171,6 +179,7 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
               expand();
               setOpen(false);
             }}
+            data-testid="timeline-settings-expand-all"
           >
             {t('timeline.expand-all')}
           </Button>
@@ -180,6 +189,7 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
               collapse();
               setOpen(false);
             }}
+            data-testid="timeline-settings-collapse-all"
           >
             {t('timeline.collapse-all')}
           </Button>

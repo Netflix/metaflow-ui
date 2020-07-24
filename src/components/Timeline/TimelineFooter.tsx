@@ -7,8 +7,8 @@ const TimelineFooter: React.FC<{ graph: GraphState; move: (value: number) => voi
   <GraphFooter>
     <HorizontalScrollbar graph={graph} updateTimeline={(value) => move(value)} />
     <GraphFooterMetrics>
-      <div>{((graph.timelineStart - graph.min) / 1000).toFixed(2)}s</div>
-      <div>{((graph.timelineEnd - graph.min) / 1000).toFixed(2)}s</div>
+      <div data-testid="timeline-footer-start">{((graph.timelineStart - graph.min) / 1000).toFixed(2)}s</div>
+      <div data-testid="timeline-footer-end">{((graph.timelineEnd - graph.min) / 1000).toFixed(2)}s</div>
     </GraphFooterMetrics>
   </GraphFooter>
 );
