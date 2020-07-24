@@ -21,33 +21,10 @@ type TimelineRowProps = {
 };
 
 type LabelPosition = 'left' | 'right' | 'none';
-/*
-function rowStartTime(item: Row) {
-  return item.type === 'step' ? item.data.ts_epoch : item.data[0].ts_epoch;
-}
 
-function rowEndTime(item: Row) {
-  return item.type === 'step' ? item.data.finished_at : item.data[0].finished_at;
-}
-*/
 const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, sticky, endTime }) => {
-  // const { push } = useHistory();
   if (!item) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
-  /*const finishedAt = endTime || rowEndTime(item);
-
-  const visibleDuration = graph.timelineEnd - graph.timelineStart;
-
-  // Calculate have much box needs to be pushed from (or to) left
-  const valueFromLeft =
-    graph.alignment === 'fromLeft'
-      ? ((graph.min - graph.timelineStart) / visibleDuration) * 100
-      : ((rowStartTime(item) - graph.timelineStart) / visibleDuration) * 100;
-*/
-  // const width = finishedAt ? ((finishedAt - rowStartTime(item)) / visibleDuration) * 100 : 100 - valueFromLeft;
-
-  // const labelPosition = getLengthLabelPosition(valueFromLeft, width);
-
   return (
     <>
       <Element>
@@ -75,28 +52,6 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
           )}
         </RowLabel>
         <RowGraphContainer>
-          {/*<div style={{ width: '100%', transform: `translateX(${valueFromLeft}%)` }}>
-            <BoxGraphic
-              root={item.type === 'step'}
-              style={{
-                width: width + '%',
-              }}
-              onClick={() => {
-                if (item.type === 'task') {
-                  push(getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id));
-                }
-              }}
-            >
-              <RowMetricLabel item={item} finishedAt={finishedAt} labelPosition={labelPosition} />
-              <BoxGraphicLine
-                grayed={item.type === 'step' && isOpen}
-                state={endTime || rowEndTime(item) ? 'completed' : 'running'}
-              />
-              <BoxGraphicMarkerStart />
-              <BoxGraphicMarkerEnd />
-            </BoxGraphic>
-            </div> */}
-
           {item.type === 'step' ? (
             <BoxGraphicElement
               graph={graph}

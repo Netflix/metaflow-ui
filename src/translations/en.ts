@@ -24,6 +24,8 @@ const en = {
       tag: 'Tag',
       project: 'Project',
 
+      flow_id: 'Flow id',
+
       id: 'Id',
       status: 'Status',
       'started-at': 'Started at',
@@ -64,9 +66,17 @@ const en = {
       'collapse-all': 'Collapse all',
       relative: 'Relative',
       absolute: 'Absolute',
+      'group-by-step': 'Group by step',
+      'order-by': 'Order by',
+      'started-at': 'Started at',
+      duration: 'Duration',
+      zoom: 'Zoom',
+      'fit-to-screen': 'Fit to screen',
     },
 
     task: {
+      loading: 'Loading task data',
+      'could-not-find-task': 'Could not find the task',
       'task-info': 'Task info',
       links: 'Links',
       'std-out': 'Std out',
@@ -78,6 +88,7 @@ const en = {
       'no-match': "Text doesn't match known patterns.",
       goto: 'Go to...',
       whereto: 'Where to?',
+      example: 'Example',
       'example-run': 'MyFlow / run_id',
       'example-step': 'MyFlow / run_id / step_name',
       'example-task': 'MyFlow / run_id / step_name / task_id',

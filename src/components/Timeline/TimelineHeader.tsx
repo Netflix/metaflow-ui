@@ -7,6 +7,7 @@ import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
 import styled from 'styled-components';
 import Icon, { SortIcon } from '../Icon';
+import { useTranslation } from 'react-i18next';
 
 type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
@@ -29,6 +30,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   expandAll,
   collapseAll,
 }) => {
+  const { t } = useTranslation();
   return (
     <TimelineHeaderContainer>
       <TimelineHeaderTop>
@@ -37,7 +39,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             <TextInputField disabled={true} horizontal placeholder="Search not implemented..." />
           </TimelineHeaderItem>
           <TimelineHeaderItem pad="sm">
-            <Text>Status:</Text>
+            <Text>{t('fields.status')}:</Text>
             <SelectField
               horizontal
               disabled={true}
@@ -53,7 +55,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
       <TimelineHeaderBottom>
         <TimelineHeaderBottomLeft>
           <CheckboxField
-            label="Group by step"
+            label={t('timeline.group-by-step')}
             checked={graph.groupBy === 'step'}
             onChange={() => toggleGroupBy(graph.groupBy === 'step' ? 'none' : 'step')}
           />
@@ -61,7 +63,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
           <ItemRow>
-            <Text>Order by:</Text>
+            <Text>{t('timeline.order-by')}:</Text>
             <ButtonGroup>
               <Button
                 size="sm"
@@ -74,7 +76,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 }}
                 active={graph.sortBy === 'startTime'}
               >
-                Started at
+                {t('timeline.started-at')}
                 {graph.sortBy === 'startTime' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
               </Button>
               <Button
@@ -88,17 +90,17 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 }}
                 active={graph.sortBy === 'duration'}
               >
-                Duration
+                {t('timeline.duration')}
                 {graph.sortBy === 'duration' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
               </Button>
             </ButtonGroup>
           </ItemRow>
 
           <ItemRow className="">
-            <Text>Zoom:</Text>
+            <Text>{t('timeline.zoom')}:</Text>
             <ButtonGroup>
               <Button size="sm" onClick={() => zoomReset()} active={!graph.controlled}>
-                Fit to screen
+                {t('timeline.fit-to-screen')}
               </Button>
               <Button size="sm" onClick={() => zoom('out')}>
                 <Icon name="minus" />
@@ -155,6 +157,7 @@ const TimelineHeaderBottomRight = styled.div`
 const TimelineHeaderItem = styled(ItemRow)``;
 
 const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = ({ expand, collapse }) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
     <div style={{ position: 'relative' }}>
@@ -169,7 +172,7 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
               setOpen(false);
             }}
           >
-            Expand all
+            {t('timeline.expand-all')}
           </Button>
           <br />
           <Button
@@ -178,7 +181,7 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
               setOpen(false);
             }}
           >
-            Collapse all
+            {t('timeline.collapse-all')}
           </Button>
         </TemporaryPopup>
       )}
