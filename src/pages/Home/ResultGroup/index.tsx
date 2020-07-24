@@ -98,7 +98,7 @@ const ResultGroup: React.FC<Props> = ({
       }),
   ).filter((x: IRun | undefined) => !!x);
 
-  const allRuns = initialData.concat(cachedPages);
+  const allRuns = uniqueRows(initialData.concat(cachedPages));
 
   const HeaderColumn = (props: { label: string; queryKey: string }) => (
     <HeaderColumnBase {...props} onSort={onOrderChange} currentOrder={localSearchParams['_order']} />
@@ -161,6 +161,11 @@ const ResultGroup: React.FC<Props> = ({
     </StyledResultGroup>
   );
 };
+
+function uniqueRows(runs: IRun[]) {
+  const ids = runs.map((item) => item.run_number);
+  return runs.filter((item, index) => ids.indexOf(item.run_number) === index);
+}
 
 export default ResultGroup;
 
