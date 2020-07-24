@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
@@ -8,6 +8,8 @@ import useResource from '../../hooks/useResource';
 import { formatDuration } from '../../utils/format';
 import { getISOString } from '../../utils/date';
 import StatusField from '../../components/Status';
+
+import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
 
 //
 // View container
@@ -44,6 +46,41 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
     initialData: null,
   });
 
+  /**
+   * Plugins helpers begin
+   */
+  const sectionPlugins = useMemo(() => Plugins.all().filter((plugin) => plugin['task-view']?.sections), []);
+
+  const pluginComponentsForSection = useMemo(
+    () => (sectionKey: string) =>
+      sectionPlugins.reduce((components: PluginTaskSection[], plugin: Plugin) => {
+        const sectionMatches = (plugin['task-view']?.sections || []).filter((section) => section.key === sectionKey);
+        return [...components, ...sectionMatches];
+      }, []),
+    [sectionPlugins],
+  );
+  const renderComponentsForSection = useMemo(
+    () => (sectionKey: string) =>
+      pluginComponentsForSection(sectionKey).map(({ component: Component }, index) => {
+        return Component ? <Component key={index} task={task} artifacts={artifacts} /> : null;
+      }),
+    [task, artifacts, pluginComponentsForSection],
+  );
+  const pluginSectionsCustom = useMemo(
+    () =>
+      sectionPlugins
+        .reduce((sections: string[], plugin: Plugin) => {
+          const sectionKeys = (plugin['task-view']?.sections || []).map((section) => section.key);
+          return [...sections, ...sectionKeys];
+        }, []) // Find section keys from plugins
+        .filter((v, i, a) => a.indexOf(v) === i) // Remove duplicates
+        .filter((key) => !['taskinfo', 'stdout', 'stderr', 'artifacts'].includes(key)), // Ignore built-in sections
+    [sectionPlugins],
+  );
+  /**
+   * Plugins helpers end
+   */
+
   return (
     <TaskContainer>
       {!task && t('task.loading')}
@@ -53,65 +90,100 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
           sections={[
             {
               key: 'taskinfo',
+              order: 1,
               label: t('task.task-info'),
               component: (
-                <InformationRow spaceless>
-                  <PropertyTable
-                    items={[task]}
-                    columns={[
-                      { label: t('fields.task-id') + ':', prop: 'task_id' },
-                      { label: t('fields.status') + ':', accessor: (_item) => <StatusField status={'completed'} /> },
-                      {
-                        label: t('fields.started-at') + ':',
-                        accessor: (item) => (item.ts_epoch ? getISOString(new Date(item.ts_epoch)) : ''),
-                      },
-                      {
-                        label: t('fields.finished-at') + ':',
-                        accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
-                      },
-                      {
-                        label: t('fields.duration') + ':',
-                        accessor: (item) => (item.duration ? formatDuration(item.duration) : ''),
-                      },
-                    ]}
-                  />
-                </InformationRow>
+                <>
+                  <InformationRow spaceless>
+                    <PropertyTable
+                      items={[task]}
+                      columns={[
+                        { label: t('fields.task-id') + ':', prop: 'task_id' },
+                        { label: t('fields.status') + ':', accessor: (_item) => <StatusField status={'completed'} /> },
+                        {
+                          label: t('fields.started-at') + ':',
+                          accessor: (item) => (item.ts_epoch ? getISOString(new Date(item.ts_epoch)) : ''),
+                        },
+                        {
+                          label: t('fields.finished-at') + ':',
+                          accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
+                        },
+                        {
+                          label: t('fields.duration') + ':',
+                          accessor: (item) => (item.duration ? formatDuration(item.duration) : ''),
+                        },
+                      ]}
+                    />
+                  </InformationRow>
+                  {renderComponentsForSection('taskinfo')}
+                </>
               ),
-            },
-            {
-              key: 'links',
-              label: t('task.links'),
-              component: <KeyValueList items={[]} />,
             },
             {
               key: 'stdout',
+              order: 2,
               label: t('task.std-out'),
-              component: <StyledCodeBlock>{`Std out is not available yet`}</StyledCodeBlock>,
+              component: (
+                <>
+                  <StyledCodeBlock>{`Std out is not available yet`}</StyledCodeBlock>
+                  {renderComponentsForSection('stdout')}
+                </>
+              ),
             },
             {
               key: 'stderr',
+              order: 3,
               label: t('task.std-err'),
-              component: <StyledCodeBlock>{`Std err is not available yet`}</StyledCodeBlock>,
+              component: (
+                <>
+                  <StyledCodeBlock>{`Std err is not available yet`}</StyledCodeBlock>
+                  {renderComponentsForSection('stderr')}
+                </>
+              ),
             },
             {
               key: 'artifacts',
+              order: 4,
               label: t('task.artifacts'),
               component: (
-                <InformationRow spaceless>
-                  <PropertyTable
-                    items={artifacts || []}
-                    columns={[
-                      { label: t('fields.artifact-name') + ':', prop: 'name' },
-                      { label: t('fields.location') + ':', prop: 'location' },
-                      { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
-                      { label: t('fields.type') + ':', prop: 'type' },
-                      { label: t('fields.content-type') + ':', prop: 'content_type' },
-                    ]}
-                  />
-                </InformationRow>
+                <>
+                  <InformationRow spaceless>
+                    <PropertyTable
+                      items={artifacts || []}
+                      columns={[
+                        { label: t('fields.artifact-name') + ':', prop: 'name' },
+                        { label: t('fields.location') + ':', prop: 'location' },
+                        { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
+                        { label: t('fields.type') + ':', prop: 'type' },
+                        { label: t('fields.content-type') + ':', prop: 'content_type' },
+                      ]}
+                    />
+                  </InformationRow>
+                  {renderComponentsForSection('artifacts')}
+                </>
               ),
             },
-          ]}
+            ...pluginSectionsCustom.map((sectionKey, index) => {
+              const sections = pluginComponentsForSection(sectionKey).filter((s) => s.component);
+              // Get order and label for each section
+              // Plugin that is registered first is the priority
+              const order = sections.find((s) => s.order)?.order;
+              const label = sections.find((s) => s.label)?.label;
+
+              return {
+                key: sectionKey,
+                order: order || 100 + index,
+                label: label || sectionKey,
+                component: (
+                  <>
+                    {sections.map(({ component: Component }, index) => {
+                      return Component ? <Component key={index} task={task} artifacts={artifacts} /> : null;
+                    })}
+                  </>
+                ),
+              };
+            }),
+          ].sort((a, b) => a.order - b.order)}
         />
       )}
     </TaskContainer>
@@ -125,6 +197,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
 type AnchoredViewSection = {
   key: string;
   label: string;
+  order: number;
   component: React.ReactNode;
 };
 
@@ -238,31 +311,6 @@ const TaskSectionHeader = styled.div`
 `;
 const TaskSectionContent = styled.div`
   padding: 15px;
-`;
-
-//
-// Basic key value listing
-//
-
-const KeyValueList: React.FC<{ items: { label: string; content: React.ReactNode }[] }> = ({ items }) => (
-  <div>
-    {items.map((item) => (
-      <KeyValueListRow key={item.label}>
-        <KeyValueListLabel>{item.label}</KeyValueListLabel>
-        <div>{item.content}</div>
-      </KeyValueListRow>
-    ))}
-  </div>
-);
-
-const KeyValueListRow = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: 14px;
-`;
-
-const KeyValueListLabel = styled.div`
-  flex-basis: 150px;
 `;
 
 //
