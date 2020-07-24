@@ -139,5 +139,14 @@ describe('TimelineRow component', () => {
     expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(0%)');
     expect(getByTestId('boxgraphic').style.width).toBe('35%');
     expect(getByTestId('boxgraphic-label').textContent).toBe('0.35s');
+
+    // Try with unfinished item. No label since bar takes so wide space
+    rerender(
+      <TestWrapper>
+        <BoxGraphicElement {...props} graph={createGraphState({})} finishedAt={undefined} />
+      </TestWrapper>,
+    );
+    expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(10%)');
+    expect(getByTestId('boxgraphic').style.width).toBe('90%');
   });
 });
