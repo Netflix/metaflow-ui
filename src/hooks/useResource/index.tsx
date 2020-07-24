@@ -185,15 +185,12 @@ export default function useResource<T, U>({
       // We can skip cache step if we have disabled it
       if (!fullyDisableCache) {
         const safeCache = currentCache || { data: initialData };
-        console.log(target, pause);
         if (event.type === EventType.INSERT) {
-          console.log('test');
           cacheSet(target, {
             ...safeCache,
             data: Array.isArray(safeCache.data) ? [event.data].concat(safeCache.data) : (safeCache.data = event.data),
           });
         } else if (event.type === EventType.UPDATE) {
-          console.log('test2');
           // On update we need to use updatePredicate to update items in cache.
           cacheSet(target, {
             ...safeCache,
