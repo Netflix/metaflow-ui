@@ -80,5 +80,11 @@ declare module 'styled-components' {
       danger: NotificationColorMap;
       default: NotificationColorMap;
     };
+
+    spinner: {
+      size: number; // Spinner size (width & height) (px)
+      color: string; // Border color
+      borderWidth: number; // Border width (px)
+    };
   }
 }

@@ -3,8 +3,6 @@
 //
 const en = {
   translation: {
-    'no-results': 'No results',
-
     items: {
       run: 'Run',
       step: 'Step',

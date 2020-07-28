@@ -113,6 +113,11 @@ const defaultTheme: DefaultTheme = {
       text: textColor.mid,
     },
   },
+  spinner: {
+    size: 20,
+    color: brandColor.blue,
+    borderWidth: 2,
+  },
 };
 
 export default defaultTheme;
