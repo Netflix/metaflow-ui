@@ -20,6 +20,7 @@ import TagInput from '../../components/TagInput';
 import Icon from '../../components/Icon';
 import Button from '../../components/Button';
 import { Text } from '../../components/Text';
+import Spinner from '../../components/Spinner';
 import ResultGroup from './ResultGroup';
 
 interface DefaultQuery {
@@ -210,10 +211,9 @@ const Home: React.FC = () => {
 
       <Content>
         {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
-        {(!runs || !runs.length) && (
+        {!error && (!runs || !runs.length) && (
           <Section>
-            <h3>{t('no-results')}</h3>
-            <p></p>
+            <Spinner />
           </Section>
         )}
         {!!runs &&

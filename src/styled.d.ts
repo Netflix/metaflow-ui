@@ -12,6 +12,8 @@ declare module 'styled-components' {
 
   export interface DefaultTheme {
     layout: {
+      /** Layout maximum width. (px) */
+      maxWidth: number;
       /** This value is used for both appbar height and page top padding. (rem) */
       appbarHeight: number;
       /** Appbar logo image height in rem */
@@ -77,6 +79,12 @@ declare module 'styled-components' {
       warning: NotificationColorMap;
       danger: NotificationColorMap;
       default: NotificationColorMap;
+    };
+
+    spinner: {
+      size: number; // Spinner size (width & height) (px)
+      color: string; // Border color
+      borderWidth: number; // Border width (px)
     };
   }
 }
