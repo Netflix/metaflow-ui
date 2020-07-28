@@ -48,14 +48,18 @@ Dockerfile provides support for nginx container hosting the production build of 
 # Build Docker image
 $ docker build --tag metaflow-ui:latest .
 
-# Run Docker container on port 8080
-$ docker run -p 3000:80 metaflow-ui:latest
+# Run Docker container on port 3000
+$ docker run -p 3000:3000 metaflow-ui:latest
 
 # Run Docker container using custom API endpoint
-$ docker run -p 3000:80 -e METAFLOW_SERVICE=http://custom-ui-backend/api metaflow-ui:latest
+$ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://custom-ui-backend/api metaflow-ui:latest
 ```
 
 ## Documentation
+
+See [docs/README.md](docs/README.md) to learn more.
+
+General Metaflow documentation available here:
 
 - [**Metaflow documentation**](https://docs.metaflow.org)
 - [**React documentation**](https://reactjs.org)

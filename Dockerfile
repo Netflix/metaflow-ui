@@ -11,6 +11,7 @@ RUN yarn build
 
 FROM nginx
 
+ENV PORT=3000
 ENV METAFLOW_SERVICE=/api
 
 COPY --from=build /app/build /usr/share/nginx/html
