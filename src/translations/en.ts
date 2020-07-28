@@ -56,6 +56,7 @@ const en = {
       parameters: 'Parameters',
       'show-run-details': 'Show run details',
       'hide-run-details': 'Hide run details',
+      tags: 'Tags',
     },
 
     timeline: {

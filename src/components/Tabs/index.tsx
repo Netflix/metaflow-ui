@@ -10,7 +10,7 @@ interface TabDefinition {
   // If linkTo is given, click elements will be links instead
   linkTo?: string;
   // Component to be rendered when active
-  component: React.ReactNode;
+  component?: React.ReactNode;
   temporary?: boolean;
 }
 
@@ -46,7 +46,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, widen }) => {
           ) : (
             <TabsHeadingItem
               active={tab.key === active}
-              onClick={() => setActive(tab.key)}
+              onClick={() => tab.component && setActive(tab.key)}
               key={tab.key}
               temporary={tab.temporary}
             >

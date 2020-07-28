@@ -37,6 +37,19 @@ const RunPage: React.FC = () => {
     }
   }, [params.viewType, params.stepName, params.taskId]);
 
+  const [previousStepName, setPreviousStepName] = useState<string>();
+  const [previousTaskId, setPreviousTaskId] = useState<string>();
+
+  useEffect(() => {
+    setPreviousStepName(undefined);
+    setPreviousTaskId(undefined);
+  }, [params.runNumber]);
+
+  useEffect(() => {
+    params.stepName && setPreviousStepName(params.stepName);
+    params.taskId && setPreviousTaskId(params.taskId);
+  }, [params.stepName, params.taskId]);
+
   return (
     <FixedContent>
       <RunHeader run={run} />
@@ -57,17 +70,18 @@ const RunPage: React.FC = () => {
             linkTo: getPath.timeline(params.flowId, params.runNumber),
             component: <TimelineContainer run={run} />,
           },
-          ...(params.stepName && params.taskId
-            ? [
-                {
-                  key: 'task',
-                  label: `${t('items.task')}: ${params.taskId}`,
-                  linkTo: getPath.task(params.flowId, params.runNumber, params.stepName, params.taskId),
-                  temporary: true,
-                  component: <TaskViewContainer run={run} stepName={params.stepName} taskId={params.taskId} />,
-                },
-              ]
-            : []),
+          {
+            key: 'task',
+            label: previousTaskId ? `${t('items.task')}: ${previousTaskId}` : `${t('items.task')}`,
+            linkTo:
+              previousStepName &&
+              previousTaskId &&
+              getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId),
+            temporary: !!(previousStepName && previousTaskId),
+            component: previousStepName && previousTaskId && (
+              <TaskViewContainer run={run} stepName={previousStepName} taskId={previousTaskId} />
+            ),
+          },
         ]}
       />
     </FixedContent>
