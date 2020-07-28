@@ -12,6 +12,8 @@ declare module 'styled-components' {
 
   export interface DefaultTheme {
     layout: {
+      /** Layout maximum width. (px) */
+      maxWidth: number;
       /** This value is used for both appbar height and page top padding. (rem) */
       appbarHeight: number;
       /** Appbar logo image height in rem */

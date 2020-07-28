@@ -21,6 +21,7 @@ const AppBar: React.FC = () => {
 export default AppBar;
 
 const Wrapper = styled.header`
+  max-width: ${(p) => p.theme.layout.maxWidth}px;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -29,6 +30,7 @@ const Wrapper = styled.header`
   left: 0;
   right: 0;
   height: ${(p) => p.theme.layout.appbarHeight}rem;
+  margin: 0 auto;
   padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem;
   background: rgba(255, 255, 255, 0.75);
   z-index: 999;

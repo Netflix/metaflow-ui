@@ -73,6 +73,7 @@ const buttonColor = {
 
 const defaultTheme: DefaultTheme = {
   layout: {
+    maxWidth: 2560,
     appbarHeight: 7,
     appbarLogoHeight: 1.5,
     pagePaddingX: spacer.hg,
