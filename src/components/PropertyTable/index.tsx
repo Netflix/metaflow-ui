@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 type PropertyTableScheme = 'dark' | 'bright' | 'normal';
 
-type PropertyTableColumns<T> = {
+export type PropertyTableColumns<T> = {
   label: React.ReactNode;
   prop?: keyof T;
   accessor?: (item: T) => React.ReactNode;
@@ -21,7 +21,7 @@ function PropertyTable<T>({ items, columns, scheme = 'normal' }: PropertyTablePr
       <thead>
         <tr>
           {columns.map((col, index) => (
-            <PropertyTableRowItemHeader key={index} scheme={scheme}>
+            <PropertyTableRowItemHeader key={index} scheme={scheme} data-testid="property-table-header">
               {col.label}
             </PropertyTableRowItemHeader>
           ))}
@@ -30,9 +30,9 @@ function PropertyTable<T>({ items, columns, scheme = 'normal' }: PropertyTablePr
 
       <tbody>
         {items.map((row, index) => (
-          <tr key={index}>
+          <tr key={index} data-testid="property-table-row">
             {columns.map((col, index) => (
-              <PropertyTableRowItemContent key={index} scheme={scheme}>
+              <PropertyTableRowItemContent key={index} scheme={scheme} data-testid="property-table-cell">
                 {col.accessor ? col.accessor(row) : col.prop ? row[col.prop] : ''}
               </PropertyTableRowItemContent>
             ))}
