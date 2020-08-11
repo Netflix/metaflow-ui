@@ -10,29 +10,32 @@ import { getISOString } from '../../utils/date';
 import StatusField from '../../components/Status';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
+import { RowDataModel } from '../../components/Timeline/useRowData';
+import { Link } from 'react-router-dom';
+import { getPath } from '../../utils/routing';
 
 //
 // View container
 //
 
-type TaskViewContainer = { run: IRun | null; stepName?: string; taskId?: string };
+type TaskViewContainer = { run: IRun | null; stepName?: string; taskId?: string; rowData: RowDataModel };
 
-const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId }) => {
+const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId, rowData }) => {
   const { t } = useTranslation();
   if (!run?.run_number || !stepName || !taskId) {
     return <>{t('run.no-run-data')}</>;
   }
 
-  return <Task run={run} stepName={stepName} taskId={taskId} />;
+  return <Task run={run} stepName={stepName} taskId={taskId} rowData={rowData} />;
 };
 
 //
 // Task view
 //
 
-type TaskViewProps = { run: IRun; stepName: string; taskId: string };
+type TaskViewProps = { run: IRun; stepName: string; taskId: string; rowData: RowDataModel };
 
-const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
+const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   const { t } = useTranslation();
   const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
@@ -85,6 +88,35 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
     <TaskContainer>
       {!task && t('task.loading')}
       {error || (task && !task.task_id && t('task.could-not-find-task'))}
+      {rowData && (
+        <div style={{ width: '200px' }}>
+          {Object.keys(rowData).map((step: string) => {
+            const row = rowData[step];
+
+            return (
+              <div key={step}>
+                <div style={{ fontWeight: 'bold' }}>{step}</div>
+                {row &&
+                  Object.keys(row.data).map((task_id) => {
+                    const taskData = row.data[parseInt(task_id)];
+
+                    return (
+                      <div key={task_id}>
+                        {task_id === taskId ? (
+                          '>> ' + taskId
+                        ) : (
+                          <Link to={getPath.task(run.flow_id, run.run_number, taskData[0].step_name, task_id)}>
+                            {task_id}
+                          </Link>
+                        )}
+                      </div>
+                    );
+                  })}
+              </div>
+            );
+          })}
+        </div>
+      )}
       {task && task.task_id && (
         <AnchoredView
           sections={[

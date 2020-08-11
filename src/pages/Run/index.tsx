@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useResource from '../../hooks/useResource';
 import { useRouteMatch } from 'react-router-dom';
-import { Run as IRun } from '../../types';
+import { Run as IRun, Step, Task } from '../../types';
 import Tabs from '../../components/Tabs';
 import { FixedContent } from '../../components/Structure';
 import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
@@ -10,6 +10,7 @@ import TaskViewContainer from '../Task';
 import RunHeader from './RunHeader';
 import { getPath } from '../../utils/routing';
 import { useTranslation } from 'react-i18next';
+import useRowData from '../../components/Timeline/useRowData';
 
 const RunPage: React.FC = () => {
   const { t } = useTranslation();
@@ -50,6 +51,50 @@ const RunPage: React.FC = () => {
     params.taskId && setPreviousTaskId(params.taskId);
   }, [params.stepName, params.taskId]);
 
+  //
+  // Step & Task data
+  //
+
+  const { rows, dispatch } = useRowData();
+
+  // Fetch & subscribe to steps
+  useResource<Step[], Step>({
+    url: encodeURI(`/flows/${params.flowId}/runs/${params.runNumber}/steps`),
+    subscribeToEvents: true,
+    initialData: [],
+    onUpdate: (items) => {
+      dispatch({ type: 'fillStep', data: items });
+    },
+    queryParams: {
+      _order: '+ts_epoch',
+      _limit: '1000',
+    },
+    fullyDisableCache: true,
+  });
+
+  // Fetch & subscribe to tasks
+  useResource<Task[], Task>({
+    url: encodeURI(`/flows/${params.flowId}/runs/${params.runNumber}/tasks`),
+    subscribeToEvents: true,
+    initialData: [],
+    updatePredicate: (a, b) => a.task_id === b.task_id,
+    queryParams: {
+      _order: '+ts_epoch',
+      _limit: '1000',
+    },
+    fetchAllData: true,
+    onUpdate: (items) => {
+      dispatch({ type: 'fillTasks', data: items });
+    },
+    fullyDisableCache: true,
+    useBatching: true,
+  });
+
+  useEffect(() => {
+    // Move this to run page
+    dispatch({ type: 'reset' });
+  }, [params.runNumber, dispatch]);
+
   return (
     <FixedContent>
       <RunHeader run={run} />
@@ -68,7 +113,7 @@ const RunPage: React.FC = () => {
             key: 'timeline',
             label: t('run.timeline'),
             linkTo: getPath.timeline(params.flowId, params.runNumber),
-            component: <TimelineContainer run={run} />,
+            component: <TimelineContainer run={run} rowData={rows} rowDataDispatch={dispatch} />,
           },
           {
             key: 'task',
@@ -79,7 +124,7 @@ const RunPage: React.FC = () => {
               getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId),
             temporary: !!(previousStepName && previousTaskId),
             component: previousStepName && previousTaskId && (
-              <TaskViewContainer run={run} stepName={previousStepName} taskId={previousTaskId} />
+              <TaskViewContainer run={run} stepName={previousStepName} taskId={previousTaskId} rowData={rows} />
             ),
           },
         ]}

@@ -4,9 +4,8 @@ import { Step, Task, Run } from '../../types';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
-import useResource from '../../hooks/useResource';
 import useGraph, { GraphState, GraphSortBy, validatedParameter } from './useGraph';
-import useRowData, { StepRowData, RowDataAction, RowDataModel } from './useRowData';
+import { StepRowData, RowDataAction, RowDataModel } from './useRowData';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
@@ -20,13 +19,17 @@ type StepIndex = { name: string; index: number };
 // Container component for timeline. We might wanna show different states here if we havent
 // gotten run data yet.
 //
-export const TimelineContainer: React.FC<{ run?: Run | null }> = ({ run }) => {
+export const TimelineContainer: React.FC<{
+  run?: Run | null;
+  rowData: RowDataModel;
+  rowDataDispatch: React.Dispatch<RowDataAction>;
+}> = ({ run, rowData, rowDataDispatch }) => {
   const { t } = useTranslation();
   if (!run || !run.run_number) {
     return <>{t('timeline.no-run-data')}</>;
   }
 
-  return <VirtualizedTimeline run={run} />;
+  return <VirtualizedTimeline run={run} rowData={rowData} rowDataDispatch={rowDataDispatch} />;
 };
 
 type TimelineFilters = {
@@ -40,7 +43,9 @@ type TimelineFilters = {
 //
 const VirtualizedTimeline: React.FC<{
   run: Run;
-}> = ({ run }) => {
+  rowData: RowDataModel;
+  rowDataDispatch: React.Dispatch<RowDataAction>;
+}> = ({ run, rowData, rowDataDispatch }) => {
   const [q, sq] = useQueryParams({
     group: StringParam,
     order: StringParam,
@@ -58,46 +63,6 @@ const VirtualizedTimeline: React.FC<{
   const [stepPositions, setStepPositions] = useState<StepIndex[]>([]);
   // Name of sticky header (if should be visible)
   const [stickyHeader, setStickyHeader] = useState<null | string>(null);
-  // Data about step rows and their children. Each rowDataState item is step row and in its data property you will find
-  // tasks belonging to it.
-  const { rows: rowDataState, dispatch } = useRowData();
-
-  //
-  // Data fetching
-  //
-
-  // Fetch & subscribe to steps
-  useResource<Step[], Step>({
-    url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
-    subscribeToEvents: true,
-    initialData: [],
-    onUpdate: (items) => {
-      dispatch({ type: 'fillStep', data: items });
-    },
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-    },
-    fullyDisableCache: true,
-  });
-
-  // Fetch & subscribe to tasks
-  useResource<Task[], Task>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/tasks`,
-    subscribeToEvents: true,
-    initialData: [],
-    updatePredicate: (a, b) => a.task_id === b.task_id,
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-    },
-    fetchAllData: true,
-    onUpdate: (items) => {
-      dispatch({ type: 'fillTasks', data: items });
-    },
-    fullyDisableCache: true,
-    useBatching: true,
-  });
 
   //
   // Local filterings
@@ -158,8 +123,8 @@ const VirtualizedTimeline: React.FC<{
   // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {
     // Filter out steps if we have step filters on.
-    const visibleSteps: Step[] = Object.keys(rowDataState)
-      .map((key) => rowDataState[key].step)
+    const visibleSteps: Step[] = Object.keys(rowData)
+      .map((key) => rowData[key].step)
       .filter(
         (item): item is Step =>
           // Filter out possible undefined (should not really happen, might though if there is some timing issues with REST and websocket)
@@ -171,11 +136,11 @@ const VirtualizedTimeline: React.FC<{
       );
 
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
-    const newRows: Row[] = makeVisibleRows(rowDataState, graph, visibleSteps);
+    const newRows: Row[] = makeVisibleRows(rowData, graph, visibleSteps);
 
     if (visibleSteps.length > 0) {
       // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
-      const highestTimestamp = findHighestTimestampForGraph(rowDataState, graph, visibleSteps);
+      const highestTimestamp = findHighestTimestampForGraph(rowData, graph, visibleSteps);
 
       graphDispatch({ type: 'init', start: visibleSteps[0].ts_epoch, end: highestTimestamp });
     }
@@ -184,7 +149,7 @@ const VirtualizedTimeline: React.FC<{
 
     // If no grouping, sort tasks here.
     setRows(rowsToUpdate);
-  }, [rowDataState, graphDispatch, filters.steps, graph.groupBy, graph.min, graph.sortBy, graph.sortDir]); // eslint-disable-line
+  }, [rowData, graphDispatch, filters.steps, graph.groupBy, graph.min, graph.sortBy, graph.sortDir]); // eslint-disable-line
 
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
@@ -203,23 +168,22 @@ const VirtualizedTimeline: React.FC<{
 
   // Reset everything if run is changed
   useEffect(() => {
-    dispatch({ type: 'reset' });
     graphDispatch({ type: 'reset' });
-  }, [run.run_number, dispatch, graphDispatch]);
+  }, [run.run_number, graphDispatch]);
 
   //
   // Button behaviour
   //
 
   const expandAll = () => {
-    Object.keys(rowDataState).forEach((stepName) => {
-      dispatch({ type: 'open', id: stepName });
+    Object.keys(rowData).forEach((stepName) => {
+      rowDataDispatch({ type: 'open', id: stepName });
     });
   };
 
   const collapseAll = () => {
-    Object.keys(rowDataState).forEach((stepName) => {
-      dispatch({ type: 'close', id: stepName });
+    Object.keys(rowData).forEach((stepName) => {
+      rowDataDispatch({ type: 'close', id: stepName });
     });
   };
 
@@ -295,7 +259,7 @@ const VirtualizedTimeline: React.FC<{
                 }
               }}
               rowHeight={ROW_HEIGHT}
-              rowRenderer={createRowRenderer({ rows, graph, dispatch, rowDataState })}
+              rowRenderer={createRowRenderer({ rows, graph, dispatch: rowDataDispatch, rowDataState: rowData })}
               height={listContainer.height + (stickyHeader ? 0 : ROW_HEIGHT) - 28}
               width={listContainer.width}
             />
@@ -305,8 +269,8 @@ const VirtualizedTimeline: React.FC<{
                 stickyStep={stickyHeader}
                 items={rows}
                 graph={graph}
-                rowData={rowDataState[stickyHeader]}
-                onToggle={() => dispatch({ type: 'close', id: stickyHeader })}
+                rowData={rowData[stickyHeader]}
+                onToggle={() => rowDataDispatch({ type: 'close', id: stickyHeader })}
               />
             )}
           </FixedListContainer>
