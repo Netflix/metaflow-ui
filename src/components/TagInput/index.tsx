@@ -47,18 +47,21 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void }> = ({ onSubmit }) => 
 
   return (
     <TagInputWrapper>
-      <Button onClick={handleFormActivation} active={formActive}>
+      <Button onClick={handleFormActivation} active={formActive} data-testid="tag-input-activate-button">
         <Icon name={formActive ? 'times' : 'plus'} />
       </Button>
       <Popover show={formActive}>
         <TextInputField
+          data-testid="tag-input-textarea"
           horizontal
           value={val}
           ref={inputEl}
           onChange={(e) => e && setVal(e.target.value)}
           onKeyPress={(e) => handleKeyPress(e)}
         />
-        <Button onClick={() => handleSubmit(val)}>Add</Button>
+        <Button onClick={() => handleSubmit(val)} data-testid="tag-input-add-button">
+          Add
+        </Button>
       </Popover>
     </TagInputWrapper>
   );

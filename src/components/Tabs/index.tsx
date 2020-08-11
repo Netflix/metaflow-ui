@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
-interface TabDefinition {
+export interface TabDefinition {
   // Unique key
   key: string;
   // Label to be shown
@@ -38,7 +38,12 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, widen }) => {
       <TabsHeading widen={widen}>
         {tabs.map((tab) =>
           tab.linkTo ? (
-            <Link to={tab.linkTo} key={tab.key} className={tab.key === active ? 'active' : ''}>
+            <Link
+              to={tab.linkTo}
+              key={tab.key}
+              className={tab.key === active ? 'active' : ''}
+              data-testid="tab-heading-item"
+            >
               <TabsHeadingItem active={tab.key === active} temporary={tab.temporary}>
                 {tab.label}
               </TabsHeadingItem>
@@ -49,6 +54,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, widen }) => {
               onClick={() => tab.component && setActive(tab.key)}
               key={tab.key}
               temporary={tab.temporary}
+              data-testid="tab-heading-item"
             >
               {tab.label}
             </TabsHeadingItem>
@@ -56,7 +62,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, widen }) => {
         )}
       </TabsHeading>
 
-      <ActiveTab>{activeDef && activeDef.component}</ActiveTab>
+      <ActiveTab data-testid="tab-active-content">{activeDef && activeDef.component}</ActiveTab>
     </TabsContainer>
   );
 };
