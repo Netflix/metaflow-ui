@@ -11,7 +11,8 @@ import StatusField from '../../components/Status';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
 import { RowDataModel } from '../../components/Timeline/useRowData';
-import { Link } from 'react-router-dom';
+import { AutoSizer, List } from 'react-virtualized';
+import { useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
 
 //
@@ -37,6 +38,7 @@ type TaskViewProps = { run: IRun; stepName: string; taskId: string; rowData: Row
 
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   const { t } = useTranslation();
+  const history = useHistory();
   const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
     subscribeToEvents: true,
@@ -49,9 +51,9 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
     initialData: null,
   });
 
-  /**
-   * Plugins helpers begin
-   */
+  //
+  // Plugins helpers begin
+  //
   const sectionPlugins = useMemo(() => Plugins.all().filter((plugin) => plugin['task-view']?.sections), []);
 
   const pluginComponentsForSection = useMemo(
@@ -80,41 +82,68 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
         .filter((key) => !['taskinfo', 'stdout', 'stderr', 'artifacts'].includes(key)), // Ignore built-in sections
     [sectionPlugins],
   );
-  /**
-   * Plugins helpers end
-   */
+
+  //
+  // Plugins helpers end
+  //
+
+  const [tasks, setTasks] = useState<ITask[]>([]);
+
+  useEffect(() => {
+    let taskRows: ITask[] = [];
+    for (const stepname of Object.keys(rowData)) {
+      const step = rowData[stepname];
+
+      taskRows = taskRows.concat(Object.keys(step.data).map((d) => step.data[parseInt(d)][0]));
+    }
+
+    setTasks(taskRows);
+  }, [rowData]);
 
   return (
     <TaskContainer>
       {!task && t('task.loading')}
       {error || (task && !task.task_id && t('task.could-not-find-task'))}
       {rowData && (
-        <div style={{ width: '200px' }}>
-          {Object.keys(rowData).map((step: string) => {
-            const row = rowData[step];
+        <div style={{ width: '215px', paddingRight: '15px' }}>
+          <AutoSizer disableWidth>
+            {(size) => (
+              <List
+                overscanRowCount={5}
+                rowCount={tasks.length}
+                rowHeight={20}
+                rowRenderer={({ index, style }) => {
+                  const taskItem: ITask = tasks[index];
 
-            return (
-              <div key={step}>
-                <div style={{ fontWeight: 'bold' }}>{step}</div>
-                {row &&
-                  Object.keys(row.data).map((task_id) => {
-                    const taskData = row.data[parseInt(task_id)];
-
-                    return (
-                      <div key={task_id}>
-                        {task_id === taskId ? (
-                          '>> ' + taskId
-                        ) : (
-                          <Link to={getPath.task(run.flow_id, run.run_number, taskData[0].step_name, task_id)}>
-                            {task_id}
-                          </Link>
-                        )}
+                  return (
+                    <div
+                      key={index}
+                      style={style}
+                      onClick={() =>
+                        history.push(
+                          getPath.task(taskItem.flow_id, taskItem.run_number, taskItem.step_name, taskItem.task_id),
+                        )
+                      }
+                    >
+                      <div
+                        style={{
+                          display: 'flex',
+                          textAlign: 'right',
+                          cursor: 'pointer',
+                          fontWeight: taskItem.task_id.toString() === taskId ? 'bold' : 'normal',
+                        }}
+                      >
+                        <div style={{ flex: 1, overflowX: 'hidden', fontSize: '14px' }}>{taskItem.step_name}</div>
+                        <div style={{ padding: '0 5px 0 0' }}>/{taskItem.task_id}</div>
                       </div>
-                    );
-                  })}
-              </div>
-            );
-          })}
+                    </div>
+                  );
+                }}
+                height={size.height}
+                width={200}
+              />
+            )}
+          </AutoSizer>
         </div>
       )}
       {task && task.task_id && (
