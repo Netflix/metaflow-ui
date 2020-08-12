@@ -28,27 +28,6 @@ export type RowDataAction =
 
 export type RowDataModel = { [key: string]: StepRowData };
 
-function createNewStepRowTasks(currentData: Record<number, Task[]>, item: Task) {
-  if (currentData[item.task_id]) {
-    const newtasks = currentData[item.task_id];
-
-    let added = false;
-    for (const index in newtasks) {
-      if (!newtasks[index].finished_at || newtasks[index].finished_at === item.finished_at) {
-        added = true;
-        newtasks[index] = item;
-      }
-    }
-
-    if (!added) {
-      newtasks.push(item);
-    }
-    return newtasks;
-  } else {
-    return [item];
-  }
-}
-
 function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataModel {
   switch (action.type) {
     case 'fillStep':
@@ -138,7 +117,33 @@ function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataMode
   return state;
 }
 
-function timepointsOfTasks(tasks: Task[]): [number, number] {
+/**
+ * Merge or add new data to row information.
+ * If there already was data about same TASK but it doesnt have finished_at value, we
+ * replace it.
+ */
+export function createNewStepRowTasks(currentData: Record<number, Task[]>, item: Task): Task[] {
+  if (currentData[item.task_id]) {
+    const newtasks = currentData[item.task_id];
+
+    let added = false;
+    for (const index in newtasks) {
+      if (!newtasks[index].finished_at || newtasks[index].finished_at === item.finished_at) {
+        added = true;
+        newtasks[index] = item;
+      }
+    }
+
+    if (!added) {
+      newtasks.push(item);
+    }
+    return newtasks;
+  } else {
+    return [item];
+  }
+}
+
+export function timepointsOfTasks(tasks: Task[]): [number, number] {
   return tasks.reduce(
     (val, task) => {
       const highpoint: number =
