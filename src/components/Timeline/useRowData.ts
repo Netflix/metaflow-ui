@@ -28,7 +28,7 @@ export type RowDataAction =
 
 export type RowDataModel = { [key: string]: StepRowData };
 
-function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataModel {
+export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataModel {
   switch (action.type) {
     case 'fillStep':
       const steprows = action.data.reduce((obj, step) => {
