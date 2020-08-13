@@ -65,5 +65,8 @@
     "eslint-plugin-react-hooks": "^4.0.4",
     "http-proxy-middleware": "^1.0.4",
     "jest-websocket-mock": "^2.1.0"
+  },
+  "resolutions": {
+    "jest-environment-jsdom": "^26.0.1"
   }
 }

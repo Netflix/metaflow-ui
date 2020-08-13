@@ -25,6 +25,7 @@ export interface HookConfig<T, U> {
   pause?: boolean;
   fullyDisableCache?: boolean;
   useBatching?: boolean;
+  uuid?: string;
 }
 
 interface DataModel<T> {
@@ -131,6 +132,7 @@ export default function useResource<T, U>({
   pause = false,
   fullyDisableCache = false,
   useBatching = false,
+  uuid,
 }: HookConfig<T, U>): Resource<T> {
   const cache = useRef(privateCache ? createCache() : singletonCache).current;
   const [error, setError] = useState(null);
@@ -201,6 +203,7 @@ export default function useResource<T, U>({
         }
       }
     },
+    uuid,
   });
 
   function fetchData(targetUrl: string, signal: AbortSignal, cb: () => void, isSilent?: boolean) {

@@ -51,7 +51,7 @@ export type GraphAction =
   // Update zoom contol state. If controlled, we dont update zoom level.
   | { type: 'setControlled'; value: boolean };
 
-function graphReducer(state: GraphState, action: GraphAction): GraphState {
+export function graphReducer(state: GraphState, action: GraphAction): GraphState {
   switch (action.type) {
     case 'init':
       return {
@@ -144,7 +144,7 @@ function graphReducer(state: GraphState, action: GraphAction): GraphState {
  * in or out only small amount. Else much more.
  * @param state State of current graph
  */
-function getZoomAmount(state: GraphState) {
+export function getZoomAmount(state: GraphState): number {
   const currentVisiblePortion = (state.timelineEnd - state.timelineStart) / (state.max - state.min);
   return currentVisiblePortion < 0.21 ? (state.max - state.min) / 50 : (state.max - state.min) / 10;
 }
@@ -154,7 +154,7 @@ function getZoomAmount(state: GraphState) {
  * @param graph State of current graph
  * @param change Amount we are about to change visible value
  */
-function zoomOverTotalLength(graph: GraphState, change: number) {
+export function zoomOverTotalLength(graph: GraphState, change: number): boolean {
   return graph.timelineEnd + change - (graph.timelineStart - change) >= graph.max - graph.min;
 }
 
@@ -163,7 +163,7 @@ function zoomOverTotalLength(graph: GraphState, change: number) {
  * @param graph State of current graph
  * @param change Amount we are about to change visible value
  */
-function startOutOfBounds(graph: GraphState, change: number) {
+export function startOutOfBounds(graph: GraphState, change: number): boolean {
   return graph.timelineStart + change < graph.min;
 }
 
@@ -172,7 +172,7 @@ function startOutOfBounds(graph: GraphState, change: number) {
  * @param graph State of current graph
  * @param change Amount we are about to change visible value
  */
-function endOutOfBounds(graph: GraphState, change: number) {
+export function endOutOfBounds(graph: GraphState, change: number): boolean {
   return graph.timelineEnd + change > graph.max;
 }
 
@@ -182,11 +182,11 @@ function endOutOfBounds(graph: GraphState, change: number) {
  * @param change Amount we are about to change visible value
  * @param changeEnd We might want to move and value different direction than start (zoom events)
  */
-function startOrEndOutOfBounds(graph: GraphState, change: number, changeEnd?: number) {
+export function startOrEndOutOfBounds(graph: GraphState, change: number, changeEnd?: number): boolean {
   return startOutOfBounds(graph, change) || endOutOfBounds(graph, changeEnd || change);
 }
 
-function updateGraph(graph: GraphState, change: number, changeEnd?: number): GraphState {
+export function updateGraph(graph: GraphState, change: number, changeEnd?: number): GraphState {
   return {
     ...graph,
     timelineStart: graph.timelineStart + change,
@@ -194,7 +194,7 @@ function updateGraph(graph: GraphState, change: number, changeEnd?: number): Gra
   };
 }
 
-function resetTimeline(graph: GraphState): GraphState {
+export function resetTimeline(graph: GraphState): GraphState {
   return {
     ...graph,
     timelineStart: graph.min,
