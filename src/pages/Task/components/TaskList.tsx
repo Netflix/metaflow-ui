@@ -25,9 +25,14 @@ type TaskListRowItem =
 
 const HEADER_SIZE_PX = 112;
 
+type TaskListStepData = {
+  isOpen: boolean;
+};
+
 const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ rowData, activeTaskId }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [rows, setRows] = useState<TaskListRowItem[]>([]);
+  const [stepData, setStepData] = useState<Record<string, TaskListStepData>>({});
   const history = useHistory();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -37,7 +42,10 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
       const step = rowData[stepname];
 
       taskRows.push({ type: 'step' as const, data: step });
-      if (step.isOpen) {
+
+      const isOpen = stepData[stepname] ? stepData[stepname].isOpen : step.isOpen;
+
+      if (isOpen) {
         taskRows = taskRows.concat(
           Object.keys(step.data).map((key) => ({
             type: 'task',
@@ -48,7 +56,18 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
     }
 
     setRows(taskRows);
-  }, [rowData]);
+  }, [rowData, stepData]);
+
+  useEffect(() => {
+    setStepData(
+      Object.keys(rowData).reduce((obj, key) => {
+        if (stepData[key]) {
+          return obj;
+        }
+        return { ...obj, [key]: { isOpen: true } };
+      }, {}),
+    );
+  }, [rowData]); // eslint-disable-line
 
   useEffect(() => {
     const listener = () => {
@@ -58,6 +77,11 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
     window.addEventListener('scroll', listener);
     return () => window.removeEventListener('scroll', listener);
   }, []);
+
+  const listSize = ref?.current
+    ? window.innerHeight -
+      (viewScrollTop + 25 > ref.current.offsetTop ? HEADER_SIZE_PX + 25 : ref.current.offsetTop - viewScrollTop + 25)
+    : 0;
 
   return (
     <TaskListContainer ref={ref}>
@@ -85,6 +109,10 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
               style={style}
               onClick={() => {
                 if (item.type === 'step') {
+                  if (item.data.step) {
+                    const sname = item.data.step.step_name;
+                    setStepData({ ...stepData, [sname]: { isOpen: stepData[sname] ? !stepData[sname].isOpen : true } });
+                  }
                 } else {
                   history.push(
                     getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id),
@@ -94,7 +122,19 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
             >
               <RowContainer>
                 <RowIconSection rowType={item.type}>
-                  {item.type === 'step' ? <Icon name="arrowDown" rotate={-90} size="xs" /> : null}
+                  {item.type === 'step' ? (
+                    <Icon
+                      name="arrowDown"
+                      rotate={
+                        item.data.step &&
+                        stepData[item.data.step.step_name] &&
+                        stepData[item.data.step.step_name].isOpen
+                          ? 0
+                          : -90
+                      }
+                      size="xs"
+                    />
+                  ) : null}
                 </RowIconSection>
                 <RowTextContent rowType={item.type} active={item.type === 'task' && item.data.task_id === activeTaskId}>
                   <div
@@ -112,7 +152,7 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
             </div>
           );
         }}
-        height={window.innerHeight - HEADER_SIZE_PX - 60}
+        height={listSize}
         width={215}
       />
     </TaskListContainer>
@@ -127,6 +167,7 @@ const TaskListContainer = styled.div`
 
 const RowContainer = styled.div`
   display: flex;
+  cursor: pointer;
 `;
 
 const RowTextContent = styled.div<{ rowType: 'step' | 'task'; active?: boolean }>`

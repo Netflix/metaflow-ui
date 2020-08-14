@@ -87,10 +87,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
 
   return (
     <TaskContainer>
+      <TaskList rowData={rowData} activeTaskId={parseInt(taskId)} />
+
       {!task && t('task.loading')}
       {error || (task && !task.task_id && t('task.could-not-find-task'))}
-
-      <TaskList rowData={rowData} activeTaskId={parseInt(taskId)} />
 
       {task && task.task_id && (
         <AnchoredView
