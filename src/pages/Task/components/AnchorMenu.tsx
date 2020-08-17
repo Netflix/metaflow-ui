@@ -36,18 +36,14 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items }) => {
     return () => window.removeEventListener('scroll', listener);
   }, [items]);
 
+  const isScrolledOver = ref && ref.current && viewScrollTop + HEADER_SIZE_PX > ref.current.offsetTop;
+
   return (
-    <div ref={ref}>
+    <AnchorMenuContainer ref={ref}>
       <div
         style={
           // Adding header height here manually. We need to think it makes sense to have sticky header
-          {
-            transform: `translateY(${
-              ref && ref.current && viewScrollTop + HEADER_SIZE_PX > ref.current.offsetTop
-                ? viewScrollTop + HEADER_SIZE_PX - ref.current.offsetTop
-                : 0
-            }px)`,
-          }
+          isScrolledOver ? { position: 'fixed', top: HEADER_SIZE_PX + 'px' } : {}
         }
       >
         {items.map(({ key, label, position }) => (
@@ -64,9 +60,14 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items }) => {
           </AnchorMenuItem>
         ))}
       </div>
-    </div>
+    </AnchorMenuContainer>
   );
 };
+
+const AnchorMenuContainer = styled.div`
+  width: 200px;
+  flex-shrink: 0;
+`;
 
 const AnchorMenuItem = styled.div<{ active?: boolean }>`
   cursor: pointer;

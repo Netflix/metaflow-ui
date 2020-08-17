@@ -41,11 +41,9 @@ const AnchoredView: React.FC<AnchoredViewProps> = ({ sections }) => {
         ))}
       </TaskContent>
 
-      <TaskSidebar>
-        <AnchorMenu
-          items={sections.map(({ key, label }, index) => ({ key, label, position: sectionPositions[index] }))}
-        />
-      </TaskSidebar>
+      <AnchorMenu
+        items={sections.map(({ key, label }, index) => ({ key, label, position: sectionPositions[index] }))}
+      />
     </AnchoredViewContainer>
   );
 };
@@ -57,13 +55,8 @@ const AnchoredViewContainer = styled.div`
 
 const TaskContent = styled.div`
   flex: 1;
-  max-width: 80%;
-  padding: 0 2rem 0 0;
-`;
 
-const TaskSidebar = styled.div`
-  flex-basis: 250px;
-  padding: 1rem;
+  padding: 0 2rem 0 0;
 `;
 
 export default AnchoredView;
