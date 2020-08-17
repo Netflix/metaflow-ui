@@ -146,9 +146,9 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
                         rotate={
                           item.data.step &&
                           stepData[item.data.step.step_name] &&
-                          stepData[item.data.step.step_name].isOpen
-                            ? 0
-                            : -90
+                          !stepData[item.data.step.step_name].isOpen
+                            ? -90
+                            : 0
                         }
                         size="xs"
                       />
