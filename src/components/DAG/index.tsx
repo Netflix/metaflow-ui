@@ -10,6 +10,7 @@ import useResource from '../../hooks/useResource';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
 import Notification, { NotificationType } from '../Notification';
+import FullPageContainer from '../FullPageContainer';
 
 //
 // DAG
@@ -38,6 +39,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     },
   });
 
+  const [showFullscreen, setFullscreen] = useState(false);
   const [dagTree, setDagTree] = useState<DAGStructureTree>([]);
   const [dataSet, setDataSet] = useState<DAGModel | null>(null);
 
@@ -48,6 +50,24 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
       setDagTree(convertDAGModelToTree(dagHugeflow));
     }
   }, [dataSet]);
+
+  const content = dagTree && (
+    <DAGRenderingContainer showFullscreen={showFullscreen}>
+      <div style={{ display: 'flex' }}>
+        <NormalItemContainer>
+          {dagTree.map((elem, index) => (
+            <RenderStep
+              run={run}
+              item={elem}
+              key={index}
+              isLast={index + 1 === dagTree.length}
+              stepIds={stepData ? stepData.map((item) => item.step_name) : []}
+            />
+          ))}
+        </NormalItemContainer>
+      </div>
+    </DAGRenderingContainer>
+  );
 
   return (
     <div style={{ width: '100%' }}>
@@ -61,25 +81,10 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
         <Button onClick={() => setDataSet(dagexample2)}>example2</Button>
         <Button onClick={() => setDataSet(dagexample3)}>example3</Button>
         <Button onClick={() => setDataSet(dagHugeflow)}>hugeflow</Button>
+        <Button onClick={() => setFullscreen(true)}>Set fullscreen</Button>
       </ItemRow>
 
-      {dagTree && (
-        <DAGRenderingContainer>
-          <div style={{ display: 'flex' }}>
-            <NormalItemContainer>
-              {dagTree.map((elem, index) => (
-                <RenderStep
-                  run={run}
-                  item={elem}
-                  key={index}
-                  isLast={index + 1 === dagTree.length}
-                  stepIds={stepData ? stepData.map((item) => item.step_name) : []}
-                />
-              ))}
-            </NormalItemContainer>
-          </div>
-        </DAGRenderingContainer>
-      )}
+      {showFullscreen ? <FullPageContainer onClose={() => setFullscreen(false)}>{content}</FullPageContainer> : content}
     </div>
   );
 };
@@ -184,9 +189,9 @@ const LineElement: React.FC<{ mode?: 'short' | 'long' }> = ({ mode = 'short' }) 
   </svg>
 );
 
-const DAGRenderingContainer = styled.div`
+const DAGRenderingContainer = styled.div<{ showFullscreen: boolean }>`
   margin: 0 -45px;
-  overflow-x: scroll;
+  overflow-x: ${(p) => (p.showFullscreen ? 'visible' : 'hidden')};
   font-family: monospace;
   font-size: 14px;
 `;
