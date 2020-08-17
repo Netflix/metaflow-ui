@@ -18,7 +18,7 @@ describe('Task page', () => {
   test('<Task /> - health check', () => {
     render(
       <TestWrapper>
-        <Task run={run} stepName="test" taskId="test" />
+        <Task run={run} stepName="test" taskId="test" rowData={{}} />
       </TestWrapper>,
     );
   });

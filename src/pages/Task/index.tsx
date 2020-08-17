@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
@@ -10,29 +10,32 @@ import { getISOString } from '../../utils/date';
 import StatusField from '../../components/Status';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
+import { RowDataModel } from '../../components/Timeline/useRowData';
+import TaskList from './components/TaskList';
+import AnchoredView from './components/AnchoredView';
 
 //
 // View container
 //
 
-type TaskViewContainer = { run: IRun | null; stepName?: string; taskId?: string };
+type TaskViewContainer = { run: IRun | null; stepName?: string; taskId?: string; rowData: RowDataModel };
 
-const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId }) => {
+const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId, rowData }) => {
   const { t } = useTranslation();
   if (!run?.run_number || !stepName || !taskId) {
     return <>{t('run.no-run-data')}</>;
   }
 
-  return <Task run={run} stepName={stepName} taskId={taskId} />;
+  return <Task run={run} stepName={stepName} taskId={taskId} rowData={rowData} />;
 };
 
 //
 // Task view
 //
 
-type TaskViewProps = { run: IRun; stepName: string; taskId: string };
+type TaskViewProps = { run: IRun; stepName: string; taskId: string; rowData: RowDataModel };
 
-const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
+const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   const { t } = useTranslation();
   const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
@@ -46,9 +49,9 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
     initialData: null,
   });
 
-  /**
-   * Plugins helpers begin
-   */
+  //
+  // Plugins helpers begin
+  //
   const sectionPlugins = useMemo(() => Plugins.all().filter((plugin) => plugin['task-view']?.sections), []);
 
   const pluginComponentsForSection = useMemo(
@@ -77,14 +80,18 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
         .filter((key) => !['taskinfo', 'stdout', 'stderr', 'artifacts'].includes(key)), // Ignore built-in sections
     [sectionPlugins],
   );
-  /**
-   * Plugins helpers end
-   */
+
+  //
+  // Plugins helpers end
+  //
 
   return (
     <TaskContainer>
+      <TaskList rowData={rowData} activeTaskId={parseInt(taskId)} />
+
       {!task && t('task.loading')}
       {error || (task && !task.task_id && t('task.could-not-find-task'))}
+
       {task && task.task_id && (
         <AnchoredView
           sections={[
@@ -190,73 +197,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId }) => {
   );
 };
 
-//
-// Anchored View
-//
-
-type AnchoredViewSection = {
-  key: string;
-  label: string;
-  order: number;
-  component: React.ReactNode;
-};
-
-type AnchoredViewProps = {
-  sections: AnchoredViewSection[];
-};
-
-const AnchoredView: React.FC<AnchoredViewProps> = ({ sections }) => {
-  const [sectionPositions, setSectionPositions] = useState<Record<number, number>>({});
-
-  return (
-    <AnchoredViewContainer>
-      <TaskContent>
-        {sections.map((section, index) => (
-          <TaskSection
-            key={section.key}
-            label={section.label}
-            sectionkey={section.key}
-            updatePosition={(offsetTop) => {
-              const exists = sectionPositions[index];
-              if (!exists || (exists && exists !== offsetTop)) {
-                setSectionPositions((cur) => ({ ...cur, [index]: offsetTop }));
-              }
-            }}
-          >
-            {section.component}
-          </TaskSection>
-        ))}
-      </TaskContent>
-
-      <TaskSidebar>
-        <AnchorMenu
-          items={sections.map(({ key, label }, index) => ({ key, label, position: sectionPositions[index] }))}
-        />
-      </TaskSidebar>
-    </AnchoredViewContainer>
-  );
-};
-
 const TaskContainer = styled.div`
   display: flex;
   padding: 25px 0;
   width: 100%;
-`;
-
-const AnchoredViewContainer = styled.div`
-  display: flex;
-  width 100%;
-`;
-
-const TaskContent = styled.div`
-  flex: 1;
-  max-width: 80%;
-  padding: 0 2rem 0 0;
-`;
-
-const TaskSidebar = styled.div`
-  flex-basis: 250px;
-  padding: 1rem;
 `;
 
 const StyledCodeBlock = styled.div`
@@ -267,122 +211,6 @@ const StyledCodeBlock = styled.div`
   border-radius: 4px;
   font-size: 14px;
   white-space: pre-wrap;
-`;
-
-//
-// Task section presents one title section of task view
-//
-
-const TaskSection: React.FC<{ label: string; sectionkey: string; updatePosition: (offsetTop: number) => void }> = ({
-  label,
-  sectionkey,
-  updatePosition,
-  children,
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const offset = ref?.current?.offsetTop;
-    if (offset) {
-      updatePosition(offset);
-    }
-  }, [updatePosition, ref]);
-
-  return (
-    <TaskSectionContainer ref={ref} id={sectionkey}>
-      <TaskSectionHeader>
-        <h3>{label}</h3>
-      </TaskSectionHeader>
-      <TaskSectionContent>{children}</TaskSectionContent>
-    </TaskSectionContainer>
-  );
-};
-
-const TaskSectionContainer = styled.div`
-  margin-bottom: 2rem;
-`;
-const TaskSectionHeader = styled.div`
-  padding: 0 1rem;
-  border-bottom: 1px solid ${(props) => props.theme.color.border.light};
-
-  h3 {
-    margin: 0.75rem 0;
-  }
-`;
-const TaskSectionContent = styled.div`
-  padding: 15px;
-`;
-
-//
-// Anchor menu
-//
-
-type AnchorItem = {
-  key: string;
-  label: string;
-  position?: number;
-};
-
-type AnchorMenuProps = {
-  items: AnchorItem[];
-};
-
-const AnchorMenu: React.FC<AnchorMenuProps> = ({ items }) => {
-  const [viewScrollTop, setScrollTop] = useState(0);
-  const [active, setActive] = useState<string | undefined>(items[0]?.key);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const listener = () => {
-      setScrollTop(window.scrollY);
-      const current = [...items].reverse().find((item) => item.position && item.position < window.scrollY + 112);
-      setActive((current && current.key) || items[0]?.key);
-    };
-
-    window.addEventListener('scroll', listener);
-
-    return () => window.removeEventListener('scroll', listener);
-  }, [items]);
-
-  return (
-    <div ref={ref}>
-      <div
-        style={
-          // Adding header height here manually. We need to think it makes sense to have sticky header
-          {
-            transform: `translateY(${
-              ref && ref.current && viewScrollTop + 112 > ref.current.offsetTop
-                ? viewScrollTop + 112 - ref.current.offsetTop
-                : 0
-            }px)`,
-          }
-        }
-      >
-        {items.map(({ key, label, position }) => (
-          <AnchorMenuItem
-            key={key}
-            active={key === active}
-            onClick={() => {
-              if (position) {
-                window.scroll({ top: position - 111 });
-              }
-            }}
-          >
-            {label}
-          </AnchorMenuItem>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const AnchorMenuItem = styled.div<{ active?: boolean }>`
-  cursor: pointer;
-  line-height: 2rem;
-  padding: 0 1rem;
-  margin-bottom 0.5rem;
-  border-left: 2px solid ${(p) => (p.active ? p.theme.color.text.blue : p.theme.color.border.light)};
-  transition: 0.15s border;
 `;
 
 export default TaskViewContainer;

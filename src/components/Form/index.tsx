@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 import Icon from '../Icon';
@@ -49,7 +49,7 @@ export const Field: React.FC<FieldBaseProps> = ({
 export const SelectField: React.FC<
   { label?: string; options: [string, string][]; disabled?: boolean } & CommonFieldProps<HTMLSelectElement>
 > = ({ label, options, horizontal, ...rest }) => {
-  const id = uuid();
+  const [id] = useState(uuid());
   const testid = rest['data-testid'];
 
   return (
@@ -73,7 +73,7 @@ export const CheckboxField: React.FC<{ label: string; checked: boolean } & Commo
   className,
   ...rest
 }) => {
-  const id = uuid();
+  const [id] = useState(uuid());
   const testid = rest['data-testid'];
   return (
     <Field
@@ -116,7 +116,7 @@ export const TextInputField = React.forwardRef<
     },
     ref,
   ) => {
-    const id = uuid();
+    const [id] = useState(uuid());
     const testid = rest['data-testid'];
     const valueProps = defaultValue ? { defaultValue } : { value };
 
@@ -160,6 +160,8 @@ const FieldWrapper = styled.div<FieldBaseProps>`
 
   input[type='text'],
   select {
+    width: 100%;
+    min-width: 150px;
     border-radius: 0.25rem;
     outline: 0;
     line-height: 1.25rem;
