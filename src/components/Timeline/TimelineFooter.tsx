@@ -61,6 +61,10 @@ const TimelineFooter: React.FC<{
         const startPercent = (startValue - rect.left) / rect.width;
         const endPercent = (endValue - rect.left) / rect.width;
 
+        if (endPercent - startPercent < 0.03) {
+          return;
+        }
+
         const start = (graph.timelineEnd - graph.timelineStart) * startPercent + graph.timelineStart;
         const end = (graph.timelineEnd - graph.timelineStart) * endPercent + graph.timelineStart;
 
