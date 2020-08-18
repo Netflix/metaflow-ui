@@ -2,13 +2,14 @@ import React from 'react';
 import styled from 'styled-components';
 import { GraphState } from './useGraph';
 import HorizontalScrollbar from './TimelineHorizontalScroll';
+import { formatDuration } from '../../utils/format';
 
 const TimelineFooter: React.FC<{ graph: GraphState; move: (value: number) => void }> = ({ graph, move }) => (
   <GraphFooter>
     <HorizontalScrollbar graph={graph} updateTimeline={(value) => move(value)} />
     <GraphFooterMetrics>
-      <div data-testid="timeline-footer-start">{((graph.timelineStart - graph.min) / 1000).toFixed(2)}s</div>
-      <div data-testid="timeline-footer-end">{((graph.timelineEnd - graph.min) / 1000).toFixed(2)}s</div>
+      <div data-testid="timeline-footer-start">{formatDuration(graph.timelineStart - graph.min) || '0s'}</div>
+      <div data-testid="timeline-footer-end">{formatDuration(graph.timelineEnd - graph.min)}</div>
     </GraphFooterMetrics>
   </GraphFooter>
 );
