@@ -18,13 +18,16 @@ function getLeftValue(start: number | null, end: number | null): number {
 
 function getWidthValue(start: number | null, end: number | null): number {
   if (start && end) {
-    console.log(start > end ? start - end : start - end);
     return start > end ? start - end : end - start;
   }
   return 0;
 }
 
-const TimelineFooter: React.FC<{ graph: GraphState; move: (value: number) => void }> = ({ graph, move }) => {
+const TimelineFooter: React.FC<{
+  graph: GraphState;
+  move: (value: number) => void;
+  zoomTo: (start: number, end: number) => void;
+}> = ({ graph, move, zoomTo }) => {
   const [dragstate, setDragstate] = useState<FooterDragState>({
     dragging: false,
     startPos: null,
@@ -38,15 +41,31 @@ const TimelineFooter: React.FC<{ graph: GraphState; move: (value: number) => voi
       startPos: clientX,
       currentPos: clientX,
     });
-    console.log('START: ', clientX);
-    if (_container && _container.current) {
-      console.log('ELEMENT OFFSET: ', _container.current.getBoundingClientRect().left);
-    }
   };
 
   const onDragMove = (clientX: number) => {
     if (dragstate.dragging) {
       setDragstate((d) => ({ ...d, currentPos: clientX }));
+    }
+  };
+
+  const handleEnd = () => {
+    if (dragstate.dragging) {
+      setDragstate({ ...dragstate, dragging: false });
+      const rect = _container?.current?.getBoundingClientRect();
+
+      if (rect) {
+        const startValue = getLeftValue(dragstate.startPos, dragstate.currentPos);
+        const endValue = startValue + getWidthValue(dragstate.startPos, dragstate.currentPos);
+
+        const startPercent = (startValue - rect.left) / rect.width;
+        const endPercent = (endValue - rect.left) / rect.width;
+
+        const start = (graph.timelineEnd - graph.timelineStart) * startPercent + graph.timelineStart;
+        const end = (graph.timelineEnd - graph.timelineStart) * endPercent + graph.timelineStart;
+
+        zoomTo(start, end);
+      }
     }
   };
 
@@ -57,11 +76,15 @@ const TimelineFooter: React.FC<{ graph: GraphState; move: (value: number) => voi
         ref={_container}
         onMouseDown={(e) => onDragStart(e.clientX)}
         onMouseMove={(e) => onDragMove(e.clientX)}
-        onMouseOut={() => setDragstate({ ...dragstate, dragging: false })}
-        onMouseUp={() => setDragstate({ ...dragstate, dragging: false })}
+        onMouseOut={handleEnd}
+        onMouseUp={handleEnd}
       >
-        <div data-testid="timeline-footer-start">{((graph.timelineStart - graph.min) / 1000).toFixed(2)}s</div>
-        <div data-testid="timeline-footer-end">{((graph.timelineEnd - graph.min) / 1000).toFixed(2)}s</div>
+        <div data-testid="timeline-footer-start" style={{ pointerEvents: 'none' }}>
+          {((graph.timelineStart - graph.min) / 1000).toFixed(2)}s
+        </div>
+        <div data-testid="timeline-footer-end" style={{ pointerEvents: 'none' }}>
+          {((graph.timelineEnd - graph.min) / 1000).toFixed(2)}s
+        </div>
         {dragstate.dragging && (
           <div
             style={{

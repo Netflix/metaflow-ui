@@ -275,7 +275,11 @@ const VirtualizedTimeline: React.FC<{
             )}
           </FixedListContainer>
         </div>
-        <TimelineFooter graph={graph} move={(value) => graphDispatch({ type: 'move', value: value })} />
+        <TimelineFooter
+          graph={graph}
+          move={(value) => graphDispatch({ type: 'move', value: value })}
+          zoomTo={(start, end) => graphDispatch({ type: 'setZoom', start, end })}
+        />
       </VirtualizedTimelineSubContainer>
     </VirtualizedTimelineContainer>
   );
