@@ -15,3 +15,7 @@ export const SmallText = styled.small`
 `;
 
 export const Paragraph = styled.p``;
+
+export const ForceBreakText = styled.span`
+  word-break: break-all;
+`;
