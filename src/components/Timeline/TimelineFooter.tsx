@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 import { RowDataModel } from './useRowData';
 import { Step } from '../../types';
+import { formatDuration } from '../../utils/format';
 
 type TimelineFooterProps = {
   rowData: RowDataModel;
@@ -134,11 +135,17 @@ const MiniTimelineActive: React.FC<{
         <div />
         <div />
         <div />
+        <div style={{ position: 'absolute', bottom: '-20px', left: '-50%' }}>
+          {graph.timelineStart <= graph.min ? '0.0s' : formatDuration(graph.timelineStart - graph.min)}
+        </div>
       </MiniTimelineHandle>
       <MiniTimelineHandle style={{ right: '-5px' }} onMouseDown={() => startHandleMove('right')}>
         <div />
         <div />
         <div />
+        <div style={{ position: 'absolute', bottom: '-20px', left: '-50%' }}>
+          {formatDuration(graph.timelineEnd - graph.min)}
+        </div>
       </MiniTimelineHandle>
     </MiniTimelineActiveSection>
   );
@@ -149,6 +156,7 @@ const TimelineFooterContainer = styled.div`
   width: 100%;
   height: 40px;
   padding-left: 225px;
+  padding-bottom: 25px;
 `;
 
 const TimelineFooterContent = styled.div`
