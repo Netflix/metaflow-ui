@@ -1,32 +1,208 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { createRef, useState } from 'react';
 import { GraphState } from './useGraph';
-import HorizontalScrollbar from './TimelineHorizontalScroll';
-import { formatDuration } from '../../utils/format';
+import styled from 'styled-components';
 
-const TimelineFooter: React.FC<{ graph: GraphState; move: (value: number) => void }> = ({ graph, move }) => (
-  <GraphFooter>
-    <HorizontalScrollbar graph={graph} updateTimeline={(value) => move(value)} />
-    <GraphFooterMetrics>
-      <div data-testid="timeline-footer-start">{formatDuration(graph.timelineStart - graph.min) || '0s'}</div>
-      <div data-testid="timeline-footer-end">{formatDuration(graph.timelineEnd - graph.min)}</div>
-    </GraphFooterMetrics>
-  </GraphFooter>
-);
+import { RowDataModel } from './useRowData';
+import { Step } from '../../types';
 
-const GraphFooter = styled.div`
-  display: flex;
-  flex-direction: column;
+type TimelineFooterProps = {
+  rowData: RowDataModel;
+  graph: GraphState;
+  move: (change: number) => void;
+  updateHandle: (which: 'left' | 'right', to: number) => void;
+};
+
+const TimelineFooter: React.FC<TimelineFooterProps> = ({ rowData, graph, move, updateHandle }) => {
+  const _container = createRef<HTMLDivElement>();
+  const [drag, setDrag] = useState({ dragging: false, start: 0 });
+  const [handleDrag, setHandleDrag] = useState<{ dragging: boolean; which: 'left' | 'right' }>({
+    dragging: false,
+    which: 'left',
+  });
+
+  const handleMove = (clientX: number) => {
+    if (!_container || !_container.current) {
+      return;
+    }
+
+    if (handleDrag.dragging) {
+      const rect = _container.current.getBoundingClientRect();
+      const position = (clientX - rect.left) / rect.width;
+
+      updateHandle(handleDrag.which, graph.min + (graph.max - graph.min) * position);
+    } else if (drag.dragging) {
+      const movement = (clientX - drag.start) / _container.current.clientWidth;
+      setDrag({ ...drag, start: clientX });
+      move((graph.max - graph.min) * movement);
+    }
+  };
+
+  const startMove = (clientX: number) => {
+    setDrag({ ...drag, dragging: true, start: clientX });
+  };
+
+  const stopMove = () => {
+    setDrag({ dragging: false, start: 0 });
+  };
+
+  const startHandleDrag = (which: 'left' | 'right') => {
+    setHandleDrag({ dragging: true, which });
+    setDrag({ ...drag, dragging: false });
+  };
+
+  const stopHandleDrag = () => {
+    if (handleDrag.dragging) {
+      setHandleDrag({ ...handleDrag, dragging: false });
+    }
+  };
+
+  return (
+    <TimelineFooterContainer>
+      <TimelineFooterContent
+        onMouseMove={(e) => handleMove(e.clientX)}
+        onTouchMove={(e) => move(e.touches[0].clientX)}
+        onMouseLeave={() => {
+          stopHandleDrag();
+          stopMove();
+        }}
+        onMouseUp={() => {
+          stopHandleDrag();
+          stopMove();
+        }}
+      >
+        <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
+        <MiniTimelineContainer ref={_container}>
+          {Object.keys(rowData).map((key) => {
+            const step = rowData[key].step;
+            if (step) {
+              return (
+                <MiniTimelineRow
+                  key={step.step_name}
+                  graph={graph}
+                  step={{ ...step, finished_at: step.finished_at || rowData[key].finished_at || step.ts_epoch }}
+                />
+              );
+            }
+            return null;
+          })}
+        </MiniTimelineContainer>
+      </TimelineFooterContent>
+    </TimelineFooterContainer>
+  );
+};
+
+const MiniTimelineRow: React.FC<{
+  step: Step;
+  graph: GraphState;
+}> = ({ step, graph }) => {
+  const width = (((step.finished_at || 0) - step.ts_epoch) / (graph.max - graph.min)) * 100;
+  const left = ((step.ts_epoch - graph.min) / (graph.max - graph.min)) * 100;
+
+  return (
+    <div
+      style={{
+        position: 'relative',
+        background: 'green',
+        height: '2px',
+        width: width + '%',
+        left: left + '%',
+        marginBottom: '1px',
+        minWidth: '2px',
+      }}
+    ></div>
+  );
+};
+
+const MiniTimelineActive: React.FC<{
+  graph: GraphState;
+  startMove: (value: number) => void;
+  startHandleMove: (which: 'left' | 'right') => void;
+}> = ({ graph, startMove, startHandleMove }) => {
+  const width = ((graph.timelineEnd - graph.timelineStart) / (graph.max - graph.min)) * 100;
+  const left = ((graph.timelineStart - graph.min) / (graph.max - graph.min)) * 100;
+
+  return (
+    <MiniTimelineActiveSection
+      style={{
+        width: width + '%',
+        left: left + '%',
+      }}
+      onMouseDown={(e) => startMove(e.clientX)}
+      onTouchStart={(e) => startMove(e.touches[0].clientX)}
+    >
+      <MiniTimelineHandle style={{ left: '-5px' }} onMouseDown={() => startHandleMove('left')}>
+        <div />
+        <div />
+        <div />
+      </MiniTimelineHandle>
+      <MiniTimelineHandle style={{ right: '-5px' }} onMouseDown={() => startHandleMove('right')}>
+        <div />
+        <div />
+        <div />
+      </MiniTimelineHandle>
+    </MiniTimelineActiveSection>
+  );
+};
+
+const TimelineFooterContainer = styled.div`
+  position: relative;
   width: 100%;
+  height: 40px;
   padding-left: 225px;
 `;
 
-const GraphFooterMetrics = styled.div`
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0.5rem 1rem;
-  font-size: 14px;
+const TimelineFooterContent = styled.div`
   position: relative;
+  background: #f6f6f6;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  height: 49px;
+`;
+
+const MiniTimelineContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  position: absolute;
+  overflow: hidden;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  height: 41px;
+
+  pointer-events: none;
+`;
+
+const MiniTimelineActiveSection = styled.div`
+  position: relative;
+  height: 49px;
+  background #fff;
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 8px solid rgba(0, 0, 0, 0.1);
+  cursor: grab;
+`;
+
+const MiniTimelineHandle = styled.div`
+  position: absolute;
+  top: 7px;
+  height: 29px;
+  width: 10px;
+  background: #2f80ed;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  > div {
+    height: 1px;
+    width: 4px;
+    background: #fff;
+    margin-bottom: 2px;
+  }
 `;
 
 export default TimelineFooter;

@@ -8,7 +8,7 @@ import useGraph, { GraphState, GraphSortBy, validatedParameter } from './useGrap
 import { StepRowData, RowDataAction, RowDataModel } from './useRowData';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
-import TimelineFooter from './TimelineFooter2';
+import TimelineFooter from './TimelineFooter';
 import { useQueryParams, StringParam } from 'use-query-params';
 
 export const ROW_HEIGHT = 28;
@@ -279,6 +279,13 @@ const VirtualizedTimeline: React.FC<{
           graph={graph}
           rowData={rowData}
           move={(value) => graphDispatch({ type: 'move', value: value })}
+          updateHandle={(which, to) => {
+            if (which === 'left') {
+              graphDispatch({ type: 'setZoom', start: to, end: graph.timelineEnd });
+            } else {
+              graphDispatch({ type: 'setZoom', start: graph.timelineStart, end: to });
+            }
+          }}
           // zoomTo={(start, end) => graphDispatch({ type: 'setZoom', start, end })}
         />
       </VirtualizedTimelineSubContainer>
