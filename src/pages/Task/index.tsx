@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
-import { Run as IRun, Task as ITask, Artifact } from '../../types';
+import { Run as IRun, Task as ITask, Artifact, Log } from '../../types';
 import useResource from '../../hooks/useResource';
 import { formatDuration } from '../../utils/format';
 import { getISOString } from '../../utils/date';
@@ -46,6 +46,18 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
 
   const { data: artifacts } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
+    subscribeToEvents: true,
+    initialData: null,
+  });
+
+  const { data: stdout } = useResource<Log[], Log>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
+    subscribeToEvents: true,
+    initialData: null,
+  });
+
+  const { data: stderr } = useResource<Log[], Log>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
     subscribeToEvents: true,
     initialData: null,
   });
@@ -134,7 +146,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-out'),
               component: (
                 <>
-                  <StyledCodeBlock>{`Std out is not available yet`}</StyledCodeBlock>
+                  <StyledCodeBlock>{console.log('LOGS:', stdout)}</StyledCodeBlock>
                   {renderComponentsForSection('stdout')}
                 </>
               ),
@@ -145,7 +157,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-err'),
               component: (
                 <>
-                  <StyledCodeBlock>{`Std err is not available yet`}</StyledCodeBlock>
+                  <StyledCodeBlock>{stderr?.map((logline) => logline.line).join('\n')}</StyledCodeBlock>
                   {renderComponentsForSection('stderr')}
                 </>
               ),
