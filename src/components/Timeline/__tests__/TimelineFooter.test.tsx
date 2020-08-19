@@ -20,7 +20,7 @@ describe('TimelineFooter component', () => {
       </TestWrapper>,
     );
 
-    expect(result.getByTestId('timeline-footer-start').textContent).toBe('0.00s');
+    expect(result.getByTestId('timeline-footer-start').textContent).toBe('0s');
     expect(result.getByTestId('timeline-footer-end').textContent).toBe('1.00s');
 
     result.rerender(

@@ -54,16 +54,24 @@ export type GraphAction =
 
 export function graphReducer(state: GraphState, action: GraphAction): GraphState {
   switch (action.type) {
-    case 'init':
-      return {
-        ...state,
-        max: action.end,
-        min: action.start,
-        timelineEnd: action.end,
-        timelineStart: action.start,
-        controlled: false,
-      };
-
+    case 'init': {
+      if (state.controlled) {
+        return {
+          ...state,
+          max: action.end,
+          min: action.start,
+        };
+      } else {
+        return {
+          ...state,
+          max: action.end,
+          min: action.start,
+          timelineEnd: action.end,
+          timelineStart: action.start,
+          controlled: false,
+        };
+      }
+    }
     case 'move':
       // Check if any of the edges of scroll bar are out of bounds
       if (startOrEndOutOfBounds(state, action.value)) {
