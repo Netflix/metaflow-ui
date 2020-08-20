@@ -146,7 +146,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-out'),
               component: (
                 <>
-                  <StyledCodeBlock>{console.log('LOGS:', stdout)}</StyledCodeBlock>
+                  <StyledCodeBlock>{stdout?.map((logline) => logline.line).join('\n')}</StyledCodeBlock>
                   {renderComponentsForSection('stdout')}
                 </>
               ),
@@ -227,6 +227,8 @@ const StyledCodeBlock = styled.div`
   font-family: monospace;
   border-radius: 4px;
   font-size: 14px;
+  max-height: 40vh;
+  overflow-y: scroll;
   white-space: pre-wrap;
 `;
 
