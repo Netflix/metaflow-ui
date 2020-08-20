@@ -46,6 +46,7 @@ export type GraphAction =
   // Zoom functions manipulates timelineStart and timelineEnd values to kinda fake zooming.
   | { type: 'zoomIn' }
   | { type: 'zoomOut' }
+  | { type: 'setZoom'; start: number; end: number }
   | { type: 'resetZoom' }
   | { type: 'reset' }
   // Update zoom contol state. If controlled, we dont update zoom level.
@@ -134,6 +135,9 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
         return updateGraph(state, -change, change);
       }
     }
+
+    case 'setZoom':
+      return { ...state, timelineEnd: action.end, timelineStart: action.start, controlled: true };
 
     case 'resetZoom':
       return resetTimeline(state);

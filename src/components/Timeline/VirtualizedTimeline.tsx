@@ -223,7 +223,7 @@ const VirtualizedTimeline: React.FC<{
           expandAll={expandAll}
           collapseAll={collapseAll}
         />
-        <div style={{ flex: '1' }} ref={_listContainer}>
+        <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
           <FixedListContainer
             onMouseDown={(e) => startMove(e.clientX)}
             onMouseUp={() => stopMove()}
@@ -236,9 +236,9 @@ const VirtualizedTimeline: React.FC<{
             sticky={!!stickyHeader && graph.groupBy !== 'none'}
             style={{
               height:
-                (listContainer.height < window.innerHeight * 0.5 && rows.length * ROW_HEIGHT > window.innerHeight * 0.5
-                  ? window.innerHeight * 0.5
-                  : listContainer.height) + 'px',
+                (listContainer.height - 69 > rows.length * ROW_HEIGHT
+                  ? rows.length * ROW_HEIGHT
+                  : listContainer.height - 69) + 'px',
               width: listContainer.width + 'px',
             }}
           >
@@ -260,7 +260,7 @@ const VirtualizedTimeline: React.FC<{
               }}
               rowHeight={ROW_HEIGHT}
               rowRenderer={createRowRenderer({ rows, graph, dispatch: rowDataDispatch, rowDataState: rowData })}
-              height={listContainer.height + (stickyHeader ? 0 : ROW_HEIGHT) - 28}
+              height={listContainer.height - (stickyHeader ? ROW_HEIGHT : 0) - 69}
               width={listContainer.width}
             />
 
@@ -274,8 +274,20 @@ const VirtualizedTimeline: React.FC<{
               />
             )}
           </FixedListContainer>
+
+          <TimelineFooter
+            graph={graph}
+            rowData={rowData}
+            move={(value) => graphDispatch({ type: 'move', value: value })}
+            updateHandle={(which, to) => {
+              if (which === 'left') {
+                graphDispatch({ type: 'setZoom', start: to, end: graph.timelineEnd });
+              } else {
+                graphDispatch({ type: 'setZoom', start: graph.timelineStart, end: to });
+              }
+            }}
+          />
         </div>
-        <TimelineFooter graph={graph} move={(value) => graphDispatch({ type: 'move', value: value })} />
       </VirtualizedTimelineSubContainer>
     </VirtualizedTimelineContainer>
   );
