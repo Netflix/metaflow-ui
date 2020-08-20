@@ -131,32 +131,42 @@ const MiniTimelineActive: React.FC<{
       onMouseDown={(e) => startMove(e.clientX)}
       onTouchStart={(e) => startMove(e.touches[0].clientX)}
     >
-      <MiniTimelineHandle style={{ left: '-5px' }} onMouseDown={() => startHandleMove('left')}>
-        <div />
-        <div />
-        <div />
-        <div style={{ position: 'absolute', bottom: '-20px', left: '-50%' }}>
-          {graph.timelineStart <= graph.min ? '0.0s' : formatDuration(graph.timelineStart - graph.min)}
-        </div>
-      </MiniTimelineHandle>
-      <MiniTimelineHandle style={{ right: '-5px' }} onMouseDown={() => startHandleMove('right')}>
-        <div />
-        <div />
-        <div />
-        <div style={{ position: 'absolute', bottom: '-20px', left: '-50%' }}>
-          {formatDuration(graph.timelineEnd - graph.min)}
-        </div>
-      </MiniTimelineHandle>
+      <MiniTimelineZoomHandle
+        which="left"
+        label={graph.timelineStart <= graph.min ? '0.0s' : formatDuration(graph.timelineStart - graph.min)}
+        onDragStart={() => startHandleMove('left')}
+      />
+      <MiniTimelineZoomHandle
+        which="right"
+        label={formatDuration(graph.timelineEnd - graph.min)}
+        onDragStart={() => startHandleMove('right')}
+      />
     </MiniTimelineActiveSection>
   );
 };
+
+const MiniTimelineZoomHandle: React.FC<{ which: 'left' | 'right'; label: string; onDragStart: () => void }> = ({
+  label,
+  onDragStart,
+  which,
+}) => (
+  <MiniTimelineHandle
+    style={which === 'right' ? { right: '-5px' } : { left: '-5px' }}
+    onMouseDown={() => onDragStart()}
+  >
+    <div />
+    <div />
+    <div />
+    <MiniTimelineLabel>{label}</MiniTimelineLabel>
+  </MiniTimelineHandle>
+);
 
 const TimelineFooterContainer = styled.div`
   position: relative;
   width: 100%;
   height: 40px;
   padding-left: 225px;
-  padding-bottom: 25px;
+  margin-bottom: 25px;
 `;
 
 const TimelineFooterContent = styled.div`
@@ -211,6 +221,13 @@ const MiniTimelineHandle = styled.div`
     background: #fff;
     margin-bottom: 2px;
   }
+`;
+
+const MiniTimelineLabel = styled.div`
+  position: absolute;
+  bottom: -20px;
+  left: -50%;
+  font-size: 14px;
 `;
 
 export default TimelineFooter;
