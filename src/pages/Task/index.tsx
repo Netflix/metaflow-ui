@@ -91,7 +91,8 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
       <TaskList rowData={rowData} activeTaskId={parseInt(taskId)} />
 
       {!task && t('task.loading')}
-      {error || (task && !task.task_id && t('task.could-not-find-task'))}
+      {(error || (task && !task.task_id && taskId !== 'not-selected')) && t('task.could-not-find-task')}
+      {taskId === 'not-selected' && t('task.no-task-selected')}
 
       {task && task.task_id && (
         <AnchoredView
