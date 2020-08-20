@@ -236,7 +236,7 @@ const VirtualizedTimeline: React.FC<{
             sticky={!!stickyHeader && graph.groupBy !== 'none'}
             style={{
               height:
-                (listContainer.height > rows.length * ROW_HEIGHT
+                (listContainer.height - 69 > rows.length * ROW_HEIGHT
                   ? rows.length * ROW_HEIGHT
                   : listContainer.height - 69) + 'px',
               width: listContainer.width + 'px',
