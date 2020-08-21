@@ -15,6 +15,7 @@ import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import { ForceBreakText } from '../../components/Text';
 import LogList from '../../components/LogList';
+import FullPageContainer from '../../components/FullPageContainer';
 
 //
 // View container
@@ -39,6 +40,7 @@ type TaskViewProps = { run: IRun; stepName: string; taskId: string; rowData: Row
 
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   const { t } = useTranslation();
+  const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
     subscribeToEvents: true,
@@ -85,7 +87,37 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
 
   //
   // Plugins helpers end
+  // Logs start
   //
+
+  const [stdout, setStdout] = useState<Log[]>([]);
+  useResource<Log[], Log>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
+    subscribeToEvents: true,
+    initialData: [],
+    fullyDisableCache: true,
+    useBatching: true,
+    onUpdate: (items) => {
+      setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
+    },
+  });
+
+  const [stderr, setStderr] = useState<Log[]>([]);
+  useResource<Log[], Log>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
+    subscribeToEvents: true,
+    initialData: [],
+    fullyDisableCache: true,
+    useBatching: true,
+    onUpdate: (items) => {
+      setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
+    },
+  });
+
+  useEffect(() => {
+    setStdout([]);
+    setStderr([]);
+  }, [taskId]);
 
   return (
     <TaskContainer>
@@ -95,7 +127,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
       {(error || (task && !task.task_id && taskId !== 'not-selected')) && t('task.could-not-find-task')}
       {taskId === 'not-selected' && t('task.no-task-selected')}
 
-      {task && task.task_id && (
+      {task && task.task_id && fullscreen === null && (
         <AnchoredView
           sections={[
             {
@@ -135,9 +167,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-out'),
               component: (
                 <>
-                  <TaskLogs
-                    path={`/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`}
-                  />
+                  <LogList rows={stdout} onShowFullscreen={() => setFullscreen('stdout')} />
                   {renderComponentsForSection('stdout')}
                 </>
               ),
@@ -148,9 +178,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-err'),
               component: (
                 <>
-                  <TaskLogs
-                    path={`/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`}
-                  />
+                  <LogList rows={stderr} onShowFullscreen={() => setFullscreen('stderr')} />
                   {renderComponentsForSection('stderr')}
                 </>
               ),
@@ -203,28 +231,15 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
           ].sort((a, b) => a.order - b.order)}
         />
       )}
+
+      {fullscreen && (
+        <FullPageContainer
+          onClose={() => setFullscreen(null)}
+          component={(height) => <LogList rows={fullscreen === 'stdout' ? stdout : stderr} fixedHeight={height} />}
+        ></FullPageContainer>
+      )}
     </TaskContainer>
   );
-};
-
-const TaskLogs: React.FC<{ path: string }> = ({ path }) => {
-  const [logs, setLogs] = useState<Log[]>([]);
-  useResource<Log[], Log>({
-    url: path,
-    subscribeToEvents: true,
-    initialData: [],
-    fullyDisableCache: true,
-    useBatching: true,
-    onUpdate: (items) => {
-      setLogs((l) => l.concat(items).sort((a, b) => a.row - b.row));
-    },
-  });
-
-  useEffect(() => {
-    setLogs([]);
-  }, [path]);
-
-  return <LogList rows={logs.length > 0 ? logs : [{ row: 0, line: 'No log data...' }]} />;
 };
 
 const TaskContainer = styled.div`

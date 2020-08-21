@@ -4,14 +4,21 @@ import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtuali
 import { Log as ILog } from '../../types';
 import { CheckboxField } from '../Form';
 import { ItemRow } from '../Structure';
+import Button from '../Button';
+import { useTranslation } from 'react-i18next';
+import useComponentSize from '@rehooks/component-size';
+import { ROW_HEIGHT } from '../Timeline/VirtualizedTimeline';
 
 type LogProps = {
   rows: ILog[];
+  onShowFullscreen?: () => void;
+  fixedHeight?: number;
 };
 
-const ROW_HEIGHT = 20;
+// const ROW_HEIGHT = 20;
 
-const LogList: React.FC<LogProps> = ({ rows }) => {
+const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) => {
+  const { t } = useTranslation();
   const [stickBottom, setStickBottom] = useState(true);
   const [cache] = useState(
     new CellMeasurerCache({
@@ -20,6 +27,8 @@ const LogList: React.FC<LogProps> = ({ rows }) => {
     }),
   );
   const _list = useRef<List>(null);
+  const _itemRow = useRef<HTMLDivElement>(null);
+  const ItemRowSize = useComponentSize(_itemRow);
 
   useEffect(() => {
     if (stickBottom && _list) {
@@ -28,10 +37,11 @@ const LogList: React.FC<LogProps> = ({ rows }) => {
   }, [rows, stickBottom]);
 
   return (
-    <div>
-      <ItemRow>
+    <div style={{ flex: '1 1 0' }}>
+      <ItemRow ref={_itemRow}>
         <CheckboxField label="stick to bottom" checked={stickBottom} onChange={() => setStickBottom(!stickBottom)} />
         <div>{rows.length}</div>
+        {onShowFullscreen && <Button onClick={onShowFullscreen}>{t('run.show-fullscreen')}</Button>}
       </ItemRow>
       <LogListContainer>
         <AutoSizer disableHeight>
@@ -46,13 +56,19 @@ const LogList: React.FC<LogProps> = ({ rows }) => {
                 <CellMeasurer cache={cache} columnIndex={0} key={key} rowIndex={index} parent={parent}>
                   {() => (
                     <LogLine style={style}>
-                      <LogLineNumber>{rows[index].row}</LogLineNumber>
                       <div>{rows[index].line}</div>
+                      <LogLineNumber className="logline-number">{rows[index].row}</LogLineNumber>
                     </LogLine>
                   )}
                 </CellMeasurer>
               )}
-              height={ROW_HEIGHT * rows.length > 400 ? 400 : ROW_HEIGHT * rows.length}
+              height={
+                fixedHeight
+                  ? fixedHeight - ItemRowSize.height
+                  : ROW_HEIGHT * rows.length < 400
+                  ? ROW_HEIGHT * rows.length
+                  : 400
+              }
               width={width}
             />
           )}
@@ -75,19 +91,26 @@ const LogListContainer = styled.div`
 const LogLine = styled.div`
   display: flex;
   transition: backgorund 0.15s;
-  padding: 0.25rem 1rem 0;
+  padding: 0.25rem 40px 0 1rem;
 
   &:hover {
     background: rgba(0, 0, 0, 0.1);
+    .logline-number {
+      display: block;
+    }
   }
 `;
 
 const LogLineNumber = styled.div`
-  width: 40px;
-  flex-shrink: 0;
+  display: none;
   opacity: 0.6;
   font-size: 12px;
   line-height: 14px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  line-height: 25px;
+  padding-right: 0.5rem;
 `;
 
 export default LogList;

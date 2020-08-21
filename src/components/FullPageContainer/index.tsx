@@ -1,13 +1,17 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import styled from 'styled-components';
 import logo from '../../assets/logo_dark_horizontal.svg';
 import Icon from '../Icon';
+import useComponentSize from '@rehooks/component-size';
 
 type FullPageContainerProps = {
   onClose: () => void;
+  component?: (height: number) => JSX.Element;
 };
 
-const FullPageContainer: React.FC<FullPageContainerProps> = ({ children, onClose }) => {
+const FullPageContainer: React.FC<FullPageContainerProps> = ({ children, onClose, component }) => {
+  const _content = useRef<HTMLDivElement>(null);
+  const ContentSize = useComponentSize(_content);
   return (
     <FullPageStyleContainer>
       <FullPageContainerHeader>
@@ -17,7 +21,9 @@ const FullPageContainer: React.FC<FullPageContainerProps> = ({ children, onClose
           <Icon name="times" size="lg" />
         </FullPageContainerClose>
       </FullPageContainerHeader>
-      <FullPageContainerContent>{children}</FullPageContainerContent>
+      <FullPageContainerContent ref={_content}>
+        {component ? component(ContentSize.height) : children}
+      </FullPageContainerContent>
     </FullPageStyleContainer>
   );
 };
@@ -46,6 +52,7 @@ const FullPageContainerContent = styled.div`
   align-items: center;
   justify-content: center;
   flex: 1 1 0;
+  overflow: hidden;
 `;
 
 const FullPageContainerClose = styled.div`
