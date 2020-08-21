@@ -213,7 +213,7 @@ const VirtualizedTimeline: React.FC<{
   };
 
   const content = (
-    <VirtualizedTimelineContainer>
+    <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
         <TimelineHeader
           graph={graph}
@@ -225,6 +225,7 @@ const VirtualizedTimeline: React.FC<{
           expandAll={expandAll}
           collapseAll={collapseAll}
           setFullscreen={() => setFullscreen(true)}
+          isFullscreen={showFullscreen}
         />
         <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
           <FixedListContainer

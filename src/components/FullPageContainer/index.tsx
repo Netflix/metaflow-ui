@@ -30,6 +30,9 @@ const FullPageStyleContainer = styled.div`
   top: 0;
   z-index: 9999;
   background: #fff;
+
+  display: flex;
+  flex-direction: column;
 `;
 
 const FullPageContainerHeader = styled.div`
@@ -42,6 +45,7 @@ const FullPageContainerContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: 1 1 0;
 `;
 
 const FullPageContainerClose = styled.div`
