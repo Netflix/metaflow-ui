@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
 import { useQueryParams, StringParam } from 'use-query-params';
+import FullPageContainer from '../FullPageContainer';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task[] };
@@ -63,6 +64,7 @@ const VirtualizedTimeline: React.FC<{
   const [stepPositions, setStepPositions] = useState<StepIndex[]>([]);
   // Name of sticky header (if should be visible)
   const [stickyHeader, setStickyHeader] = useState<null | string>(null);
+  const [showFullscreen, setFullscreen] = useState(false);
 
   //
   // Local filterings
@@ -210,8 +212,8 @@ const VirtualizedTimeline: React.FC<{
     setDrag({ dragging: false, start: 0 });
   };
 
-  return (
-    <VirtualizedTimelineContainer>
+  const content = (
+    <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
         <TimelineHeader
           graph={graph}
@@ -222,6 +224,8 @@ const VirtualizedTimeline: React.FC<{
           updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')}
           expandAll={expandAll}
           collapseAll={collapseAll}
+          setFullscreen={() => setFullscreen(true)}
+          isFullscreen={showFullscreen}
         />
         <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
           <FixedListContainer
@@ -290,6 +294,12 @@ const VirtualizedTimeline: React.FC<{
         </div>
       </VirtualizedTimelineSubContainer>
     </VirtualizedTimelineContainer>
+  );
+
+  return showFullscreen ? (
+    <FullPageContainer onClose={() => setFullscreen(false)}>{content}</FullPageContainer>
+  ) : (
+    content
   );
 };
 

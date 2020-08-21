@@ -17,6 +17,8 @@ export type TimelineHeaderProps = {
   updateSortDir: () => void;
   expandAll: () => void;
   collapseAll: () => void;
+  setFullscreen: () => void;
+  isFullscreen: boolean;
   graph: GraphState;
 };
 
@@ -29,6 +31,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   updateSortDir,
   expandAll,
   collapseAll,
+  isFullscreen,
+  setFullscreen,
 }) => {
   const { t } = useTranslation();
   return (
@@ -49,6 +53,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               ]}
             />
           </TimelineHeaderItem>
+          {!isFullscreen && <Button onClick={() => setFullscreen()}>{t('run.show-fullscreen')}</Button>}
         </ItemRow>
       </TimelineHeaderTop>
 
