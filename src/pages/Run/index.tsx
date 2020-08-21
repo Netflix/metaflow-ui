@@ -47,8 +47,8 @@ const RunPage: React.FC = () => {
   }, [params.runNumber]);
 
   useEffect(() => {
-    params.stepName && setPreviousStepName(params.stepName);
-    params.taskId && setPreviousTaskId(params.taskId);
+    params.stepName && params.stepName !== 'not-selected' && setPreviousStepName(params.stepName);
+    params.taskId && params.stepName !== 'not-selected' && setPreviousTaskId(params.taskId);
   }, [params.stepName, params.taskId]);
 
   //
@@ -119,12 +119,18 @@ const RunPage: React.FC = () => {
             key: 'task',
             label: previousTaskId ? `${t('items.task')}: ${previousTaskId}` : `${t('items.task')}`,
             linkTo:
-              previousStepName &&
-              previousTaskId &&
-              getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId),
+              (previousStepName &&
+                previousTaskId &&
+                getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId)) ||
+              getPath.task(params.flowId, params.runNumber, 'not-selected', 'not-selected'),
             temporary: !!(previousStepName && previousTaskId),
-            component: previousStepName && previousTaskId && (
-              <TaskViewContainer run={run} stepName={previousStepName} taskId={previousTaskId} rowData={rows} />
+            component: (
+              <TaskViewContainer
+                run={run}
+                stepName={previousStepName || 'not-selected'}
+                taskId={previousTaskId || 'not-selected'}
+                rowData={rows}
+              />
             ),
           },
         ]}

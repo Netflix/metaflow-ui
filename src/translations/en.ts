@@ -75,6 +75,7 @@ const en = {
 
     task: {
       loading: 'Loading task data',
+      'no-task-selected': 'No task selected',
       'could-not-find-task': 'Could not find the task',
       'task-info': 'Task info',
       links: 'Links',

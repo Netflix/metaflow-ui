@@ -46,6 +46,7 @@ export type GraphAction =
   // Zoom functions manipulates timelineStart and timelineEnd values to kinda fake zooming.
   | { type: 'zoomIn' }
   | { type: 'zoomOut' }
+  | { type: 'setZoom'; start: number; end: number }
   | { type: 'resetZoom' }
   | { type: 'reset' }
   // Update zoom contol state. If controlled, we dont update zoom level.
@@ -53,16 +54,24 @@ export type GraphAction =
 
 export function graphReducer(state: GraphState, action: GraphAction): GraphState {
   switch (action.type) {
-    case 'init':
-      return {
-        ...state,
-        max: action.end,
-        min: action.start,
-        timelineEnd: action.end,
-        timelineStart: action.start,
-        controlled: false,
-      };
-
+    case 'init': {
+      if (state.controlled) {
+        return {
+          ...state,
+          max: action.end,
+          min: action.start,
+        };
+      } else {
+        return {
+          ...state,
+          max: action.end,
+          min: action.start,
+          timelineEnd: action.end,
+          timelineStart: action.start,
+          controlled: false,
+        };
+      }
+    }
     case 'move':
       // Check if any of the edges of scroll bar are out of bounds
       if (startOrEndOutOfBounds(state, action.value)) {
@@ -126,6 +135,9 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
         return updateGraph(state, -change, change);
       }
     }
+
+    case 'setZoom':
+      return { ...state, timelineEnd: action.end, timelineStart: action.start, controlled: true };
 
     case 'resetZoom':
       return resetTimeline(state);

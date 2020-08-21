@@ -13,6 +13,7 @@ import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
 import { RowDataModel } from '../../components/Timeline/useRowData';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
+import { ForceBreakText } from '../../components/Text';
 
 //
 // View container
@@ -90,7 +91,8 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
       <TaskList rowData={rowData} activeTaskId={parseInt(taskId)} />
 
       {!task && t('task.loading')}
-      {error || (task && !task.task_id && t('task.could-not-find-task'))}
+      {(error || (task && !task.task_id && taskId !== 'not-selected')) && t('task.could-not-find-task')}
+      {taskId === 'not-selected' && t('task.no-task-selected')}
 
       {task && task.task_id && (
         <AnchoredView
@@ -159,7 +161,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
                       items={artifacts || []}
                       columns={[
                         { label: t('fields.artifact-name') + ':', prop: 'name' },
-                        { label: t('fields.location') + ':', prop: 'location' },
+                        {
+                          label: t('fields.location') + ':',
+                          accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
+                        },
                         { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
                         { label: t('fields.type') + ':', prop: 'type' },
                         { label: t('fields.content-type') + ':', prop: 'content_type' },
