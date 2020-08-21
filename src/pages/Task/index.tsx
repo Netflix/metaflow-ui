@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
@@ -14,6 +14,7 @@ import { RowDataModel } from '../../components/Timeline/useRowData';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import { ForceBreakText } from '../../components/Text';
+import LogList from '../../components/LogList';
 
 //
 // View container
@@ -47,19 +48,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   const { data: artifacts } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     subscribeToEvents: true,
-    initialData: null,
-  });
-
-  const { data: stdout } = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
-    subscribeToEvents: true,
-    initialData: null,
-  });
-
-  const { data: stderr } = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
-    subscribeToEvents: true,
-    initialData: null,
+    initialData: [],
   });
 
   //
@@ -146,7 +135,9 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-out'),
               component: (
                 <>
-                  <StyledCodeBlock>{stdout?.map((logline) => logline.line).join('\n')}</StyledCodeBlock>
+                  <TaskLogs
+                    path={`/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`}
+                  />
                   {renderComponentsForSection('stdout')}
                 </>
               ),
@@ -157,7 +148,9 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-err'),
               component: (
                 <>
-                  <StyledCodeBlock>{stderr?.map((logline) => logline.line).join('\n')}</StyledCodeBlock>
+                  <TaskLogs
+                    path={`/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`}
+                  />
                   {renderComponentsForSection('stderr')}
                 </>
               ),
@@ -214,22 +207,30 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   );
 };
 
+const TaskLogs: React.FC<{ path: string }> = ({ path }) => {
+  const [logs, setLogs] = useState<Log[]>([]);
+  useResource<Log[], Log>({
+    url: path,
+    subscribeToEvents: true,
+    initialData: [],
+    fullyDisableCache: true,
+    useBatching: true,
+    onUpdate: (items) => {
+      setLogs((l) => l.concat(items).sort((a, b) => a.row - b.row));
+    },
+  });
+
+  useEffect(() => {
+    setLogs([]);
+  }, [path]);
+
+  return <LogList rows={logs.length > 0 ? logs : [{ row: 0, line: 'No log data...' }]} />;
+};
+
 const TaskContainer = styled.div`
   display: flex;
   padding: 25px 0;
   width: 100%;
-`;
-
-const StyledCodeBlock = styled.div`
-  padding: 1rem;
-  background: ${(props) => props.theme.color.bg.light};
-  border-bottom: 1px solid ${(props) => props.theme.color.border.light};
-  font-family: monospace;
-  border-radius: 4px;
-  font-size: 14px;
-  max-height: 40vh;
-  overflow-y: scroll;
-  white-space: pre-wrap;
 `;
 
 export default TaskViewContainer;
