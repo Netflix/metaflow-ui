@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const Page = styled.div`
   max-width: ${(p) => p.theme.layout.maxWidth}px;
@@ -46,9 +46,18 @@ export const FixedContent = styled.div`
   flex-direction: column;
 `;
 
-export const ItemRow = styled.div<{ pad?: 'xs' | 'sm' | 'md' | 'lg' | 'hg' }>`
+export const ItemRow = styled.div<{
+  pad?: 'xs' | 'sm' | 'md' | 'lg' | 'hg';
+  margin?: 'xs' | 'sm' | 'md' | 'lg' | 'hg';
+}>`
   display: flex;
   align-items: center;
+
+  ${(p) =>
+    p.margin &&
+    css`
+      margin: ${p.theme.spacer[p.margin || 'sm']}rem 0;
+    `}
 
   > * {
     margin-right: ${(p) => p.theme.spacer[p.pad || 'sm']}rem;

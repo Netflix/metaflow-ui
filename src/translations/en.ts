@@ -57,6 +57,7 @@ const en = {
       'show-run-details': 'Show run details',
       'hide-run-details': 'Hide run details',
       tags: 'Tags',
+      'scroll-to-bottom': 'Scroll to bottom',
       'show-fullscreen': 'Show fullscreen',
     },
 

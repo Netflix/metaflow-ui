@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { Log as ILog } from '../../types';
-import { CheckboxField } from '../Form';
 import { ItemRow } from '../Structure';
 import Button from '../Button';
 import { useTranslation } from 'react-i18next';
@@ -38,11 +37,6 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
 
   return (
     <div style={{ flex: '1 1 0' }}>
-      <ItemRow ref={_itemRow}>
-        <CheckboxField label="stick to bottom" checked={stickBottom} onChange={() => setStickBottom(!stickBottom)} />
-        <div>{rows.length}</div>
-        {onShowFullscreen && <Button onClick={onShowFullscreen}>{t('run.show-fullscreen')}</Button>}
-      </ItemRow>
       <LogListContainer>
         <AutoSizer disableHeight>
           {({ width }) => (
@@ -52,6 +46,13 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
               rowCount={rows.length}
               rowHeight={cache.rowHeight}
               deferredMeasurementCache={cache}
+              onScroll={(args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
+                if (args.scrollTop + args.clientHeight >= args.scrollHeight) {
+                  setStickBottom(true);
+                } else if (stickBottom) {
+                  setStickBottom(false);
+                }
+              }}
               rowRenderer={({ index, style, key, parent }) => (
                 <CellMeasurer cache={cache} columnIndex={0} key={key} rowIndex={index} parent={parent}>
                   {() => (
@@ -73,7 +74,19 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
             />
           )}
         </AutoSizer>
+
+        {!stickBottom && (
+          <ScrollToBottomButton onClick={() => setStickBottom(true)}>{t('run.scroll-to-bottom')}</ScrollToBottomButton>
+        )}
       </LogListContainer>
+
+      <ItemRow ref={_itemRow} margin="sm">
+        {onShowFullscreen && (
+          <Button onClick={onShowFullscreen}>
+            <span>{t('run.show-fullscreen')}</span>
+          </Button>
+        )}
+      </ItemRow>
     </div>
   );
 };
@@ -111,6 +124,18 @@ const LogLineNumber = styled.div`
   right: 0;
   line-height: 25px;
   padding-right: 0.5rem;
+`;
+
+const ScrollToBottomButton = styled.div`
+  position: absolute;
+  bottom: 0.5rem;
+  right: 2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
 `;
 
 export default LogList;
