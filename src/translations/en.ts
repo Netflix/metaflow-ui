@@ -85,6 +85,7 @@ const en = {
       'std-err': 'Std err',
       artifacts: 'Artifacts',
       'search-tasks': 'Search tasks',
+      'no-logs': 'No logs',
     },
 
     breadcrumb: {

@@ -167,7 +167,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-out'),
               component: (
                 <>
-                  <LogList rows={stdout} onShowFullscreen={() => setFullscreen('stdout')} />
+                  <LogList
+                    rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
+                    onShowFullscreen={() => setFullscreen('stdout')}
+                  />
                   {renderComponentsForSection('stdout')}
                 </>
               ),
@@ -178,7 +181,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-err'),
               component: (
                 <>
-                  <LogList rows={stderr} onShowFullscreen={() => setFullscreen('stderr')} />
+                  <LogList
+                    rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
+                    onShowFullscreen={() => setFullscreen('stderr')}
+                  />
                   {renderComponentsForSection('stderr')}
                 </>
               ),

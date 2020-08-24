@@ -81,7 +81,7 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
       </LogListContainer>
 
       <ItemRow ref={_itemRow} margin="sm">
-        {onShowFullscreen && (
+        {onShowFullscreen && rows.length > 1 && (
           <Button onClick={onShowFullscreen}>
             <span>{t('run.show-fullscreen')}</span>
           </Button>
