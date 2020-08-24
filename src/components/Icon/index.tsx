@@ -12,6 +12,7 @@ import { ReactComponent as Pen } from '../../assets/pen.svg';
 import { ReactComponent as Search } from '../../assets/search.svg';
 import { ReactComponent as Ellipsis } from '../../assets/ellipsis.svg';
 import { ReactComponent as Return } from '../../assets/return.svg';
+import { ReactComponent as Maximize } from '../../assets/maximize.svg';
 
 type SupportedIcons = {
   timeline: FunctionComponent;
@@ -25,6 +26,7 @@ type SupportedIcons = {
   search: FunctionComponent;
   ellipsis: FunctionComponent;
   return: FunctionComponent;
+  maximize: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -39,6 +41,7 @@ const icons: SupportedIcons = {
   search: Search,
   ellipsis: Ellipsis,
   return: Return,
+  maximize: Maximize,
 };
 
 type SupportedSizes = {

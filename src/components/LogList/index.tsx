@@ -7,6 +7,7 @@ import Button from '../Button';
 import { useTranslation } from 'react-i18next';
 import useComponentSize from '@rehooks/component-size';
 import { ROW_HEIGHT } from '../Timeline/VirtualizedTimeline';
+import Icon from '../Icon';
 
 type LogProps = {
   rows: ILog[];
@@ -82,7 +83,8 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
 
       <ItemRow ref={_itemRow} margin="sm">
         {onShowFullscreen && rows.length > 1 && (
-          <Button onClick={onShowFullscreen}>
+          <Button onClick={onShowFullscreen} withIcon>
+            <Icon name="maximize" />
             <span>{t('run.show-fullscreen')}</span>
           </Button>
         )}

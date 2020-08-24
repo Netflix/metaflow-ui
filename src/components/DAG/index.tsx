@@ -12,6 +12,7 @@ import { getPath } from '../../utils/routing';
 import Notification, { NotificationType } from '../Notification';
 import FullPageContainer from '../FullPageContainer';
 import { useTranslation } from 'react-i18next';
+import Icon from '../Icon';
 
 //
 // DAG
@@ -83,7 +84,10 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
         <Button onClick={() => setDataSet(dagexample2)}>example2</Button>
         <Button onClick={() => setDataSet(dagexample3)}>example3</Button>
         <Button onClick={() => setDataSet(dagHugeflow)}>hugeflow</Button>
-        <Button onClick={() => setFullscreen(true)}>{t('run.show-fullscreen')}</Button>
+        <Button onClick={() => setFullscreen(true)} withIcon>
+          <Icon name="maximize" />
+          <span>{t('run.show-fullscreen')}</span>
+        </Button>
       </ItemRow>
 
       {showFullscreen ? <FullPageContainer onClose={() => setFullscreen(false)}>{content}</FullPageContainer> : content}
