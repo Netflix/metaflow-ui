@@ -65,6 +65,7 @@ const VirtualizedTimeline: React.FC<{
   // Name of sticky header (if should be visible)
   const [stickyHeader, setStickyHeader] = useState<null | string>(null);
   const [showFullscreen, setFullscreen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<null | string>(null);
 
   //
   // Local filterings
@@ -138,7 +139,7 @@ const VirtualizedTimeline: React.FC<{
       );
 
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
-    const newRows: Row[] = makeVisibleRows(rowData, graph, visibleSteps);
+    const newRows: Row[] = makeVisibleRows(rowData, graph, visibleSteps, statusFilter);
 
     if (visibleSteps.length > 0) {
       // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
@@ -151,7 +152,7 @@ const VirtualizedTimeline: React.FC<{
 
     // If no grouping, sort tasks here.
     setRows(rowsToUpdate);
-  }, [rowData, graphDispatch, filters.steps, graph.groupBy, graph.min, graph.sortBy, graph.sortDir]); // eslint-disable-line
+  }, [rowData, graphDispatch, filters.steps, graph.groupBy, graph.min, graph.sortBy, graph.sortDir, statusFilter]); // eslint-disable-line
 
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
@@ -226,6 +227,7 @@ const VirtualizedTimeline: React.FC<{
           collapseAll={collapseAll}
           setFullscreen={() => setFullscreen(true)}
           isFullscreen={showFullscreen}
+          updateStatusFilter={(status: null | string) => setStatusFilter(status)}
         />
         <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
           <FixedListContainer
@@ -474,15 +476,28 @@ function findHighestTimestampForGraph(rowDataState: RowDataModel, graph: GraphSt
   }, graph.min);
 }
 
-function makeVisibleRows(rowDataState: RowDataModel, graph: GraphState, visibleSteps: Step[]) {
+function makeVisibleRows(
+  rowDataState: RowDataModel,
+  graph: GraphState,
+  visibleSteps: Step[],
+  statusFilter: string | null,
+) {
   return visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
     const rowData = rowDataState[current.step_name];
     // If step row is open, add its tasks to the list.
     if (rowData?.isOpen || graph.groupBy === 'none') {
-      const rowTasks = Object.keys(rowData.data).map((item) => ({
+      let rowTasks = Object.keys(rowData.data).map((item) => ({
         type: 'task' as const,
         data: rowData.data[parseInt(item)],
       }));
+
+      if (statusFilter) {
+        rowTasks = rowTasks.filter((item) =>
+          statusFilter === 'done'
+            ? item.data.find((task) => task.finished_at)
+            : item.data.find((task) => !task.finished_at),
+        );
+      }
       return arr.concat(
         graph.groupBy === 'step' ? [{ type: 'step' as const, data: current }] : [],
         graph.groupBy === 'step' ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks,
