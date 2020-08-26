@@ -11,6 +11,7 @@ export type ButtonProps = {
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'text' | 'primaryText';
   tabIndex?: number;
+  withIcon?: boolean | 'left' | 'right';
   onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void;
   onKeyPress?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
   children: ReactNode;
@@ -30,13 +31,14 @@ const Button: React.FC<ButtonProps> = ({
   variant = 'default',
   size = 'md',
   tabIndex = 99,
+  withIcon = false,
   children,
   ...rest
 }) => {
   return (
     <StyledButton
       className={`button ${className} ${active ? 'active' : ''}`}
-      {...{ disabled, tabIndex, active, textOnly, variant, size, ...rest }}
+      {...{ disabled, tabIndex, active, textOnly, variant, size, withIcon, ...rest }}
     >
       {children}
     </StyledButton>
@@ -69,12 +71,25 @@ const TextOnlyButtonCSS = css`
   }
 `;
 
+const IconOnLeftCSS = css`
+  > *:not(:first-child) {
+    margin-left: 0.5rem;
+  }
+`;
+
+const IconOnRightCSS = css`
+  > *:not(:last-child) {
+    margin-right: 0.5rem;
+  }
+`;
+
 type StyledButtonProps = {
   disabled?: boolean;
   active?: boolean;
   textOnly?: boolean;
   size: NonNullable<ButtonProps['size']>;
   variant: NonNullable<ButtonProps['variant']>;
+  withIcon: NonNullable<ButtonProps['withIcon']>;
 };
 
 const getButtonColors = (variant: ButtonColors) => css`
@@ -113,6 +128,8 @@ const StyledButton = styled.button<StyledButtonProps>`
   ${(p) => p.active && ActiveButtonCSS};
   ${(p) => p.disabled && DisabledButtonCSS};
   ${(p) => p.textOnly && TextOnlyButtonCSS};
+  ${(p) => (p.withIcon === true || p.withIcon === 'left') && IconOnLeftCSS};
+  ${(p) => p.withIcon === 'right' && IconOnRightCSS};
   font-size: ${(p) => buttonFontSizes[p.size]}rem;
 `;
 

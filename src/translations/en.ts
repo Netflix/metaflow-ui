@@ -57,6 +57,7 @@ const en = {
       'show-run-details': 'Show run details',
       'hide-run-details': 'Hide run details',
       tags: 'Tags',
+      'scroll-to-bottom': 'Scroll to bottom',
       'show-fullscreen': 'Show fullscreen',
     },
 
@@ -84,6 +85,7 @@ const en = {
       'std-err': 'Std err',
       artifacts: 'Artifacts',
       'search-tasks': 'Search tasks',
+      'no-logs': 'No logs',
     },
 
     breadcrumb: {

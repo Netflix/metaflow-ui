@@ -53,7 +53,12 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               ]}
             />
           </TimelineHeaderItem>
-          {!isFullscreen && <Button onClick={() => setFullscreen()}>{t('run.show-fullscreen')}</Button>}
+          {!isFullscreen && (
+            <Button onClick={() => setFullscreen()} withIcon>
+              <Icon name="maximize" />
+              <span>{t('run.show-fullscreen')}</span>
+            </Button>
+          )}
         </ItemRow>
       </TimelineHeaderTop>
 

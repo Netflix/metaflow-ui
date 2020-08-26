@@ -1,9 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
-import { Run as IRun, Task as ITask, Artifact } from '../../types';
+import { Run as IRun, Task as ITask, Artifact, Log } from '../../types';
 import useResource from '../../hooks/useResource';
 import { formatDuration } from '../../utils/format';
 import { getISOString } from '../../utils/date';
@@ -14,6 +14,8 @@ import { RowDataModel } from '../../components/Timeline/useRowData';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import { ForceBreakText } from '../../components/Text';
+import LogList from '../../components/LogList';
+import FullPageContainer from '../../components/FullPageContainer';
 
 //
 // View container
@@ -38,6 +40,7 @@ type TaskViewProps = { run: IRun; stepName: string; taskId: string; rowData: Row
 
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   const { t } = useTranslation();
+  const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
     subscribeToEvents: true,
@@ -47,7 +50,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   const { data: artifacts } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     subscribeToEvents: true,
-    initialData: null,
+    initialData: [],
   });
 
   //
@@ -84,7 +87,37 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
 
   //
   // Plugins helpers end
+  // Logs start
   //
+
+  const [stdout, setStdout] = useState<Log[]>([]);
+  useResource<Log[], Log>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
+    subscribeToEvents: true,
+    initialData: [],
+    fullyDisableCache: true,
+    useBatching: true,
+    onUpdate: (items) => {
+      setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
+    },
+  });
+
+  const [stderr, setStderr] = useState<Log[]>([]);
+  useResource<Log[], Log>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
+    subscribeToEvents: true,
+    initialData: [],
+    fullyDisableCache: true,
+    useBatching: true,
+    onUpdate: (items) => {
+      setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
+    },
+  });
+
+  useEffect(() => {
+    setStdout([]);
+    setStderr([]);
+  }, [taskId]);
 
   return (
     <TaskContainer>
@@ -94,7 +127,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
       {(error || (task && !task.task_id && taskId !== 'not-selected')) && t('task.could-not-find-task')}
       {taskId === 'not-selected' && t('task.no-task-selected')}
 
-      {task && task.task_id && (
+      {task && task.task_id && fullscreen === null && (
         <AnchoredView
           sections={[
             {
@@ -134,7 +167,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-out'),
               component: (
                 <>
-                  <StyledCodeBlock>{`Std out is not available yet`}</StyledCodeBlock>
+                  <LogList
+                    rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
+                    onShowFullscreen={() => setFullscreen('stdout')}
+                  />
                   {renderComponentsForSection('stdout')}
                 </>
               ),
@@ -145,7 +181,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
               label: t('task.std-err'),
               component: (
                 <>
-                  <StyledCodeBlock>{`Std err is not available yet`}</StyledCodeBlock>
+                  <LogList
+                    rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
+                    onShowFullscreen={() => setFullscreen('stderr')}
+                  />
                   {renderComponentsForSection('stderr')}
                 </>
               ),
@@ -198,6 +237,13 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
           ].sort((a, b) => a.order - b.order)}
         />
       )}
+
+      {fullscreen && (
+        <FullPageContainer
+          onClose={() => setFullscreen(null)}
+          component={(height) => <LogList rows={fullscreen === 'stdout' ? stdout : stderr} fixedHeight={height} />}
+        ></FullPageContainer>
+      )}
     </TaskContainer>
   );
 };
@@ -206,16 +252,6 @@ const TaskContainer = styled.div`
   display: flex;
   padding: 25px 0;
   width: 100%;
-`;
-
-const StyledCodeBlock = styled.div`
-  padding: 1rem;
-  background: ${(props) => props.theme.color.bg.light};
-  border-bottom: 1px solid ${(props) => props.theme.color.border.light};
-  font-family: monospace;
-  border-radius: 4px;
-  font-size: 14px;
-  white-space: pre-wrap;
 `;
 
 export default TaskViewContainer;
