@@ -52,6 +52,8 @@ interface ResourcePages {
   last: number;
 }
 
+export type ResourceStatus = 'NotAsked' | 'Error' | 'Ok' | 'Loading';
+
 export interface Resource<T> {
   url: string;
   data: T | null;
@@ -59,6 +61,7 @@ export interface Resource<T> {
   getResult: () => DataModel<T>;
   cache: CacheInterface;
   target: string;
+  status: ResourceStatus;
 }
 
 interface CacheItem<T> {
@@ -138,6 +141,7 @@ export default function useResource<T, U>({
   const [error, setError] = useState(null);
   const initData = cache.get<T>(url)?.data || initialData;
   const [data, setData] = useState<T | null>(initData);
+  const [status, setStatus] = useState<ResourceStatus>('NotAsked');
 
   const q = new URLSearchParams(queryParams).toString();
   const target = `${METAFLOW_SERVICE}${url}${q ? '?' + q : ''}`;
@@ -206,7 +210,7 @@ export default function useResource<T, U>({
     uuid,
   });
 
-  function fetchData(targetUrl: string, signal: AbortSignal, cb: () => void, isSilent?: boolean) {
+  function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, isSilent?: boolean) {
     fetch(targetUrl, { signal })
       .then((response) =>
         response.json().then((result: DataModel<T>) => ({
@@ -235,14 +239,14 @@ export default function useResource<T, U>({
           ) {
             fetchData(cacheItem.result.links.next || targetUrl, signal, cb, true);
           } else {
-            cb();
+            cb(true);
           }
         },
         (error) => {
           if (error.name !== 'AbortError') {
             setError(error.toString());
           }
-          cb();
+          cb(false);
         },
       );
   }
@@ -270,8 +274,14 @@ export default function useResource<T, U>({
 
     //if ((!pause && (!cached || !cached.data || cached.stale)) || true) {
     if (!pause) {
-      fetchData(target, signal, () => {
+      setStatus('Loading');
+      fetchData(target, signal, (isSuccess) => {
         fulfilled = true;
+        if (isSuccess) {
+          setStatus('Ok');
+        } else {
+          setStatus('Error');
+        }
       });
     }
     /*} else if (cached && cached.data) {
@@ -292,5 +302,5 @@ export default function useResource<T, U>({
     };
   }, [target]); // eslint-disable-line
 
-  return { url, target, data, error, getResult: () => cache.get<T>(target)?.result, cache };
+  return { url, target, data, error, getResult: () => cache.get<T>(target)?.result, cache, status };
 }
