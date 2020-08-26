@@ -56,9 +56,9 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 }
               }}
               options={[
-                ['all', 'All'],
-                ['done', 'Completed'],
-                ['running', 'Running'],
+                ['all', t('run.filter-all')],
+                ['done', t('run.filter-completed')],
+                ['running', t('run.filter-running')],
               ]}
             />
           </TimelineHeaderItem>

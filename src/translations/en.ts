@@ -58,6 +58,9 @@ const en = {
       'hide-run-details': 'Hide run details',
       tags: 'Tags',
       'show-fullscreen': 'Show fullscreen',
+      'filter-all': 'All',
+      'filter-completed': 'Completed',
+      'filter-running': 'Running',
     },
 
     timeline: {
