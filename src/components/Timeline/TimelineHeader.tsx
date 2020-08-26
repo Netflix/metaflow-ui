@@ -19,6 +19,7 @@ export type TimelineHeaderProps = {
   collapseAll: () => void;
   setFullscreen: () => void;
   isFullscreen: boolean;
+  updateStatusFilter: (status: null | string) => void;
   graph: GraphState;
 };
 
@@ -33,6 +34,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   collapseAll,
   isFullscreen,
   setFullscreen,
+  updateStatusFilter,
 }) => {
   const { t } = useTranslation();
   return (
@@ -46,10 +48,17 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             <Text>{t('fields.status')}:</Text>
             <SelectField
               horizontal
-              disabled={true}
+              onChange={(e) => {
+                if (e?.target.value === 'all') {
+                  updateStatusFilter(null);
+                } else {
+                  updateStatusFilter(e?.target.value || null);
+                }
+              }}
               options={[
-                ['All', 'all'],
-                ['Completed', 'completed'],
+                ['all', t('run.filter-all')],
+                ['done', t('run.filter-completed')],
+                ['running', t('run.filter-running')],
               ]}
             />
           </TimelineHeaderItem>

@@ -59,6 +59,9 @@ const en = {
       tags: 'Tags',
       'scroll-to-bottom': 'Scroll to bottom',
       'show-fullscreen': 'Show fullscreen',
+      'filter-all': 'All',
+      'filter-completed': 'Completed',
+      'filter-running': 'Running',
     },
 
     timeline: {
