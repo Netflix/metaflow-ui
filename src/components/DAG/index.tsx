@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 import { DAGModel, convertDAGModelToTree, DAGStructureTree, DAGTreeNode, StepTree } from './DAGUtils';
 import { Run, Step } from '../../types';
@@ -13,6 +13,8 @@ import Notification, { NotificationType } from '../Notification';
 import FullPageContainer from '../FullPageContainer';
 import { useTranslation } from 'react-i18next';
 import Icon from '../Icon';
+import useComponentSize from '@rehooks/component-size';
+import useWindowSize from '../../hooks/useWindowSize';
 
 //
 // DAG
@@ -32,6 +34,10 @@ const DAGContainer: React.FC<IDAG> = ({ run }) => {
 
 const DAG: React.FC<{ run: Run }> = ({ run }) => {
   const { t } = useTranslation();
+  const _container = useRef(null);
+  const ContainerSize = useComponentSize(_container);
+  const WindowSize = useWindowSize();
+
   const { data: stepData } = useResource<Step[], Step>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
     subscribeToEvents: true,
@@ -55,14 +61,24 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   }, [dataSet]);
 
   const content = dagTree && (
-    <DAGRenderingContainer showFullscreen={showFullscreen}>
-      <div style={{ display: 'flex' }}>
-        <NormalItemContainer>
+    <DAGRenderingContainer
+      showFullscreen={showFullscreen}
+      ref={_container}
+      style={{
+        transform:
+          'scale(' +
+          (showFullscreen && ContainerSize.width > WindowSize.width ? WindowSize.width / ContainerSize.width : 1) +
+          ')',
+      }}
+    >
+      <div style={{ display: 'flex', padding: '1rem' }}>
+        <NormalItemContainer isFirst isLast>
           {dagTree.map((elem, index) => (
             <RenderStep
               run={run}
               item={elem}
               key={index}
+              isFirst={index === 0}
               isLast={index + 1 === dagTree.length}
               stepIds={stepData ? stepData.map((item) => item.step_name) : []}
             />
@@ -108,21 +124,18 @@ function stateOfStep(item: StepTree, stepIds: string[]) {
 
 const RenderStep: React.FC<{
   item: DAGTreeNode;
+  isFirst?: boolean;
   isLast?: boolean;
   inContainer?: boolean;
   stepIds: string[];
   run: Run;
-}> = ({ item, isLast, inContainer, stepIds, run }) => {
+}> = ({ item, isFirst, isLast, stepIds, run }) => {
   const history = useHistory();
   if (item.node_type === 'normal') {
-    const shouldLine = inContainer
-      ? (item.children?.length || 0) > 0
-      : !isLast || (isLast && (item.children?.length || 0) > 0);
-
     const stepState = stateOfStep(item, stepIds);
 
     return (
-      <NormalItemContainer className="itemcontainer">
+      <NormalItemContainer className="itemcontainer" isFirst={isFirst} isLast={isLast}>
         <NormalItem
           state={stepState}
           onClick={() => {
@@ -130,11 +143,6 @@ const RenderStep: React.FC<{
           }}
         >
           {item.step_name}
-          {shouldLine && (
-            <LineContainer>
-              <LineElement />
-            </LineContainer>
-          )}
         </NormalItem>
         {item.children && item.children.length > 0 && (
           <NormalItemChildContainer className="childcontainer">
@@ -167,52 +175,49 @@ const RenderStep: React.FC<{
 
 const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' }> = ({ containerType, children }) => {
   if (containerType === 'parallel') {
-    return (
-      <ContainerItem>
-        {children}
-        <LineContainer>
-          <LineElement />
-        </LineContainer>
-      </ContainerItem>
-    );
+    return <ContainerItem>{children}</ContainerItem>;
   } else {
     return (
       <ForeachContainer>
-        <ForeachItem>
-          {children}
-          <LineContainer>
-            <LineElement mode="long" />
-          </LineContainer>
-        </ForeachItem>
+        <ForeachItem>{children}</ForeachItem>
       </ForeachContainer>
     );
   }
 };
 
-const LineElement: React.FC<{ mode?: 'short' | 'long' }> = ({ mode = 'short' }) => (
-  <svg viewBox={`0 0 30 ${mode === 'short' ? 32 : 35}`} xmlns="http://www.w3.org/2000/svg">
-    <line strokeWidth="3" x1="15" y1="2" x2="15" y2={`${mode === 'short' ? 32 : 35}`} stroke="#c0c0c0" />
-  </svg>
-);
-
 const DAGRenderingContainer = styled.div<{ showFullscreen: boolean }>`
-  margin: 0 -45px;
-  overflow-x: ${(p) => (p.showFullscreen ? 'visible' : 'hidden')};
+  margin: ${(p) => (p.showFullscreen ? '0' : '0 -45px')};
+  overflow-x: ${(p) => (p.showFullscreen ? 'visible' : 'scroll')};
   font-family: monospace;
   font-size: 14px;
 `;
 
-const NormalItemContainer = styled.div`
-  padding: 15px;
+const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; isLast?: boolean }>`
+  padding: ${(p) => (p.isRoot ? '0 1rem' : '1rem')};
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   margin: 0 auto;
+  position: relative;
+
+  padding-top: ${(p) => (p.isFirst ? '0' : '1rem')};
+  padding-bottom: ${(p) => (p.isLast ? '0' : '1rem')};
+
+  &::before {
+    content: '';
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: #c0c0c0;
+    left: 50%;
+  }
 `;
 
 const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
-  border: 2px solid
+  border: 1px solid
     ${(p) =>
       p.state === 'ok'
         ? p.theme.notification.success.text
@@ -222,6 +227,7 @@ const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
         ? 'gray'
         : 'gray'};
   padding: 0.75rem 1.5rem;
+
   position: relative;
   border-radius: 4px;
   transition: 0.15s border;
@@ -234,8 +240,8 @@ const NormalItemChildContainer = styled.div`
 `;
 
 const BaseContainerStyle = css`
-  border: 2px dashed #c0c0c0;
-  background: rgba(192, 192, 192, 0.1);
+  border: 1px solid #c0c0c0;
+  background: #f9f9f9;
   display: flex;
   margin: 15px;
   border-radius: 4px;
@@ -260,15 +266,6 @@ const ForeachItem = styled.div`
   margin: 0;
   transform: translateX(5px) translateY(5px);
   flex: 1;
-`;
-
-const LineContainer = styled.div`
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
 `;
 
 export default DAGContainer;
