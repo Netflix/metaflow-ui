@@ -23,7 +23,7 @@ const en = {
       tag: 'Tag',
       project: 'Project',
 
-      flow_id: 'Flow id',
+      flow_id: 'Flow',
 
       id: 'Id',
       status: 'Status',
