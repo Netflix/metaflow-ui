@@ -14,6 +14,7 @@ const en = {
     home: {
       home: 'Home',
       'load-more-runs': 'Load more runs',
+      'no-results': 'There is results with given parameters',
     },
 
     fields: {

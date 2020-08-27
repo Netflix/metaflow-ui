@@ -99,7 +99,7 @@ const Home: React.FC = () => {
 
   const groupField: keyof IRun = getDefaultedQueryParam('_group');
 
-  const { data: runs, error } = useResource<IRun[], IRun>({
+  const { data: runs, error, status } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: true,
@@ -230,11 +230,14 @@ const Home: React.FC = () => {
 
       <Content>
         {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
-        {!error && (!runs || !runs.length) && (
+        {status === 'Loading' && (
           <Section>
             <Spinner />
           </Section>
         )}
+
+        {status === 'Ok' && (!runs || runs.length === 0) && <Section>{t('home.no-results')}</Section>}
+
         {!!runs &&
           !!runs.length &&
           Object.keys(runsGroupedByProperty)
