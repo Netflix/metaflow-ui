@@ -29,12 +29,27 @@ interface DefaultQuery {
   _limit: 'string';
 }
 
-export const defaultQuery = new URLSearchParams({
+const defaultParams = {
   _group: 'flow_id',
   _order: '-run_number',
   _limit: '10',
   status: 'running,completed,failed',
-});
+};
+
+export const defaultQuery = new URLSearchParams(defaultParams);
+
+function isDefaultParams(params: Record<string, string>) {
+  if (Object.keys(params).length === 4) {
+    if (
+      params._order === defaultParams._order &&
+      params._limit === defaultParams._limit &&
+      params.status === defaultParams.status
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
 
 function paramList(param: QueryParam): Array<string> {
   return param !== null ? param.split(',').filter((p: string) => p !== '') : [];
@@ -56,8 +71,12 @@ const Home: React.FC = () => {
     ...fromPairs<string>([...defaultQuery.entries()]),
     ...fromPairs<string>([...query.entries()]),
   });
+  const activeParams = getAllDefaultedQueryParams();
 
-  const resetAllFilters = useCallback(() => search(defaultQuery.toString()), [search]);
+  const resetAllFilters = useCallback(() => {
+    const newQ = new URLSearchParams({ ...defaultParams, _group: activeParams._group });
+    search(newQ.toString());
+  }, [search, activeParams._group]);
   const handleRunClick = (r: IRun) => history.push(getPath.dag(r.flow_id, r.run_number));
 
   const handleOrderChange = (orderProp: string) => {
@@ -85,7 +104,7 @@ const Home: React.FC = () => {
     initialData: [],
     subscribeToEvents: true,
     updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
-    queryParams: getAllDefaultedQueryParams(),
+    queryParams: activeParams,
   });
 
   useEffect(() => {
@@ -202,7 +221,7 @@ const Home: React.FC = () => {
         </Section>
 
         <Section>
-          <Button onClick={() => resetAllFilters()}>
+          <Button onClick={() => resetAllFilters()} disabled={isDefaultParams(activeParams)}>
             <Icon name="times" padRight />
             <Text>{t('filters.reset-all')}</Text>
           </Button>
@@ -227,7 +246,7 @@ const Home: React.FC = () => {
                   field={getDefaultedQueryParam('_group')}
                   fieldValue={k}
                   initialData={runsGroupedByProperty[k]}
-                  queryParams={getAllDefaultedQueryParams()}
+                  queryParams={activeParams}
                   onOrderChange={handleOrderChange}
                   onRunClick={handleRunClick}
                   resourceUrl="/runs"
