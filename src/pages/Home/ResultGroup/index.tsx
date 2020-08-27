@@ -134,7 +134,7 @@ const ResultGroup: React.FC<Props> = ({
               </TD>
               <TD>{getISOString(new Date(r.ts_epoch))}</TD>
               <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
-              <TD>{r.duration ? formatDuration(r.duration) : ''}</TD>
+              <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
               <TD>{r.user_name}</TD>
               <TD className="timeline-link">
                 <Link
