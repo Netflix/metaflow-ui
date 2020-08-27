@@ -33,9 +33,16 @@ export function findAdditionalButtons(routeMatch: match<KnownParams> | null, loc
   const buttons = [];
   const params = routeMatch.params;
 
+  if (params.flowId) {
+    buttons.push({
+      label: `${params.flowId}`,
+      path: getPath.home() + '?flow_id=' + params.flowId,
+    });
+  }
+
   if (params.flowId && params.runNumber) {
     buttons.push({
-      label: `${params.flowId}/${params.runNumber}`,
+      label: `${params.runNumber}`,
       path: getPath.timeline(params.flowId, params.runNumber),
     });
   }
@@ -159,32 +166,37 @@ const Breadcrumb: React.FC = () => {
 
       {/* Rendering edit block when active */}
       {edit && (
-        <GoToHolder data-testid="breadcrumb-goto-container">
-          <GoToContainer>
-            <ItemRow pad="md">
-              <TextInputField
-                placeholder={t('breadcrumb.whereto')}
-                defaultValue={currentBreadcrumbPath}
-                onKeyPress={onKeyPress}
-                autoFocus={true}
-              />
-              <GotoClose onClick={() => closeUp()}>
-                <Icon name="times" size="md" />
-              </GotoClose>
-            </ItemRow>
-            <BreadcrumbInfo>
-              {warning && <BreadcrumbWarning>{warning}</BreadcrumbWarning>}
-              <BreadcrumbHelpLabel>{t('breadcrumb.example')}:</BreadcrumbHelpLabel>
-              <BreadcrumbKeyValueList
-                items={[
-                  { key: t('items.run'), value: t('breadcrumb.example-run') },
-                  { key: t('items.step'), value: t('breadcrumb.example-step') },
-                  { key: t('items.task'), value: t('breadcrumb.example-task') },
-                ]}
-              />
-            </BreadcrumbInfo>
-          </GoToContainer>
-        </GoToHolder>
+        <>
+          <GoToHolder data-testid="breadcrumb-goto-container">
+            <GoToContainer>
+              <ItemRow pad="md">
+                <TextInputField
+                  placeholder={t('breadcrumb.goto')}
+                  defaultValue={currentBreadcrumbPath}
+                  onKeyPress={onKeyPress}
+                  autoFocus={true}
+                />
+                <GotoClose onClick={() => closeUp()}>
+                  <Icon name="times" size="md" />
+                </GotoClose>
+              </ItemRow>
+              <BreadcrumbInfo>
+                {warning && <BreadcrumbWarning>{warning}</BreadcrumbWarning>}
+                <BreadcrumbHelpLabel>{t('breadcrumb.example')}:</BreadcrumbHelpLabel>
+                <BreadcrumbKeyValueList
+                  items={[
+                    { key: t('items.flow'), value: t('breadcrumb.example-flow') },
+                    { key: t('items.run'), value: t('breadcrumb.example-run') },
+                    { key: t('items.step'), value: t('breadcrumb.example-step') },
+                    { key: t('items.task'), value: t('breadcrumb.example-task') },
+                  ]}
+                />
+              </BreadcrumbInfo>
+            </GoToContainer>
+          </GoToHolder>
+
+          <ModalOutsideClickDetector onClick={() => closeUp()} />
+        </>
       )}
     </StyledBreadcrumb>
   );
@@ -229,6 +241,7 @@ const GoToHolder = styled.div`
   font-size: 0.875rem;
   height: 2rem;
   margin-top: -2px;
+  z-index: 2;
 `;
 
 const GoToContainer = styled.div`
@@ -272,6 +285,15 @@ const KeyValueListValue = styled.div`
 const KeyValueListItem = styled.div`
   display: flex;
   padding: 5px 0;
+`;
+
+const ModalOutsideClickDetector = styled.div`
+  position: fixed;
+  zindex: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
 `;
 
 export default Breadcrumb;
