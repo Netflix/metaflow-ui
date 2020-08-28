@@ -115,7 +115,7 @@ describe('TimelineRow component', () => {
 
     expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(10%)');
     expect(getByTestId('boxgraphic').style.width).toBe('35%');
-    expect(getByTestId('boxgraphic-label').textContent).toBe('0.35s');
+    expect(getByTestId('boxgraphic-label').textContent).toBe('0.3s');
 
     // Change graph zoom values to start from 0.3s and end to 0.5s. Element will be
     // rendered quite a lot to the left (translateX -100%)
@@ -127,7 +127,7 @@ describe('TimelineRow component', () => {
 
     expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(-100%)');
     expect(getByTestId('boxgraphic').style.width).toBe('175%');
-    expect(getByTestId('boxgraphic-label').textContent).toBe('0.35s');
+    expect(getByTestId('boxgraphic-label').textContent).toBe('0.3s');
 
     // Same as default graph but alignment is from left so every element should start from left
     rerender(
@@ -138,7 +138,7 @@ describe('TimelineRow component', () => {
 
     expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(0%)');
     expect(getByTestId('boxgraphic').style.width).toBe('35%');
-    expect(getByTestId('boxgraphic-label').textContent).toBe('0.35s');
+    expect(getByTestId('boxgraphic-label').textContent).toBe('0.3s');
 
     // Try with unfinished item. No label since bar takes so wide space
     rerender(

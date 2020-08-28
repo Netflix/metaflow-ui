@@ -4,6 +4,7 @@
 const en = {
   translation: {
     items: {
+      flow: 'Flow',
       run: 'Run',
       step: 'Step',
       task: 'Task',
@@ -14,6 +15,7 @@ const en = {
     home: {
       home: 'Home',
       'load-more-runs': 'Load more runs',
+      'no-results': 'There is results with given parameters',
     },
 
     fields: {
@@ -22,9 +24,9 @@ const en = {
       tag: 'Tag',
       project: 'Project',
 
-      flow_id: 'Flow id',
+      flow_id: 'Flow',
 
-      id: 'Id',
+      id: 'ID',
       status: 'Status',
       'started-at': 'Started at',
       'finished-at': 'Finished at',
@@ -37,8 +39,8 @@ const en = {
       type: 'Type',
       'content-type': 'Content type',
 
-      'run-id': 'Run id',
-      'task-id': 'Task id',
+      'run-id': 'Run ID',
+      'task-id': 'Task ID',
     },
 
     filters: {
@@ -96,9 +98,10 @@ const en = {
       goto: 'Go to...',
       whereto: 'Where to?',
       example: 'Example',
-      'example-run': 'MyFlow / run_id',
-      'example-step': 'MyFlow / run_id / step_name',
-      'example-task': 'MyFlow / run_id / step_name / task_id',
+      'example-flow': 'Flow Name',
+      'example-run': 'Flow Name / Run ID',
+      'example-step': 'Flow Name / Run ID / Step Name',
+      'example-task': 'Flow Name / Run ID / Step Name / Task ID',
     },
   },
 };

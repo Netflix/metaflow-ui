@@ -29,12 +29,27 @@ interface DefaultQuery {
   _limit: 'string';
 }
 
-export const defaultQuery = new URLSearchParams({
+const defaultParams = {
   _group: 'flow_id',
   _order: '-run_number',
   _limit: '10',
   status: 'running,completed,failed',
-});
+};
+
+export const defaultQuery = new URLSearchParams(defaultParams);
+
+function isDefaultParams(params: Record<string, string>) {
+  if (Object.keys(params).length === 4) {
+    if (
+      params._order === defaultParams._order &&
+      params._limit === defaultParams._limit &&
+      params.status === defaultParams.status
+    ) {
+      return true;
+    }
+  }
+  return false;
+}
 
 function paramList(param: QueryParam): Array<string> {
   return param !== null ? param.split(',').filter((p: string) => p !== '') : [];
@@ -56,8 +71,12 @@ const Home: React.FC = () => {
     ...fromPairs<string>([...defaultQuery.entries()]),
     ...fromPairs<string>([...query.entries()]),
   });
+  const activeParams = getAllDefaultedQueryParams();
 
-  const resetAllFilters = useCallback(() => search(defaultQuery.toString()), [search]);
+  const resetAllFilters = useCallback(() => {
+    const newQ = new URLSearchParams({ ...defaultParams, _group: activeParams._group });
+    search(newQ.toString());
+  }, [search, activeParams._group]);
   const handleRunClick = (r: IRun) => history.push(getPath.dag(r.flow_id, r.run_number));
 
   const handleOrderChange = (orderProp: string) => {
@@ -80,12 +99,12 @@ const Home: React.FC = () => {
 
   const groupField: keyof IRun = getDefaultedQueryParam('_group');
 
-  const { data: runs, error } = useResource<IRun[], IRun>({
+  const { data: runs, error, status } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: true,
     updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
-    queryParams: getAllDefaultedQueryParams(),
+    queryParams: activeParams,
   });
 
   useEffect(() => {
@@ -131,7 +150,7 @@ const Home: React.FC = () => {
       <Sidebar className="sidebar">
         <Section>
           <SectionHeader>
-            {t('filters.group-by')}
+            <div style={{ flexShrink: 0, paddingRight: '0.5rem' }}>{t('filters.group-by')}</div>
             <SectionHeaderContent align="right">
               <SelectField
                 horizontal
@@ -154,46 +173,14 @@ const Home: React.FC = () => {
         </Section>
 
         <Section>
-          <SectionHeader>
-            {t('fields.user')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} />
-            </SectionHeaderContent>
-          </SectionHeader>
-          <TagParameterList
-            paramKey="_tags"
-            mapList={(xs) => xs.filter((x) => x.startsWith('user:')).map((x) => x.substr('user:'.length))}
-            mapValue={(x) => `user:${x}`}
-          />
-        </Section>
+          <TagInput onSubmit={(v) => updateListValue('flow_id', v)} sectionLabel={t('fields.flow')} />
 
-        <Section>
-          <SectionHeader>
-            {t('fields.flow')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('flow_id', v)} />
-            </SectionHeaderContent>
-          </SectionHeader>
           <TagParameterList paramKey="flow_id" />
         </Section>
 
         <Section>
-          <SectionHeader>
-            {t('fields.tag')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('_tags', v)} />
-            </SectionHeaderContent>
-          </SectionHeader>
-          <TagParameterList paramKey="_tags" mapList={(xs) => xs.filter((x) => !/^user:|project:/.test(x))} />
-        </Section>
+          <TagInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} sectionLabel={t('fields.project')} />
 
-        <Section>
-          <SectionHeader>
-            {t('fields.project')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} />
-            </SectionHeaderContent>
-          </SectionHeader>
           <TagParameterList
             paramKey="_tags"
             mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
@@ -202,7 +189,23 @@ const Home: React.FC = () => {
         </Section>
 
         <Section>
-          <Button onClick={() => resetAllFilters()}>
+          <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} sectionLabel={t('fields.user')} />
+
+          <TagParameterList
+            paramKey="_tags"
+            mapList={(xs) => xs.filter((x) => x.startsWith('user:')).map((x) => x.substr('user:'.length))}
+            mapValue={(x) => `user:${x}`}
+          />
+        </Section>
+
+        <Section>
+          <TagInput onSubmit={(v) => updateListValue('_tags', v)} sectionLabel={t('fields.tag')} />
+
+          <TagParameterList paramKey="_tags" mapList={(xs) => xs.filter((x) => !/^user:|project:/.test(x))} />
+        </Section>
+
+        <Section>
+          <Button onClick={() => resetAllFilters()} disabled={isDefaultParams(activeParams)}>
             <Icon name="times" padRight />
             <Text>{t('filters.reset-all')}</Text>
           </Button>
@@ -211,11 +214,14 @@ const Home: React.FC = () => {
 
       <Content>
         {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
-        {!error && (!runs || !runs.length) && (
+        {status === 'Loading' && (
           <Section>
             <Spinner />
           </Section>
         )}
+
+        {status === 'Ok' && (!runs || runs.length === 0) && <Section>{t('home.no-results')}</Section>}
+
         {!!runs &&
           !!runs.length &&
           Object.keys(runsGroupedByProperty)
@@ -227,7 +233,7 @@ const Home: React.FC = () => {
                   field={getDefaultedQueryParam('_group')}
                   fieldValue={k}
                   initialData={runsGroupedByProperty[k]}
-                  queryParams={getAllDefaultedQueryParams()}
+                  queryParams={activeParams}
                   onOrderChange={handleOrderChange}
                   onRunClick={handleRunClick}
                   resourceUrl="/runs"
@@ -253,7 +259,7 @@ const Sidebar = styled.div`
 `;
 
 const Content = styled.div`
-  margin-left: ${(p) => p.theme.spacer.hg + p.theme.layout.sidebarWidth}rem;
+  margin-left: ${(p) => p.theme.layout.sidebarWidth + 1}rem;
   padding-top: ${(p) => p.theme.spacer.md}rem;
 
   h3:first-of-type {

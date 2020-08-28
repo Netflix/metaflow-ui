@@ -12,7 +12,7 @@ export function formatDuration(time: number, precision?: number): string {
 
   if (hours > 0) str += hours + 'h ';
   if (minutes > 0) str += minutes + 'm ';
-  if (seconds > 0) str += seconds.toFixed(precision || 2) + 's';
+  if (seconds > 0) str += (precision === 0 ? Math.round(seconds) : seconds.toFixed(precision || 1)) + 's';
 
   return str;
 }

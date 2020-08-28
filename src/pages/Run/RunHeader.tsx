@@ -49,7 +49,7 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
                 },
                 {
                   label: t('fields.duration') + ':',
-                  accessor: (item) => (item.finished_at ? formatDuration(item.finished_at - item.ts_epoch) : ''),
+                  accessor: (item) => (item.finished_at ? formatDuration(item.finished_at - item.ts_epoch, 0) : ''),
                 },
               ]}
             />

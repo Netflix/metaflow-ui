@@ -6,6 +6,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
 import Icon from '../Icon';
 import { Step, Task } from '../../types';
+import { formatDuration } from '../../utils/format';
 
 type TimelineRowProps = {
   // Row type and data
@@ -140,7 +141,7 @@ const RowMetricLabel: React.FC<{
 }> = ({ item, finishedAt, labelPosition, ...rest }) =>
   labelPosition === 'none' ? null : (
     <BoxGraphicValue position={labelPosition} {...rest}>
-      {finishedAt ? ((finishedAt - item.ts_epoch) / 1000).toFixed(2) + 's' : '?'}
+      {finishedAt ? formatDuration(finishedAt - item.ts_epoch, 1) : '?'}
     </BoxGraphicValue>
   );
 
