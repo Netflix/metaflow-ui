@@ -174,36 +174,12 @@ const Home: React.FC = () => {
 
         <Section>
           <SectionHeader>
-            {t('fields.user')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} />
-            </SectionHeaderContent>
-          </SectionHeader>
-          <TagParameterList
-            paramKey="_tags"
-            mapList={(xs) => xs.filter((x) => x.startsWith('user:')).map((x) => x.substr('user:'.length))}
-            mapValue={(x) => `user:${x}`}
-          />
-        </Section>
-
-        <Section>
-          <SectionHeader>
             {t('fields.flow')}
             <SectionHeaderContent align="right">
               <TagInput onSubmit={(v) => updateListValue('flow_id', v)} />
             </SectionHeaderContent>
           </SectionHeader>
           <TagParameterList paramKey="flow_id" />
-        </Section>
-
-        <Section>
-          <SectionHeader>
-            {t('fields.tag')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('_tags', v)} />
-            </SectionHeaderContent>
-          </SectionHeader>
-          <TagParameterList paramKey="_tags" mapList={(xs) => xs.filter((x) => !/^user:|project:/.test(x))} />
         </Section>
 
         <Section>
@@ -218,6 +194,30 @@ const Home: React.FC = () => {
             mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
             mapValue={(x) => `project:${x}`}
           />
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            {t('fields.user')}
+            <SectionHeaderContent align="right">
+              <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} />
+            </SectionHeaderContent>
+          </SectionHeader>
+          <TagParameterList
+            paramKey="_tags"
+            mapList={(xs) => xs.filter((x) => x.startsWith('user:')).map((x) => x.substr('user:'.length))}
+            mapValue={(x) => `user:${x}`}
+          />
+        </Section>
+
+        <Section>
+          <SectionHeader>
+            {t('fields.tag')}
+            <SectionHeaderContent align="right">
+              <TagInput onSubmit={(v) => updateListValue('_tags', v)} />
+            </SectionHeaderContent>
+          </SectionHeader>
+          <TagParameterList paramKey="_tags" mapList={(xs) => xs.filter((x) => !/^user:|project:/.test(x))} />
         </Section>
 
         <Section>
