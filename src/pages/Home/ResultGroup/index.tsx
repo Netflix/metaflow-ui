@@ -121,11 +121,11 @@ const ResultGroup: React.FC<Props> = ({
   const cols = [
     { label: t('fields.id'), key: 'run_number' },
     { label: t('fields.flow_id'), key: 'flow_id', hidden: field === 'flow_id' },
+    { label: t('fields.user'), key: 'user_name', hidden: field === 'user_name' },
     { label: t('fields.status'), key: 'status' },
     { label: t('fields.started-at'), key: 'ts_epoch' },
     { label: t('fields.finished-at'), key: 'finished_at' },
     { label: t('fields.duration'), key: 'duration' },
-    { label: t('fields.user'), key: 'user_name' },
   ].filter((item) => !item.hidden);
 
   const tableRef = useRef<HTMLTableElement>(null);
@@ -171,13 +171,13 @@ const ResultGroup: React.FC<Props> = ({
                 <span className="muted">#</span> <strong>{r.run_number}</strong>
               </TD>
               {field !== 'flow_id' && <TD>{r.flow_id}</TD>}
+              {field !== 'user_name' && <TD>{r.user_name}</TD>}
               <TD>
                 <StatusField status={r.status} />
               </TD>
               <TD>{getISOString(new Date(r.ts_epoch))}</TD>
               <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
               <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
-              <TD>{r.user_name}</TD>
               <TD className="timeline-link">
                 <Link
                   to={getPath.run(r.flow_id, r.run_number)}
