@@ -25,7 +25,11 @@ describe('Breadcrumb component', () => {
   test('findAdditionalButtons - run', () => {
     expect(findAdditionalButtons(matchWithParams(RUN_PARAMS), '')).toEqual([
       {
-        label: 'HugeFlow/5',
+        label: 'HugeFlow',
+        path: '/?flow_id=HugeFlow',
+      },
+      {
+        label: '5',
         path: '/flows/HugeFlow/runs/5/view/timeline',
       },
     ]);
@@ -33,7 +37,11 @@ describe('Breadcrumb component', () => {
 
   const STEP_RESULT = [
     {
-      label: 'HugeFlow/5',
+      label: 'HugeFlow',
+      path: '/?flow_id=HugeFlow',
+    },
+    {
+      label: '5',
       path: '/flows/HugeFlow/runs/5/view/timeline',
     },
     {
@@ -93,7 +101,8 @@ describe('Breadcrumb component', () => {
 
     getByTestId('home-button');
     getByTestId('breadcrumb-button-container');
-    getByText('HugeFlow/4');
+    getByText('HugeFlow');
+    getByText('4');
   });
 
   test('<Breadcrumb /> - Should render home and after click input field', () => {
