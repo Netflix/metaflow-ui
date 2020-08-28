@@ -11,6 +11,7 @@ import RunHeader from './RunHeader';
 import { getPath } from '../../utils/routing';
 import { useTranslation } from 'react-i18next';
 import useRowData from '../../components/Timeline/useRowData';
+import Spinner from '../../components/Spinner';
 
 const RunPage: React.FC = () => {
   const { t } = useTranslation();
@@ -22,7 +23,7 @@ const RunPage: React.FC = () => {
     taskId?: string;
   }>();
 
-  const { data: run } = useResource<IRun, IRun>({
+  const { data: run, status } = useResource<IRun, IRun>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}`,
     subscribeToEvents: true,
     initialData: null,
@@ -97,44 +98,55 @@ const RunPage: React.FC = () => {
 
   return (
     <FixedContent>
-      <RunHeader run={run} />
+      {status === 'Loading' && (
+        <div style={{ textAlign: 'center' }}>
+          <Spinner />
+        </div>
+      )}
 
-      <Tabs
-        widen
-        activeTab={tab}
-        tabs={[
-          {
-            key: 'dag',
-            label: t('run.DAG'),
-            linkTo: getPath.dag(params.flowId, params.runNumber),
-            component: <DAG run={run} />,
-          },
-          {
-            key: 'timeline',
-            label: t('run.timeline'),
-            linkTo: getPath.timeline(params.flowId, params.runNumber),
-            component: <TimelineContainer run={run} rowData={rows} rowDataDispatch={dispatch} />,
-          },
-          {
-            key: 'task',
-            label: previousTaskId ? `${t('items.task')}: ${previousTaskId}` : `${t('items.task')}`,
-            linkTo:
-              (previousStepName &&
-                previousTaskId &&
-                getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId)) ||
-              getPath.task(params.flowId, params.runNumber, 'not-selected', 'not-selected'),
-            temporary: !!(previousStepName && previousTaskId),
-            component: (
-              <TaskViewContainer
-                run={run}
-                stepName={previousStepName || 'not-selected'}
-                taskId={previousTaskId || 'not-selected'}
-                rowData={rows}
-              />
-            ),
-          },
-        ]}
-      />
+      {status === 'Ok' && run && !run.run_number && t('timeline.no-run-data')}
+
+      {run && run.run_number && (
+        <>
+          <RunHeader run={run} />
+          <Tabs
+            widen
+            activeTab={tab}
+            tabs={[
+              {
+                key: 'dag',
+                label: t('run.DAG'),
+                linkTo: getPath.dag(params.flowId, params.runNumber),
+                component: <DAG run={run} />,
+              },
+              {
+                key: 'timeline',
+                label: t('run.timeline'),
+                linkTo: getPath.timeline(params.flowId, params.runNumber),
+                component: <TimelineContainer run={run} rowData={rows} rowDataDispatch={dispatch} />,
+              },
+              {
+                key: 'task',
+                label: previousTaskId ? `${t('items.task')}: ${previousTaskId}` : `${t('items.task')}`,
+                linkTo:
+                  (previousStepName &&
+                    previousTaskId &&
+                    getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId)) ||
+                  getPath.task(params.flowId, params.runNumber, 'not-selected', 'not-selected'),
+                temporary: !!(previousStepName && previousTaskId),
+                component: (
+                  <TaskViewContainer
+                    run={run}
+                    stepName={previousStepName || 'not-selected'}
+                    taskId={previousTaskId || 'not-selected'}
+                    rowData={rows}
+                  />
+                ),
+              },
+            ]}
+          />
+        </>
+      )}
     </FixedContent>
   );
 };
