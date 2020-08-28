@@ -110,7 +110,7 @@ const ResultGroup: React.FC<Props> = ({
     ).filter((x: IRun | undefined) => !!x);
 
     setRows(uniqueRows(initialData.concat(cachedPages)));
-  }, [initialData, page]);
+  }, [initialData, page]); // eslint-disable-line
 
   //
   // STICKY HEADER
@@ -220,7 +220,7 @@ const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = 
     window.addEventListener('scroll', listener);
 
     return () => window.removeEventListener('scroll', listener);
-  }, []);
+  }, []); // eslint-disable-line
 
   function shouldStick() {
     const rect = tableRef.current?.getBoundingClientRect();
