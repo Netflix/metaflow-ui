@@ -236,7 +236,16 @@ const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = 
     return rect ? -(rect.y - 112) : 0;
   }
 
-  return <thead style={shouldStick() ? { transform: `translateY(${fromTop()}px)` } : {}}>{children}</thead>;
+  const isSticky = shouldStick();
+
+  return (
+    <thead
+      className={isSticky ? 'sticky' : ''}
+      style={isSticky ? { transform: `translateY(${fromTop() - 15}px)` } : {}}
+    >
+      {children}
+    </thead>
+  );
 };
 
 export default ResultGroup;
@@ -250,6 +259,12 @@ export const StyledResultGroup = styled(Section)`
 
   thead {
     background: #ffffff;
+
+    &.sticky {
+      h3 {
+        margin-top: 15px;
+      }
+    }
   }
 
   td.timeline-link {
