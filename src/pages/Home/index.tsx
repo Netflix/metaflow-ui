@@ -150,7 +150,7 @@ const Home: React.FC = () => {
       <Sidebar className="sidebar">
         <Section>
           <SectionHeader>
-            {t('filters.group-by')}
+            <div style={{ flexShrink: 0, paddingRight: '0.5rem' }}>{t('filters.group-by')}</div>
             <SectionHeaderContent align="right">
               <SelectField
                 horizontal
@@ -173,22 +173,14 @@ const Home: React.FC = () => {
         </Section>
 
         <Section>
-          <SectionHeader>
-            {t('fields.flow')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('flow_id', v)} />
-            </SectionHeaderContent>
-          </SectionHeader>
+          <TagInput onSubmit={(v) => updateListValue('flow_id', v)} sectionLabel={t('fields.flow')} />
+
           <TagParameterList paramKey="flow_id" />
         </Section>
 
         <Section>
-          <SectionHeader>
-            {t('fields.project')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} />
-            </SectionHeaderContent>
-          </SectionHeader>
+          <TagInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} sectionLabel={t('fields.project')} />
+
           <TagParameterList
             paramKey="_tags"
             mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
@@ -197,12 +189,8 @@ const Home: React.FC = () => {
         </Section>
 
         <Section>
-          <SectionHeader>
-            {t('fields.user')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} />
-            </SectionHeaderContent>
-          </SectionHeader>
+          <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} sectionLabel={t('fields.user')} />
+
           <TagParameterList
             paramKey="_tags"
             mapList={(xs) => xs.filter((x) => x.startsWith('user:')).map((x) => x.substr('user:'.length))}
@@ -211,12 +199,8 @@ const Home: React.FC = () => {
         </Section>
 
         <Section>
-          <SectionHeader>
-            {t('fields.tag')}
-            <SectionHeaderContent align="right">
-              <TagInput onSubmit={(v) => updateListValue('_tags', v)} />
-            </SectionHeaderContent>
-          </SectionHeader>
+          <TagInput onSubmit={(v) => updateListValue('_tags', v)} sectionLabel={t('fields.tag')} />
+
           <TagParameterList paramKey="_tags" mapList={(xs) => xs.filter((x) => !/^user:|project:/.test(x))} />
         </Section>
 
@@ -275,7 +259,7 @@ const Sidebar = styled.div`
 `;
 
 const Content = styled.div`
-  margin-left: ${(p) => p.theme.spacer.hg + p.theme.layout.sidebarWidth}rem;
+  margin-left: ${(p) => p.theme.layout.sidebarWidth + 1}rem;
   padding-top: ${(p) => p.theme.spacer.md}rem;
 
   h3:first-of-type {

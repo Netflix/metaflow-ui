@@ -11,6 +11,7 @@ export const PopoverStyles = css`
 const PopoverWrapper = styled.div<{ show: boolean }>`
   ${PopoverStyles}
   position: absolute;
+  z-index: 11;
   left: 0;
   top: 0;
   display: ${(p) => (p.show ? 'block' : 'none')};

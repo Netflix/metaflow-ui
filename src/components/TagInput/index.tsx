@@ -4,6 +4,7 @@ import Popover from '../Popover';
 import Icon from '../Icon';
 import Button from '../Button';
 import { TextInputField } from '../Form';
+import { SectionHeader, SectionHeaderContent } from '../Structure';
 
 const TagInputWrapper = styled.div`
   position: relative;
@@ -24,7 +25,7 @@ const TagInputWrapper = styled.div`
   }
 `;
 
-const TagInput: React.FC<{ onSubmit: (k: string) => void }> = ({ onSubmit }) => {
+const TagInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: string }> = ({ onSubmit, sectionLabel }) => {
   const [formActive, setFormActive] = useState(false);
   const [val, setVal] = useState('');
   const inputEl = useRef<HTMLInputElement>(null);
@@ -46,25 +47,48 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void }> = ({ onSubmit }) => 
   };
 
   return (
-    <TagInputWrapper>
-      <Button onClick={handleFormActivation} active={formActive} data-testid="tag-input-activate-button">
-        <Icon name={formActive ? 'times' : 'plus'} />
-      </Button>
-      <Popover show={formActive}>
-        <TextInputField
-          data-testid="tag-input-textarea"
-          horizontal
-          value={val}
-          ref={inputEl}
-          onChange={(e) => e && setVal(e.target.value)}
-          onKeyPress={(e) => handleKeyPress(e)}
-        />
-        <Button onClick={() => handleSubmit(val)} data-testid="tag-input-add-button">
-          Add
-        </Button>
-      </Popover>
-    </TagInputWrapper>
+    <SectionHeader
+      onClick={() => {
+        if (!formActive) {
+          setFormActive(true);
+          setTimeout(() => inputEl.current && inputEl.current.focus(), 0);
+        }
+      }}
+    >
+      {sectionLabel}
+      <SectionHeaderContent align="right">
+        <TagInputWrapper>
+          <Button onClick={handleFormActivation} active={formActive} data-testid="tag-input-activate-button">
+            <Icon name={formActive ? 'times' : 'plus'} />
+          </Button>
+          <Popover show={formActive}>
+            <TextInputField
+              data-testid="tag-input-textarea"
+              horizontal
+              autoFocus
+              value={val}
+              ref={inputEl}
+              onChange={(e) => e && setVal(e.target.value)}
+              onKeyPress={(e) => handleKeyPress(e)}
+            />
+            <Button onClick={() => handleSubmit(val)} data-testid="tag-input-add-button">
+              Add
+            </Button>
+          </Popover>
+        </TagInputWrapper>
+      </SectionHeaderContent>
+      {formActive && <TagInputPopupOutsideClickDetector onClick={() => setFormActive(false)} />}
+    </SectionHeader>
   );
 };
+
+const TagInputPopupOutsideClickDetector = styled.div`
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  zindex: 10;
+`;
 
 export default TagInput;
