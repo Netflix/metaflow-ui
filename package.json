@@ -29,6 +29,7 @@
     "reconnecting-websocket": "^4.4.0",
     "styled-components": "^5.1.1",
     "typescript": "~3.7.2",
+    "use-is-in-viewport": "^1.0.9",
     "use-query-params": "^1.1.6",
     "uuid": "^8.2.0"
   },
