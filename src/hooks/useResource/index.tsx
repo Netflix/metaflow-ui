@@ -275,6 +275,7 @@ export default function useResource<T, U>({
     //if ((!pause && (!cached || !cached.data || cached.stale)) || true) {
     if (!pause) {
       setStatus('Loading');
+      console.log('Fethcing ', performance.now());
       fetchData(target, signal, (isSuccess) => {
         fulfilled = true;
         if (isSuccess) {

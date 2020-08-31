@@ -75,7 +75,7 @@ interface HeaderColumnProps {
 }
 
 export const HeaderColumn: React.FC<HeaderColumnProps> = ({ label, queryKey, currentOrder, onSort, ...rest }) => {
-  const [direction, orderParam] = parseOrderParam(currentOrder);
+  const [direction, orderParam] = currentOrder ? parseOrderParam(currentOrder) : ['down' as const, ''];
   const active: boolean = queryKey === orderParam;
 
   return (

@@ -166,31 +166,41 @@ const ResultGroup: React.FC<Props> = ({
         <tbody>
           {rows.map((r, i) => (
             <TR key={`r-${i}`} onClick={() => onRunClick(r)}>
-              <StatusColorCell status={r.status} />
-              <TD>
-                <span className="muted">#</span> <strong>{r.run_number}</strong>
-              </TD>
-              {field !== 'flow_id' && <TD>{r.flow_id}</TD>}
-              {field !== 'user_name' && <TD>{r.user_name}</TD>}
-              <TD>
-                <StatusField status={r.status} />
-              </TD>
-              <TD>{getISOString(new Date(r.ts_epoch))}</TD>
-              <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
-              <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
-              <TD className="timeline-link">
-                <Link
-                  to={getPath.run(r.flow_id, r.run_number)}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    history.push(getPath.run(r.flow_id, r.run_number));
-                  }}
-                >
-                  <Icon name="timeline" size="lg" padRight />
-                  <Text>Timeline</Text>
-                </Link>
-              </TD>
+              {isInViewport ? (
+                <>
+                  <StatusColorCell status={r.status} />
+                  <TD>
+                    <span className="muted">#</span> <strong>{r.run_number}</strong>
+                  </TD>
+                  {field !== 'flow_id' && <TD>{r.flow_id}</TD>}
+                  {field !== 'user_name' && <TD>{r.user_name}</TD>}
+                  <TD>
+                    <StatusField status={r.status} />
+                  </TD>
+                  <TD>{getISOString(new Date(r.ts_epoch))}</TD>
+                  <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
+                  <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
+                  <TD className="timeline-link">
+                    <Link
+                      to={getPath.run(r.flow_id, r.run_number)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        history.push(getPath.run(r.flow_id, r.run_number));
+                      }}
+                    >
+                      <Icon name="timeline" size="lg" padRight />
+                      <Text>Timeline</Text>
+                    </Link>
+                  </TD>
+                </>
+              ) : (
+                <>
+                  <TD colSpan={8}>
+                    <div style={{ height: '32px' }}>Loading...</div>
+                  </TD>
+                </>
+              )}
             </TR>
           ))}
         </tbody>
