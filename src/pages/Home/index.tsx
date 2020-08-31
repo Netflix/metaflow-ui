@@ -154,6 +154,7 @@ const Home: React.FC = () => {
             <SectionHeaderContent align="right">
               <SelectField
                 horizontal
+                noMinWidth
                 value={getDefaultedQueryParam('_group')}
                 onChange={(e) => e && handleParamChange('_group', e.target.value)}
                 options={[
@@ -256,6 +257,7 @@ const Sidebar = styled.div`
   position: fixed;
   width: ${(p) => p.theme.layout.sidebarWidth}rem;
   top: ${(p) => p.theme.layout.appbarHeight}rem;
+  font-size: 0.875rem;
 `;
 
 const Content = styled.div`

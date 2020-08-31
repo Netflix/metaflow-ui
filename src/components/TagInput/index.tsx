@@ -47,7 +47,7 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: string }
   };
 
   return (
-    <SectionHeader
+    <TagInputHeader
       onClick={() => {
         if (!formActive) {
           setFormActive(true);
@@ -58,7 +58,7 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: string }
       {sectionLabel}
       <SectionHeaderContent align="right">
         <TagInputWrapper>
-          <Button onClick={handleFormActivation} active={formActive} data-testid="tag-input-activate-button">
+          <Button onClick={handleFormActivation} active={formActive} iconOnly data-testid="tag-input-activate-button">
             <Icon name={formActive ? 'times' : 'plus'} />
           </Button>
           <Popover show={formActive}>
@@ -78,7 +78,7 @@ const TagInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: string }
         </TagInputWrapper>
       </SectionHeaderContent>
       {formActive && <TagInputPopupOutsideClickDetector onClick={() => setFormActive(false)} />}
-    </SectionHeader>
+    </TagInputHeader>
   );
 };
 
@@ -89,6 +89,10 @@ const TagInputPopupOutsideClickDetector = styled.div`
   top: 0;
   left: 0;
   zindex: 10;
+`;
+
+const TagInputHeader = styled(SectionHeader)`
+  padding-bottom: 0.375rem;
 `;
 
 export default TagInput;

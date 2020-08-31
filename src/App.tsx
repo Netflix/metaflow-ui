@@ -9,6 +9,7 @@ import { Page } from './components/Structure';
 import AppBar from './components/AppBar';
 
 import GlobalStyle from './GlobalStyle';
+import './theme/font/roboto.css';
 import theme from './theme';
 
 function ScrollToTop() {
