@@ -260,10 +260,8 @@ export const StyledResultGroup = styled(Section)`
   thead {
     background: #ffffff;
 
-    &.sticky {
-      h3 {
-        margin-top: 15px;
-      }
+    h3:first-of-type {
+      margin-top: 1rem;
     }
   }
 
