@@ -79,8 +79,8 @@ const Home: React.FC = () => {
   const activeParams = getAllDefaultedQueryParams();
 
   const resetAllFilters = useCallback(() => {
-    setQp(defaultParams, 'replace');
-  }, [setQp]);
+    setQp({ ...defaultParams, _group: activeParams._group }, 'replace');
+  }, [setQp, activeParams]);
 
   const handleRunClick = (r: IRun) => history.push(getPath.dag(r.flow_id, r.run_number));
 
