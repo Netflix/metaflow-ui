@@ -32,7 +32,7 @@ interface DefaultQuery {
 
 const defaultParams = {
   _group: 'flow_id',
-  _order: '-run_number',
+  _order: '-ts_epoch',
   _limit: '10',
   status: 'running,completed,failed',
 };
