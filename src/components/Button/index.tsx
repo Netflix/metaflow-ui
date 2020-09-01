@@ -8,6 +8,7 @@ export type ButtonProps = {
   disabled?: boolean;
   active?: boolean;
   textOnly?: boolean;
+  iconOnly?: boolean;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'text' | 'primaryText';
   tabIndex?: number;
@@ -28,6 +29,7 @@ const Button: React.FC<ButtonProps> = ({
   active = false,
   disabled = false,
   textOnly = false,
+  iconOnly = false,
   variant = 'default',
   size = 'md',
   tabIndex = 99,
@@ -38,7 +40,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <StyledButton
       className={`button ${className} ${active ? 'active' : ''}`}
-      {...{ disabled, tabIndex, active, textOnly, variant, size, withIcon, ...rest }}
+      {...{ disabled, tabIndex, active, textOnly, variant, size, withIcon, iconOnly, ...rest }}
     >
       {children}
     </StyledButton>
@@ -87,6 +89,7 @@ type StyledButtonProps = {
   disabled?: boolean;
   active?: boolean;
   textOnly?: boolean;
+  iconOnly?: boolean;
   size: NonNullable<ButtonProps['size']>;
   variant: NonNullable<ButtonProps['variant']>;
   withIcon: NonNullable<ButtonProps['withIcon']>;
@@ -116,7 +119,6 @@ export const ButtonCSS = css`
   align-items: center;
   outline: 0;
   cursor: pointer;
-  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
   text-decoration: none;
   border-radius: 0.25rem;
   border: 1px solid ${(p) => p.theme.color.border.light};
@@ -124,6 +126,7 @@ export const ButtonCSS = css`
 
 const StyledButton = styled.button<StyledButtonProps>`
   ${ButtonCSS};
+  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => (p.iconOnly ? p.theme.spacer.xs : p.theme.spacer.sm)}rem;
   ${(p) => getButtonColors(p.theme.color.button[p.variant])};
   ${(p) => p.active && ActiveButtonCSS};
   ${(p) => p.disabled && DisabledButtonCSS};

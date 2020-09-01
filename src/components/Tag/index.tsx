@@ -8,7 +8,8 @@ const ActiveTagCSS = css`
   background: ${(p) => p.theme.color.bg.blueLight};
   color: ${(p) => p.theme.color.text.blue};
   border-bottom: 1px solid ${(p) => darken(0.1, p.theme.color.bg.blueLight)};
-  font-weight: 500;
+  padding: ${(p) => p.theme.spacer.sm}rem;
+  font-weight: 400;
   box-shadow: none;
 
   &:hover {

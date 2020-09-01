@@ -18,6 +18,7 @@ type CommonFieldProps<T> = {
 type FieldBaseProps = CommonFieldProps<HTMLDivElement> & {
   children: ReactNode;
   type: string;
+  noMinWidth?: boolean;
 };
 
 export const Field: React.FC<FieldBaseProps> = ({
@@ -27,6 +28,7 @@ export const Field: React.FC<FieldBaseProps> = ({
   horizontal,
   active,
   onClick,
+  noMinWidth,
   ...rest
 }) => {
   const testid = rest['data-testid'];
@@ -38,6 +40,7 @@ export const Field: React.FC<FieldBaseProps> = ({
         active,
         type,
         onClick,
+        noMinWidth,
       }}
       data-testid={testid}
     >
@@ -47,13 +50,15 @@ export const Field: React.FC<FieldBaseProps> = ({
 };
 
 export const SelectField: React.FC<
-  { label?: string; options: [string, string][]; disabled?: boolean } & CommonFieldProps<HTMLSelectElement>
-> = ({ label, options, horizontal, ...rest }) => {
+  { label?: string; options: [string, string][]; disabled?: boolean; noMinWidth?: boolean } & CommonFieldProps<
+    HTMLSelectElement
+  >
+> = ({ label, options, horizontal, noMinWidth, ...rest }) => {
   const [id] = useState(uuid());
   const testid = rest['data-testid'];
 
   return (
-    <Field horizontal={horizontal} type="select" data-testid={testid}>
+    <Field horizontal={horizontal} type="select" data-testid={testid} noMinWidth={noMinWidth}>
       {label && <label htmlFor={id}>{label}</label>}
       <select id={id} {...rest}>
         {options.map((o) => (
@@ -161,7 +166,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   input[type='text'],
   select {
     width: 100%;
-    min-width: 150px;
+    min-width: ${(p) => (p.noMinWidth ? 'none' : '150px')};
     border-radius: 0.25rem;
     outline: 0;
     line-height: 1.25rem;
@@ -191,7 +196,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   }
 
   &.field-checkbox {
-    margin-bottom: ${(p) => p.theme.spacer.xs}rem;
+    margin-bottom: 0.4rem;
     cursor: pointer;
     label {
       cursor: pointer;
@@ -202,7 +207,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     span.checkbox.checked {
       color: #fff;
       border-color: transparent;
-      background-color: ${(p) => p.theme.color.bg.blue};
+      font-weight: 500;
     }
 
     &.status-running span.checkbox.checked {
@@ -213,6 +218,10 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     }
     &.status-completed span.checkbox.checked {
       background: ${(p) => p.theme.color.bg.green};
+    }
+
+    label {
+      font-weight: 500;
     }
   }
 
