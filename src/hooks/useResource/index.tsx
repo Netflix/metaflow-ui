@@ -28,7 +28,7 @@ export interface HookConfig<T, U> {
   uuid?: string;
 }
 
-interface DataModel<T> {
+export interface DataModel<T> {
   data: T;
   status: number;
   links: ResourceLinks;
@@ -275,7 +275,7 @@ export default function useResource<T, U>({
     //if ((!pause && (!cached || !cached.data || cached.stale)) || true) {
     if (!pause) {
       setStatus('Loading');
-      console.log('Fethcing ', performance.now());
+
       fetchData(target, signal, (isSuccess) => {
         fulfilled = true;
         if (isSuccess) {

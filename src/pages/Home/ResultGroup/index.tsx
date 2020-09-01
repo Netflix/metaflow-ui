@@ -11,7 +11,7 @@ import { flatten } from '../../../utils/array';
 import { omit } from '../../../utils/object';
 import { getPath } from '../../../utils/routing';
 
-import useResource from '../../../hooks/useResource';
+import useResource, { DataModel } from '../../../hooks/useResource';
 
 import { Section } from '../../../components/Structure';
 import Icon from '../../../components/Icon';
@@ -110,7 +110,7 @@ const ResultGroup: React.FC<Props> = ({
     ).filter((x: IRun | undefined) => !!x);
 
     setRows(uniqueRows(initialData.concat(cachedPages)));
-  }, [initialData, page]); // eslint-disable-line
+  }, [initialData, page, result?.data]); // eslint-disable-line
 
   //
   // STICKY HEADER
@@ -129,7 +129,6 @@ const ResultGroup: React.FC<Props> = ({
   ].filter((item) => !item.hidden);
 
   const tableRef = useRef<HTMLTableElement>(null);
-
   const HeadContent = (
     <>
       <TR>
@@ -197,7 +196,7 @@ const ResultGroup: React.FC<Props> = ({
               ) : (
                 <>
                   <TD colSpan={8}>
-                    <div style={{ height: '32px' }}>Loading...</div>
+                    <div style={{ height: '32px' }}> </div>
                   </TD>
                 </>
               )}
@@ -205,7 +204,7 @@ const ResultGroup: React.FC<Props> = ({
           ))}
         </tbody>
       </Table>
-      {result?.pages?.last !== page && rows.length >= Number(localSearchParams['_limit']) && (
+      {hasMoreItems(result, rows.length, Number(localSearchParams['_limit']), page) && (
         <Button className="load-more" onClick={() => loadMoreRuns()} size="sm" variant="primaryText" textOnly>
           {t('home.load-more-runs')} <Icon name="arrowDown" padLeft />
         </Button>
@@ -213,6 +212,14 @@ const ResultGroup: React.FC<Props> = ({
     </StyledResultGroup>
   );
 };
+
+function hasMoreItems(result: DataModel<IRun[]>, rowsAmount: number, limit: number, currentPage: number) {
+  if (result?.pages) {
+    return currentPage < result.pages.last;
+  }
+
+  return rowsAmount >= limit;
+}
 
 function uniqueRows(runs: IRun[]) {
   const ids = runs.map((item) => item.run_number);

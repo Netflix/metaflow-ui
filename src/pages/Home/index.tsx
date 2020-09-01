@@ -22,6 +22,7 @@ import { Text } from '../../components/Text';
 import Spinner from '../../components/Spinner';
 import ResultGroup from './ResultGroup';
 import { useQueryParams, StringParam } from 'use-query-params';
+import useIsInViewport from 'use-is-in-viewport';
 
 interface DefaultQuery {
   _group: 'string';
@@ -54,8 +55,6 @@ function isDefaultParams(params: Record<string, string>) {
 function paramList(param: QueryParam): Array<string> {
   return param ? param.split(',').filter((p: string) => p !== '') : [];
 }
-
-// TODO: most of the query related functionality could be exposed by the useQuery hook
 
 const Home: React.FC = () => {
   const [qp, setQp] = useQueryParams({
@@ -119,6 +118,12 @@ const Home: React.FC = () => {
     }
   }, [activeParams, resetAllFilters]);
 
+  useEffect(() => {
+    if (isDefaultParams(activeParams)) {
+      resetAllFilters();
+    }
+  }, []); // eslint-disable-line
+
   const [runGroups, setRunGroups] = useState<Record<string, IRun[]>>({});
 
   useEffect(() => {
@@ -129,7 +134,7 @@ const Home: React.FC = () => {
           )
         : {},
     );
-  }, [runs]);
+  }, [runs]); // eslint-disable-line
 
   return (
     <>
@@ -145,6 +150,7 @@ const Home: React.FC = () => {
       <MemoContentArea
         error={error}
         status={status}
+        params={cleanParams(qp as any)}
         runGroups={runGroups}
         handleOrderChange={handleOrderChange}
         handleRunClick={handleRunClick}
@@ -165,7 +171,6 @@ const StatusCheckboxField: React.FC<{
       className={`status-${value}`}
       checked={!!(activeStatus && activeStatus.indexOf(value) > -1)}
       onChange={() => {
-        console.log('click ', performance.now());
         updateField('status', value);
       }}
     />
@@ -297,18 +302,23 @@ const HomeContentArea: React.FC<{
   error: Error | null;
   status: 'Ok' | 'Error' | 'Loading' | 'NotAsked';
   runGroups: Record<string, IRun[]>;
-  // params: PossibleQueryParams;
+  params: Record<string, string>;
   handleOrderChange: (orderProps: string) => void;
   handleRunClick: (r: IRun) => void;
-}> = ({ error, status, runGroups, handleOrderChange, handleRunClick }) => {
+}> = ({ error, status, runGroups, handleOrderChange, handleRunClick, params }) => {
+  const [visibleAmount, setVisibleAmount] = useState(5);
   const { t } = useTranslation();
   const resultAmount = Object.keys(runGroups).length;
+
+  useEffect(() => {
+    setVisibleAmount(5);
+  }, [params._group, params.status, params.flow_id, params._tags]);
 
   return (
     <Content>
       {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
       {status === 'Loading' && (
-        <Section style={{ position: 'absolute', left: '50%' }}>
+        <Section style={{ position: 'absolute', left: '50%', background: '#fff' }}>
           <Spinner />
         </Section>
       )}
@@ -318,39 +328,72 @@ const HomeContentArea: React.FC<{
       {resultAmount > 0 &&
         Object.keys(runGroups)
           .sort()
+          .slice(0, visibleAmount)
           .map((k) => {
             return (
               <ResultGroup
                 key={k}
-                field={'flow_id'}
+                field={params._group ? params._group : 'flow_id'}
                 fieldValue={k}
                 initialData={runGroups[k]}
-                queryParams={{}}
+                queryParams={params}
                 onOrderChange={handleOrderChange}
                 onRunClick={handleRunClick}
                 resourceUrl="/runs"
               />
             );
           })}
+      <AutoLoadTrigger
+        updateVisibility={() => {
+          if (totalLengthOfRuns(runGroups) > visibleAmount) {
+            setVisibleAmount(visibleAmount + 5);
+          }
+        }}
+      />
     </Content>
   );
+};
+
+function totalLengthOfRuns(grouppedRuns: Record<string, IRun[]>) {
+  return Object.keys(grouppedRuns).reduce((amount, key) => {
+    return amount + grouppedRuns[key].length;
+  }, 0);
+}
+
+const AutoLoadTrigger: React.FC<{ updateVisibility: () => void }> = ({ updateVisibility }) => {
+  const [isInViewport, targetRef] = useIsInViewport();
+  const [isUpdatable, setIsUpdatable] = useState(false);
+
+  useEffect(() => {
+    if (isInViewport && isUpdatable) {
+      updateVisibility();
+      setIsUpdatable(false);
+
+      setTimeout(() => {
+        setIsUpdatable(true);
+      }, 250);
+    }
+  }, [isInViewport, updateVisibility, isUpdatable]);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsUpdatable(true);
+    }, 500);
+  }, []);
+
+  return <div ref={targetRef} />;
 };
 
 const MemoContentArea = React.memo<{
   error: Error | null;
   status: 'Ok' | 'Error' | 'Loading' | 'NotAsked';
   runGroups: Record<string, IRun[]>;
-  // params: PossibleQueryParams;
+  params: Record<string, string>;
   handleOrderChange: (orderProps: string) => void;
   handleRunClick: (r: IRun) => void;
-}>(
-  (props) => {
-    return <HomeContentArea {...props} />;
-  },
-  (prev, n) => {
-    return prev.status === n.status && Object.keys(prev.runGroups).length === Object.keys(n.runGroups).length;
-  },
-);
+}>((props) => {
+  return <HomeContentArea {...props} />;
+});
 
 function cleanParams(qp: Record<string, string>): Record<string, string> {
   return Object.keys(qp).reduce((obj, key) => {
