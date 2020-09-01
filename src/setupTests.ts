@@ -7,9 +7,7 @@ import '@testing-library/jest-dom/extend-expect';
 const noop = () => null;
 Object.defineProperty(window, 'scrollTo', { value: noop, writable: true });
 
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-
+(global as any).IntersectionObserver = class IntersectionObserver {
   disconnect() {
     return null;
   }
