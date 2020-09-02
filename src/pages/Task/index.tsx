@@ -141,6 +141,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
                       items={[task]}
                       columns={[
                         { label: t('fields.task-id') + ':', prop: 'task_id' },
+                        { label: t('items.step') + ':', prop: 'step_name' },
                         { label: t('fields.status') + ':', accessor: (_item) => <StatusField status={'completed'} /> },
                         {
                           label: t('fields.started-at') + ':',

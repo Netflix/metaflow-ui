@@ -45,20 +45,21 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
     let taskRows: TaskListRowItem[] = [];
     for (const stepname of Object.keys(rowData)) {
       const step = rowData[stepname];
+      if (!stepname.startsWith('_')) {
+        taskRows.push({ type: 'step' as const, data: step });
 
-      taskRows.push({ type: 'step' as const, data: step });
+        const isOpen = stepData[stepname] ? stepData[stepname].isOpen : step.isOpen;
 
-      const isOpen = stepData[stepname] ? stepData[stepname].isOpen : step.isOpen;
-
-      if (isOpen) {
-        taskRows = taskRows.concat(
-          Object.keys(step.data)
-            .filter((key) => !filter || key.indexOf(filter) > -1)
-            .map((key) => ({
-              type: 'task',
-              data: step.data[parseInt(key)][0],
-            })),
-        );
+        if (isOpen) {
+          taskRows = taskRows.concat(
+            Object.keys(step.data)
+              .filter((key) => !filter || key.indexOf(filter) > -1)
+              .map((key) => ({
+                type: 'task',
+                data: step.data[parseInt(key)][0],
+              })),
+          );
+        }
       }
     }
 

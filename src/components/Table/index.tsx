@@ -16,12 +16,12 @@ export default styled.table`
   margin-bottom: ${(p) => p.theme.spacer.hg}rem;
 `;
 
-export const TH = styled.th<{ active?: boolean }>`
+export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
   background: #fff;
   color: ${(p) => p.theme.color.text.light};
   font-weight: 400;
-  cursor: pointer;
   white-space: nowrap;
+  cursor: ${(p) => (p.clickable ? 'pointer' : 'auto')};
   ${cell};
 
   .icon {
@@ -53,9 +53,8 @@ export const TD = styled.td`
   }
 `;
 
-export const TR = styled.tr`
-  cursor: pointer;
-
+export const TR = styled.tr<{ clickable?: boolean }>`
+  cursor: ${(p) => (p.clickable ? 'pointer' : 'auto')};
   &:hover ${TD} {
     background: ${(p) => p.theme.color.bg.blueLight};
     color: ${(p) => p.theme.color.text.blue};
@@ -79,7 +78,7 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({ label, queryKey, cur
   const active: boolean = queryKey === orderParam;
 
   return (
-    <TH active={active} onClick={() => onSort(queryKey)} {...rest}>
+    <TH active={active} onClick={() => onSort(queryKey)} {...rest} clickable>
       <HeaderColumnWrapper>
         {label}
         <SortIcon active={active} direction={direction} padLeft />

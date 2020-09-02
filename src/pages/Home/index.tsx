@@ -21,7 +21,7 @@ import Button from '../../components/Button';
 import { Text } from '../../components/Text';
 import Spinner from '../../components/Spinner';
 import ResultGroup from './ResultGroup';
-import { useQueryParams, StringParam } from 'use-query-params';
+import { useQueryParams, StringParam, withDefault } from 'use-query-params';
 import useIsInViewport from 'use-is-in-viewport';
 
 interface DefaultQuery {
@@ -58,11 +58,11 @@ function paramList(param: QueryParam): Array<string> {
 
 const Home: React.FC = () => {
   const [qp, setQp] = useQueryParams({
-    _group: StringParam,
-    _order: StringParam,
-    _limit: StringParam,
+    _group: withDefault(StringParam, 'flow_id'),
+    _order: withDefault(StringParam, '-ts_epoch'),
+    _limit: withDefault(StringParam, '6'),
     _tags: StringParam,
-    status: StringParam,
+    status: withDefault(StringParam, 'running,completed,failed'),
     flow_id: StringParam,
   });
 

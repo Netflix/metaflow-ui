@@ -32,8 +32,8 @@ const RunPage: React.FC = () => {
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState('timeline');
   useEffect(() => {
-    if (params.viewType) {
-      setTab(params.viewType === 'dag' ? 'dag' : 'timeline');
+    if (params.viewType && ['dag', 'timeline', 'task'].indexOf(params.viewType) > -1) {
+      setTab(params.viewType);
     } else if (params.stepName && params.taskId) {
       setTab('task');
     }
@@ -132,7 +132,7 @@ const RunPage: React.FC = () => {
                   (previousStepName &&
                     previousTaskId &&
                     getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId)) ||
-                  getPath.task(params.flowId, params.runNumber, 'not-selected', 'not-selected'),
+                  getPath.tasks(params.flowId, params.runNumber),
                 temporary: !!(previousStepName && previousTaskId),
                 component: (
                   <TaskViewContainer

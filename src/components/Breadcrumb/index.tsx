@@ -33,10 +33,11 @@ export function findAdditionalButtons(routeMatch: match<KnownParams> | null, loc
   const buttons = [];
   const params = routeMatch.params;
 
-  if (params.flowId) {
+  const flowValue = queryParams.get('flow_id') || params.flowId;
+  if (flowValue) {
     buttons.push({
-      label: `${params.flowId}`,
-      path: getPath.home() + '?flow_id=' + params.flowId,
+      label: `${flowValue}`,
+      path: getPath.home() + '?flow_id=' + flowValue,
     });
   }
 
@@ -80,6 +81,7 @@ const Breadcrumb: React.FC = () => {
   const currentBreadcrumbPath = buttonList.map((item) => item.label).join('/');
 
   const [edit, setEdit] = useState(false);
+  const [str, setStr] = useState(currentBreadcrumbPath.replace(/\s/g, ''));
   const [lastRoute, setLastRoute] = useState(currentBreadcrumbPath);
   const [warning, setWarning] = useState('');
 
@@ -172,8 +174,12 @@ const Breadcrumb: React.FC = () => {
               <ItemRow pad="md">
                 <TextInputField
                   placeholder={t('breadcrumb.goto')}
-                  defaultValue={currentBreadcrumbPath}
+                  value={str}
                   onKeyPress={onKeyPress}
+                  onChange={(e) => {
+                    console.log('e');
+                    setStr(e?.target.value?.replace(/\s/g, '') || '');
+                  }}
                   autoFocus={true}
                 />
                 <GotoClose onClick={() => closeUp()}>

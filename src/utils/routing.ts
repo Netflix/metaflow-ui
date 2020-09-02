@@ -16,6 +16,7 @@ export const getPath = {
     `/flows/${flowId}/runs/${runNumber}/view/timeline?steps=${stepName}`,
   dag: (flowId: PathValue, runNumber: PathValue): string => `/flows/${flowId}/runs/${runNumber}/view/dag`,
   timeline: (flowId: PathValue, runNumber: PathValue): string => `/flows/${flowId}/runs/${runNumber}/view/timeline`,
+  tasks: (flowId: PathValue, runNumber: PathValue): string => `/flows/${flowId}/runs/${runNumber}/view/task`,
   task: (flowId: PathValue, runNumber: PathValue, stepName: PathValue, taskId: PathValue): string =>
     `/flows/${flowId}/runs/${runNumber}/steps/${stepName}/tasks/${taskId}`,
   run: (flowId: PathValue, runNumber: PathValue): string => `/flows/${flowId}/runs/${runNumber}`,

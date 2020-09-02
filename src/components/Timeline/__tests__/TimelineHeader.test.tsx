@@ -12,6 +12,9 @@ const headerFunctionProps = {
   updateSortDir: () => null,
   expandAll: () => null,
   collapseAll: () => null,
+  setFullscreen: () => null,
+  isFullscreen: false,
+  updateStatusFilter: () => null,
 };
 
 describe('TimelineHeader component', () => {
@@ -82,10 +85,10 @@ describe('TimelineHeader component', () => {
       </TestWrapper>,
     );
 
-    expect(getByTestId('timeline-header-orderby-startedat')).toHaveClass('active');
+    expect(getByTestId('timeline-header-orderby-startTime')).toHaveClass('active');
     expect(getByTestId('timeline-header-orderby-duration')).not.toHaveClass('active');
     // When started at is active and we click, we should call updateSortDir function instead
-    fireEvent.click(getByTestId('timeline-header-orderby-startedat'));
+    fireEvent.click(getByTestId('timeline-header-orderby-startTime'));
     expect(props.updateSortBy).toBeCalledTimes(0);
     expect(props.updateSortDir).toBeCalledTimes(1);
     // When started at is active and we click duration button, we call updateSortBy
@@ -98,7 +101,7 @@ describe('TimelineHeader component', () => {
       </TestWrapper>,
     );
     // Try other way around
-    fireEvent.click(getByTestId('timeline-header-orderby-startedat'));
+    fireEvent.click(getByTestId('timeline-header-orderby-startTime'));
     expect(props.updateSortBy).toBeCalledWith('startTime');
 
     fireEvent.click(getByTestId('timeline-header-orderby-duration'));

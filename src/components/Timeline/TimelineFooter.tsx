@@ -59,18 +59,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ rowData, graph, move, u
 
   return (
     <TimelineFooterContainer>
-      <TimelineFooterContent
-        onMouseMove={(e) => handleMove(e.clientX)}
-        onTouchMove={(e) => move(e.touches[0].clientX)}
-        onMouseLeave={() => {
-          stopHandleDrag();
-          stopMove();
-        }}
-        onMouseUp={() => {
-          stopHandleDrag();
-          stopMove();
-        }}
-      >
+      <TimelineFooterContent>
         <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
         <MiniTimelineContainer ref={_container}>
           {Object.keys(rowData).map((key) => {
@@ -88,6 +77,29 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ rowData, graph, move, u
           })}
         </MiniTimelineContainer>
       </TimelineFooterContent>
+
+      {(drag.dragging || handleDrag.dragging) && (
+        <div
+          style={{
+            position: 'fixed',
+            width: '100%',
+            height: '100%',
+            left: 0,
+            top: 0,
+            zIndex: 10,
+          }}
+          onMouseMove={(e) => handleMove(e.clientX)}
+          onTouchMove={(e) => move(e.touches[0].clientX)}
+          onMouseLeave={() => {
+            stopHandleDrag();
+            stopMove();
+          }}
+          onMouseUp={() => {
+            stopHandleDrag();
+            stopMove();
+          }}
+        ></div>
+      )}
     </TimelineFooterContainer>
   );
 };

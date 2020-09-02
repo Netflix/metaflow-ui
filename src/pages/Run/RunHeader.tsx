@@ -15,6 +15,7 @@ import { SmallText } from '../../components/Text';
 import StatusField from '../../components/Status';
 import InformationRow from '../../components/InformationRow';
 import PropertyTable from '../../components/PropertyTable';
+import { useHistory } from 'react-router-dom';
 
 function mergeTags(run: Run) {
   const baseTags = run.tags || [];
@@ -25,6 +26,7 @@ function mergeTags(run: Run) {
 
 const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
   const { t } = useTranslation();
+  const history = useHistory();
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -59,7 +61,14 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
               <SmallText>{t('run.tags')}</SmallText>
               <ItemRow pad="xs">
                 {mergeTags(run).map((tag) => (
-                  <Tag key={tag}>{tag}</Tag>
+                  <Tag
+                    key={tag}
+                    onClick={() => {
+                      history.push('/?_tags=' + tag);
+                    }}
+                  >
+                    {tag}
+                  </Tag>
                 ))}
               </ItemRow>
             </ItemRow>

@@ -102,10 +102,10 @@ const VirtualizedTimeline: React.FC<{
       });
     }
 
-    const sortBy = validatedParameter<'startTime' | 'duration'>(
+    const sortBy = validatedParameter<'startTime' | 'endTime' | 'duration'>(
       q.order,
       graph.sortBy,
-      ['startTime', 'duration'],
+      ['startTime', 'endTime', 'duration'],
       'startTime',
     );
     if (sortBy) {
@@ -287,9 +287,9 @@ const VirtualizedTimeline: React.FC<{
             move={(value) => graphDispatch({ type: 'move', value: value })}
             updateHandle={(which, to) => {
               if (which === 'left') {
-                graphDispatch({ type: 'setZoom', start: to, end: graph.timelineEnd });
+                graphDispatch({ type: 'setZoom', start: to < graph.min ? graph.min : to, end: graph.timelineEnd });
               } else {
-                graphDispatch({ type: 'setZoom', start: graph.timelineStart, end: to });
+                graphDispatch({ type: 'setZoom', start: graph.timelineStart, end: to > graph.max ? graph.max : to });
               }
             }}
           />
@@ -417,6 +417,9 @@ function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc') {
 
     if (sortBy === 'startTime' && fst.type === 'task' && snd.type === 'task') {
       return fst.data[0].ts_epoch - snd.data[0].ts_epoch;
+    }
+    if (sortBy === 'endTime' && fst.type === 'task' && snd.type === 'task') {
+      return (fst.data[0].finished_at || 0) - (snd.data[0].finished_at || 0);
     } else if (sortBy === 'duration') {
       return taskDuration(fst) - taskDuration(snd);
     }
@@ -455,7 +458,7 @@ function findHighestTimestampForGraph(rowDataState: RowDataModel, graph: GraphSt
   return Object.keys(rowDataState).reduce((val, key) => {
     const step = rowDataState[key];
     // When we are sorting by start time, we can check just last step finish time
-    if (graph.sortBy === 'startTime' && step.finished_at && step.finished_at > val) {
+    if ((graph.sortBy === 'startTime' || graph.sortBy === 'endTime') && step.finished_at && step.finished_at > val) {
       if (visibleStepNames.indexOf(key) === -1) return val;
       return step.finished_at;
     }

@@ -78,6 +78,7 @@ const ResultGroup: React.FC<Props> = ({
     [field]: fieldValue,
     _page: String(page),
   });
+
   const [rows, setRows] = useState<IRun[]>([]);
 
   const { error, getResult, cache, target } = useResource<IRun[], IRun>({
@@ -133,7 +134,17 @@ const ResultGroup: React.FC<Props> = ({
     <>
       <TR>
         <th colSpan={8} style={{ textAlign: 'left' }}>
-          <h3>{fieldValue}</h3>
+          <h3
+            onClick={() => {
+              const url =
+                field === 'flow_id'
+                  ? '/?_limit=20&flow_id=' + fieldValue
+                  : '/?_limit=20&_group=user_name&_tags=user:' + fieldValue;
+              history.push(url);
+            }}
+          >
+            {fieldValue}
+          </h3>
           {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
         </th>
       </TR>
@@ -164,12 +175,17 @@ const ResultGroup: React.FC<Props> = ({
         )}
         <tbody>
           {rows.map((r, i) => (
-            <TR key={`r-${i}`} onClick={() => onRunClick(r)}>
+            <TR key={`r-${i}`} clickable onClick={() => onRunClick(r)}>
               {isInViewport ? (
                 <>
                   <StatusColorCell status={r.status} />
                   <TD>
-                    <span className="muted">#</span> <strong>{r.run_number}</strong>
+                    <div style={{ display: 'flex' }}>
+                      <span className="muted" style={{ marginRight: '5px' }}>
+                        #
+                      </span>{' '}
+                      <strong>{r.run_number}</strong>
+                    </div>
                   </TD>
                   {field !== 'flow_id' && <TD>{r.flow_id}</TD>}
                   {field !== 'user_name' && <TD>{r.user_name}</TD>}
@@ -217,7 +233,6 @@ function hasMoreItems(result: DataModel<IRun[]>, rowsAmount: number, limit: numb
   if (result?.pages) {
     return currentPage < result.pages.last;
   }
-
   return rowsAmount >= limit;
 }
 
@@ -279,6 +294,7 @@ export const StyledResultGroup = styled(Section)`
 
     h3:first-of-type {
       margin-top: 1rem;
+      cursor: pointer;
     }
   }
 
@@ -295,13 +311,6 @@ export const StyledResultGroup = styled(Section)`
   }
 
   tr:hover td.timeline-link a {
-    color: ${(p) => p.theme.color.text.blue};
-
-    svg #line1 {
-      color: ${(p) => p.theme.color.bg.red};
-    }
-    svg #line2 {
-      color: ${(p) => p.theme.color.bg.yellow};
-    }
+    color: ${(p) => p.theme.color.bg.blue};
   }
 `;
