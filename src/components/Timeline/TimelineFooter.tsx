@@ -91,7 +91,6 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ rowData, graph, move, u
           onMouseMove={(e) => handleMove(e.clientX)}
           onTouchMove={(e) => move(e.touches[0].clientX)}
           onMouseLeave={() => {
-            console.log('leave');
             stopHandleDrag();
             stopMove();
           }}
