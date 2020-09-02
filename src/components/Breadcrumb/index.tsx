@@ -33,10 +33,11 @@ export function findAdditionalButtons(routeMatch: match<KnownParams> | null, loc
   const buttons = [];
   const params = routeMatch.params;
 
-  if (params.flowId) {
+  const flowValue = queryParams.get('flow_id') || params.flowId;
+  if (flowValue) {
     buttons.push({
-      label: `${params.flowId}`,
-      path: getPath.home() + '?flow_id=' + params.flowId,
+      label: `${flowValue}`,
+      path: getPath.home() + '?flow_id=' + flowValue,
     });
   }
 
