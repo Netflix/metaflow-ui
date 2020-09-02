@@ -287,9 +287,9 @@ const VirtualizedTimeline: React.FC<{
             move={(value) => graphDispatch({ type: 'move', value: value })}
             updateHandle={(which, to) => {
               if (which === 'left') {
-                graphDispatch({ type: 'setZoom', start: to, end: graph.timelineEnd });
+                graphDispatch({ type: 'setZoom', start: to < graph.min ? graph.min : to, end: graph.timelineEnd });
               } else {
-                graphDispatch({ type: 'setZoom', start: graph.timelineStart, end: to });
+                graphDispatch({ type: 'setZoom', start: graph.timelineStart, end: to > graph.max ? graph.max : to });
               }
             }}
           />

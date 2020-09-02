@@ -180,7 +180,12 @@ const ResultGroup: React.FC<Props> = ({
                 <>
                   <StatusColorCell status={r.status} />
                   <TD>
-                    <span className="muted">#</span> <strong>{r.run_number}</strong>
+                    <div style={{ display: 'flex' }}>
+                      <span className="muted" style={{ marginRight: '5px' }}>
+                        #
+                      </span>{' '}
+                      <strong>{r.run_number}</strong>
+                    </div>
                   </TD>
                   {field !== 'flow_id' && <TD>{r.flow_id}</TD>}
                   {field !== 'user_name' && <TD>{r.user_name}</TD>}

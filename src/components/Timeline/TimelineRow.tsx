@@ -191,6 +191,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
     color: gray;
     text-decoration: none;
     min-width: ${(p) => (p.group === 'none' ? '100%' : '50%')};
+    max-width: ${(p) => (p.group === 'none' ? '100%' : '90%')};
     background: #f6f6f6;
     display: inline-block;
     margin-right: -0.25rem;
