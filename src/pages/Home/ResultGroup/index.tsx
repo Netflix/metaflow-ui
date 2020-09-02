@@ -295,13 +295,6 @@ export const StyledResultGroup = styled(Section)`
   }
 
   tr:hover td.timeline-link a {
-    color: ${(p) => p.theme.color.text.blue};
-
-    svg #line1 {
-      color: ${(p) => p.theme.color.bg.red};
-    }
-    svg #line2 {
-      color: ${(p) => p.theme.color.bg.yellow};
-    }
+    color: ${(p) => p.theme.color.bg.blue};
   }
 `;
