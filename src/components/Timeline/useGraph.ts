@@ -2,7 +2,7 @@ import { useReducer } from 'react';
 
 export type GraphAlignment = 'fromLeft' | 'fromStartTime';
 export type GraphGroupBy = 'step' | 'none';
-export type GraphSortBy = 'startTime' | 'duration';
+export type GraphSortBy = 'startTime' | 'endTime' | 'duration';
 
 export type GraphState = {
   // Relative or absolute rendering? Absolute = just line length
@@ -60,6 +60,8 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
           ...state,
           max: action.end,
           min: action.start,
+          timelineStart: action.start > state.timelineStart ? action.start : state.timelineStart,
+          timelineEnd: action.end < state.timelineEnd ? action.end : state.timelineEnd,
         };
       } else {
         return {

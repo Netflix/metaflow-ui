@@ -75,6 +75,7 @@ const en = {
       'group-by-step': 'Group by step',
       'order-by': 'Order by',
       'started-at': 'Started at',
+      'finished-at': 'Finished at',
       duration: 'Duration',
       zoom: 'Zoom',
       'fit-to-screen': 'Fit to screen',

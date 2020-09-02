@@ -37,6 +37,17 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   updateStatusFilter,
 }) => {
   const { t } = useTranslation();
+  const SortButtonDef = (label: string, property: GraphSortBy) => (
+    <SortButton
+      label={label}
+      property={property}
+      current={graph.sortBy}
+      direction={graph.sortDir}
+      updateSortBy={updateSortBy}
+      updateSortDir={updateSortDir}
+    />
+  );
+
   return (
     <TimelineHeaderContainer>
       <TimelineHeaderTop>
@@ -85,36 +96,9 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
           <ItemRow>
             <Text>{t('timeline.order-by')}:</Text>
             <ButtonGroup>
-              <Button
-                size="sm"
-                onClick={() => {
-                  if (graph.sortBy === 'startTime') {
-                    updateSortDir();
-                  } else {
-                    updateSortBy('startTime');
-                  }
-                }}
-                active={graph.sortBy === 'startTime'}
-                data-testid="timeline-header-orderby-startedat"
-              >
-                {t('timeline.started-at')}
-                {graph.sortBy === 'startTime' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => {
-                  if (graph.sortBy === 'duration') {
-                    updateSortDir();
-                  } else {
-                    updateSortBy('duration');
-                  }
-                }}
-                active={graph.sortBy === 'duration'}
-                data-testid="timeline-header-orderby-duration"
-              >
-                {t('timeline.duration')}
-                {graph.sortBy === 'duration' ? <HeaderSortIcon dir={graph.sortDir} /> : null}
-              </Button>
+              {SortButtonDef(t('timeline.started-at'), 'startTime')}
+              {SortButtonDef(t('timeline.finished-at'), 'endTime')}
+              {SortButtonDef(t('timeline.duration'), 'duration')}
             </ButtonGroup>
           </ItemRow>
 
@@ -143,6 +127,30 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   );
 };
 
+const SortButton: React.FC<{
+  label: string;
+  property: GraphSortBy;
+  current: GraphSortBy;
+  direction: 'asc' | 'desc';
+  updateSortDir: () => void;
+  updateSortBy: (prop: GraphSortBy) => void;
+}> = ({ current, label, property, direction, updateSortDir, updateSortBy }) => (
+  <Button
+    size="sm"
+    onClick={() => {
+      if (current === property) {
+        updateSortDir();
+      } else {
+        updateSortBy(property);
+      }
+    }}
+    active={current === property}
+    data-testid={`timeline-header-orderby-${property}`}
+  >
+    {label}
+    {current === property ? <HeaderSortIcon dir={direction} /> : null}
+  </Button>
+);
 const HeaderSortIcon: React.FC<{ dir: 'asc' | 'desc' }> = ({ dir }) => (
   <SortIcon padLeft size="sm" active direction={dir === 'asc' ? 'up' : 'down'} />
 );
