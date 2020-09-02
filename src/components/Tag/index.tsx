@@ -17,7 +17,7 @@ const ActiveTagCSS = css`
   }
 `;
 
-const Tag = styled.span`
+const Tag = styled.span<{ highlighted?: boolean }>`
   display: inline-flex;
   background: ${(p) => p.theme.color.bg.white};
   color: ${(p) => p.theme.color.text.mid};
@@ -27,16 +27,20 @@ const Tag = styled.span`
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1rem;
-  cursor: default;
+  cursor: ${(p) => (p.onClick ? 'pointer' : 'default')};
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
 
-  ${(p) => p.onClick && ActiveTagCSS};
+  &:hover {
+    background: ${(p) => darken(0.03, p.theme.color.bg.white)};
+  }
+
+  ${(p) => p.highlighted && ActiveTagCSS};
 `;
 
 export default Tag;
 
 export const RemovableTag: React.FC<{ onClick: () => void }> = ({ children, onClick }) => (
-  <Tag onClick={onClick}>
+  <Tag onClick={onClick} highlighted>
     {children}
     <Icon name="times" padLeft />
   </Tag>
