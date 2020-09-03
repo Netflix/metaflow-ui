@@ -251,7 +251,7 @@ const VirtualizedTimeline: React.FC<{
             <List
               // eslint-disable-next-line react/no-string-refs
               ref={_listref}
-              overscanRowCount={5}
+              overscanRowCount={10}
               rowCount={rows.length}
               onRowsRendered={(params) => {
                 const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);

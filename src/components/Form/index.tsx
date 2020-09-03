@@ -208,6 +208,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
       color: #fff;
       border-color: transparent;
       font-weight: 500;
+      background: ${(p) => p.theme.color.bg.blue};
     }
 
     &.status-running span.checkbox.checked {
