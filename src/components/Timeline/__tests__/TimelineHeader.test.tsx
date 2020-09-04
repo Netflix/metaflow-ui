@@ -38,6 +38,10 @@ describe('TimelineHeader component', () => {
       </TestWrapper>,
     );
 
+    // Click settings button
+    expect(getByTestId('timeline-settings-button')).toBeInTheDocument();
+    fireEvent.click(getByTestId('timeline-settings-button'));
+
     expect(getByTestId('timeline-header-groupby-step')).toHaveClass('active');
 
     fireEvent.click(getByTestId('timeline-header-groupby-step'));

@@ -50,47 +50,15 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
 
   return (
     <TimelineHeaderContainer>
-      <TimelineHeaderTop>
-        <ItemRow pad="lg">
-          <TimelineHeaderItem>
-            <TextInputField disabled={true} horizontal placeholder="Search not implemented..." />
-          </TimelineHeaderItem>
-          <TimelineHeaderItem pad="sm">
-            <Text>{t('fields.status')}:</Text>
-            <SelectField
-              horizontal
-              onChange={(e) => {
-                if (e?.target.value === 'all') {
-                  updateStatusFilter(null);
-                } else {
-                  updateStatusFilter(e?.target.value || null);
-                }
-              }}
-              options={[
-                ['all', t('run.filter-all')],
-                ['done', t('run.filter-completed')],
-                ['running', t('run.filter-running')],
-              ]}
-            />
-          </TimelineHeaderItem>
-          {!isFullscreen && (
-            <Button onClick={() => setFullscreen()} withIcon>
-              <Icon name="maximize" />
-              <span>{t('run.show-fullscreen')}</span>
-            </Button>
-          )}
-        </ItemRow>
-      </TimelineHeaderTop>
-
       <TimelineHeaderBottom>
         <TimelineHeaderBottomLeft>
-          <CheckboxField
-            label={t('timeline.group-by-step')}
-            checked={graph.groupBy === 'step'}
-            onChange={() => toggleGroupBy(graph.groupBy === 'step' ? 'none' : 'step')}
-            data-testid="timeline-header-groupby-step"
+          <TextInputField disabled={true} horizontal placeholder="Search not implemented..." />
+          <SettingsButton
+            expand={() => expandAll()}
+            collapse={() => collapseAll()}
+            groupBy={graph.groupBy}
+            toggleGroupBy={toggleGroupBy}
           />
-          <SettingsButton expand={() => expandAll()} collapse={() => collapseAll()} />
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
           <ItemRow>
@@ -100,9 +68,29 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               {SortButtonDef(t('timeline.finished-at'), 'endTime')}
               {SortButtonDef(t('timeline.duration'), 'duration')}
             </ButtonGroup>
+
+            <TimelineHeaderItem pad="sm">
+              <Text>{t('fields.status')}:</Text>
+              <SelectField
+                horizontal
+                noMinWidth
+                onChange={(e) => {
+                  if (e?.target.value === 'all') {
+                    updateStatusFilter(null);
+                  } else {
+                    updateStatusFilter(e?.target.value || null);
+                  }
+                }}
+                options={[
+                  ['all', t('run.filter-all')],
+                  ['done', t('run.filter-completed')],
+                  ['running', t('run.filter-running')],
+                ]}
+              />
+            </TimelineHeaderItem>
           </ItemRow>
 
-          <ItemRow className="">
+          <ItemRow>
             <Text>{t('timeline.zoom')}:</Text>
             <ButtonGroup>
               <Button
@@ -120,6 +108,12 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 <Icon name="plus" />
               </Button>
             </ButtonGroup>
+            {!isFullscreen && (
+              <Button onClick={() => setFullscreen()} withIcon>
+                <Icon name="maximize" />
+                <span>{t('run.show-fullscreen')}</span>
+              </Button>
+            )}
           </ItemRow>
         </TimelineHeaderBottomRight>
       </TimelineHeaderBottom>
@@ -160,12 +154,6 @@ const TimelineHeaderContainer = styled.div`
   font-size: 14px;
 `;
 
-const TimelineHeaderTop = styled.div`
-  padding-bottom: ${(p) => p.theme.spacer.md}rem;
-  border-bottom: 1px solid ${(p) => p.theme.color.border.light};
-  display: flex;
-`;
-
 const TimelineHeaderBottom = styled.div`
   display: flex;
 
@@ -177,30 +165,46 @@ const TimelineHeaderBottom = styled.div`
 const TimelineHeaderBottomLeft = styled.div`
   display: flex;
   justify-content: space-between;
-  padding: ${(p) => p.theme.spacer.md}rem;
+  align-items: center;
+  padding: ${(p) => `${p.theme.spacer.md}rem ${p.theme.spacer.sm}rem ${p.theme.spacer.md}rem 0`};
   width: 225px;
   border-right: 1px solid ${(p) => p.theme.color.border.light};
 `;
 
 const TimelineHeaderBottomRight = styled.div`
   padding: ${(p) => p.theme.spacer.md}rem;
+  padding-right: 0;
   display: flex;
   flex: 1;
   justify-content: space-between;
 `;
 
-const TimelineHeaderItem = styled(ItemRow)``;
+const TimelineHeaderItem = styled(ItemRow)`
+  margin: 0 1rem;
+`;
 
-const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = ({ expand, collapse }) => {
+const SettingsButton: React.FC<{
+  expand: () => void;
+  collapse: () => void;
+  groupBy: GraphGroupBy;
+  toggleGroupBy: (gb: GraphGroupBy) => void;
+}> = ({ expand, collapse, groupBy, toggleGroupBy }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
-    <div style={{ position: 'relative' }}>
+    <StyledSettingsButton>
       <Button active={open} onClick={() => setOpen(!open)} data-testid="timeline-settings-button">
         <Icon name="ellipsis" />
       </Button>
       {open && (
         <TemporaryPopup>
+          <CheckboxField
+            label={t('timeline.group-by-step')}
+            checked={groupBy === 'step'}
+            onChange={() => toggleGroupBy(groupBy === 'step' ? 'none' : 'step')}
+            data-testid="timeline-header-groupby-step"
+          />
+          <br />
           <Button
             onClick={() => {
               expand();
@@ -222,9 +226,17 @@ const SettingsButton: React.FC<{ expand: () => void; collapse: () => void }> = (
           </Button>
         </TemporaryPopup>
       )}
-    </div>
+    </StyledSettingsButton>
   );
 };
+
+const StyledSettingsButton = styled.div`
+  position: relative;
+  button {
+    height: 30px;
+    margin-left: 0.5rem;
+  }
+`;
 
 const TemporaryPopup = styled.div`
   position: absolute;
