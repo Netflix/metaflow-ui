@@ -127,6 +127,11 @@ const Breadcrumb: React.FC = () => {
     setWarning('');
   };
 
+  const openModal = () => {
+    setEdit(true);
+    setStr(currentBreadcrumbPath.replace(/\s/g, ''));
+  };
+
   return (
     <StyledBreadcrumb pad="md">
       <ButtonLink to="/" tabIndex={0} data-testid={'home-button'}>
@@ -138,8 +143,8 @@ const Breadcrumb: React.FC = () => {
         <TextInputField
           horizontal
           placeholder={t('breadcrumb.goto')}
-          onClick={() => setEdit(true)}
-          onKeyPress={() => setEdit(true)}
+          onClick={openModal}
+          onKeyPress={openModal}
           data-testid="breadcrumb-goto-input-inactive"
         />
       )}
@@ -153,10 +158,10 @@ const Breadcrumb: React.FC = () => {
             </ButtonLink>
           ))}
           <EditButton
-            onClick={() => setEdit(true)}
+            onClick={openModal}
             onKeyPress={(e) => {
               if (e && e.charCode === 13) {
-                setEdit(true);
+                openModal();
               }
             }}
             tabIndex={0}
@@ -177,7 +182,6 @@ const Breadcrumb: React.FC = () => {
                   value={str}
                   onKeyPress={onKeyPress}
                   onChange={(e) => {
-                    console.log('e');
                     setStr(e?.target.value?.replace(/\s/g, '') || '');
                   }}
                   autoFocus={true}
