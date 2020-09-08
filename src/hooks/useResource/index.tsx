@@ -169,7 +169,7 @@ export default function useResource<T, U>({
   useWebsocket<U>({
     url: url,
     queryParams: queryParams,
-    enabled: subscribeToEvents,
+    enabled: subscribeToEvents && !pause,
     onUpdate: (event: Event<any>) => {
       if (pause) return;
       // TODO: Create cache item if it doesn't exist (How though? We have only partial data available.)

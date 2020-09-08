@@ -94,7 +94,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     };
 
     // Always unsubscribe first to prevent duplicate event listeners
-    unsubscribe() && subscriptions.push({ uuid, resource, onUpdate: onUpdate as OnUpdate<unknown> });
+    unsubscribe() && subscriptions.push({ uuid, resource: target, onUpdate: onUpdate as OnUpdate<unknown> });
 
     conn.send(JSON.stringify(subscribeMessage(uuid, target)));
 
