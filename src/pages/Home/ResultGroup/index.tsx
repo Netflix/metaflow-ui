@@ -43,8 +43,7 @@ export const StatusColorHeaderCell = styled(TH)`
 `;
 
 type Props = {
-  field: string;
-  fieldValue: string;
+  label: string;
   resourceUrl: string;
   initialData: IRun[];
   queryParams: Record<string, string>;
@@ -59,25 +58,20 @@ const HeaderColumn = (props: {
   currentOrder: string;
 }) => <HeaderColumnBase {...props} />;
 
-const ResultGroup: React.FC<Props> = ({
-  field,
-  fieldValue,
-  resourceUrl,
-  initialData,
-  queryParams,
-  onRunClick,
-  onOrderChange,
-}) => {
+const ResultGroup: React.FC<Props> = ({ label, resourceUrl, initialData, queryParams, onRunClick, onOrderChange }) => {
   const { t } = useTranslation();
   const history = useHistory();
 
   const [page, setPage] = useState(1);
   const loadMoreRuns = () => setPage(page + 1);
-  const localSearchParams = omit(['_group'], {
-    ...queryParams,
-    [field]: fieldValue,
-    _page: String(page),
-  });
+
+  const localSearchParams = queryParams._group
+    ? omit(['_group'], {
+        ...queryParams,
+        [queryParams._group]: label,
+        _page: String(page),
+      })
+    : { ...queryParams, _page: String(page) };
 
   const [rows, setRows] = useState<IRun[]>([]);
 
@@ -121,8 +115,8 @@ const ResultGroup: React.FC<Props> = ({
 
   const cols = [
     { label: t('fields.id'), key: 'run_number' },
-    { label: t('fields.flow_id'), key: 'flow_id', hidden: field === 'flow_id' },
-    { label: t('fields.user'), key: 'user_name', hidden: field === 'user_name' },
+    { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
+    { label: t('fields.user'), key: 'user_name', hidden: queryParams._group === 'user_name' },
     { label: t('fields.status'), key: 'status' },
     { label: t('fields.started-at'), key: 'ts_epoch' },
     { label: t('fields.finished-at'), key: 'finished_at' },
@@ -136,14 +130,16 @@ const ResultGroup: React.FC<Props> = ({
         <th colSpan={8} style={{ textAlign: 'left' }}>
           <h3
             onClick={() => {
-              const url =
-                field === 'flow_id'
-                  ? '/?_limit=20&flow_id=' + fieldValue
-                  : '/?_limit=20&_group=user_name&_tags=user:' + fieldValue;
-              history.push(url);
+              if (queryParams._group) {
+                const url =
+                  queryParams._group === 'flow_id'
+                    ? '/?_limit=20&flow_id=' + label
+                    : '/?_limit=20&_group=user_name&_tags=user:' + label;
+                history.push(url);
+              }
             }}
           >
-            {fieldValue}
+            {label}
           </h3>
           {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
         </th>
@@ -187,8 +183,8 @@ const ResultGroup: React.FC<Props> = ({
                       <strong>{r.run_number}</strong>
                     </div>
                   </TD>
-                  {field !== 'flow_id' && <TD>{r.flow_id}</TD>}
-                  {field !== 'user_name' && <TD>{r.user_name}</TD>}
+                  {queryParams._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
+                  {queryParams._group !== 'user_name' && <TD>{r.user_name}</TD>}
                   <TD>
                     <StatusField status={r.status} />
                   </TD>

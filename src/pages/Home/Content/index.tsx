@@ -44,8 +44,7 @@ const HomeContentArea: React.FC<{
             return (
               <ResultGroup
                 key={k}
-                field={params._group ? params._group : 'flow_id'}
-                fieldValue={k}
+                label={k && k !== 'undefined' ? k : 'Runs'}
                 initialData={runGroups[k]}
                 queryParams={params}
                 onOrderChange={handleOrderChange}

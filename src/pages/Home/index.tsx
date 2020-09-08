@@ -20,16 +20,16 @@ export interface DefaultQuery {
 }
 
 const defaultParams = {
-  _group: 'flow_id',
+  // _group: 'flow_id',
   _order: '-ts_epoch',
-  _limit: '6',
+  _limit: '15',
   status: 'running,completed,failed',
 };
 
 export const defaultQuery = new URLSearchParams(defaultParams);
 
 export function isDefaultParams(params: Record<string, string>): boolean {
-  if (Object.keys(params).length === 4) {
+  if (Object.keys(params).length === 3) {
     if (
       params._order === defaultParams._order &&
       params._limit === defaultParams._limit &&
@@ -47,12 +47,12 @@ export function paramList(param: QueryParam): Array<string> {
 
 const Home: React.FC = () => {
   const [qp, setQp] = useQueryParams({
-    _group: withDefault(StringParam, 'flow_id'),
-    _order: withDefault(StringParam, '-ts_epoch'),
-    _limit: withDefault(StringParam, '6'),
+    _group: StringParam,
+    _order: withDefault(StringParam, defaultParams._order),
+    _limit: withDefault(StringParam, defaultParams._limit),
     _group_limit: withDefault(StringParam, '6'),
     _tags: StringParam,
-    status: withDefault(StringParam, 'running,completed,failed'),
+    status: withDefault(StringParam, defaultParams.status),
     flow_id: StringParam,
   });
 
@@ -60,13 +60,9 @@ const Home: React.FC = () => {
   const handleParamChange = (key: string, value: string) => {
     setQp({ [key]: value });
   };
-  const getQueryParam: (props: string) => string = (prop: string) => (qp as any)[prop] || (defaultParams as any)[prop];
-  const getDefaultedQueryParam = (prop: keyof DefaultQuery) => getQueryParam(prop) as string;
-  const getAllDefaultedQueryParams = () => ({
-    ...defaultParams,
-    ...cleanParams(qp as any),
-  });
-  const activeParams = getAllDefaultedQueryParams();
+
+  const activeParams = cleanParams(qp);
+  activeParams._group_limit = activeParams._group ? '6' : '15';
 
   const resetAllFilters = useCallback(() => {
     setQp({ ...defaultParams, _group: activeParams._group }, 'replace');
@@ -75,13 +71,13 @@ const Home: React.FC = () => {
   const handleRunClick = (r: IRun) => history.push(getPath.dag(r.flow_id, r.run_number));
 
   const handleOrderChange = (orderProp: string) => {
-    const [currentDirection, currentOrderProp] = parseOrderParam(getDefaultedQueryParam('_order'));
+    const [currentDirection, currentOrderProp] = parseOrderParam(qp._order);
     const nextOrder = `${directionFromText(currentDirection)}${orderProp}`;
     handleParamChange('_order', currentOrderProp === orderProp ? swapDirection(nextOrder) : nextOrder);
   };
 
   const updateListValue = (key: string, val: string) => {
-    const vals = new Set(paramList(getQueryParam(key)));
+    const vals = new Set(paramList(activeParams[key]));
 
     if (!vals.has(val)) {
       vals.add(val);
@@ -92,7 +88,7 @@ const Home: React.FC = () => {
     handleParamChange(key, [...vals.values()].join(','));
   };
 
-  const groupField: keyof IRun = getDefaultedQueryParam('_group');
+  const groupField: keyof IRun = activeParams._group;
 
   const { data: runs, error, status } = useResource<IRun[], IRun>({
     url: `/runs`,
@@ -129,8 +125,6 @@ const Home: React.FC = () => {
   return (
     <>
       <HomeSidebar
-        getQueryParam={getQueryParam}
-        getDefaultedQueryParam={getDefaultedQueryParam}
         handleParamChange={handleParamChange}
         updateListValue={updateListValue}
         params={activeParams}
@@ -140,7 +134,7 @@ const Home: React.FC = () => {
       <MemoContentArea
         error={error}
         status={status}
-        params={cleanParams(qp as any)}
+        params={activeParams}
         runGroups={runGroups}
         handleOrderChange={handleOrderChange}
         handleRunClick={handleRunClick}
@@ -149,7 +143,7 @@ const Home: React.FC = () => {
   );
 };
 
-function cleanParams(qp: Record<string, string>): Record<string, string> {
+function cleanParams(qp: any): Record<string, string> {
   return Object.keys(qp).reduce((obj, key) => {
     const value = qp[key];
     if (value) {

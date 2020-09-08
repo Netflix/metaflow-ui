@@ -1,7 +1,7 @@
 import React from 'react';
 import { CheckboxField, SelectField } from '../../../components/Form';
 
-import { DefaultQuery, paramList, isDefaultParams } from '../index';
+import { paramList, isDefaultParams } from '../index';
 import { useTranslation } from 'react-i18next';
 import { Section, SectionHeader, SectionHeaderContent } from '../../../components/Structure';
 import TagInput from '../../../components/TagInput';
@@ -48,13 +48,11 @@ const StatusCheckboxField: React.FC<{
 };
 
 const HomeSidebar: React.FC<{
-  getQueryParam: (key: string) => string;
-  getDefaultedQueryParam: (key: keyof DefaultQuery) => string;
   handleParamChange: (key: string, value: string) => void;
   updateListValue: (key: string, value: string) => void;
   params: Record<string, string>;
   resetAllFilters: () => void;
-}> = ({ getQueryParam, getDefaultedQueryParam, handleParamChange, updateListValue, params, resetAllFilters }) => {
+}> = ({ handleParamChange, updateListValue, params, resetAllFilters }) => {
   const { t } = useTranslation();
 
   return (
@@ -66,9 +64,10 @@ const HomeSidebar: React.FC<{
             <SelectField
               horizontal
               noMinWidth
-              value={getDefaultedQueryParam('_group')}
+              value={params._group}
               onChange={(e) => e && handleParamChange('_group', e.target.value)}
               options={[
+                ['', t('fields.none')],
                 ['flow_id', t('fields.flow')],
                 ['user_name', t('fields.user')],
               ]}
@@ -102,7 +101,7 @@ const HomeSidebar: React.FC<{
       <Section>
         <TagInput onSubmit={(v) => updateListValue('flow_id', v)} sectionLabel={t('fields.flow')} />
 
-        <TagParameterList paramKey="flow_id" updateList={updateListValue} value={getQueryParam('flow_id')} />
+        <TagParameterList paramKey="flow_id" updateList={updateListValue} value={params.flow_id} />
       </Section>
 
       <Section>
@@ -113,7 +112,7 @@ const HomeSidebar: React.FC<{
           mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
           mapValue={(x) => `project:${x}`}
           updateList={updateListValue}
-          value={getQueryParam('_tags')}
+          value={params._tags}
         />
       </Section>
 
@@ -125,7 +124,7 @@ const HomeSidebar: React.FC<{
           mapList={(xs) => xs.filter((x) => x.startsWith('user:')).map((x) => x.substr('user:'.length))}
           mapValue={(x) => `user:${x}`}
           updateList={updateListValue}
-          value={getQueryParam('_tags')}
+          value={params._tags}
         />
       </Section>
 
@@ -136,7 +135,7 @@ const HomeSidebar: React.FC<{
           paramKey="_tags"
           mapList={(xs) => xs.filter((x) => !/^user:|project:/.test(x))}
           updateList={updateListValue}
-          value={getQueryParam('_tags')}
+          value={params._tags}
         />
       </Section>
 

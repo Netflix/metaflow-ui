@@ -19,6 +19,8 @@ const en = {
     },
 
     fields: {
+      none: 'None',
+
       flow: 'Flow',
       user: 'User',
       tag: 'Tag',
