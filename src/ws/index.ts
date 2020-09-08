@@ -77,7 +77,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
 
   const emit = (event: Event<unknown>) => {
     subscriptions.forEach((subscription) => {
-      if (event.resource === subscription.resource && event.uuid === subscription.uuid) {
+      if (event.uuid === subscription.uuid) {
         subscription.onUpdate(event);
       }
     });

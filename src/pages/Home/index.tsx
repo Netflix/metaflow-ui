@@ -326,7 +326,6 @@ const HomeContentArea: React.FC<{
 
       {status === 'Ok' && resultAmount === 0 && <Section>{t('home.no-results')}</Section>}
 
-      <RecentRuns />
       {resultAmount > 0 &&
         Object.keys(runGroups)
           .sort()
@@ -353,35 +352,6 @@ const HomeContentArea: React.FC<{
         }}
       />
     </Content>
-  );
-};
-
-const RecentRuns = () => {
-  const { data } = useResource<IRun[], IRun>({
-    url: `/runs`,
-    initialData: [],
-    subscribeToEvents: true,
-    updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
-    queryParams: {
-      _order: '-ts_epoch',
-      _limit: '3',
-    },
-  });
-
-  return (
-    <ResultGroup
-      key={'recent_runs'}
-      field={'user_name'}
-      fieldValue={'Recent runs'}
-      initialData={data || []}
-      queryParams={{
-        _order: '-ts_epoch',
-        _limit: '3',
-      }}
-      onOrderChange={() => null}
-      onRunClick={() => null}
-      resourceUrl="/runs"
-    />
   );
 };
 
