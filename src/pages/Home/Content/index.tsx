@@ -28,22 +28,20 @@ const HomeContentArea: React.FC<{
       {status === 'Ok' && resultAmount === 0 && <Section>{t('home.no-results')}</Section>}
 
       {resultAmount > 0 &&
-        Object.keys(runGroups)
-          .sort()
-          .map((k) => {
-            return (
-              <ResultGroup
-                key={k}
-                label={k && k !== 'undefined' ? k : 'Runs'}
-                initialData={runGroups[k]}
-                queryParams={params}
-                onOrderChange={handleOrderChange}
-                onRunClick={handleRunClick}
-                resourceUrl="/runs"
-                hideLoadMore={k === 'undefined'}
-              />
-            );
-          })}
+        Object.keys(runGroups).map((k) => {
+          return (
+            <ResultGroup
+              key={k}
+              label={k && k !== 'undefined' ? k : 'Runs'}
+              initialData={runGroups[k]}
+              queryParams={params}
+              onOrderChange={handleOrderChange}
+              onRunClick={handleRunClick}
+              resourceUrl="/runs"
+              hideLoadMore={k === 'undefined'}
+            />
+          );
+        })}
 
       <AutoLoadTrigger
         status={status}

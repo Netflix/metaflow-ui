@@ -34,7 +34,7 @@ export function findAdditionalButtons(routeMatch: match<KnownParams> | null, loc
   const params = routeMatch.params;
 
   const flowValue = queryParams.get('flow_id') || params.flowId;
-  if (flowValue) {
+  if (flowValue && flowValue.split(',').length === 1) {
     buttons.push({
       label: `${flowValue}`,
       path: getPath.home() + '?flow_id=' + flowValue,
