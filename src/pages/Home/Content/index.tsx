@@ -16,30 +16,20 @@ const HomeContentArea: React.FC<{
   params: Record<string, string>;
   handleOrderChange: (orderProps: string) => void;
   handleRunClick: (r: IRun) => void;
-}> = ({ error, status, runGroups, handleOrderChange, handleRunClick, params }) => {
-  const [visibleAmount, setVisibleAmount] = useState(5);
+  loadMore: () => void;
+}> = ({ error, status, runGroups, handleOrderChange, handleRunClick, params, loadMore }) => {
   const { t } = useTranslation();
   const resultAmount = Object.keys(runGroups).length;
-
-  useEffect(() => {
-    setVisibleAmount(5);
-  }, [params._group, params.status, params.flow_id, params._tags]);
 
   return (
     <Content>
       {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
-      {status === 'Loading' && (
-        <Section style={{ position: 'absolute', left: '50%', background: '#fff' }}>
-          <Spinner />
-        </Section>
-      )}
 
       {status === 'Ok' && resultAmount === 0 && <Section>{t('home.no-results')}</Section>}
 
       {resultAmount > 0 &&
         Object.keys(runGroups)
           .sort()
-          .slice(0, visibleAmount)
           .map((k) => {
             return (
               <ResultGroup
@@ -50,40 +40,42 @@ const HomeContentArea: React.FC<{
                 onOrderChange={handleOrderChange}
                 onRunClick={handleRunClick}
                 resourceUrl="/runs"
+                hideLoadMore={k === 'undefined'}
               />
             );
           })}
+
       <AutoLoadTrigger
+        status={status}
         updateVisibility={() => {
-          if (totalLengthOfRuns(runGroups) > visibleAmount) {
-            setVisibleAmount(visibleAmount + 5);
-          }
+          loadMore();
         }}
       />
     </Content>
   );
 };
 
-function totalLengthOfRuns(grouppedRuns: Record<string, IRun[]>) {
-  return Object.keys(grouppedRuns).reduce((amount, key) => {
-    return amount + grouppedRuns[key].length;
-  }, 0);
-}
-
-const AutoLoadTrigger: React.FC<{ updateVisibility: () => void }> = ({ updateVisibility }) => {
+const AutoLoadTrigger: React.FC<{
+  updateVisibility: () => void;
+  status: 'NotAsked' | 'Loading' | 'Error' | 'Ok';
+}> = ({ updateVisibility, status }) => {
   const [isInViewport, targetRef] = useIsInViewport();
   const [isUpdatable, setIsUpdatable] = useState(false);
 
   useEffect(() => {
-    if (isInViewport && isUpdatable) {
+    if (isInViewport && isUpdatable && status === 'Ok') {
       updateVisibility();
       setIsUpdatable(false);
+    }
+  }, [isInViewport, updateVisibility, isUpdatable, status]);
 
+  useEffect(() => {
+    if (status === 'Ok' && !isUpdatable) {
       setTimeout(() => {
         setIsUpdatable(true);
       }, 250);
     }
-  }, [isInViewport, updateVisibility, isUpdatable]);
+  }, [status]); // eslint-disable-line
 
   useEffect(() => {
     setTimeout(() => {
@@ -91,21 +83,19 @@ const AutoLoadTrigger: React.FC<{ updateVisibility: () => void }> = ({ updateVis
     }, 500);
   }, []);
 
-  return <div ref={targetRef} />;
+  return (
+    <LoadTriggerContainer ref={targetRef}>
+      {status === 'Loading' && (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Spinner />
+          <span style={{ marginLeft: '0.5rem' }}>Loading Items</span>
+        </div>
+      )}
+    </LoadTriggerContainer>
+  );
 };
 
-const MemoContentArea = React.memo<{
-  error: Error | null;
-  status: 'Ok' | 'Error' | 'Loading' | 'NotAsked';
-  runGroups: Record<string, IRun[]>;
-  params: Record<string, string>;
-  handleOrderChange: (orderProps: string) => void;
-  handleRunClick: (r: IRun) => void;
-}>((props) => {
-  return <HomeContentArea {...props} />;
-});
-
-export default MemoContentArea;
+export default HomeContentArea;
 
 const Content = styled.div`
   margin-left: ${(p) => p.theme.layout.sidebarWidth + 1}rem;
@@ -114,4 +104,10 @@ const Content = styled.div`
   h3:first-of-type {
     margin-top: 0;
   }
+`;
+
+const LoadTriggerContainer = styled.div`
+  padding: 1rem;
+  text-align: center;
+  min-height: 55px;
 `;

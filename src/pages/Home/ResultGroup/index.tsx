@@ -49,6 +49,7 @@ type Props = {
   queryParams: Record<string, string>;
   onRunClick: (r: IRun) => void;
   onOrderChange: (p: string) => void;
+  hideLoadMore?: boolean;
 };
 
 const HeaderColumn = (props: {
@@ -58,7 +59,15 @@ const HeaderColumn = (props: {
   currentOrder: string;
 }) => <HeaderColumnBase {...props} />;
 
-const ResultGroup: React.FC<Props> = ({ label, resourceUrl, initialData, queryParams, onRunClick, onOrderChange }) => {
+const ResultGroup: React.FC<Props> = ({
+  label,
+  resourceUrl,
+  initialData,
+  queryParams,
+  onRunClick,
+  onOrderChange,
+  hideLoadMore,
+}) => {
   const { t } = useTranslation();
   const history = useHistory();
 
@@ -66,10 +75,11 @@ const ResultGroup: React.FC<Props> = ({ label, resourceUrl, initialData, queryPa
   const loadMoreRuns = () => setPage(page + 1);
 
   const localSearchParams = queryParams._group
-    ? omit(['_group'], {
+    ? omit(['_group', '_group_limit'], {
         ...queryParams,
         [queryParams._group]: label,
         _page: String(page),
+        _limit: queryParams._group_limit,
       })
     : { ...queryParams, _page: String(page) };
 
@@ -127,13 +137,13 @@ const ResultGroup: React.FC<Props> = ({ label, resourceUrl, initialData, queryPa
   const HeadContent = (
     <>
       <TR>
-        <th colSpan={8} style={{ textAlign: 'left' }}>
+        <th colSpan={cols.length + 2} style={{ textAlign: 'left' }}>
           <h3
             onClick={() => {
               if (queryParams._group) {
                 const url =
                   queryParams._group === 'flow_id'
-                    ? '/?_limit=20&flow_id=' + label
+                    ? '/?_limit=20&_group=flow_id&flow_id=' + label
                     : '/?_limit=20&_group=user_name&_tags=user:' + label;
                 history.push(url);
               }
@@ -216,7 +226,7 @@ const ResultGroup: React.FC<Props> = ({ label, resourceUrl, initialData, queryPa
           ))}
         </tbody>
       </Table>
-      {hasMoreItems(result, rows.length, Number(localSearchParams['_limit']), page) && (
+      {!hideLoadMore && hasMoreItems(result, rows.length, Number(localSearchParams['_limit']), page) && (
         <Button className="load-more" onClick={() => loadMoreRuns()} size="sm" variant="primaryText" textOnly>
           {t('home.load-more-runs')} <Icon name="arrowDown" padLeft />
         </Button>

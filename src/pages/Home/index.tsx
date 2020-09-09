@@ -11,7 +11,7 @@ import { getPath } from '../../utils/routing';
 
 import { useQueryParams, StringParam, withDefault } from 'use-query-params';
 import HomeSidebar from './Sidebar';
-import MemoContentArea from './Content';
+import HomeContentArea from './Content';
 
 export interface DefaultQuery {
   _group: 'string';
@@ -58,6 +58,7 @@ const Home: React.FC = () => {
 
   const history = useHistory();
   const handleParamChange = (key: string, value: string) => {
+    setPage(1);
     setQp({ [key]: value });
   };
 
@@ -90,12 +91,38 @@ const Home: React.FC = () => {
 
   const groupField: keyof IRun = activeParams._group;
 
-  const { data: runs, error, status } = useResource<IRun[], IRun>({
+  const [page, setPage] = useState(1);
+  const [runGroups, setRunGroups] = useState<Record<string, IRun[]>>({});
+
+  const { error, status, getResult } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: true,
     updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
-    queryParams: activeParams,
+    queryParams: { ...activeParams, _page: String(page) },
+    onUpdate: (items) => {
+      const newItems = items
+        ? fromPairs<IRun[]>(
+            pluck(groupField, items).map((val) => [val as string, items.filter((r) => r[groupField] === val)]),
+          )
+        : {};
+
+      // If we changed just page (of groupped items), we need to merge old and new result.
+      if (page > 1) {
+        const merged = Object.keys(newItems).reduce((obj, key) => {
+          const runs = newItems[key];
+
+          if (obj[key]) {
+            return { ...obj, [key]: obj[key].concat(runs) };
+          }
+          return { ...obj, [key]: runs };
+        }, runGroups);
+
+        setRunGroups(merged);
+      } else {
+        setRunGroups(newItems);
+      }
+    },
   });
 
   useEffect(() => {
@@ -110,18 +137,6 @@ const Home: React.FC = () => {
     }
   }, []); // eslint-disable-line
 
-  const [runGroups, setRunGroups] = useState<Record<string, IRun[]>>({});
-
-  useEffect(() => {
-    setRunGroups(
-      runs
-        ? fromPairs<IRun[]>(
-            pluck(groupField, runs).map((val) => [val as string, runs.filter((r) => r[groupField] === val)]),
-          )
-        : {},
-    );
-  }, [runs]); // eslint-disable-line
-
   return (
     <>
       <HomeSidebar
@@ -131,13 +146,19 @@ const Home: React.FC = () => {
         resetAllFilters={resetAllFilters}
       />
 
-      <MemoContentArea
+      <HomeContentArea
         error={error}
         status={status}
         params={activeParams}
         runGroups={runGroups}
         handleOrderChange={handleOrderChange}
         handleRunClick={handleRunClick}
+        loadMore={() => {
+          if ((getResult().pages?.last || 0) <= page) {
+            return;
+          }
+          setPage(page + 1);
+        }}
       />
     </>
   );
