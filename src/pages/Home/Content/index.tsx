@@ -15,9 +15,9 @@ const HomeContentArea: React.FC<{
   runGroups: Record<string, IRun[]>;
   params: Record<string, string>;
   handleOrderChange: (orderProps: string) => void;
-  handleRunClick: (r: IRun) => void;
+  handleGroupTitleClick: (title: string) => void;
   loadMore: () => void;
-}> = ({ error, status, runGroups, handleOrderChange, handleRunClick, params, loadMore }) => {
+}> = ({ error, status, runGroups, handleOrderChange, handleGroupTitleClick, params, loadMore }) => {
   const { t } = useTranslation();
   const resultAmount = Object.keys(runGroups).length;
 
@@ -36,7 +36,7 @@ const HomeContentArea: React.FC<{
               initialData={runGroups[k]}
               queryParams={params}
               onOrderChange={handleOrderChange}
-              onRunClick={handleRunClick}
+              handleGroupTitleClick={handleGroupTitleClick}
               resourceUrl="/runs"
               hideLoadMore={k === 'undefined'}
             />
@@ -98,10 +98,6 @@ export default HomeContentArea;
 const Content = styled.div`
   margin-left: ${(p) => p.theme.layout.sidebarWidth + 1}rem;
   padding-top: ${(p) => p.theme.spacer.md}rem;
-
-  h3:first-of-type {
-    margin-top: 0;
-  }
 `;
 
 const LoadTriggerContainer = styled.div`

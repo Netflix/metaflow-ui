@@ -211,6 +211,7 @@ export default function useResource<T, U>({
   });
 
   function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, isSilent?: boolean) {
+    const start = window.performance.now();
     fetch(targetUrl, { signal })
       .then((response) =>
         response.json().then((result: DataModel<T>) => ({
@@ -220,6 +221,7 @@ export default function useResource<T, U>({
       )
       .then(
         (cacheItem) => {
+          console.log('Request load took: ', window.performance.now() - start);
           // If silent mode, we dont want cache to trigger update cycle, but we use onUpdate function.
           if (!fullyDisableCache) {
             const cacheSet = isSilent ? cache.setInBackground : cache.set;
@@ -241,6 +243,7 @@ export default function useResource<T, U>({
           } else {
             cb(true);
           }
+          console.log('Request took: ', window.performance.now() - start);
         },
         (error) => {
           if (error.name !== 'AbortError') {

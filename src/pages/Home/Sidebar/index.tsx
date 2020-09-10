@@ -64,7 +64,7 @@ const HomeSidebar: React.FC<{
             <SelectField
               horizontal
               noMinWidth
-              value={params._group}
+              value={params._group || ''}
               onChange={(e) => e && handleParamChange('_group', e.target.value)}
               options={[
                 ['', t('fields.none')],
