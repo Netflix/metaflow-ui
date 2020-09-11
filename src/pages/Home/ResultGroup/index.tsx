@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,20 +7,17 @@ import useIsInViewport from 'use-is-in-viewport';
 import { Run as IRun, RunStatus } from '../../../types';
 
 import { getISOString } from '../../../utils/date';
-import { flatten } from '../../../utils/array';
-import { omit } from '../../../utils/object';
-import { getPath } from '../../../utils/routing';
 
-import useResource, { DataModel } from '../../../hooks/useResource';
+import { getPath } from '../../../utils/routing';
 
 import { Section } from '../../../components/Structure';
 import Icon from '../../../components/Icon';
-import Button from '../../../components/Button';
 import { Text } from '../../../components/Text';
 import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
 import Notification, { NotificationType } from '../../../components/Notification';
 import StatusField from '../../../components/Status';
 import { formatDuration } from '../../../utils/format';
+import Button from '../../../components/Button';
 
 const statusColors: RunStatus = {
   completed: 'white',
@@ -50,6 +47,7 @@ type Props = {
   onOrderChange: (p: string) => void;
   handleGroupTitleClick: (title: string) => void;
   hideLoadMore?: boolean;
+  targetCount: number;
 };
 
 const HeaderColumn = (props: {
@@ -59,70 +57,20 @@ const HeaderColumn = (props: {
   currentOrder: string;
 }) => <HeaderColumnBase {...props} />;
 
-const ResultGroup: React.FC<Props> = ({
+const ResultGroup2: React.FC<Props> = ({
   label,
-  resourceUrl,
-  initialData,
+  initialData: rows,
   queryParams,
   onOrderChange,
-  hideLoadMore,
   handleGroupTitleClick,
+  targetCount,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
 
-  const [page, setPage] = useState(1);
-  const loadMoreRuns = () => setPage(page + 1);
-
-  const localSearchParams = queryParams._group
-    ? omit(['_group', '_group_limit'], {
-        ...queryParams,
-        [queryParams._group]: label,
-        _page: String(page),
-        _limit: queryParams._group_limit,
-      })
-    : { ...queryParams, _page: String(page) };
-
-  const [rows, setRows] = useState<IRun[]>([]);
-
-  const { error, getResult, cache, target } = useResource<IRun[], IRun>({
-    url: resourceUrl,
-    initialData,
-    subscribeToEvents: true,
-    updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
-    queryParams: localSearchParams,
-    pause: page === 1,
-  });
-
-  const pageInvalidationStr = new URLSearchParams(queryParams).toString();
-
-  useLayoutEffect(() => {
-    setPage(1);
-  }, [pageInvalidationStr]);
-
-  const { origin, pathname } = new URL(target);
-  const result = getResult();
-
-  useEffect(() => {
-    const cachedPages: IRun[] = flatten(
-      Array(page)
-        .fill('')
-        .map((_, i) => {
-          const cacheKey = `${origin}${pathname}?${new URLSearchParams({
-            ...localSearchParams,
-            _page: String(i + 1),
-          }).toString()}`;
-          return cache.get(cacheKey)?.data as IRun[];
-        }),
-    ).filter((x: IRun | undefined) => !!x);
-
-    setRows(uniqueRows(initialData.concat(cachedPages)));
-  }, [initialData, page, result?.data]); // eslint-disable-line
-
   //
   // STICKY HEADER
   //
-
   const [isInViewport, targetRef] = useIsInViewport();
 
   const cols = [
@@ -144,10 +92,10 @@ const ResultGroup: React.FC<Props> = ({
           <StickyHeader tableRef={tableRef}>
             <TableHeader
               handleClick={handleGroupTitleClick}
-              error={error}
+              error={null}
               cols={cols}
               onOrderChange={onOrderChange}
-              order={localSearchParams['_order']}
+              order={queryParams['_order']}
               label={label}
             />
           </StickyHeader>
@@ -155,16 +103,16 @@ const ResultGroup: React.FC<Props> = ({
           <thead>
             <TableHeader
               handleClick={handleGroupTitleClick}
-              error={error}
+              error={null}
               cols={cols}
               onOrderChange={onOrderChange}
-              order={localSearchParams['_order']}
+              order={queryParams['_order']}
               label={label}
             />
           </thead>
         )}
         <tbody>
-          {rows.map((r, i) => (
+          {rows.slice(0, targetCount).map((r, i) => (
             <TR key={`r-${i}`} clickable onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}>
               {isInViewport ? (
                 <TableRows r={r} params={queryParams} historyPush={history.push} />
@@ -179,9 +127,16 @@ const ResultGroup: React.FC<Props> = ({
           ))}
         </tbody>
       </Table>
-      {!hideLoadMore && hasMoreItems(result, rows.length, Number(localSearchParams['_limit']), page) && (
-        <Button className="load-more" onClick={() => loadMoreRuns()} size="sm" variant="primaryText" textOnly>
-          {t('home.load-more-runs')} <Icon name="arrowDown" padLeft />
+
+      {targetCount < rows.length && (
+        <Button
+          className="load-more"
+          onClick={() => handleGroupTitleClick(label)}
+          size="sm"
+          variant="primaryText"
+          textOnly
+        >
+          {t('home.show-all-runs')} <Icon name="arrowDown" rotate={-90} padLeft />
         </Button>
       )}
     </StyledResultGroup>
@@ -257,18 +212,6 @@ const TableRows: React.FC<TableRowsProps> = ({ r, params, historyPush }) => (
   </>
 );
 
-function hasMoreItems(result: DataModel<IRun[]>, rowsAmount: number, limit: number, currentPage: number) {
-  if (result?.pages) {
-    return currentPage < result.pages.last;
-  }
-  return rowsAmount >= limit;
-}
-
-function uniqueRows(runs: IRun[]) {
-  const ids = runs.map((item) => item.run_number);
-  return runs.filter((item, index) => ids.indexOf(item.run_number) === index);
-}
-
 const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = ({ tableRef, children }) => {
   const scrollState = useState(0);
 
@@ -308,7 +251,7 @@ const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = 
   );
 };
 
-export default ResultGroup;
+export default ResultGroup2;
 
 export const StyledResultGroup = styled(Section)`
   margin-bottom: ${(p) => p.theme.spacer.md}rem;

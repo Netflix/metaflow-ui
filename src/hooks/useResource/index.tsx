@@ -19,6 +19,8 @@ export interface HookConfig<T, U> {
   // Update function to trigger something on component when new data arrives. This way we dont have to update whole data set
   // if we get one new entity
   onUpdate?: (item: T) => void;
+  // Separate update function for websocket messages.
+  onWSUpdate?: (item: U, eventType: EventType) => void;
   // ?
   privateCache?: boolean;
   // ?
@@ -131,6 +133,7 @@ export default function useResource<T, U>({
   updatePredicate = (_a, _b) => false,
   fetchAllData = false,
   onUpdate,
+  onWSUpdate,
   privateCache = false,
   pause = false,
   fullyDisableCache = false,
@@ -178,14 +181,18 @@ export default function useResource<T, U>({
       const cacheSet = onUpdate ? cache.setInBackground : cache.set;
       // ..and update new data to component manually. This way we only send updated value to component instead of whole batch
       // Optionally we can also batch some amount of messages before sending them to component
-      if (onUpdate) {
+      if (onUpdate || onWSUpdate) {
         if (useBatching) {
           if (!updateBatcher[target]) {
             updateBatcher[target] = [];
           }
           updateBatcher[target].push(event.data);
         } else {
-          onUpdate(Array.isArray(initialData) ? [event.data] : event.data);
+          if (onWSUpdate) {
+            onWSUpdate(event.data, event.type);
+          } else if (onUpdate) {
+            onUpdate(Array.isArray(initialData) ? [event.data] : event.data);
+          }
         }
       }
       // We can skip cache step if we have disabled it

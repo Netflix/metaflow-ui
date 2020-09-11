@@ -17,7 +17,8 @@ const HomeContentArea: React.FC<{
   handleOrderChange: (orderProps: string) => void;
   handleGroupTitleClick: (title: string) => void;
   loadMore: () => void;
-}> = ({ error, status, runGroups, handleOrderChange, handleGroupTitleClick, params, loadMore }) => {
+  targetCount: number;
+}> = ({ error, status, runGroups, handleOrderChange, handleGroupTitleClick, params, loadMore, targetCount }) => {
   const { t } = useTranslation();
   const resultAmount = Object.keys(runGroups).length;
 
@@ -37,6 +38,7 @@ const HomeContentArea: React.FC<{
               queryParams={params}
               onOrderChange={handleOrderChange}
               handleGroupTitleClick={handleGroupTitleClick}
+              targetCount={targetCount}
               resourceUrl="/runs"
               hideLoadMore={k === 'undefined'}
             />
