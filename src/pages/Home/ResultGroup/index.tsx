@@ -205,7 +205,7 @@ const TableRows: React.FC<TableRowsProps> = React.memo(
     </>
   ),
   (prev, next) => {
-    return prev.r == next.r;
+    return prev.r == next.r; // eslint-disable-line
   },
 );
 
