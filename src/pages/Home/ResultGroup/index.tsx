@@ -57,7 +57,7 @@ const HeaderColumn = (props: {
   currentOrder: string;
 }) => <HeaderColumnBase {...props} />;
 
-const ResultGroup2: React.FC<Props> = ({
+const ResultGroup: React.FC<Props> = ({
   label,
   initialData: rows,
   queryParams,
@@ -248,7 +248,7 @@ const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = 
   );
 };
 
-export default ResultGroup2;
+export default ResultGroup;
 
 export const StyledResultGroup = styled(Section)`
   margin-bottom: ${(p) => p.theme.spacer.md}rem;

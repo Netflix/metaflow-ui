@@ -14,7 +14,7 @@ const en = {
 
     home: {
       home: 'Home',
-      'load-more-runs': 'Load more runs',
+      'loading-items': 'Loading items',
       'show-all-runs': 'Show all runs',
       'no-results': 'There is results with given parameters',
     },

@@ -59,6 +59,7 @@ const AutoLoadTrigger: React.FC<{
   updateVisibility: () => void;
   status: 'NotAsked' | 'Loading' | 'Error' | 'Ok';
 }> = ({ updateVisibility, status }) => {
+  const { t } = useTranslation();
   const [isInViewport, targetRef] = useIsInViewport();
   const [isUpdatable, setIsUpdatable] = useState(false);
 
@@ -88,7 +89,7 @@ const AutoLoadTrigger: React.FC<{
       {status === 'Loading' && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Spinner />
-          <span style={{ marginLeft: '0.5rem' }}>Loading Items</span>
+          <span style={{ marginLeft: '0.5rem' }}>{t('home.loading-items')}</span>
         </div>
       )}
     </LoadTriggerContainer>
