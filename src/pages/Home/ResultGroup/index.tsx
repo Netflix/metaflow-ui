@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,20 +7,17 @@ import useIsInViewport from 'use-is-in-viewport';
 import { Run as IRun, RunStatus } from '../../../types';
 
 import { getISOString } from '../../../utils/date';
-import { flatten } from '../../../utils/array';
-import { omit } from '../../../utils/object';
-import { getPath } from '../../../utils/routing';
 
-import useResource, { DataModel } from '../../../hooks/useResource';
+import { getPath } from '../../../utils/routing';
 
 import { Section } from '../../../components/Structure';
 import Icon from '../../../components/Icon';
-import Button from '../../../components/Button';
 import { Text } from '../../../components/Text';
 import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
 import Notification, { NotificationType } from '../../../components/Notification';
 import StatusField from '../../../components/Status';
 import { formatDuration } from '../../../utils/format';
+import Button from '../../../components/Button';
 
 const statusColors: RunStatus = {
   completed: 'white',
@@ -43,13 +40,14 @@ export const StatusColorHeaderCell = styled(TH)`
 `;
 
 type Props = {
-  field: string;
-  fieldValue: string;
+  label: string;
   resourceUrl: string;
   initialData: IRun[];
   queryParams: Record<string, string>;
-  onRunClick: (r: IRun) => void;
   onOrderChange: (p: string) => void;
+  handleGroupTitleClick: (title: string) => void;
+  hideLoadMore?: boolean;
+  targetCount: number;
 };
 
 const HeaderColumn = (props: {
@@ -60,69 +58,25 @@ const HeaderColumn = (props: {
 }) => <HeaderColumnBase {...props} />;
 
 const ResultGroup: React.FC<Props> = ({
-  field,
-  fieldValue,
-  resourceUrl,
-  initialData,
+  label,
+  initialData: rows,
   queryParams,
-  onRunClick,
   onOrderChange,
+  handleGroupTitleClick,
+  targetCount,
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
 
-  const [page, setPage] = useState(1);
-  const loadMoreRuns = () => setPage(page + 1);
-  const localSearchParams = omit(['_group'], {
-    ...queryParams,
-    [field]: fieldValue,
-    _page: String(page),
-  });
-
-  const [rows, setRows] = useState<IRun[]>([]);
-
-  const { error, getResult, cache, target } = useResource<IRun[], IRun>({
-    url: resourceUrl,
-    initialData,
-    subscribeToEvents: true,
-    updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
-    queryParams: localSearchParams,
-    pause: page === 1,
-  });
-
-  const pageInvalidationStr = new URLSearchParams(queryParams).toString();
-
-  useLayoutEffect(() => setPage(1), [pageInvalidationStr]);
-
-  const { origin, pathname } = new URL(target);
-  const result = getResult();
-
-  useEffect(() => {
-    const cachedPages: IRun[] = flatten(
-      Array(page)
-        .fill('')
-        .map((_, i) => {
-          const cacheKey = `${origin}${pathname}?${new URLSearchParams({
-            ...localSearchParams,
-            _page: String(i + 1),
-          }).toString()}`;
-          return cache.get(cacheKey)?.data as IRun[];
-        }),
-    ).filter((x: IRun | undefined) => !!x);
-
-    setRows(uniqueRows(initialData.concat(cachedPages)));
-  }, [initialData, page, result?.data]); // eslint-disable-line
-
   //
   // STICKY HEADER
   //
-
   const [isInViewport, targetRef] = useIsInViewport();
 
   const cols = [
     { label: t('fields.id'), key: 'run_number' },
-    { label: t('fields.flow_id'), key: 'flow_id', hidden: field === 'flow_id' },
-    { label: t('fields.user'), key: 'user_name', hidden: field === 'user_name' },
+    { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
+    { label: t('fields.user'), key: 'user_name', hidden: queryParams._group === 'user_name' },
     { label: t('fields.status'), key: 'status' },
     { label: t('fields.started-at'), key: 'ts_epoch' },
     { label: t('fields.finished-at'), key: 'finished_at' },
@@ -130,116 +84,133 @@ const ResultGroup: React.FC<Props> = ({
   ].filter((item) => !item.hidden);
 
   const tableRef = useRef<HTMLTableElement>(null);
-  const HeadContent = (
-    <>
-      <TR>
-        <th colSpan={8} style={{ textAlign: 'left' }}>
-          <h3
-            onClick={() => {
-              const url =
-                field === 'flow_id'
-                  ? '/?_limit=20&flow_id=' + fieldValue
-                  : '/?_limit=20&_group=user_name&_tags=user:' + fieldValue;
-              history.push(url);
-            }}
-          >
-            {fieldValue}
-          </h3>
-          {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
-        </th>
-      </TR>
-      <TR>
-        <StatusColorHeaderCell />
-        {cols.map((col) => (
-          <HeaderColumn
-            key={col.key}
-            label={col.label}
-            queryKey={col.key}
-            onSort={onOrderChange}
-            currentOrder={localSearchParams['_order']}
-          />
-        ))}
-
-        <th></th>
-      </TR>
-    </>
-  );
 
   return (
     <StyledResultGroup ref={targetRef}>
       <Table cellPadding="0" cellSpacing="0" ref={tableRef}>
         {isInViewport && rows.length > 5 ? (
-          <StickyHeader tableRef={tableRef}>{HeadContent}</StickyHeader>
+          <StickyHeader tableRef={tableRef}>
+            <TableHeader
+              handleClick={handleGroupTitleClick}
+              error={null}
+              cols={cols}
+              onOrderChange={onOrderChange}
+              order={queryParams['_order']}
+              label={label}
+            />
+          </StickyHeader>
         ) : (
-          <thead>{HeadContent}</thead>
+          <thead>
+            <TableHeader
+              handleClick={handleGroupTitleClick}
+              error={null}
+              cols={cols}
+              onOrderChange={onOrderChange}
+              order={queryParams['_order']}
+              label={label}
+            />
+          </thead>
         )}
         <tbody>
-          {rows.map((r, i) => (
-            <TR key={`r-${i}`} clickable onClick={() => onRunClick(r)}>
-              {isInViewport ? (
-                <>
-                  <StatusColorCell status={r.status} />
-                  <TD>
-                    <div style={{ display: 'flex' }}>
-                      <span className="muted" style={{ marginRight: '5px' }}>
-                        #
-                      </span>{' '}
-                      <strong>{r.run_number}</strong>
-                    </div>
-                  </TD>
-                  {field !== 'flow_id' && <TD>{r.flow_id}</TD>}
-                  {field !== 'user_name' && <TD>{r.user_name}</TD>}
-                  <TD>
-                    <StatusField status={r.status} />
-                  </TD>
-                  <TD>{getISOString(new Date(r.ts_epoch))}</TD>
-                  <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
-                  <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
-                  <TD className="timeline-link">
-                    <Link
-                      to={getPath.run(r.flow_id, r.run_number)}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        history.push(getPath.run(r.flow_id, r.run_number));
-                      }}
-                    >
-                      <Icon name="timeline" size="lg" padRight />
-                      <Text>Timeline</Text>
-                    </Link>
-                  </TD>
-                </>
-              ) : (
-                <>
-                  <TD colSpan={8}>
-                    <div style={{ height: '32px' }}> </div>
-                  </TD>
-                </>
-              )}
+          {rows.slice(0, targetCount).map((r, i) => (
+            <TR key={`r-${i}`} clickable onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}>
+              <TableRows r={r} params={queryParams} historyPush={history.push} />
             </TR>
           ))}
         </tbody>
       </Table>
-      {hasMoreItems(result, rows.length, Number(localSearchParams['_limit']), page) && (
-        <Button className="load-more" onClick={() => loadMoreRuns()} size="sm" variant="primaryText" textOnly>
-          {t('home.load-more-runs')} <Icon name="arrowDown" padLeft />
+
+      {targetCount < rows.length && (
+        <Button
+          className="load-more"
+          onClick={() => handleGroupTitleClick(label)}
+          size="sm"
+          variant="primaryText"
+          textOnly
+        >
+          {t('home.show-all-runs')} <Icon name="arrowDown" rotate={-90} padLeft />
         </Button>
       )}
     </StyledResultGroup>
   );
 };
 
-function hasMoreItems(result: DataModel<IRun[]>, rowsAmount: number, limit: number, currentPage: number) {
-  if (result?.pages) {
-    return currentPage < result.pages.last;
-  }
-  return rowsAmount >= limit;
-}
+type TableHeaderProps = {
+  handleClick: (str: string) => void;
+  error: Error | null;
+  cols: { label: string; key: string; hidden?: boolean }[];
+  onOrderChange: (p: string) => void;
+  order: string;
+  label: string;
+};
 
-function uniqueRows(runs: IRun[]) {
-  const ids = runs.map((item) => item.run_number);
-  return runs.filter((item, index) => ids.indexOf(item.run_number) === index);
-}
+const TableHeader: React.FC<TableHeaderProps> = ({ handleClick, error, cols, onOrderChange, order, label }) => (
+  <>
+    <TR>
+      <th colSpan={cols.length + 2} style={{ textAlign: 'left' }}>
+        <ResultGroupTitle onClick={() => handleClick(label)}>{label}</ResultGroupTitle>
+        {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
+      </th>
+    </TR>
+    <TR>
+      <StatusColorHeaderCell />
+      {cols.map((col) => (
+        <HeaderColumn key={col.key} label={col.label} queryKey={col.key} onSort={onOrderChange} currentOrder={order} />
+      ))}
+
+      <th></th>
+    </TR>
+  </>
+);
+
+type TableRowsProps = {
+  r: IRun;
+  params: Record<string, string>;
+  historyPush: (url: string) => void;
+};
+
+const TableRows: React.FC<TableRowsProps> = React.memo(
+  ({ r, params, historyPush }) => {
+    const { t } = useTranslation();
+    return (
+      <>
+        <StatusColorCell status={r.status} />
+        <TD>
+          <div style={{ display: 'flex' }}>
+            <span className="muted" style={{ marginRight: '5px' }}>
+              #
+            </span>{' '}
+            <strong>{r.run_number}</strong>
+          </div>
+        </TD>
+        {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
+        {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
+        <TD>
+          <StatusField status={r.status} />
+        </TD>
+        <TD>{getISOString(new Date(r.ts_epoch))}</TD>
+        <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
+        <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
+        <TD className="timeline-link">
+          <Link
+            to={getPath.run(r.flow_id, r.run_number)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              historyPush(getPath.run(r.flow_id, r.run_number));
+            }}
+          >
+            <Icon name="timeline" size="lg" padRight />
+            <Text>{t('run.timeline')}</Text>
+          </Link>
+        </TD>
+      </>
+    );
+  },
+  (prev, next) => {
+    return prev.r == next.r; // eslint-disable-line
+  },
+);
 
 const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = ({ tableRef, children }) => {
   const scrollState = useState(0);
@@ -283,7 +254,7 @@ const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = 
 export default ResultGroup;
 
 export const StyledResultGroup = styled(Section)`
-  margin-bottom: ${(p) => p.theme.spacer.hg}rem;
+  margin-bottom: ${(p) => p.theme.spacer.md}rem;
 
   table {
     margin-bottom: ${(p) => p.theme.spacer.sm}rem;
@@ -291,11 +262,6 @@ export const StyledResultGroup = styled(Section)`
 
   thead {
     background: #ffffff;
-
-    h3:first-of-type {
-      margin-top: 1rem;
-      cursor: pointer;
-    }
   }
 
   td.timeline-link {
@@ -312,5 +278,15 @@ export const StyledResultGroup = styled(Section)`
 
   tr:hover td.timeline-link a {
     color: ${(p) => p.theme.color.bg.blue};
+  }
+`;
+
+const ResultGroupTitle = styled.h3`
+  margin-top: 1rem;
+  cursor: pointer;
+  display: inline-block;
+
+  &:hover {
+    color: ${(p) => p.theme.color.text.blue};
   }
 `;

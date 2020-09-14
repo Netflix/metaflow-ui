@@ -30,12 +30,8 @@ describe('useWebsocket hook', () => {
     // Update function in client should get triggered
     expect(updateFunction).toHaveBeenLastCalledWith({ uuid: 'test123', resource: '/test' });
 
-    // Send with different resource name...
-    server.send({ uuid: 'test123', resource: '/test-monkey' });
-    // ..And last triggered message should be still earlier one
-    expect(updateFunction).toHaveBeenLastCalledWith({ uuid: 'test123', resource: '/test' });
     // Send with different uuid...
-    server.send({ uuid: 'test122', resource: '/test' });
+    server.send({ uuid: 'test122', resource: '/test-monkey' });
     // ..And last triggered message should be still earlier one
     expect(updateFunction).toHaveBeenLastCalledWith({ uuid: 'test123', resource: '/test' });
 

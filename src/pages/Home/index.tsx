@@ -1,97 +1,72 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import styled from 'styled-components';
-import { useHistory } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
 
 import { Run as IRun, QueryParam } from '../../types';
 import useResource from '../../hooks/useResource';
 
-import { fromPairs } from '../../utils/object';
+import { fromPairs, omit } from '../../utils/object';
 import { pluck } from '../../utils/array';
-import { parseOrderParam, directionFromText, swapDirection } from '../../utils/url';
-import { getPath } from '../../utils/routing';
+import { parseOrderParam, directionFromText, swapDirection, DirectionText } from '../../utils/url';
 
-import { RemovableTag } from '../../components/Tag';
-import { CheckboxField, SelectField } from '../../components/Form';
-import { Section, SectionHeader, SectionHeaderContent } from '../../components/Structure';
-import Notification, { NotificationType } from '../../components/Notification';
-import TagInput from '../../components/TagInput';
-import Icon from '../../components/Icon';
-import Button from '../../components/Button';
-import { Text } from '../../components/Text';
-import Spinner from '../../components/Spinner';
-import ResultGroup from './ResultGroup';
 import { useQueryParams, StringParam, withDefault } from 'use-query-params';
-import useIsInViewport from 'use-is-in-viewport';
-
-interface DefaultQuery {
-  _group: 'string';
-  _order: 'string';
-  _limit: 'string';
-}
+import HomeSidebar from './Sidebar';
+import HomeContentArea from './Content';
+import { EventType } from '../../ws';
 
 const defaultParams = {
-  _group: 'flow_id',
   _order: '-ts_epoch',
-  _limit: '6',
+  _limit: '15',
   status: 'running,completed,failed',
 };
 
-export const defaultQuery = new URLSearchParams(defaultParams);
-
-function isDefaultParams(params: Record<string, string>) {
-  if (Object.keys(params).length === 4) {
-    if (
-      params._order === defaultParams._order &&
-      params._limit === defaultParams._limit &&
-      params.status === defaultParams.status
-    ) {
-      return true;
-    }
-  }
-  return false;
-}
-
-function paramList(param: QueryParam): Array<string> {
-  return param ? param.split(',').filter((p: string) => p !== '') : [];
-}
-
 const Home: React.FC = () => {
+  //
+  // State
+  //
+
+  const [page, setPage] = useState(1);
+  const [runGroups, setRunGroups] = useState<Record<string, IRun[]>>({});
+  // WARNING: These fake params are workaround for one special case. Generally when we are changing filters, we want to
+  // reset page to start (page = 1). BUT when ordering stuff again, we want to keep same amount items as before. We don't
+  // want to interfere pagination overall, but we need to fetch all new stuff in one request, so we store these fake params here
+  // for one request.
+  //
+  // For example if we are in page 5 with limit 15, when we reorder fakeparams would be set to page=1&limit=75. However url params are kept
+  // in page=5&limit15 so that when user scrolls down, we can fetch sixth page easily.
+  //
+  const [fakeParams, setFakeParams] = useState<{ _limit: string; _page: string } | null>(null);
+
+  //
+  // QueryParams
+  //
+
   const [qp, setQp] = useQueryParams({
-    _group: withDefault(StringParam, 'flow_id'),
-    _order: withDefault(StringParam, '-ts_epoch'),
-    _limit: withDefault(StringParam, '6'),
+    _group: StringParam,
+    _order: withDefault(StringParam, defaultParams._order),
+    _limit: withDefault(StringParam, defaultParams._limit),
+    _group_limit: withDefault(StringParam, '6'),
     _tags: StringParam,
-    status: withDefault(StringParam, 'running,completed,failed'),
+    status: withDefault(StringParam, defaultParams.status),
     flow_id: StringParam,
   });
 
-  const history = useHistory();
-  const handleParamChange = (key: string, value: string) => {
-    setQp({ [key]: value });
-  };
-  const getQueryParam: (props: string) => string = (prop: string) => (qp as any)[prop] || (defaultParams as any)[prop];
-  const getDefaultedQueryParam = (prop: keyof DefaultQuery) => getQueryParam(prop) as string;
-  const getAllDefaultedQueryParams = () => ({
-    ...defaultParams,
-    ...cleanParams(qp as any),
-  });
-  const activeParams = getAllDefaultedQueryParams();
+  const activeParams = cleanParams(qp);
+  activeParams._group_limit = activeParams._group ? '6' : '15';
 
   const resetAllFilters = useCallback(() => {
     setQp({ ...defaultParams, _group: activeParams._group }, 'replace');
   }, [setQp, activeParams]);
 
-  const handleRunClick = (r: IRun) => history.push(getPath.dag(r.flow_id, r.run_number));
-
-  const handleOrderChange = (orderProp: string) => {
-    const [currentDirection, currentOrderProp] = parseOrderParam(getDefaultedQueryParam('_order'));
-    const nextOrder = `${directionFromText(currentDirection)}${orderProp}`;
-    handleParamChange('_order', currentOrderProp === orderProp ? swapDirection(nextOrder) : nextOrder);
+  const handleParamChange = (key: string, value: string, keepFakeParams?: boolean) => {
+    // We want to reset page when changing filters, but not when reordering
+    if (!keepFakeParams) {
+      setFakeParams(null);
+      setPage(1);
+    }
+    setQp({ [key]: value });
   };
 
   const updateListValue = (key: string, val: string) => {
-    const vals = new Set(paramList(getQueryParam(key)));
+    const vals = new Set(paramList(activeParams[key]));
 
     if (!vals.has(val)) {
       vals.add(val);
@@ -102,15 +77,184 @@ const Home: React.FC = () => {
     handleParamChange(key, [...vals.values()].join(','));
   };
 
-  const groupField: keyof IRun = getDefaultedQueryParam('_group');
+  useEffect(() => {
+    if (page !== 1) {
+      setPage(1);
+    }
+  }, [activeParams.flow_id, activeParams._tags, activeParams.status, activeParams._group]); // eslint-disable-line
 
-  const { data: runs, error, status } = useResource<IRun[], IRun>({
+  //
+  // Data
+  //
+
+  function isGrouping() {
+    if (activeParams._group) {
+      if (activeParams._group === 'flow_id' && activeParams.flow_id && activeParams.flow_id.split(',').length === 1) {
+        return false;
+      } else if (activeParams._group === 'user_name' && activeParams._tags) {
+        // Parse user tags from tags string and check if there is only 1
+        const userTags = activeParams._tags.split(',').filter((str) => str.startsWith('user:'));
+        if (userTags.length === 1) {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
+
+    return true;
+  }
+
+  function makeParams() {
+    const params: Record<string, string> = { ...activeParams, _page: String(page), ...(fakeParams || {}) };
+
+    // We want to remove groupping from request in some cases
+    // 1) When grouping is flow_id and only 1 flow_id filter is active, we want to show all runs of this group
+    // 2) When grouping is user_name and only 1 user_name filter is active, we want to show all runs of this group
+    if (params._group) {
+      if (params._group === 'flow_id' && params.flow_id && params.flow_id.split(',').length === 1) {
+        return omit(['_group'], params);
+      } else if (params._group === 'user_name' && params._tags) {
+        // Parse user tags from tags string and check if there is only 1
+        const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
+        if (userTags.length === 1) {
+          return omit(['_group'], params);
+        }
+      }
+    }
+
+    // Separate user tags from other so because they need to be handles with OR operator
+    if (params._tags) {
+      const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
+      if (userTags.length > 0) {
+        // Remove tags from normal tags
+        params._tags = params._tags
+          .split(',')
+          .filter((str) => !str.startsWith('user:'))
+          .join(',');
+
+        if (params._tags === '') {
+          delete params._tags;
+        }
+
+        params['_tags:any'] = userTags.join(',');
+      }
+    }
+
+    params._group_limit = String(parseInt(params._group_limit) + 1);
+
+    return params;
+  }
+
+  const { error, status, getResult } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: true,
     updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
-    queryParams: activeParams,
+    queryParams: makeParams(),
+    onUpdate: (items) => {
+      const newItems = items
+        ? fromPairs<IRun[]>(
+            pluck(activeParams._group, items).map((val) => [
+              val as string,
+              items.filter((r) => r[activeParams._group] === val),
+            ]),
+          )
+        : {};
+
+      // If we changed just page (of groupped items), we need to merge old and new result.
+      // Also don't merge when using fakeParams since it means we are reordering, in that case everything needs to change.
+      if (page > 1 && !fakeParams) {
+        const merged = Object.keys(newItems).reduce((obj, key) => {
+          const runs = newItems[key];
+
+          if (obj[key]) {
+            return { ...obj, [key]: obj[key].concat(runs) };
+          }
+          return { ...obj, [key]: runs };
+        }, runGroups);
+
+        setRunGroups(merged);
+      } else {
+        setRunGroups(newItems);
+      }
+    },
+    onWSUpdate: (item, eventType) => {
+      const groupKey = item[activeParams._group] || 'undefined';
+      if (typeof groupKey === 'string') {
+        if (eventType === EventType.INSERT) {
+          setRunGroups((rg) => {
+            if (rg[groupKey]) {
+              return { ...rg, [groupKey]: sortRuns([...rg[groupKey], item], activeParams._order) };
+            }
+            return { ...rg, [groupKey]: [item] };
+          });
+        } else if (eventType === EventType.UPDATE) {
+          setRunGroups((rg) => {
+            if (rg[groupKey]) {
+              const index = rg[groupKey].findIndex((r) => r.run_number === item.run_number);
+              return {
+                ...rg,
+                [groupKey]:
+                  index > -1
+                    ? sortRuns(
+                        rg[groupKey].map((r) => (r.run_number === item.run_number ? item : r)),
+                        activeParams._order,
+                      )
+                    : sortRuns([...rg[groupKey], item], activeParams._order),
+              };
+            }
+            return { ...rg, [groupKey]: [item] };
+          });
+        }
+      }
+    },
   });
+
+  //
+  // Event Handlers
+  //
+
+  const handleGroupTitleClick = (title: string) => {
+    if (activeParams._group === 'flow_id') {
+      setPage(1);
+      setQp({ flow_id: title });
+    } else if (activeParams._group === 'user_name') {
+      setPage(1);
+      // Remove other user tags
+      const newtags = activeParams._tags
+        ? activeParams._tags
+            .split(',')
+            .filter((str) => !str.startsWith('user:'))
+            .concat([`user:${title}`])
+            .join(',')
+        : `user:${title}`;
+      setQp({ _tags: newtags });
+    }
+  };
+
+  const handleOrderChange = (orderProp: string) => {
+    const [currentDirection, currentOrderProp] = parseOrderParam(qp._order);
+    const nextOrder = `${directionFromText(currentDirection)}${orderProp}`;
+
+    if (page > 1) {
+      setFakeParams({ _limit: String(parseInt(activeParams._limit) * page), _page: '1' });
+    }
+
+    handleParamChange('_order', currentOrderProp === orderProp ? swapDirection(nextOrder) : nextOrder, true);
+  };
+
+  const handleLoadMore = () => {
+    if ((getResult().pages?.last || 0) <= page && !fakeParams) {
+      return;
+    }
+    setFakeParams(null);
+    setPage(page + 1);
+  };
+
+  //
+  // Effects
+  //
 
   useEffect(() => {
     if (Object.keys(cleanParams(activeParams)).length === 0) {
@@ -124,280 +268,32 @@ const Home: React.FC = () => {
     }
   }, []); // eslint-disable-line
 
-  const [runGroups, setRunGroups] = useState<Record<string, IRun[]>>({});
-
-  useEffect(() => {
-    setRunGroups(
-      runs
-        ? fromPairs<IRun[]>(
-            pluck(groupField, runs).map((val) => [val as string, runs.filter((r) => r[groupField] === val)]),
-          )
-        : {},
-    );
-  }, [runs]); // eslint-disable-line
-
   return (
     <>
       <HomeSidebar
-        getQueryParam={getQueryParam}
-        getDefaultedQueryParam={getDefaultedQueryParam}
         handleParamChange={handleParamChange}
         updateListValue={updateListValue}
         params={activeParams}
         resetAllFilters={resetAllFilters}
       />
 
-      <MemoContentArea
+      <HomeContentArea
         error={error}
         status={status}
-        params={cleanParams(qp as any)}
+        params={activeParams}
         runGroups={runGroups}
         handleOrderChange={handleOrderChange}
-        handleRunClick={handleRunClick}
+        handleGroupTitleClick={handleGroupTitleClick}
+        loadMore={handleLoadMore}
+        targetCount={isGrouping() ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page}
       />
     </>
   );
 };
 
-const StatusCheckboxField: React.FC<{
-  value: string;
-  label: string;
-  updateField: (key: string, value: string) => void;
-  activeStatus?: string | null;
-}> = ({ value, label, updateField, activeStatus }) => {
-  return (
-    <CheckboxField
-      label={label}
-      className={`status-${value}`}
-      checked={!!(activeStatus && activeStatus.indexOf(value) > -1)}
-      onChange={() => {
-        updateField('status', value);
-      }}
-    />
-  );
-};
-
-const TagParameterList: React.FC<{
-  paramKey: string;
-  mapList?: (xs: string[]) => string[];
-  mapValue?: (x: string) => string;
-  updateList: (key: string, value: string) => void;
-  value?: string;
-}> = ({ paramKey, mapList = (xs) => xs, mapValue = (x) => x, updateList, value }) => (
-  <>
-    {value
-      ? mapList(paramList(value)).map((x, i) => (
-          <StyledRemovableTag key={i} onClick={() => updateList(paramKey, mapValue(x))}>
-            {x}
-          </StyledRemovableTag>
-        ))
-      : null}
-  </>
-);
-
-const HomeSidebar: React.FC<{
-  getQueryParam: (key: string) => string;
-  getDefaultedQueryParam: (key: keyof DefaultQuery) => string;
-  handleParamChange: (key: string, value: string) => void;
-  updateListValue: (key: string, value: string) => void;
-  params: Record<string, string>;
-  resetAllFilters: () => void;
-}> = ({ getQueryParam, getDefaultedQueryParam, handleParamChange, updateListValue, params, resetAllFilters }) => {
-  const { t } = useTranslation();
-
-  return (
-    <Sidebar className="sidebar">
-      <Section>
-        <SectionHeader>
-          <div style={{ flexShrink: 0, paddingRight: '0.5rem' }}>{t('filters.group-by')}</div>
-          <SectionHeaderContent align="right">
-            <SelectField
-              horizontal
-              noMinWidth
-              value={getDefaultedQueryParam('_group')}
-              onChange={(e) => e && handleParamChange('_group', e.target.value)}
-              options={[
-                ['flow_id', t('fields.flow')],
-                ['user_name', t('fields.user')],
-              ]}
-            />
-          </SectionHeaderContent>
-        </SectionHeader>
-      </Section>
-
-      <Section>
-        <SectionHeader>{t('fields.status')}</SectionHeader>
-        <StatusCheckboxField
-          label={t('filters.running')}
-          value="running"
-          activeStatus={params.status}
-          updateField={updateListValue}
-        />
-        <StatusCheckboxField
-          label={t('filters.failed')}
-          value="failed"
-          activeStatus={params.status}
-          updateField={updateListValue}
-        />
-        <StatusCheckboxField
-          label={t('filters.completed')}
-          value="completed"
-          activeStatus={params.status}
-          updateField={updateListValue}
-        />
-      </Section>
-
-      <Section>
-        <TagInput onSubmit={(v) => updateListValue('flow_id', v)} sectionLabel={t('fields.flow')} />
-
-        <TagParameterList paramKey="flow_id" updateList={updateListValue} value={getQueryParam('flow_id')} />
-      </Section>
-
-      <Section>
-        <TagInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} sectionLabel={t('fields.project')} />
-
-        <TagParameterList
-          paramKey="_tags"
-          mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
-          mapValue={(x) => `project:${x}`}
-          updateList={updateListValue}
-          value={getQueryParam('_tags')}
-        />
-      </Section>
-
-      <Section>
-        <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} sectionLabel={t('fields.user')} />
-
-        <TagParameterList
-          paramKey="_tags"
-          mapList={(xs) => xs.filter((x) => x.startsWith('user:')).map((x) => x.substr('user:'.length))}
-          mapValue={(x) => `user:${x}`}
-          updateList={updateListValue}
-          value={getQueryParam('_tags')}
-        />
-      </Section>
-
-      <Section>
-        <TagInput onSubmit={(v) => updateListValue('_tags', v)} sectionLabel={t('fields.tag')} />
-
-        <TagParameterList
-          paramKey="_tags"
-          mapList={(xs) => xs.filter((x) => !/^user:|project:/.test(x))}
-          updateList={updateListValue}
-          value={getQueryParam('_tags')}
-        />
-      </Section>
-
-      <Section>
-        <Button onClick={() => resetAllFilters()} disabled={isDefaultParams(params)}>
-          <Icon name="times" padRight />
-          <Text>{t('filters.reset-all')}</Text>
-        </Button>
-      </Section>
-    </Sidebar>
-  );
-};
-
-const HomeContentArea: React.FC<{
-  error: Error | null;
-  status: 'Ok' | 'Error' | 'Loading' | 'NotAsked';
-  runGroups: Record<string, IRun[]>;
-  params: Record<string, string>;
-  handleOrderChange: (orderProps: string) => void;
-  handleRunClick: (r: IRun) => void;
-}> = ({ error, status, runGroups, handleOrderChange, handleRunClick, params }) => {
-  const [visibleAmount, setVisibleAmount] = useState(5);
-  const { t } = useTranslation();
-  const resultAmount = Object.keys(runGroups).length;
-
-  useEffect(() => {
-    setVisibleAmount(5);
-  }, [params._group, params.status, params.flow_id, params._tags]);
-
-  return (
-    <Content>
-      {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
-      {status === 'Loading' && (
-        <Section style={{ position: 'absolute', left: '50%', background: '#fff' }}>
-          <Spinner />
-        </Section>
-      )}
-
-      {status === 'Ok' && resultAmount === 0 && <Section>{t('home.no-results')}</Section>}
-
-      {resultAmount > 0 &&
-        Object.keys(runGroups)
-          .sort()
-          .slice(0, visibleAmount)
-          .map((k) => {
-            return (
-              <ResultGroup
-                key={k}
-                field={params._group ? params._group : 'flow_id'}
-                fieldValue={k}
-                initialData={runGroups[k]}
-                queryParams={params}
-                onOrderChange={handleOrderChange}
-                onRunClick={handleRunClick}
-                resourceUrl="/runs"
-              />
-            );
-          })}
-      <AutoLoadTrigger
-        updateVisibility={() => {
-          if (totalLengthOfRuns(runGroups) > visibleAmount) {
-            setVisibleAmount(visibleAmount + 5);
-          }
-        }}
-      />
-    </Content>
-  );
-};
-
-function totalLengthOfRuns(grouppedRuns: Record<string, IRun[]>) {
-  return Object.keys(grouppedRuns).reduce((amount, key) => {
-    return amount + grouppedRuns[key].length;
-  }, 0);
-}
-
-const AutoLoadTrigger: React.FC<{ updateVisibility: () => void }> = ({ updateVisibility }) => {
-  const [isInViewport, targetRef] = useIsInViewport();
-  const [isUpdatable, setIsUpdatable] = useState(false);
-
-  useEffect(() => {
-    if (isInViewport && isUpdatable) {
-      updateVisibility();
-      setIsUpdatable(false);
-
-      setTimeout(() => {
-        setIsUpdatable(true);
-      }, 250);
-    }
-  }, [isInViewport, updateVisibility, isUpdatable]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsUpdatable(true);
-    }, 500);
-  }, []);
-
-  return <div ref={targetRef} />;
-};
-
-const MemoContentArea = React.memo<{
-  error: Error | null;
-  status: 'Ok' | 'Error' | 'Loading' | 'NotAsked';
-  runGroups: Record<string, IRun[]>;
-  params: Record<string, string>;
-  handleOrderChange: (orderProps: string) => void;
-  handleRunClick: (r: IRun) => void;
-}>((props) => {
-  return <HomeContentArea {...props} />;
-});
-
-function cleanParams(qp: Record<string, string>): Record<string, string> {
+function cleanParams(qp: any): Record<string, string> {
   return Object.keys(qp).reduce((obj, key) => {
-    const value = (qp as any)[key];
+    const value = qp[key];
     if (value) {
       return { ...obj, [key]: value };
     }
@@ -405,25 +301,55 @@ function cleanParams(qp: Record<string, string>): Record<string, string> {
   }, {});
 }
 
-export default Home;
-
-const StyledRemovableTag = styled(RemovableTag)`
-  margin-right: ${(p) => p.theme.spacer.xs}rem;
-  margin-bottom: ${(p) => p.theme.spacer.xs}rem;
-`;
-
-const Sidebar = styled.div`
-  position: fixed;
-  width: ${(p) => p.theme.layout.sidebarWidth}rem;
-  top: ${(p) => p.theme.layout.appbarHeight}rem;
-  font-size: 0.875rem;
-`;
-
-const Content = styled.div`
-  margin-left: ${(p) => p.theme.layout.sidebarWidth + 1}rem;
-  padding-top: ${(p) => p.theme.spacer.md}rem;
-
-  h3:first-of-type {
-    margin-top: 0;
+export function isDefaultParams(params: Record<string, string>): boolean {
+  if (Object.keys(params).length === 3) {
+    if (
+      params._order === defaultParams._order &&
+      params._limit === defaultParams._limit &&
+      params.status === defaultParams.status
+    ) {
+      return true;
+    }
   }
-`;
+  return false;
+}
+
+export function paramList(param: QueryParam): Array<string> {
+  return param ? param.split(',').filter((p: string) => p !== '') : [];
+}
+
+const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
+  const val1 = dir === 'down' ? a[key] : b[key];
+  const val2 = dir === 'down' ? b[key] : a[key];
+
+  if (typeof val1 === 'string' && typeof val2 === 'string') {
+    return val1.toUpperCase() > val2.toUpperCase() ? 1 : val1.toUpperCase() < val2.toUpperCase() ? -1 : 0;
+  }
+
+  return 0;
+};
+
+const nmbSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
+  const val1 = dir === 'down' ? a[key] : b[key];
+  const val2 = dir === 'down' ? b[key] : a[key];
+
+  if (typeof val1 === 'number' && typeof val2 === 'number') {
+    return val1 - val2;
+  }
+
+  return 0;
+};
+
+export function sortRuns(runs: IRun[], order: string): IRun[] {
+  const [dir, key] = parseOrderParam(order);
+
+  if (key === 'ts_epoch' || key === 'duration' || key === 'finished_at') {
+    return runs.sort(nmbSort(dir, key));
+  } else if (key === 'user_name' || key === 'status' || key === 'flow_id') {
+    return runs.sort(strSort(dir, key));
+  }
+
+  return runs;
+}
+
+export default Home;
