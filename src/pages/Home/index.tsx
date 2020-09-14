@@ -81,7 +81,7 @@ const Home: React.FC = () => {
     if (page !== 1) {
       setPage(1);
     }
-  }, [activeParams.flow_id, activeParams._tags, activeParams.status, activeParams._group]);
+  }, [activeParams.flow_id, activeParams._tags, activeParams.status, activeParams._group]); // eslint-disable-line
 
   //
   // Data
