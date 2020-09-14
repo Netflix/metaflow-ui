@@ -170,40 +170,43 @@ type TableRowsProps = {
 };
 
 const TableRows: React.FC<TableRowsProps> = React.memo(
-  ({ r, params, historyPush }) => (
-    <>
-      <StatusColorCell status={r.status} />
-      <TD>
-        <div style={{ display: 'flex' }}>
-          <span className="muted" style={{ marginRight: '5px' }}>
-            #
-          </span>{' '}
-          <strong>{r.run_number}</strong>
-        </div>
-      </TD>
-      {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
-      {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
-      <TD>
-        <StatusField status={r.status} />
-      </TD>
-      <TD>{getISOString(new Date(r.ts_epoch))}</TD>
-      <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
-      <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
-      <TD className="timeline-link">
-        <Link
-          to={getPath.run(r.flow_id, r.run_number)}
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            historyPush(getPath.run(r.flow_id, r.run_number));
-          }}
-        >
-          <Icon name="timeline" size="lg" padRight />
-          <Text>Timeline</Text>
-        </Link>
-      </TD>
-    </>
-  ),
+  ({ r, params, historyPush }) => {
+    const { t } = useTranslation();
+    return (
+      <>
+        <StatusColorCell status={r.status} />
+        <TD>
+          <div style={{ display: 'flex' }}>
+            <span className="muted" style={{ marginRight: '5px' }}>
+              #
+            </span>{' '}
+            <strong>{r.run_number}</strong>
+          </div>
+        </TD>
+        {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
+        {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
+        <TD>
+          <StatusField status={r.status} />
+        </TD>
+        <TD>{getISOString(new Date(r.ts_epoch))}</TD>
+        <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
+        <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
+        <TD className="timeline-link">
+          <Link
+            to={getPath.run(r.flow_id, r.run_number)}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              historyPush(getPath.run(r.flow_id, r.run_number));
+            }}
+          >
+            <Icon name="timeline" size="lg" padRight />
+            <Text>{t('run.timeline')}</Text>
+          </Link>
+        </TD>
+      </>
+    );
+  },
   (prev, next) => {
     return prev.r == next.r; // eslint-disable-line
   },
