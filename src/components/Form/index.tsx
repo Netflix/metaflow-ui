@@ -50,9 +50,13 @@ export const Field: React.FC<FieldBaseProps> = ({
 };
 
 export const SelectField: React.FC<
-  { label?: string; options: [string, string][]; disabled?: boolean; noMinWidth?: boolean } & CommonFieldProps<
-    HTMLSelectElement
-  >
+  {
+    label?: string;
+    options: [string, string][];
+    disabled?: boolean;
+    noMinWidth?: boolean;
+    maxWidth?: boolean;
+  } & CommonFieldProps<HTMLSelectElement>
 > = ({ label, options, horizontal, noMinWidth, ...rest }) => {
   const [id] = useState(uuid());
   const testid = rest['data-testid'];
@@ -149,6 +153,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   display: ${(p) => (p.horizontal ? 'flex' : 'block')};
   margin-bottom: ${(p) => (p.horizontal ? 0 : p.theme.spacer.xs)}rem;
   align-items: center;
+  width: ${(p) => (p.noMinWidth ? '100%' : 'auto')};
 
   label {
     display: ${(p) => (p.horizontal ? 'inline-block' : 'block')};
