@@ -64,7 +64,7 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
                   <Tag
                     key={tag}
                     onClick={() => {
-                      history.push('/?_tags=' + tag);
+                      history.push('/?_tags=' + encodeURIComponent(tag));
                     }}
                   >
                     {tag}

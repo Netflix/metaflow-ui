@@ -20,7 +20,7 @@ import { formatDuration } from '../../../utils/format';
 import Button from '../../../components/Button';
 
 const statusColors: RunStatus = {
-  completed: 'white',
+  completed: 'green',
   running: 'yellow',
   failed: 'red',
 };

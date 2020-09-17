@@ -20,7 +20,11 @@ const en = {
     },
 
     fields: {
-      none: 'None',
+      group: {
+        none: 'No grouping',
+        flow: 'Group by flow',
+        user: 'Group by user',
+      },
 
       flow: 'Flow',
       user: 'User',

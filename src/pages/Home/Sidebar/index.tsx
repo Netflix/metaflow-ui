@@ -3,7 +3,7 @@ import { CheckboxField, SelectField } from '../../../components/Form';
 
 import { paramList, isDefaultParams } from '../index';
 import { useTranslation } from 'react-i18next';
-import { Section, SectionHeader, SectionHeaderContent } from '../../../components/Structure';
+import { Section, SectionHeader } from '../../../components/Structure';
 import TagInput from '../../../components/TagInput';
 import Button from '../../../components/Button';
 import Icon from '../../../components/Icon';
@@ -59,20 +59,17 @@ const HomeSidebar: React.FC<{
     <Sidebar className="sidebar">
       <Section>
         <SectionHeader>
-          <div style={{ flexShrink: 0, paddingRight: '0.5rem' }}>{t('filters.group-by')}</div>
-          <SectionHeaderContent align="right">
-            <SelectField
-              horizontal
-              noMinWidth
-              value={params._group || ''}
-              onChange={(e) => e && handleParamChange('_group', e.target.value)}
-              options={[
-                ['', t('fields.none')],
-                ['flow_id', t('fields.flow')],
-                ['user_name', t('fields.user')],
-              ]}
-            />
-          </SectionHeaderContent>
+          <SelectField
+            horizontal
+            noMinWidth
+            value={params._group || ''}
+            onChange={(e) => e && handleParamChange('_group', e.target.value)}
+            options={[
+              ['', t('fields.group.none')],
+              ['flow_id', t('fields.group.flow')],
+              ['user_name', t('fields.group.user')],
+            ]}
+          />
         </SectionHeader>
       </Section>
 

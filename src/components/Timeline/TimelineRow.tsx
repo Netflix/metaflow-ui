@@ -7,6 +7,7 @@ import { getPath } from '../../utils/routing';
 import Icon from '../Icon';
 import { Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
+import { lighten } from 'polished';
 
 type TimelineRowProps = {
   // Row type and data
@@ -251,7 +252,7 @@ function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst:
   } else {
     switch (state) {
       case 'completed':
-        return !isFirst ? '#AFE1B4' : theme.color.bg.green;
+        return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.green;
       case 'running':
         return theme.color.bg.yellow;
       default:

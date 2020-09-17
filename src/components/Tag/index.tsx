@@ -39,8 +39,12 @@ const Tag = styled.span<{ highlighted?: boolean }>`
 
 export default Tag;
 
-export const RemovableTag: React.FC<{ onClick: () => void }> = ({ children, onClick }) => (
-  <Tag onClick={onClick} highlighted>
+export const RemovableTag: React.FC<{ className?: string; onClick: () => void }> = ({
+  className,
+  children,
+  onClick,
+}) => (
+  <Tag onClick={onClick} className={className} highlighted>
     {children}
     <Icon name="times" padLeft />
   </Tag>
