@@ -82,6 +82,20 @@ declare module 'styled-components' {
     };
 
     spinner: {
+      sizes: {
+        sm: {
+          size: number;
+          borderWidth: number;
+        };
+        md: {
+          size: number;
+          borderWidth: number;
+        };
+        lg: {
+          size: number;
+          borderWidth: number;
+        };
+      };
       size: number; // Spinner size (width & height) (px)
       color: string; // Border color
       borderWidth: number; // Border width (px)

@@ -269,7 +269,7 @@ const Home: React.FC = () => {
   }, []); // eslint-disable-line
 
   return (
-    <>
+    <div style={{ display: 'flex', flex: 1 }}>
       <HomeSidebar
         handleParamChange={handleParamChange}
         updateListValue={updateListValue}
@@ -287,7 +287,7 @@ const Home: React.FC = () => {
         loadMore={handleLoadMore}
         targetCount={isGrouping() ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page}
       />
-    </>
+    </div>
   );
 };
 

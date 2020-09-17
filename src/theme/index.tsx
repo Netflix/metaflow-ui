@@ -115,6 +115,20 @@ const defaultTheme: DefaultTheme = {
   },
   spinner: {
     size: 20,
+    sizes: {
+      sm: {
+        size: 20,
+        borderWidth: 2,
+      },
+      md: {
+        size: 32,
+        borderWidth: 4,
+      },
+      lg: {
+        size: 64,
+        borderWidth: 6,
+      },
+    },
     color: brandColor.blue,
     borderWidth: 2,
   },
