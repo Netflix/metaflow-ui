@@ -16,6 +16,7 @@ import AnchoredView from './components/AnchoredView';
 import { ForceBreakText } from '../../components/Text';
 import LogList from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
+import useSearchRequest, { SearchResult } from '../../hooks/useSearchRequest';
 
 //
 // View container
@@ -40,6 +41,7 @@ type TaskViewProps = { run: IRun; stepName: string; taskId: string; rowData: Row
 
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   const { t } = useTranslation();
+  const [searchValue, setSearchValue] = useState('');
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
@@ -90,6 +92,14 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   // Logs start
   //
 
+  useSearchRequest({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/search`,
+    searchValue: searchValue,
+    onUpdate: (event: SearchResult) => {
+      console.log('UPDATE', event);
+    },
+  });
+
   const [stdout, setStdout] = useState<Log[]>([]);
   useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
@@ -121,7 +131,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
 
   return (
     <TaskContainer>
-      <TaskList rowData={rowData} activeTaskId={parseInt(taskId)} />
+      <TaskList rowData={rowData} activeTaskId={parseInt(taskId)} setSearchValue={setSearchValue} />
 
       {!task && t('task.loading')}
       {(error || (task && !task.task_id && taskId !== 'not-selected')) && t('task.could-not-find-task')}

@@ -32,11 +32,15 @@ type TaskListStepData = {
   isOpen: boolean;
 };
 
-const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ rowData, activeTaskId }) => {
+const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number; setSearchValue: (value: string) => void }> = ({
+  rowData,
+  activeTaskId,
+  setSearchValue,
+}) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [rows, setRows] = useState<TaskListRowItem[]>([]);
   const [stepData, setStepData] = useState<Record<string, TaskListStepData>>({});
-  const [filter, setFilter] = useState('');
+  const [filter /*setFilter*/] = useState('');
   const history = useHistory();
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
@@ -104,7 +108,11 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
         }
       >
         <TaskListInputContainer>
-          <TextInputField placeholder={t('task.search-tasks')} onChange={(e) => e && setFilter(e.target.value)} />
+          <TextInputField
+            placeholder={t('task.search-tasks')}
+            onChange={(e) => e && setSearchValue(e.target.value)}
+            /*onChange={(e) => e && setFilter(e.target.value)}*/
+          />
         </TaskListInputContainer>
         <List
           style={
