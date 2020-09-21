@@ -16,7 +16,7 @@ import AnchoredView from './components/AnchoredView';
 import { ForceBreakText } from '../../components/Text';
 import LogList from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
-import useSearchRequest, { SearchResult } from '../../hooks/useSearchRequest';
+import useSearchRequest, { SearchResult, TaskMatch } from '../../hooks/useSearchRequest';
 
 //
 // View container
@@ -39,9 +39,13 @@ const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId,
 
 type TaskViewProps = { run: IRun; stepName: string; taskId: string; rowData: RowDataModel };
 
+export type SearchResultModel = {
+  result: TaskMatch[];
+  status: 'NotAsked' | 'Loading' | 'Ok' | 'Error';
+};
+
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   const { t } = useTranslation();
-  const [searchValue, setSearchValue] = useState('');
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
@@ -92,14 +96,6 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   // Logs start
   //
 
-  useSearchRequest({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/search`,
-    searchValue: searchValue,
-    onUpdate: (event: SearchResult) => {
-      console.log('UPDATE', event);
-    },
-  });
-
   const [stdout, setStdout] = useState<Log[]>([]);
   useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
@@ -129,9 +125,38 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
     setStderr([]);
   }, [taskId]);
 
+  //
+  // Search features
+  //
+  const [searchValue, setSearchValue] = useState('');
+  const [searchResults, setSearchResults] = useState<SearchResultModel>({ result: [], status: 'NotAsked' });
+  useSearchRequest({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/search`,
+    searchValue: searchValue,
+    onUpdate: (event: SearchResult) => {
+      if (Array.isArray(event.matches)) {
+        setSearchResults({ result: event.matches || [], status: 'Ok' });
+      }
+    },
+    onStart: () => {
+      setSearchResults({ ...searchResults, status: 'Loading' });
+    },
+  });
+
+  useEffect(() => {
+    if (searchValue === '') {
+      setSearchResults({ result: [], status: 'NotAsked' });
+    }
+  }, [searchValue, setSearchResults]);
+
   return (
     <TaskContainer>
-      <TaskList rowData={rowData} activeTaskId={parseInt(taskId)} setSearchValue={setSearchValue} />
+      <TaskList
+        rowData={rowData}
+        results={searchResults}
+        activeTaskId={parseInt(taskId)}
+        setSearchValue={setSearchValue}
+      />
 
       {!task && t('task.loading')}
       {(error || (task && !task.task_id && taskId !== 'not-selected')) && t('task.could-not-find-task')}

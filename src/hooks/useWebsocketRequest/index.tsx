@@ -12,6 +12,7 @@ export type OnOpen = (event: OpenEvent) => void;
 export type OnUpdate<T> = (event: T) => void;
 export type OnClose = (event: CloseEvent) => void;
 export type OnError = (event: ErrorEvent) => void;
+export type OnStart = () => void;
 
 export interface HookConfig<T> {
   url: string;
@@ -21,6 +22,7 @@ export interface HookConfig<T> {
   onUpdate: OnUpdate<T>;
   onClose?: OnClose;
   onError?: OnError;
+  onStart?: OnStart;
 }
 
 export default function useWebsocketRequest<T>({
@@ -31,6 +33,7 @@ export default function useWebsocketRequest<T>({
   onUpdate,
   onClose,
   onError,
+  onStart,
 }: HookConfig<T>): void {
   const qs = new URLSearchParams(queryParams).toString();
 
@@ -66,6 +69,8 @@ export default function useWebsocketRequest<T>({
       const target = `${url}${q ? '?' + q : ''}`;
 
       conn = new ReconnectingWebSocket(`${METAFLOW_SERVICE_WS}${target}`, [], { maxRetries: 0 });
+
+      onStart && onStart();
 
       conn.addEventListener('open', _onOpen);
       conn.addEventListener('close', _onClose);

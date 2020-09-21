@@ -1,4 +1,4 @@
-import useWebsocketRequest, { OnOpen, OnUpdate, OnClose, OnError } from '../useWebsocketRequest';
+import useWebsocketRequest, { OnOpen, OnUpdate, OnClose, OnError, OnStart } from '../useWebsocketRequest';
 
 export interface SearchResult {
   progress?: string;
@@ -13,6 +13,8 @@ interface Match {
   task_id: number;
 }
 
+export type TaskMatch = Match;
+
 export interface HookConfig {
   url: string;
   searchValue: string;
@@ -20,6 +22,7 @@ export interface HookConfig {
   onUpdate: OnUpdate<SearchResult>;
   onClose?: OnClose;
   onError?: OnError;
+  onStart?: OnStart;
 }
 
 interface SearchKeyValuePair {
@@ -31,14 +34,21 @@ const parseSearchValue = (searchValue: string): SearchKeyValuePair | null => {
   const components = (searchValue || '').trim().split(/\s+/).filter(Boolean);
   if (components.length > 0) {
     const condition = components[0].split('=');
-    if (condition.length === 2) {
+    if (condition.length === 2 && condition[0] && condition[1]) {
       return { key: condition[0], value: condition[1] };
     }
   }
   return null;
 };
 
-export default function useSearchRequest({ url, searchValue = '', onUpdate, onClose, onError }: HookConfig): void {
+export default function useSearchRequest({
+  url,
+  searchValue = '',
+  onUpdate,
+  onClose,
+  onError,
+  onStart,
+}: HookConfig): void {
   const searchKv = parseSearchValue(searchValue);
   useWebsocketRequest<SearchResult>({
     url,
@@ -47,5 +57,6 @@ export default function useSearchRequest({ url, searchValue = '', onUpdate, onCl
     onUpdate,
     onClose,
     onError,
+    onStart,
   });
 }
