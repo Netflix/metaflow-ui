@@ -11092,6 +11092,11 @@ url@^0.11.0:
     punycode "1.3.2"
     querystring "0.2.0"
 
+use-debounce@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/use-debounce/-/use-debounce-5.0.0.tgz#839592080a0c2681a5552d9fb5bc2a970fafa77c"
+  integrity sha512-ixDekk7e2wafKlaitucqYUEkpyMwfqxz0P0s8/kcH6xJMwHEovrjsJMPzZ6a4+PhcVyAJ8prk1WI8XRNUWD7aw==
+
 use-is-in-viewport@^1.0.9:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/use-is-in-viewport/-/use-is-in-viewport-1.0.9.tgz#bbc1f2f39ece752c7af0ddcd17b251ba5b4587e2"

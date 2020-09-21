@@ -107,7 +107,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
   };
 }
 
-const ResourceEvents = createWebsocketConnection(METAFLOW_SERVICE_WS);
+const ResourceEvents = createWebsocketConnection(`${METAFLOW_SERVICE_WS}/ws`);
 
 // Export
 export default ResourceEvents;

@@ -23,7 +23,7 @@ $ METAFLOW_SERVICE_PROXY=http://localhost:8083 yarn start
 $ REACT_APP_METAFLOW_SERVICE=http://localhost:8083 yarn start
 
 # Modify Websocket endpoint (default: same as API with /ws suffix)
-$ REACT_APP_METAFLOW_SERVICE_WS=http://localhost:8083/ws yarn start
+$ REACT_APP_METAFLOW_SERVICE_WS=ws://localhost:8083 yarn start
 ```
 
 Launch the test runner in the interactive watch mode.

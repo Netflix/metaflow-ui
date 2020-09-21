@@ -3,6 +3,7 @@ import { Plugin, PluginInit } from '..';
 
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
+import { ForceBreakText } from '../../components/Text';
 
 const extractBucketAndPath = (s3Url: string) => {
   const url = s3Url.replace('s3://', '').split('/');
@@ -40,7 +41,7 @@ const plugin: PluginInit = ({ t }): Plugin => {
                         const httpEndpoint = `http://${bucket}.s3-website-us-west-1.amazonaws.com/${path}`;
                         return (
                           <a href={httpEndpoint} target="_blank" rel="noopener noreferrer">
-                            {httpEndpoint}
+                            <ForceBreakText>{httpEndpoint}</ForceBreakText>
                           </a>
                         );
                       },
@@ -52,7 +53,7 @@ const plugin: PluginInit = ({ t }): Plugin => {
                         const awsConsoleEndpoint = `https://s3.console.aws.amazon.com/s3/buckets/${bucket}/${path}`;
                         return (
                           <a href={awsConsoleEndpoint} target="_blank" rel="noopener noreferrer">
-                            {awsConsoleEndpoint}
+                            <ForceBreakText>{awsConsoleEndpoint}</ForceBreakText>
                           </a>
                         );
                       },

@@ -96,7 +96,7 @@ const en = {
       'std-out': 'Std out',
       'std-err': 'Std err',
       artifacts: 'Artifacts',
-      'search-tasks': 'Search tasks',
+      'search-tasks': 'Search tasks: artifact_name=value',
       'no-logs': 'No logs',
     },
 

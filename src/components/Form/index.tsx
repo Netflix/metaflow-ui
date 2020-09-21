@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 import Icon from '../Icon';
 import caretDownURL from '../../assets/caret_down.svg';
+import Spinner from '../Spinner';
 
 type CommonFieldProps<T> = {
   className?: string;
@@ -107,6 +108,8 @@ export const TextInputField = React.forwardRef<
     placeholder?: string;
     autoFocus?: boolean;
     disabled?: boolean;
+    loading?: boolean;
+    async?: boolean;
   } & CommonFieldProps<HTMLInputElement>
 >(
   (
@@ -121,6 +124,8 @@ export const TextInputField = React.forwardRef<
       onClick,
       onKeyPress,
       disabled,
+      loading,
+      async,
       ...rest
     },
     ref,
@@ -132,6 +137,11 @@ export const TextInputField = React.forwardRef<
     return (
       <Field horizontal={horizontal} type="text" data-testid={testid}>
         {label && <label htmlFor={id}>{label}</label>}
+        {async && (
+          <InputLoader visible={loading || false}>
+            <Spinner />
+          </InputLoader>
+        )}
         <input
           id={id}
           ref={ref}
@@ -149,11 +159,21 @@ export const TextInputField = React.forwardRef<
   },
 );
 
+const InputLoader = styled.div<{ visible: boolean }>`
+  position: absolute;
+  right: 5px;
+  top: 5px;
+
+  opacity: ${(p) => (p.visible ? '1' : '0')};
+  transition: 0.15s opacity;
+`;
+
 const FieldWrapper = styled.div<FieldBaseProps>`
   display: ${(p) => (p.horizontal ? 'flex' : 'block')};
   margin-bottom: ${(p) => (p.horizontal ? 0 : p.theme.spacer.xs)}rem;
   align-items: center;
   width: ${(p) => (p.noMinWidth ? '100%' : 'auto')};
+  position: relative;
 
   label {
     display: ${(p) => (p.horizontal ? 'inline-block' : 'block')};

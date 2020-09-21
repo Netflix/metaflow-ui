@@ -9,6 +9,8 @@ import styled, { css } from 'styled-components';
 import Icon from '../../../components/Icon';
 import { TextInputField } from '../../../components/Form';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from 'use-debounce';
+import { SearchResultModel } from '..';
 
 //
 // Tasklist
@@ -32,17 +34,31 @@ type TaskListStepData = {
   isOpen: boolean;
 };
 
-const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ rowData, activeTaskId }) => {
+type Props = {
+  rowData: RowDataModel;
+  activeTaskId: number;
+  setSearchValue: (value: string) => void;
+  results: SearchResultModel;
+};
+
+const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, setSearchValue }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [rows, setRows] = useState<TaskListRowItem[]>([]);
   const [stepData, setStepData] = useState<Record<string, TaskListStepData>>({});
-  const [filter, setFilter] = useState('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [debouncedTerm] = useDebounce(searchTerm, 300);
   const history = useHistory();
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
   useEffect(() => {
+    setSearchValue(debouncedTerm);
+  }, [debouncedTerm, setSearchValue]);
+
+  useEffect(() => {
     let taskRows: TaskListRowItem[] = [];
+    const matchIds = results.result.map((item) => item.task_id);
+
     for (const stepname of Object.keys(rowData)) {
       const step = rowData[stepname];
       if (!stepname.startsWith('_')) {
@@ -53,7 +69,7 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
         if (isOpen) {
           taskRows = taskRows.concat(
             Object.keys(step.data)
-              .filter((key) => !filter || key.indexOf(filter) > -1)
+              .filter((key) => matchIds.length === 0 || matchIds.indexOf(parseInt(key)) > -1)
               .map((key) => ({
                 type: 'task',
                 data: step.data[parseInt(key)][0],
@@ -64,7 +80,7 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
     }
 
     setRows(taskRows);
-  }, [rowData, stepData, filter]);
+  }, [rowData, stepData, results]);
 
   useEffect(() => {
     setStepData(
@@ -104,7 +120,12 @@ const TaskList: React.FC<{ rowData: RowDataModel; activeTaskId: number }> = ({ r
         }
       >
         <TaskListInputContainer>
-          <TextInputField placeholder={t('task.search-tasks')} onChange={(e) => e && setFilter(e.target.value)} />
+          <TextInputField
+            placeholder={t('task.search-tasks')}
+            onChange={(e) => e && setSearchTerm(e.target.value)}
+            loading={results.status === 'Loading'}
+            async
+          />
         </TaskListInputContainer>
         <List
           style={
