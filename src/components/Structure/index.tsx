@@ -2,9 +2,17 @@ import styled, { css } from 'styled-components';
 
 export const Page = styled.div`
   max-width: ${(p) => p.theme.layout.maxWidth}px;
-  margin-top: ${(p) => p.theme.layout.appbarHeight}rem;
-  margin: ${(p) => p.theme.layout.appbarHeight}rem auto 0 auto;
+  margin: 0 auto 0 auto;
   padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem ${(p) => p.theme.layout.pagePaddingY}rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  &:before {
+    display: block;
+    content: '';
+    height: ${(p) => p.theme.layout.appbarHeight}rem;
+  }
 `;
 
 export const Section = styled.section`

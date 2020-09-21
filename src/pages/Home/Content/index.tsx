@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { Run as IRun } from '../../../types';
 import { useTranslation } from 'react-i18next';
 import Notification, { NotificationType } from '../../../components/Notification';
-import { Section } from '../../../components/Structure';
 import Spinner from '../../../components/Spinner';
 import ResultGroup from '../ResultGroup';
 import useIsInViewport from 'use-is-in-viewport';
@@ -26,8 +25,6 @@ const HomeContentArea: React.FC<{
     <Content>
       {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
 
-      {status === 'Ok' && resultAmount === 0 && <Section>{t('home.no-results')}</Section>}
-
       {resultAmount > 0 &&
         Object.keys(runGroups).map((k) => {
           return (
@@ -45,11 +42,14 @@ const HomeContentArea: React.FC<{
           );
         })}
 
+      {status === 'Ok' && resultAmount === 0 && <Center>{t('home.no-results')}</Center>}
+
       <AutoLoadTrigger
         status={status}
         updateVisibility={() => {
           loadMore();
         }}
+        resultAmount={resultAmount}
       />
     </Content>
   );
@@ -58,8 +58,8 @@ const HomeContentArea: React.FC<{
 const AutoLoadTrigger: React.FC<{
   updateVisibility: () => void;
   status: 'NotAsked' | 'Loading' | 'Error' | 'Ok';
-}> = ({ updateVisibility, status }) => {
-  const { t } = useTranslation();
+  resultAmount: number;
+}> = ({ updateVisibility, status, resultAmount }) => {
   const [isInViewport, targetRef] = useIsInViewport();
   const [isUpdatable, setIsUpdatable] = useState(false);
 
@@ -85,14 +85,10 @@ const AutoLoadTrigger: React.FC<{
   }, []);
 
   return (
-    <LoadTriggerContainer ref={targetRef}>
-      {status === 'Loading' && (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Spinner />
-          <span style={{ marginLeft: '0.5rem' }}>{t('home.loading-items')}</span>
-        </div>
-      )}
-    </LoadTriggerContainer>
+    <>
+      {status === 'Loading' && <Center>{resultAmount > 0 ? <Spinner sm /> : <Spinner lg />}</Center>}
+      <div ref={targetRef} />
+    </>
   );
 };
 
@@ -101,10 +97,14 @@ export default HomeContentArea;
 const Content = styled.div`
   margin-left: ${(p) => p.theme.layout.sidebarWidth + 1}rem;
   padding-top: ${(p) => p.theme.spacer.md}rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 `;
 
-const LoadTriggerContainer = styled.div`
-  padding: 1rem;
-  text-align: center;
-  min-height: 55px;
+const Center = styled.div`
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 `;

@@ -1,4 +1,4 @@
-import useWebsocketRequest, { OnOpen, OnUpdate, OnClose, OnError, OnStart } from '../useWebsocketRequest';
+import useWebsocketRequest, { OnOpen, OnUpdate, OnClose, OnError } from '../useWebsocketRequest';
 
 export interface SearchResult {
   progress?: string;
@@ -22,7 +22,6 @@ export interface HookConfig {
   onUpdate: OnUpdate<SearchResult>;
   onClose?: OnClose;
   onError?: OnError;
-  onStart?: OnStart;
 }
 
 interface SearchKeyValuePair {
@@ -47,7 +46,7 @@ export default function useSearchRequest({
   onUpdate,
   onClose,
   onError,
-  onStart,
+  onOpen,
 }: HookConfig): void {
   const searchKv = parseSearchValue(searchValue);
   useWebsocketRequest<SearchResult>({
@@ -57,6 +56,6 @@ export default function useSearchRequest({
     onUpdate,
     onClose,
     onError,
-    onStart,
+    onOpen,
   });
 }

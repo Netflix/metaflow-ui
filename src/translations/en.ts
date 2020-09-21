@@ -14,9 +14,8 @@ const en = {
 
     home: {
       home: 'Home',
-      'loading-items': 'Loading items',
       'show-all-runs': 'Show all runs',
-      'no-results': 'There is results with given parameters',
+      'no-results': 'No runs found',
     },
 
     fields: {
