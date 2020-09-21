@@ -22,7 +22,6 @@ export interface HookConfig<T> {
   onUpdate: OnUpdate<T>;
   onClose?: OnClose;
   onError?: OnError;
-  onStart?: OnStart;
 }
 
 export default function useWebsocketRequest<T>({
@@ -33,7 +32,6 @@ export default function useWebsocketRequest<T>({
   onUpdate,
   onClose,
   onError,
-  onStart,
 }: HookConfig<T>): void {
   const qs = new URLSearchParams(queryParams).toString();
 
@@ -42,7 +40,7 @@ export default function useWebsocketRequest<T>({
 
     const _onOpen = (e: OpenEvent) => {
       console.debug('Websocket connection open');
-      onOpen && _onOpen(e);
+      onOpen && onOpen(e);
     };
     const _onClose = (e: CloseEvent) => {
       console.debug('Websocket connection closed');
@@ -69,8 +67,6 @@ export default function useWebsocketRequest<T>({
       const target = `${url}${q ? '?' + q : ''}`;
 
       conn = new ReconnectingWebSocket(`${METAFLOW_SERVICE_WS}${target}`, [], { maxRetries: 0 });
-
-      onStart && onStart();
 
       conn.addEventListener('open', _onOpen);
       conn.addEventListener('close', _onClose);

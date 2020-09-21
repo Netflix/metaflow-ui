@@ -136,10 +136,15 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
     onUpdate: (event: SearchResult) => {
       if (Array.isArray(event.matches)) {
         setSearchResults({ result: event.matches || [], status: 'Ok' });
+      } else {
+        setSearchResults({ result: [], status: 'Ok' });
       }
     },
-    onStart: () => {
+    onOpen: () => {
       setSearchResults({ ...searchResults, status: 'Loading' });
+    },
+    onError: () => {
+      setSearchResults({ result: [], status: 'Error' });
     },
   });
 
