@@ -15,6 +15,8 @@ const headerFunctionProps = {
   setFullscreen: () => null,
   isFullscreen: false,
   updateStatusFilter: () => null,
+  searchFieldProps: { text: '', setText: () => null },
+  searchResults: { status: 'NotAsked' as const, result: [] },
 };
 
 describe('TimelineHeader component', () => {

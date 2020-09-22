@@ -38,7 +38,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   const ContainerSize = useComponentSize(_container);
   const WindowSize = useWindowSize();
 
-  const { data: stepData } = useResource<Step[], Step>({
+  const { data: stepData, status } = useResource<Step[], Step>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
     subscribeToEvents: true,
     initialData: [],
@@ -89,7 +89,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   );
 
   return (
-    <div style={{ width: '100%' }}>
+    <div data-testid={`dag-container-${status}`} style={{ width: '100%' }}>
       <div style={{ padding: '0 0 10px 0' }}>
         <Notification type={NotificationType.Info}>
           Note! These examples are hardcoded and they do not present the state of your run.

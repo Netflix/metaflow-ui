@@ -3,6 +3,7 @@ import Task from '..';
 import { render } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
 import { Run } from '../../../types';
+import WS from 'jest-websocket-mock';
 
 const run: Run = {
   flow_id: 'string',
@@ -15,11 +16,19 @@ const run: Run = {
 };
 
 describe('Task page', () => {
-  test('<Task /> - health check', () => {
+  test('<Task /> - health check', async () => {
+    const server = new WS('ws://localhost/api/ws', { jsonProtocol: true });
+
     render(
       <TestWrapper>
         <Task run={run} stepName="test" taskId="test" rowData={{}} />
       </TestWrapper>,
     );
+
+    await server.connected;
+  });
+
+  afterEach(() => {
+    WS.clean();
   });
 });

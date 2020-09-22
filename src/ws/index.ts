@@ -50,7 +50,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
 
   const conn = new ReconnectingWebSocket(url, [], {});
   conn.addEventListener('open', (_e) => {
-    console.info('Websocket connection open');
+    // console.info('Websocket connection open');
 
     // Always re-subscribe to events when connection is established
     // This operation is safe since backend makes sure there's no duplicate identifiers
@@ -59,7 +59,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     });
   });
   conn.addEventListener('close', (_e) => {
-    console.info('Websocket connection closed');
+    // console.info('Websocket connection closed');
   });
   conn.addEventListener('message', (e) => {
     if (e.data) {
@@ -67,12 +67,12 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
         const event = JSON.parse(e.data) as Event<unknown>;
         emit(event);
       } catch (e) {
-        console.error(e);
+        // console.error(e);
       }
     }
   });
-  conn.addEventListener('error', (e) => {
-    console.error('Websocket error', e);
+  conn.addEventListener('error', () => {
+    // console.error('Websocket error', e);
   });
 
   const emit = (event: Event<unknown>) => {

@@ -17,11 +17,13 @@ const run: Run = {
 };
 
 describe('DAG component', () => {
-  test('<DAG /> - health check', () => {
-    render(
+  test('<DAG /> - health check', async () => {
+    const { findAllByTestId } = render(
       <TestWrapper>
         <DAG run={run} />
       </TestWrapper>,
     );
+    // Expect to see error here since we don't mock websocket
+    await findAllByTestId('dag-container-Error');
   });
 });
