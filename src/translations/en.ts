@@ -60,6 +60,7 @@ const en = {
     run: {
       'no-run-data': 'No run data',
       DAG: 'DAG',
+      'dag-not-available': 'DAG is currently not available',
       timeline: 'Timeline',
       parameters: 'Parameters',
       'show-run-details': 'Show run details',

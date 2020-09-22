@@ -1,8 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 import { DAGModel, convertDAGModelToTree, DAGStructureTree, DAGTreeNode, StepTree } from './DAGUtils';
 import { Run, Step } from '../../types';
-import { dagexample1, dagexample2, dagexample3, dagHugeflow } from './DAGexamples';
 import styled, { css } from 'styled-components';
 import Button from '../Button';
 import { ItemRow } from '../Structure';
@@ -48,19 +47,19 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     },
   });
 
+  useResource<DAGModel, DAGModel>({
+    url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
+    subscribeToEvents: false,
+    initialData: null,
+    onUpdate: (data) => {
+      setDagTree(convertDAGModelToTree(data));
+    },
+  });
+
   const [showFullscreen, setFullscreen] = useState(false);
   const [dagTree, setDagTree] = useState<DAGStructureTree>([]);
-  const [dataSet, setDataSet] = useState<DAGModel | null>(null);
 
-  useEffect(() => {
-    if (dataSet) {
-      setDagTree(convertDAGModelToTree(dataSet));
-    } else {
-      setDagTree(convertDAGModelToTree(dagHugeflow));
-    }
-  }, [dataSet]);
-
-  const content = dagTree && (
+  const content = !!dagTree.length && (
     <DAGRenderingContainer
       showFullscreen={showFullscreen}
       ref={_container}
@@ -88,24 +87,24 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     </DAGRenderingContainer>
   );
 
+  const error_content = !dagTree.length && (
+    <div style={{ padding: '0 0 10px 0' }}>
+      <Notification type={NotificationType.Danger}>{t('run.dag-not-available')}</Notification>
+    </div>
+  );
+
+  const fullscreen_controls = (
+    <ItemRow pad="sm">
+      <Button onClick={() => setFullscreen(true)} withIcon>
+        <Icon name="maximize" />
+        <span>{t('run.show-fullscreen')}</span>
+      </Button>
+    </ItemRow>
+  );
+
   return (
     <div style={{ width: '100%' }}>
-      <div style={{ padding: '0 0 10px 0' }}>
-        <Notification type={NotificationType.Info}>
-          Note! These examples are hardcoded and they do not present the state of your run.
-        </Notification>
-      </div>
-      <ItemRow pad="sm">
-        <Button onClick={() => setDataSet(dagexample1)}>example1</Button>
-        <Button onClick={() => setDataSet(dagexample2)}>example2</Button>
-        <Button onClick={() => setDataSet(dagexample3)}>example3</Button>
-        <Button onClick={() => setDataSet(dagHugeflow)}>hugeflow</Button>
-        <Button onClick={() => setFullscreen(true)} withIcon>
-          <Icon name="maximize" />
-          <span>{t('run.show-fullscreen')}</span>
-        </Button>
-      </ItemRow>
-
+      {error_content ? error_content : fullscreen_controls}
       {showFullscreen ? <FullPageContainer onClose={() => setFullscreen(false)}>{content}</FullPageContainer> : content}
     </div>
   );
