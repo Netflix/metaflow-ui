@@ -51,12 +51,14 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
     subscribeToEvents: true,
     initialData: null,
+    pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
   const { data: artifacts } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     subscribeToEvents: true,
     initialData: [],
+    pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
   //

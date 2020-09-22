@@ -136,7 +136,7 @@ const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, setSearchVa
           }
           overscanRowCount={5}
           rowCount={rows.length}
-          rowHeight={30}
+          rowHeight={28}
           rowRenderer={({ index, style }) => {
             const item = rows[index];
             const itemDuration = item.type === 'step' ? item.data.duration : item.data.duration;
@@ -223,19 +223,19 @@ const RowTextContent = styled.div<{ rowType: 'step' | 'task'; active?: boolean }
   justify-content: space-between;
   flex: 1;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  line-height: 30px;
-  max-width: 185px;
+  line-height: 27px;
+  max-width: 200px;
   padding: 0 10px;
   color: #333;
   background: ${(p) => (p.active ? '#E4F0FF' : 'transparent')};
 `;
 
 const RowIconSection = styled.div<{ rowType: 'step' | 'task' }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 30px;
-  line-height: 30px;
-  text-align: right;
   color: #717171;
-  padding-right: 10px;
   flex-shrink: 0;
   ${(p) =>
     p.rowType === 'step'
