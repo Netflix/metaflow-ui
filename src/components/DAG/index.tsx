@@ -52,9 +52,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     subscribeToEvents: false,
     initialData: null,
     onUpdate: (data) => {
-      if (Object.keys(data).length > 0) {
-        setDagTree(convertDAGModelToTree(data));
-      }
+      setDagTree(convertDAGModelToTree(data));
     },
   });
 
