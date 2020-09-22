@@ -10,7 +10,7 @@ import { getISOString } from '../../utils/date';
 import StatusField from '../../components/Status';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
-import { RowDataModel } from '../../components/Timeline/useRowData';
+import { RowDataAction, RowDataModel } from '../../components/Timeline/useRowData';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import { ForceBreakText } from '../../components/Text';
@@ -22,24 +22,36 @@ import useSeachField from '../../hooks/useSearchField';
 // View container
 //
 
-type TaskViewContainer = { run: IRun | null; stepName?: string; taskId?: string; rowData: RowDataModel };
+type TaskViewContainer = {
+  run: IRun | null;
+  stepName?: string;
+  taskId?: string;
+  rowData: RowDataModel;
+  rowDataDispatch: (action: RowDataAction) => void;
+};
 
-const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId, rowData }) => {
+const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId, rowData, rowDataDispatch }) => {
   const { t } = useTranslation();
   if (!run?.run_number || !stepName || !taskId) {
     return <>{t('run.no-run-data')}</>;
   }
 
-  return <Task run={run} stepName={stepName} taskId={taskId} rowData={rowData} />;
+  return <Task run={run} stepName={stepName} taskId={taskId} rowData={rowData} rowDataDispatch={rowDataDispatch} />;
 };
 
 //
 // Task view
 //
 
-type TaskViewProps = { run: IRun; stepName: string; taskId: string; rowData: RowDataModel };
+type TaskViewProps = {
+  run: IRun;
+  stepName: string;
+  taskId: string;
+  rowData: RowDataModel;
+  rowDataDispatch: (action: RowDataAction) => void;
+};
 
-const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
+const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowDataDispatch }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const { data: task, error } = useResource<ITask, ITask>({
@@ -129,7 +141,13 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
 
   return (
     <TaskContainer>
-      <TaskList rowData={rowData} activeTaskId={parseInt(taskId)} results={results} searchFieldProps={fieldProps} />
+      <TaskList
+        rowData={rowData}
+        rowDataDispatch={rowDataDispatch}
+        activeTaskId={parseInt(taskId)}
+        results={results}
+        searchFieldProps={fieldProps}
+      />
 
       {!task && t('task.loading')}
       {(error || (task && !task.task_id && taskId !== 'not-selected')) && t('task.could-not-find-task')}
@@ -259,7 +277,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
 
 const TaskContainer = styled.div`
   display: flex;
-  padding: 25px 0;
+  padding: 13px 0 25px 0;
   width: 100%;
 `;
 

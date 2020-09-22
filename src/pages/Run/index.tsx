@@ -92,7 +92,6 @@ const RunPage: React.FC = () => {
   });
 
   useEffect(() => {
-    // Move this to run page
     dispatch({ type: 'reset' });
   }, [params.runNumber, dispatch]);
 
@@ -142,6 +141,7 @@ const RunPage: React.FC = () => {
                     stepName={previousStepName || 'not-selected'}
                     taskId={previousTaskId || 'not-selected'}
                     rowData={rows}
+                    rowDataDispatch={dispatch}
                   />
                 ),
               },

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Task as ITask } from '../../../types';
-import { RowDataModel, StepRowData } from '../../../components/Timeline/useRowData';
+import { RowDataAction, RowDataModel, StepRowData } from '../../../components/Timeline/useRowData';
 import { useHistory } from 'react-router-dom';
 import { List } from 'react-virtualized';
 import { getPath } from '../../../utils/routing';
@@ -10,6 +10,7 @@ import Icon from '../../../components/Icon';
 import { useTranslation } from 'react-i18next';
 import { SearchFieldProps, SearchResultModel } from '../../../hooks/useSearchField';
 import SearchField from '../../../components/SearchField';
+import SettingsButton from '../../../components/Timeline/SettingsButton';
 
 //
 // Tasklist
@@ -35,12 +36,13 @@ type TaskListStepData = {
 
 type Props = {
   rowData: RowDataModel;
+  rowDataDispatch: (action: RowDataAction) => void;
   activeTaskId: number;
   results: SearchResultModel;
   searchFieldProps: SearchFieldProps;
 };
 
-const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, searchFieldProps }) => {
+const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, results, searchFieldProps }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [rows, setRows] = useState<TaskListRowItem[]>([]);
   const [stepData, setStepData] = useState<Record<string, TaskListStepData>>({});
@@ -57,19 +59,22 @@ const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, searchField
       if (!stepname.startsWith('_')) {
         let newRows: TaskListRowItem[] = [];
         const isOpen = stepData[stepname] ? stepData[stepname].isOpen : step.isOpen;
+
         // Add new rows if step is open
-        if (isOpen) {
-          newRows = Object.keys(step.data)
-            .filter((key) => results.status === 'NotAsked' || matchIds.indexOf(parseInt(key)) > -1)
-            .map((key) => ({
-              type: 'task',
-              data: step.data[parseInt(key)][0],
-            }));
-        }
+        newRows = Object.keys(step.data)
+          .filter((key) => results.status === 'NotAsked' || matchIds.indexOf(parseInt(key)) > -1)
+          .map((key) => ({
+            type: 'task',
+            data: step.data[parseInt(key)][0],
+          }));
 
         // Only add step row if there was tasks. Should we check if we have filter active?
         if (newRows.length > 0) {
-          taskRows = taskRows.concat([{ type: 'step' as const, data: step }], newRows);
+          if (isOpen) {
+            taskRows = taskRows.concat([{ type: 'step' as const, data: step }], newRows);
+          } else {
+            taskRows = taskRows.concat([{ type: 'step' as const, data: step }]);
+          }
         }
       }
     }
@@ -105,6 +110,22 @@ const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, searchField
 
   const isScrolledOver = ref && ref.current && viewScrollTop + HEADER_SIZE_PX > ref.current.offsetTop;
 
+  //
+  // Button behaviour
+  //
+
+  const expandAll = () => {
+    Object.keys(rowData).forEach((stepName) => {
+      rowDataDispatch({ type: 'open', id: stepName });
+    });
+  };
+
+  const collapseAll = () => {
+    Object.keys(rowData).forEach((stepName) => {
+      rowDataDispatch({ type: 'close', id: stepName });
+    });
+  };
+
   return (
     <TaskListContainer ref={ref}>
       <div
@@ -119,6 +140,12 @@ const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, searchField
             initialValue={searchFieldProps.text}
             onUpdate={searchFieldProps.setText}
             status={results.status}
+          />
+          <SettingsButton
+            expand={() => expandAll()}
+            collapse={() => collapseAll()}
+            groupBy={'step'}
+            toggleGroupBy={() => null}
           />
         </TaskListInputContainer>
 
@@ -204,7 +231,13 @@ const TaskListContainer = styled.div`
 `;
 
 const TaskListInputContainer = styled.div`
+  display: flex;
   height: 40px;
+  align-items: center;
+
+  .field-text {
+    width: 100%;
+  }
 `;
 
 const RowContainer = styled.div`
