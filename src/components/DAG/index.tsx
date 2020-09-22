@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 
 import { DAGModel, convertDAGModelToTree, DAGStructureTree, DAGTreeNode, StepTree } from './DAGUtils';
 import { Run, Step } from '../../types';
@@ -47,20 +47,19 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     },
   });
 
-  const { data: dagData } = useResource<DAGModel, DAGModel>({
+  useResource<DAGModel, DAGModel>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
     subscribeToEvents: false,
     initialData: null,
+    onUpdate: (data) => {
+      if (Object.keys(data).length > 0) {
+        setDagTree(convertDAGModelToTree(data));
+      }
+    },
   });
 
   const [showFullscreen, setFullscreen] = useState(false);
   const [dagTree, setDagTree] = useState<DAGStructureTree>([]);
-
-  useEffect(() => {
-    if (dagData) {
-      setDagTree(convertDAGModelToTree(dagData));
-    }
-  }, [dagData]);
 
   const content = !!dagTree.length && (
     <DAGRenderingContainer
