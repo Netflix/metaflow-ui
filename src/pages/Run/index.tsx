@@ -74,7 +74,7 @@ const RunPage: React.FC = () => {
   });
 
   // Fetch & subscribe to tasks
-  useResource<Task[], Task>({
+  const { status: taskStatus } = useResource<Task[], Task>({
     url: encodeURI(`/flows/${params.flowId}/runs/${params.runNumber}/tasks`),
     subscribeToEvents: true,
     initialData: [],
@@ -123,7 +123,9 @@ const RunPage: React.FC = () => {
                 key: 'timeline',
                 label: t('run.timeline'),
                 linkTo: getPath.timeline(params.flowId, params.runNumber),
-                component: <TimelineContainer run={run} rowData={rows} rowDataDispatch={dispatch} />,
+                component: (
+                  <TimelineContainer run={run} rowData={rows} rowDataDispatch={dispatch} status={taskStatus} />
+                ),
               },
               {
                 key: 'task',

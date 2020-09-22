@@ -7,10 +7,9 @@ import { getPath } from '../../../utils/routing';
 import { formatDuration } from '../../../utils/format';
 import styled, { css } from 'styled-components';
 import Icon from '../../../components/Icon';
-import { TextInputField } from '../../../components/Form';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'use-debounce';
-import { SearchResultModel } from '..';
+import { SearchFieldProps, SearchResultModel } from '../../../hooks/useSearchField';
+import SearchField from '../../../components/SearchField';
 
 //
 // Tasklist
@@ -37,23 +36,17 @@ type TaskListStepData = {
 type Props = {
   rowData: RowDataModel;
   activeTaskId: number;
-  setSearchValue: (value: string) => void;
   results: SearchResultModel;
+  searchFieldProps: SearchFieldProps;
 };
 
-const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, setSearchValue }) => {
+const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, searchFieldProps }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [rows, setRows] = useState<TaskListRowItem[]>([]);
   const [stepData, setStepData] = useState<Record<string, TaskListStepData>>({});
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [debouncedTerm] = useDebounce(searchTerm, 300);
   const history = useHistory();
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
-
-  useEffect(() => {
-    setSearchValue(debouncedTerm);
-  }, [debouncedTerm, setSearchValue]);
 
   useEffect(() => {
     let taskRows: TaskListRowItem[] = [];
@@ -62,19 +55,21 @@ const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, setSearchVa
     for (const stepname of Object.keys(rowData)) {
       const step = rowData[stepname];
       if (!stepname.startsWith('_')) {
-        taskRows.push({ type: 'step' as const, data: step });
-
+        let newRows: TaskListRowItem[] = [];
         const isOpen = stepData[stepname] ? stepData[stepname].isOpen : step.isOpen;
-
+        // Add new rows if step is open
         if (isOpen) {
-          taskRows = taskRows.concat(
-            Object.keys(step.data)
-              .filter((key) => matchIds.length === 0 || matchIds.indexOf(parseInt(key)) > -1)
-              .map((key) => ({
-                type: 'task',
-                data: step.data[parseInt(key)][0],
-              })),
-          );
+          newRows = Object.keys(step.data)
+            .filter((key) => results.status === 'NotAsked' || matchIds.indexOf(parseInt(key)) > -1)
+            .map((key) => ({
+              type: 'task',
+              data: step.data[parseInt(key)][0],
+            }));
+        }
+
+        // Only add step row if there was tasks. Should we check if we have filter active?
+        if (newRows.length > 0) {
+          taskRows = taskRows.concat([{ type: 'step' as const, data: step }], newRows);
         }
       }
     }
@@ -120,84 +115,83 @@ const TaskList: React.FC<Props> = ({ rowData, activeTaskId, results, setSearchVa
         }
       >
         <TaskListInputContainer>
-          <TextInputField
-            placeholder={t('task.search-tasks')}
-            onChange={(e) => e && setSearchTerm(e.target.value)}
-            loading={results.status === 'Loading'}
-            async
+          <SearchField
+            initialValue={searchFieldProps.text}
+            onUpdate={searchFieldProps.setText}
+            status={results.status}
           />
         </TaskListInputContainer>
-        <List
-          style={
-            // Adding header height here manually. We need to think it makes sense to have sticky header
-            {
-              borderTop: '1px solid rgba(0,0,0,0.1)',
+
+        {rows.length > 0 && (
+          <List
+            style={
+              // Adding header height here manually.
+              {
+                borderTop: '1px solid rgba(0,0,0,0.1)',
+              }
             }
-          }
-          overscanRowCount={5}
-          rowCount={rows.length}
-          rowHeight={28}
-          rowRenderer={({ index, style }) => {
-            const item = rows[index];
-            const itemDuration = item.type === 'step' ? item.data.duration : item.data.duration;
-            return (
-              <div
-                key={index}
-                style={style}
-                onClick={() => {
-                  if (item.type === 'step') {
-                    if (item.data.step) {
-                      const sname = item.data.step.step_name;
-                      setStepData({
-                        ...stepData,
-                        [sname]: { isOpen: stepData[sname] ? !stepData[sname].isOpen : true },
-                      });
+            overscanRowCount={5}
+            rowCount={rows.length}
+            rowHeight={28}
+            rowRenderer={({ index, style }) => {
+              const item = rows[index];
+              const itemDuration = item.type === 'step' ? item.data.duration : item.data.duration;
+              return (
+                <div
+                  key={index}
+                  style={style}
+                  onClick={() => {
+                    if (item.type === 'step') {
+                      if (item.data.step) {
+                        const sname = item.data.step.step_name;
+                        setStepData({
+                          ...stepData,
+                          [sname]: { isOpen: stepData[sname] ? !stepData[sname].isOpen : true },
+                        });
+                      }
+                    } else {
+                      history.push(
+                        getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id),
+                      );
                     }
-                  } else {
-                    history.push(
-                      getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id),
-                    );
-                  }
-                }}
-              >
-                <RowContainer>
-                  <RowIconSection rowType={item.type}>
-                    {item.type === 'step' ? (
-                      <Icon
-                        name="arrowDown"
-                        rotate={
-                          item.data.step &&
-                          stepData[item.data.step.step_name] &&
-                          !stepData[item.data.step.step_name].isOpen
-                            ? -90
-                            : 0
-                        }
-                        size="xs"
-                      />
-                    ) : null}
-                  </RowIconSection>
-                  <RowTextContent
-                    rowType={item.type}
-                    active={item.type === 'task' && item.data.task_id === activeTaskId}
-                  >
-                    <div
-                      style={{
-                        fontFamily: 'monospace',
-                        fontWeight: item.type === 'step' ? 'bold' : 'normal',
-                        overflowX: 'hidden',
-                      }}
+                  }}
+                >
+                  <RowContainer>
+                    <RowIconSection rowType={item.type}>
+                      {item.type === 'step' ? (
+                        <Icon
+                          name="arrowDown"
+                          rotate={
+                            item.data.step &&
+                            stepData[item.data.step.step_name] &&
+                            !stepData[item.data.step.step_name].isOpen
+                              ? -90
+                              : 0
+                          }
+                          size="xs"
+                        />
+                      ) : null}
+                    </RowIconSection>
+                    <RowTextContent
+                      rowType={item.type}
+                      active={item.type === 'task' && item.data.task_id === activeTaskId}
                     >
-                      {item.type === 'step' ? item.data.step?.step_name || '' : item.data.task_id}
-                    </div>
-                    <RowDuration>{itemDuration ? formatDuration(itemDuration, 1) : '-'}</RowDuration>
-                  </RowTextContent>
-                </RowContainer>
-              </div>
-            );
-          }}
-          height={listSize}
-          width={230}
-        />
+                      <RowMainLabel itemType={item.type}>
+                        {item.type === 'step' ? item.data.step?.step_name || '' : item.data.task_id}
+                      </RowMainLabel>
+                      <RowDuration>{itemDuration ? formatDuration(itemDuration, 1) : '-'}</RowDuration>
+                    </RowTextContent>
+                  </RowContainer>
+                </div>
+              );
+            }}
+            height={listSize}
+            width={230}
+          />
+        )}
+
+        {results.status === 'Ok' && rows.length === 0 && <div>{t('search.no-results')}</div>}
+        {results.status === 'Error' && <div>{t('search.error')}</div>}
       </div>
     </TaskListContainer>
   );
@@ -216,6 +210,12 @@ const TaskListInputContainer = styled.div`
 const RowContainer = styled.div`
   display: flex;
   cursor: pointer;
+`;
+
+const RowMainLabel = styled.div<{ itemType: string }>`
+  font-family: monospace;
+  font-weight: ${(p) => (p.itemType === 'step' ? 'bold' : 'normal')};
+  overflow-x: hidden;
 `;
 
 const RowTextContent = styled.div<{ rowType: 'step' | 'task'; active?: boolean }>`

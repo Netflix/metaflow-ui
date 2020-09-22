@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GraphState, GraphGroupBy, GraphSortBy } from './useGraph';
-import { TextInputField, CheckboxField, SelectField } from '../Form';
+import { CheckboxField, SelectField } from '../Form';
 import { ItemRow } from '../Structure';
 import { Text } from '../Text';
 import ButtonGroup from '../ButtonGroup';
@@ -8,6 +8,8 @@ import Button from '../Button';
 import styled from 'styled-components';
 import Icon, { SortIcon } from '../Icon';
 import { useTranslation } from 'react-i18next';
+import { SearchFieldProps, SearchResultModel } from '../../hooks/useSearchField';
+import SearchField from '../SearchField';
 
 export type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
@@ -21,6 +23,8 @@ export type TimelineHeaderProps = {
   isFullscreen: boolean;
   updateStatusFilter: (status: null | string) => void;
   graph: GraphState;
+  searchFieldProps: SearchFieldProps;
+  searchResults: SearchResultModel;
 };
 
 const TimelineHeader: React.FC<TimelineHeaderProps> = ({
@@ -35,6 +39,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   isFullscreen,
   setFullscreen,
   updateStatusFilter,
+  searchFieldProps,
+  searchResults,
 }) => {
   const { t } = useTranslation();
   const SortButtonDef = (label: string, property: GraphSortBy) => (
@@ -52,7 +58,11 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
     <TimelineHeaderContainer>
       <TimelineHeaderBottom>
         <TimelineHeaderBottomLeft>
-          <TextInputField disabled={true} horizontal placeholder="Search not implemented..." />
+          <SearchField
+            initialValue={searchFieldProps.text}
+            onUpdate={searchFieldProps.setText}
+            status={searchResults.status}
+          />
           <SettingsButton
             expand={() => expandAll()}
             collapse={() => collapseAll()}
