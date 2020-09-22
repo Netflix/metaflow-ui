@@ -162,6 +162,7 @@ const VirtualizedTimeline: React.FC<{
 
     // If no grouping, sort tasks here.
     setRows(rowsToUpdate);
+    /* eslint-disable */
   }, [
     rowData,
     graphDispatch,
@@ -173,6 +174,7 @@ const VirtualizedTimeline: React.FC<{
     statusFilter,
     searchResults,
   ]);
+  /* eslint-enable */
 
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
