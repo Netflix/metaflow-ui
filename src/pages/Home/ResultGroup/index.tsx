@@ -12,7 +12,7 @@ import { getPath } from '../../../utils/routing';
 
 import { Section } from '../../../components/Structure';
 import Icon from '../../../components/Icon';
-import { Text } from '../../../components/Text';
+import { Text, ForceNoBreakText } from '../../../components/Text';
 import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
 import Notification, { NotificationType } from '../../../components/Notification';
 import StatusField from '../../../components/Status';
@@ -176,17 +176,16 @@ const TableRows: React.FC<TableRowsProps> = React.memo(
       <>
         <StatusColorCell status={r.status} />
         <TD>
-          <div style={{ display: 'flex' }}>
-            <span className="muted" style={{ marginRight: '5px' }}>
-              #
-            </span>{' '}
+          <IDFieldContainer>
             <strong>{r.run_number}</strong>
-          </div>
+          </IDFieldContainer>
         </TD>
         {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
         {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
         <TD>
-          <StatusField status={r.status} />
+          <ForceNoBreakText>
+            <StatusField status={r.status} />
+          </ForceNoBreakText>
         </TD>
         <TD>{getISOString(new Date(r.ts_epoch))}</TD>
         <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
@@ -258,6 +257,7 @@ export const StyledResultGroup = styled(Section)`
 
   table {
     margin-bottom: ${(p) => p.theme.spacer.sm}rem;
+    word-break: break-all;
   }
 
   thead {
@@ -290,3 +290,5 @@ const ResultGroupTitle = styled.h3`
     color: ${(p) => p.theme.color.text.blue};
   }
 `;
+
+const IDFieldContainer = styled.div``;

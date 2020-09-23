@@ -19,3 +19,7 @@ export const Paragraph = styled.p``;
 export const ForceBreakText = styled.span`
   word-break: break-all;
 `;
+
+export const ForceNoBreakText = styled.span`
+  word-break: normal;
+`;
