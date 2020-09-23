@@ -180,25 +180,21 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
   max-width: 225px;
   overflow: hidden;
   cursor: pointer;
-  text-align: right;
   font-size: ${(p) => (p.type === 'task' ? '12px' : '14px')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
-  background: ${(p) => (p.type === 'step' && p.isOpen ? '#f6f6f6' : '#fff')};
   font-family: monospace;
   line-height: 27px;
   padding: 0 0.25rem;
 
   a {
-    color: gray;
+    display: flex;
+    width: 100%;
+    color: #333;
     text-decoration: none;
-    min-width: ${(p) => (p.group === 'none' ? '100%' : '50%')};
-    max-width: ${(p) => (p.group === 'none' ? '100%' : '90%')};
-    background: #f6f6f6;
-    display: inline-block;
-    margin-right: -0.25rem;
-    margin-left: -0.25rem;
+    max-width: 100%;
+
     padding-right: 0.25rem;
-    padding-left: 0.25rem;
+    padding-left: 2.5rem;
 
     ${(p) =>
       p.group === 'none'
@@ -212,10 +208,6 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
   i {
     line-height: 0px;
   }
-  @media screen and (max-width: 765px) {
-    flex: 0 0 100px;
-    max-width: 100px;
-  }
 `;
 
 const RowStepName = styled.span`
@@ -224,9 +216,12 @@ const RowStepName = styled.span`
 
 const StepLabel = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
   padding-left: ${(p) => p.theme.spacer.sm}rem;
+  font-size: 12px;
+  i {
+    width: 30px;
+  }
 `;
 
 const RowGraphContainer = styled.div`

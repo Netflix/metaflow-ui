@@ -75,6 +75,7 @@ const en = {
 
     timeline: {
       'no-run-data': 'No run data. You can wait if this run is created and see live updates.',
+      'no-rows': 'No tasks found',
       'expand-all': 'Expand all',
       'collapse-all': 'Collapse all',
       relative: 'Relative',
@@ -97,7 +98,7 @@ const en = {
       'std-out': 'Std out',
       'std-err': 'Std err',
       artifacts: 'Artifacts',
-      'search-tasks': 'Search tasks: artifact_name=value',
+      'search-tasks': 'Search: artifact_name=value',
       'no-logs': 'No logs',
     },
 
@@ -110,6 +111,10 @@ const en = {
       'example-run': 'Flow Name / Run ID',
       'example-step': 'Flow Name / Run ID / Step Name',
       'example-task': 'Flow Name / Run ID / Step Name / Task ID',
+    },
+
+    search: {
+      'no-results': 'No tasks found',
     },
   },
 };

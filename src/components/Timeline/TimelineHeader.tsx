@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { GraphState, GraphGroupBy, GraphSortBy } from './useGraph';
-import { TextInputField, CheckboxField, SelectField } from '../Form';
+import { SelectField } from '../Form';
 import { ItemRow } from '../Structure';
 import { Text } from '../Text';
 import ButtonGroup from '../ButtonGroup';
@@ -8,6 +8,9 @@ import Button from '../Button';
 import styled from 'styled-components';
 import Icon, { SortIcon } from '../Icon';
 import { useTranslation } from 'react-i18next';
+import { SearchFieldProps, SearchResultModel } from '../../hooks/useSearchField';
+import SearchField from '../SearchField';
+import SettingsButton from './SettingsButton';
 
 export type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
@@ -21,6 +24,8 @@ export type TimelineHeaderProps = {
   isFullscreen: boolean;
   updateStatusFilter: (status: null | string) => void;
   graph: GraphState;
+  searchFieldProps: SearchFieldProps;
+  searchResults: SearchResultModel;
 };
 
 const TimelineHeader: React.FC<TimelineHeaderProps> = ({
@@ -35,6 +40,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   isFullscreen,
   setFullscreen,
   updateStatusFilter,
+  searchFieldProps,
+  searchResults,
 }) => {
   const { t } = useTranslation();
   const SortButtonDef = (label: string, property: GraphSortBy) => (
@@ -52,7 +59,11 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
     <TimelineHeaderContainer>
       <TimelineHeaderBottom>
         <TimelineHeaderBottomLeft>
-          <TextInputField disabled={true} horizontal placeholder="Search not implemented..." />
+          <SearchField
+            initialValue={searchFieldProps.text}
+            onUpdate={searchFieldProps.setText}
+            status={searchResults.status}
+          />
           <SettingsButton
             expand={() => expandAll()}
             collapse={() => collapseAll()}
@@ -169,6 +180,11 @@ const TimelineHeaderBottomLeft = styled.div`
   padding: ${(p) => `${p.theme.spacer.md}rem ${p.theme.spacer.sm}rem ${p.theme.spacer.md}rem 0`};
   width: 225px;
   border-right: 1px solid ${(p) => p.theme.color.border.light};
+
+  .field-text {
+    font-size: 12px;
+    width: 100%;
+  }
 `;
 
 const TimelineHeaderBottomRight = styled.div`
@@ -181,73 +197,6 @@ const TimelineHeaderBottomRight = styled.div`
 
 const TimelineHeaderItem = styled(ItemRow)`
   margin: 0 1rem;
-`;
-
-const SettingsButton: React.FC<{
-  expand: () => void;
-  collapse: () => void;
-  groupBy: GraphGroupBy;
-  toggleGroupBy: (gb: GraphGroupBy) => void;
-}> = ({ expand, collapse, groupBy, toggleGroupBy }) => {
-  const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
-  return (
-    <StyledSettingsButton>
-      <Button active={open} onClick={() => setOpen(!open)} data-testid="timeline-settings-button">
-        <Icon name="ellipsis" />
-      </Button>
-      {open && (
-        <TemporaryPopup>
-          <CheckboxField
-            label={t('timeline.group-by-step')}
-            checked={groupBy === 'step'}
-            onChange={() => toggleGroupBy(groupBy === 'step' ? 'none' : 'step')}
-            data-testid="timeline-header-groupby-step"
-          />
-          <br />
-          <Button
-            onClick={() => {
-              expand();
-              setOpen(false);
-            }}
-            data-testid="timeline-settings-expand-all"
-          >
-            {t('timeline.expand-all')}
-          </Button>
-          <br />
-          <Button
-            onClick={() => {
-              collapse();
-              setOpen(false);
-            }}
-            data-testid="timeline-settings-collapse-all"
-          >
-            {t('timeline.collapse-all')}
-          </Button>
-        </TemporaryPopup>
-      )}
-    </StyledSettingsButton>
-  );
-};
-
-const StyledSettingsButton = styled.div`
-  position: relative;
-  button {
-    height: 30px;
-    margin-left: 0.5rem;
-  }
-`;
-
-const TemporaryPopup = styled.div`
-  position: absolute;
-  left: 100%;
-  top: 0;
-  padding: 10px;
-  background: #fff;
-  border: 1px solid #c8c8c8;
-  z-index: 2;
-  white-space: nowrap;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.06);
 `;
 
 export default TimelineHeader;

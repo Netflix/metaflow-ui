@@ -1,0 +1,12 @@
+<svg width="14" height="11" viewBox="0 0 14 11" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g opacity="0.5">
+<line x1="3" y1="1.25" x2="14" y2="1.25" stroke="#666666" stroke-width="1.5"/>
+<line x1="3" y1="4.25" x2="14" y2="4.25" stroke="#666666" stroke-width="1.5"/>
+<line x1="3" y1="7.25" x2="14" y2="7.25" stroke="#666666" stroke-width="1.5"/>
+<line x1="3" y1="10.25" x2="14" y2="10.25" stroke="#666666" stroke-width="1.5"/>
+<line y1="4.25" x2="2" y2="4.25" stroke="#666666" stroke-width="1.5"/>
+<line y1="7.25" x2="2" y2="7.25" stroke="#666666" stroke-width="1.5"/>
+<line y1="1.25" x2="2" y2="1.25" stroke="#666666" stroke-width="1.5"/>
+<line y1="10.25" x2="2" y2="10.25" stroke="#666666" stroke-width="1.5"/>
+</g>
+</svg>

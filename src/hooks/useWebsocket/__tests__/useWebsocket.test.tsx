@@ -39,4 +39,8 @@ describe('useWebsocket hook', () => {
     server.send({ uuid: 'test123', resource: '/test', payload: 'YepYep' });
     expect(updateFunction).toHaveBeenLastCalledWith({ uuid: 'test123', resource: '/test', payload: 'YepYep' });
   });
+
+  afterEach(() => {
+    WS.clean();
+  });
 });

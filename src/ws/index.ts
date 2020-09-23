@@ -50,8 +50,6 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
 
   const conn = new ReconnectingWebSocket(url, [], {});
   conn.addEventListener('open', (_e) => {
-    console.info('Websocket connection open');
-
     // Always re-subscribe to events when connection is established
     // This operation is safe since backend makes sure there's no duplicate identifiers
     subscriptions.forEach((subscription) => {
@@ -59,7 +57,9 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     });
   });
   conn.addEventListener('close', (_e) => {
-    console.info('Websocket connection closed');
+    if (_e.code !== 1000) {
+      console.log('Websocket closed with error');
+    }
   });
   conn.addEventListener('message', (e) => {
     if (e.data) {
