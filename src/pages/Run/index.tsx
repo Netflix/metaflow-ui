@@ -74,7 +74,7 @@ const RunPage: React.FC = () => {
   });
 
   // Fetch & subscribe to tasks
-  useResource<Task[], Task>({
+  const { status: taskStatus } = useResource<Task[], Task>({
     url: encodeURI(`/flows/${params.flowId}/runs/${params.runNumber}/tasks`),
     subscribeToEvents: true,
     initialData: [],
@@ -92,7 +92,6 @@ const RunPage: React.FC = () => {
   });
 
   useEffect(() => {
-    // Move this to run page
     dispatch({ type: 'reset' });
   }, [params.runNumber, dispatch]);
 
@@ -123,7 +122,9 @@ const RunPage: React.FC = () => {
                 key: 'timeline',
                 label: t('run.timeline'),
                 linkTo: getPath.timeline(params.flowId, params.runNumber),
-                component: <TimelineContainer run={run} rowData={rows} rowDataDispatch={dispatch} />,
+                component: (
+                  <TimelineContainer run={run} rowData={rows} rowDataDispatch={dispatch} status={taskStatus} />
+                ),
               },
               {
                 key: 'task',
@@ -140,6 +141,7 @@ const RunPage: React.FC = () => {
                     stepName={previousStepName || 'not-selected'}
                     taskId={previousTaskId || 'not-selected'}
                     rowData={rows}
+                    rowDataDispatch={dispatch}
                   />
                 ),
               },

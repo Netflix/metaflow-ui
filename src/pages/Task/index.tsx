@@ -10,53 +10,62 @@ import { getISOString } from '../../utils/date';
 import StatusField from '../../components/Status';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
-import { RowDataModel } from '../../components/Timeline/useRowData';
+import { RowDataAction, RowDataModel } from '../../components/Timeline/useRowData';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import { ForceBreakText } from '../../components/Text';
 import LogList from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
-import useSearchRequest, { SearchResult, TaskMatch } from '../../hooks/useSearchRequest';
+import useSeachField from '../../hooks/useSearchField';
 
 //
 // View container
 //
 
-type TaskViewContainer = { run: IRun | null; stepName?: string; taskId?: string; rowData: RowDataModel };
+type TaskViewContainer = {
+  run: IRun | null;
+  stepName?: string;
+  taskId?: string;
+  rowData: RowDataModel;
+  rowDataDispatch: (action: RowDataAction) => void;
+};
 
-const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId, rowData }) => {
+const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId, rowData, rowDataDispatch }) => {
   const { t } = useTranslation();
   if (!run?.run_number || !stepName || !taskId) {
     return <>{t('run.no-run-data')}</>;
   }
 
-  return <Task run={run} stepName={stepName} taskId={taskId} rowData={rowData} />;
+  return <Task run={run} stepName={stepName} taskId={taskId} rowData={rowData} rowDataDispatch={rowDataDispatch} />;
 };
 
 //
 // Task view
 //
 
-type TaskViewProps = { run: IRun; stepName: string; taskId: string; rowData: RowDataModel };
-
-export type SearchResultModel = {
-  result: TaskMatch[];
-  status: 'NotAsked' | 'Loading' | 'Ok' | 'Error';
+type TaskViewProps = {
+  run: IRun;
+  stepName: string;
+  taskId: string;
+  rowData: RowDataModel;
+  rowDataDispatch: (action: RowDataAction) => void;
 };
 
-const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
+const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowDataDispatch }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const { data: task, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
     subscribeToEvents: true,
     initialData: null,
+    pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
   const { data: artifacts } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     subscribeToEvents: true,
     initialData: [],
+    pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
   //
@@ -128,39 +137,16 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
   //
   // Search features
   //
-  const [searchValue, setSearchValue] = useState('');
-  const [searchResults, setSearchResults] = useState<SearchResultModel>({ result: [], status: 'NotAsked' });
-  useSearchRequest({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/search`,
-    searchValue: searchValue,
-    onUpdate: (event: SearchResult) => {
-      if (Array.isArray(event.matches)) {
-        setSearchResults({ result: event.matches || [], status: 'Ok' });
-      } else {
-        setSearchResults({ result: [], status: 'Ok' });
-      }
-    },
-    onOpen: () => {
-      setSearchResults({ ...searchResults, status: 'Loading' });
-    },
-    onError: () => {
-      setSearchResults({ result: [], status: 'Error' });
-    },
-  });
-
-  useEffect(() => {
-    if (searchValue === '') {
-      setSearchResults({ result: [], status: 'NotAsked' });
-    }
-  }, [searchValue, setSearchResults]);
+  const { results, fieldProps } = useSeachField(run.flow_id, run.run_number);
 
   return (
     <TaskContainer>
       <TaskList
         rowData={rowData}
-        results={searchResults}
+        rowDataDispatch={rowDataDispatch}
         activeTaskId={parseInt(taskId)}
-        setSearchValue={setSearchValue}
+        results={results}
+        searchFieldProps={fieldProps}
       />
 
       {!task && t('task.loading')}
@@ -291,7 +277,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData }) => {
 
 const TaskContainer = styled.div`
   display: flex;
-  padding: 25px 0;
+  padding: 13px 0 25px 0;
   width: 100%;
 `;
 

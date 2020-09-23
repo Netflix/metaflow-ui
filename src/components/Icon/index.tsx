@@ -13,6 +13,9 @@ import { ReactComponent as Search } from '../../assets/search.svg';
 import { ReactComponent as Ellipsis } from '../../assets/ellipsis.svg';
 import { ReactComponent as Return } from '../../assets/return.svg';
 import { ReactComponent as Maximize } from '../../assets/maximize.svg';
+import { ReactComponent as Collapse } from '../../assets/collapse.svg';
+import { ReactComponent as Expand } from '../../assets/expand.svg';
+import { ReactComponent as Listing } from '../../assets/listing.svg';
 
 type SupportedIcons = {
   timeline: FunctionComponent;
@@ -27,6 +30,9 @@ type SupportedIcons = {
   ellipsis: FunctionComponent;
   return: FunctionComponent;
   maximize: FunctionComponent;
+  collapse: FunctionComponent;
+  expand: FunctionComponent;
+  listing: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -42,6 +48,9 @@ const icons: SupportedIcons = {
   ellipsis: Ellipsis,
   return: Return,
   maximize: Maximize,
+  collapse: Collapse,
+  expand: Expand,
+  listing: Listing,
 };
 
 type SupportedSizes = {
