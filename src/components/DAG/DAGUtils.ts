@@ -92,5 +92,8 @@ function DAGModelToTree(data: DAGModel, items: string[], breaks: string[], inCon
 }
 
 export function convertDAGModelToTree(data: DAGModel): DAGStructureTree {
+  if (Object.keys(data).length === 0) {
+    return [];
+  }
   return DAGModelToTree(data, ['start'], []);
 }
