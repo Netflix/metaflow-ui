@@ -17,6 +17,7 @@ import { ForceBreakText } from '../../components/Text';
 import LogList from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
 import useSeachField from '../../hooks/useSearchField';
+import Spinner from '../../components/Spinner';
 
 //
 // View container
@@ -54,7 +55,7 @@ type TaskViewProps = {
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowDataDispatch }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
-  const { data: task, error } = useResource<ITask, ITask>({
+  const { data: task, status, error } = useResource<ITask, ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
     subscribeToEvents: true,
     initialData: null,
@@ -149,11 +150,15 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
         searchFieldProps={fieldProps}
       />
 
-      {!task && t('task.loading')}
-      {(error || (task && !task.task_id && taskId !== 'not-selected')) && t('task.could-not-find-task')}
-      {taskId === 'not-selected' && t('task.no-task-selected')}
+      {status === 'Loading' && (
+        <TaskLoaderContainer>
+          <Spinner md />
+        </TaskLoaderContainer>
+      )}
+      {error && status !== 'Loading' && t('task.could-not-find-task')}
+      {taskId === 'not-selected' && status !== 'Loading' && t('task.no-task-selected')}
 
-      {task && task.task_id && fullscreen === null && (
+      {task && task.task_id && fullscreen === null && status !== 'Loading' && (
         <AnchoredView
           sections={[
             {
@@ -279,6 +284,13 @@ const TaskContainer = styled.div`
   display: flex;
   padding: 13px 0 25px 0;
   width: 100%;
+`;
+
+const TaskLoaderContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  padding: 2rem;
 `;
 
 export default TaskViewContainer;

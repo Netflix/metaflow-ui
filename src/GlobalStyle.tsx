@@ -8,7 +8,7 @@ const globalCSS = css`
   body, html, #root {
     margin: 0;
     padding: 0;
-    min-width: 100vw;
+    min-width: 100%;
     min-height: 100vh;
   }
 

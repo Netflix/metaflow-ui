@@ -289,6 +289,7 @@ const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
   right: ${({ position }) => (position === 'left' ? '100%' : 'auto')};
   padding: 0 10px;
   font-size: 12px;
+  white-space: nowrap;
 `;
 
 export default TimelineRow;
