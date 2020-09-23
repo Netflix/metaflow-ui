@@ -62,6 +62,7 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
 
 const FilterInputWrapper = styled(SectionHeader)<{ active: boolean }>`
   padding-bottom: 0.375rem;
+  transition: border 0.15s;
 
   ${(p) => (p.active ? `border-bottom-color: ${p.theme.color.text.blue};` : '')}
 
@@ -82,7 +83,7 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
   opacity: ${(p) => (p.focus ? 1 : 0)};
   transition: opacity 0.15s;
   cursor: ${(p) => (p.focus ? 'pointer' : 'normal')};
-  margin-right: 2px;
+  margin-right: 4px;
 `;
 
 export default FilterInput;
