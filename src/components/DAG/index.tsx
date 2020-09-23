@@ -88,7 +88,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   );
 
   const error_content = !dagTree.length && (
-    <div style={{ padding: '0 0 10px 0' }}>
+    <div style={{ padding: '0 0 10px 0' }} data-testid="dag-container-Error">
       <Notification type={NotificationType.Danger}>{t('run.dag-not-available')}</Notification>
     </div>
   );
