@@ -94,7 +94,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   );
 
   const fullscreen_controls = (
-    <ItemRow pad="sm">
+    <ItemRow pad="sm" justify="flex-end">
       <Button onClick={() => setFullscreen(true)} withIcon>
         <Icon name="maximize" />
         <span>{t('run.show-fullscreen')}</span>
