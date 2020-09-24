@@ -171,7 +171,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                     <PropertyTable
                       items={[task]}
                       columns={[
-                        { label: t('fields.task-id') + ':', prop: 'task_id' },
+                        {
+                          label: t('fields.task-id') + ':',
+                          accessor: (item) => <ForceBreakText>{item.task_id}</ForceBreakText>,
+                        },
                         { label: t('items.step') + ':', prop: 'step_name' },
                         {
                           label: t('fields.status') + ':',
