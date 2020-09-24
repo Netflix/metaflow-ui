@@ -37,7 +37,15 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
         }
         return { ...obj, [step.step_name]: { step: step, isOpen: true, finished_at: 0, duration: 0, data: {} } };
       }, state);
-      return steprows;
+      return Object.keys(steprows)
+        .sort((a, b) => {
+          const astep = steprows[a];
+          const bstep = steprows[b];
+          return (astep.step?.ts_epoch || 0) - (bstep.step?.ts_epoch || 0);
+        })
+        .reduce((obj, key) => {
+          return { ...obj, [key]: steprows[key] };
+        }, {});
     case 'add':
       return { ...state, [action.id]: action.data };
     case 'fillTasks': {
