@@ -472,7 +472,7 @@ function taskDuration(a: Row): number {
 function findLongestTaskOfRow(step: StepRowData, graph: GraphState): number {
   return Object.keys(step.data).reduce((longestTaskValue, taskid) => {
     // There might be multiple tasks in same row since there might be retries. Find longest.
-    const durationOfTasksInSameRow = step.data[parseInt(taskid)].reduce((value, task) => {
+    const durationOfTasksInSameRow = step.data[taskid].reduce((value, task) => {
       return task.finished_at
         ? task.finished_at - task.ts_epoch > value
           ? task.finished_at - task.ts_epoch
@@ -532,7 +532,7 @@ function makeVisibleRows(
     if (rowData?.isOpen || graph.groupBy === 'none') {
       let rowTasks = Object.keys(rowData.data).map((item) => ({
         type: 'task' as const,
-        data: rowData.data[parseInt(item)],
+        data: rowData.data[item],
       }));
 
       if (statusFilter) {

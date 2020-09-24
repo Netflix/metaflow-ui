@@ -7,10 +7,10 @@ export interface SearchResult {
 
 interface Match {
   flow_id: string;
-  run_number: number;
+  run_number: string;
   searchable: boolean;
   step_name: string;
-  task_id: number;
+  task_id: string;
 }
 
 export type TaskMatch = Match;

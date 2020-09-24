@@ -145,7 +145,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
       <TaskList
         rowData={rowData}
         rowDataDispatch={rowDataDispatch}
-        activeTaskId={parseInt(taskId)}
+        activeTaskId={taskId}
         results={results}
         searchFieldProps={fieldProps}
       />

@@ -195,6 +195,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
 
     padding-right: 0.25rem;
     padding-left: 2.5rem;
+    white-space: nowrap;
 
     ${(p) =>
       p.group === 'none'

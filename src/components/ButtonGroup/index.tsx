@@ -8,6 +8,10 @@ const ButtonGroup = styled.div`
     border-radius: 0;
     margin-left: -1px;
 
+    white-space: nowrap;
+    overflow-x: hidden;
+    max-width: 200px;
+
     &:first-of-type {
       margin-left: 0;
       border-top-left-radius: 0.25rem;

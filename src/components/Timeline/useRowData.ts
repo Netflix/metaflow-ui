@@ -13,7 +13,7 @@ export type StepRowData = {
   duration: number;
   step?: Step;
   // Tasks for this step
-  data: Record<number, Task[]>;
+  data: Record<string, Task[]>;
 };
 
 export type RowDataAction =
@@ -31,11 +31,11 @@ export type RowDataModel = { [key: string]: StepRowData };
 export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowDataModel {
   switch (action.type) {
     case 'fillStep':
-      const steprows = action.data.reduce((obj, step) => {
+      const steprows: RowDataModel = action.data.reduce((obj: RowDataModel, step: Step) => {
         if (obj[step.step_name]) {
           return { ...obj, [step.step_name]: { ...state[step.step_name], step: step, isOpen: true } };
         }
-        return { ...obj, [step.step_name]: { step: step, isOpen: true, finished_at: 0, duration: 0, data: [] } };
+        return { ...obj, [step.step_name]: { step: step, isOpen: true, finished_at: 0, duration: 0, data: {} } };
       }, state);
       return steprows;
     case 'add':
@@ -122,7 +122,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
  * If there already was data about same TASK but it doesnt have finished_at value, we
  * replace it.
  */
-export function createNewStepRowTasks(currentData: Record<number, Task[]>, item: Task): Task[] {
+export function createNewStepRowTasks(currentData: Record<string, Task[]>, item: Task): Task[] {
   if (currentData[item.task_id]) {
     const newtasks = currentData[item.task_id];
 
