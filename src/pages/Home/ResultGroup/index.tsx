@@ -85,31 +85,25 @@ const ResultGroup: React.FC<Props> = ({
 
   const tableRef = useRef<HTMLTableElement>(null);
 
+  const tableHeader = (
+    <TableHeader
+      handleClick={handleGroupTitleClick}
+      error={null}
+      cols={cols}
+      onOrderChange={onOrderChange}
+      order={queryParams['_order']}
+      label={label}
+      clickable={!!queryParams._group}
+    />
+  );
+
   return (
     <StyledResultGroup ref={targetRef}>
       <Table cellPadding="0" cellSpacing="0" ref={tableRef}>
         {isInViewport && rows.length > 5 ? (
-          <StickyHeader tableRef={tableRef}>
-            <TableHeader
-              handleClick={handleGroupTitleClick}
-              error={null}
-              cols={cols}
-              onOrderChange={onOrderChange}
-              order={queryParams['_order']}
-              label={label}
-            />
-          </StickyHeader>
+          <StickyHeader tableRef={tableRef}>{tableHeader}</StickyHeader>
         ) : (
-          <thead>
-            <TableHeader
-              handleClick={handleGroupTitleClick}
-              error={null}
-              cols={cols}
-              onOrderChange={onOrderChange}
-              order={queryParams['_order']}
-              label={label}
-            />
-          </thead>
+          <thead>{tableHeader}</thead>
         )}
         <tbody>
           {rows.slice(0, targetCount).map((r, i) => (
@@ -142,13 +136,24 @@ type TableHeaderProps = {
   onOrderChange: (p: string) => void;
   order: string;
   label: string;
+  clickable: boolean;
 };
 
-const TableHeader: React.FC<TableHeaderProps> = ({ handleClick, error, cols, onOrderChange, order, label }) => (
+const TableHeader: React.FC<TableHeaderProps> = ({
+  handleClick,
+  error,
+  cols,
+  onOrderChange,
+  order,
+  label,
+  clickable,
+}) => (
   <>
     <TR>
       <th colSpan={cols.length + 2} style={{ textAlign: 'left' }}>
-        <ResultGroupTitle onClick={() => handleClick(label)}>{label}</ResultGroupTitle>
+        <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
+          {label}
+        </ResultGroupTitle>
         {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
       </th>
     </TR>
@@ -281,13 +286,13 @@ export const StyledResultGroup = styled(Section)`
   }
 `;
 
-const ResultGroupTitle = styled.h3`
+const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
   margin-top: 1rem;
-  cursor: pointer;
+  cursor: ${(p) => (p.clickable ? 'pointer' : 'normal')};
   display: inline-block;
 
   &:hover {
-    color: ${(p) => p.theme.color.text.blue};
+    ${(p) => (p.clickable ? `color: ${p.theme.color.text.blue};` : '')}
   }
 `;
 
