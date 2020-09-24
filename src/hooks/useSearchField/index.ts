@@ -19,11 +19,11 @@ const cache: { id: string; text: string; results: SearchResultModel } = {
   results: { result: [], status: 'NotAsked' },
 };
 
-function isCached(flowId: string, runNumber: number) {
+function isCached(flowId: string, runNumber: string) {
   return flowId + runNumber === cache.id;
 }
 
-export default function useSeachField(flowID: string, runNumber: number): SearchFieldReturnType {
+export default function useSeachField(flowID: string, runNumber: string): SearchFieldReturnType {
   const [searchValue, setSearchValue] = useState(isCached(flowID, runNumber) ? cache.text : '');
   const [searchResults, setSearchResults] = useState<SearchResultModel>(
     isCached(flowID, runNumber) ? cache.results : { result: [], status: 'NotAsked' },

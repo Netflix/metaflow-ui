@@ -37,7 +37,7 @@ type TaskListStepData = {
 type Props = {
   rowData: RowDataModel;
   rowDataDispatch: (action: RowDataAction) => void;
-  activeTaskId: number;
+  activeTaskId: string;
   results: SearchResultModel;
   searchFieldProps: SearchFieldProps;
 };
@@ -62,10 +62,11 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
 
         // Add new rows if step is open
         newRows = Object.keys(step.data)
-          .filter((key) => results.status === 'NotAsked' || matchIds.indexOf(parseInt(key)) > -1)
+          .filter((key) => results.status === 'NotAsked' || matchIds.indexOf(key) > -1)
+          .filter((key) => step.data[key] && step.data[key].length > 0)
           .map((key) => ({
             type: 'task',
-            data: step.data[parseInt(key)][0],
+            data: step.data[key][0],
           }));
 
         // Only add step row if there was tasks. Should we check if we have filter active?
@@ -249,6 +250,7 @@ const RowMainLabel = styled.div<{ itemType: string }>`
   font-family: monospace;
   font-weight: ${(p) => (p.itemType === 'step' ? 'bold' : 'normal')};
   overflow-x: hidden;
+  white-space: nowrap;
 `;
 
 const RowTextContent = styled.div<{ rowType: 'step' | 'task'; active?: boolean }>`

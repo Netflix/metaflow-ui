@@ -57,9 +57,12 @@ export const FixedContent = styled.div`
 export const ItemRow = styled.div<{
   pad?: 'xs' | 'sm' | 'md' | 'lg' | 'hg';
   margin?: 'xs' | 'sm' | 'md' | 'lg' | 'hg';
+  justify?: 'flex-start' | 'flex-end' | 'center' | 'space-around' | 'space-between' | 'space-evenly';
 }>`
   display: flex;
   align-items: center;
+
+  ${(p) => (p.justify ? `justify-content: ${p.justify};` : '')}
 
   ${(p) =>
     p.margin &&

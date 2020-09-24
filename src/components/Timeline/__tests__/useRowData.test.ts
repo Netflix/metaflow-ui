@@ -4,9 +4,9 @@ import { rowDataReducer, createNewStepRowTasks, timepointsOfTasks } from '../use
 export function createTask(partialTask: Partial<Task>): Task {
   return {
     flow_id: 'BasicFlow',
-    run_number: 1,
+    run_number: '1',
     step_name: 'askel',
-    task_id: 1,
+    task_id: '1',
     user_name: 'SanteriCM',
     ts_epoch: 0,
     duration: 100,
@@ -19,7 +19,7 @@ export function createTask(partialTask: Partial<Task>): Task {
 export function createStep(partialStep: Partial<Step>): Step {
   return {
     flow_id: 'BasicFlow',
-    run_number: 1,
+    run_number: '1',
     step_name: 'askel',
     user_name: 'SanteriCM',
     ts_epoch: 0,
@@ -37,7 +37,7 @@ describe('useRowData hook - reducer', () => {
   it('fillStep - non existing', () => {
     const newState = rowDataReducer({}, { type: 'fillStep', data: [createStep({})] });
     expect(newState['askel'].isOpen).toBe(true);
-    expect(newState['askel'].data).toEqual([]);
+    expect(newState['askel'].data).toEqual({});
   });
 
   it('fillStep - existing', () => {
@@ -72,7 +72,7 @@ describe('useRowData hook - reducer', () => {
     // Fill step row with new task, (of new task id)...
     const newState = rowDataReducer(DEFAULT_ROW_DATA(), {
       type: 'fillTasks',
-      data: [createTask({ step_name: 'askel', task_id: 2, ts_epoch: 100, finished_at: 200 })],
+      data: [createTask({ step_name: 'askel', task_id: '2', ts_epoch: 100, finished_at: 200 })],
     });
     expect(Object.keys(newState)).toEqual(['askel']);
     const newStepObject = newState.askel;
@@ -86,7 +86,7 @@ describe('useRowData hook - reducer', () => {
       duration: 200,
       data: {
         '1': [createTask({})],
-        '2': [createTask({ step_name: 'askel', task_id: 2, ts_epoch: 100, finished_at: 200 })],
+        '2': [createTask({ step_name: 'askel', task_id: '2', ts_epoch: 100, finished_at: 200 })],
       },
     });
   });
@@ -108,7 +108,7 @@ describe('useRowData hook - reducer', () => {
       finished_at: 200,
       duration: 200,
       data: {
-        '1': [createTask({ step_name: 'askel', task_id: 1, ts_epoch: 100, finished_at: 200 })],
+        '1': [createTask({ step_name: 'askel', task_id: '1', ts_epoch: 100, finished_at: 200 })],
       },
     });
   });
@@ -145,13 +145,15 @@ describe('useRowData hook - supporting functions', () => {
   });
 
   it('createNewStepRowTasks - add to existing', () => {
-    expect(createNewStepRowTasks({ 1: [createTask({ finished_at: 100 })] }, createTask({ task_id: 1 })).length).toBe(2);
+    expect(createNewStepRowTasks({ 1: [createTask({ finished_at: 100 })] }, createTask({ task_id: '1' })).length).toBe(
+      2,
+    );
   });
 
   it('createNewStepRowTasks - replace in existing', () => {
     const result = createNewStepRowTasks(
       { 1: [createTask({})] },
-      createTask({ task_id: 1, finished_at: 100, user_name: 'TestTester' }),
+      createTask({ task_id: '1', finished_at: 100, user_name: 'TestTester' }),
     );
     expect(result.length).toBe(1);
     expect(result[0].user_name).toBe('TestTester');

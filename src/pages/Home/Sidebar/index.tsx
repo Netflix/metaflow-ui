@@ -4,12 +4,12 @@ import { CheckboxField, SelectField } from '../../../components/Form';
 import { paramList, isDefaultParams } from '../index';
 import { useTranslation } from 'react-i18next';
 import { Section, SectionHeader } from '../../../components/Structure';
-import TagInput from '../../../components/TagInput';
 import Button from '../../../components/Button';
 import Icon from '../../../components/Icon';
 import { Text } from '../../../components/Text';
 import styled from 'styled-components';
 import { RemovableTag } from '../../../components/Tag';
+import FilterInput from '../../../components/FilterInput';
 
 const TagParameterList: React.FC<{
   paramKey: string;
@@ -96,13 +96,13 @@ const HomeSidebar: React.FC<{
       </Section>
 
       <Section>
-        <TagInput onSubmit={(v) => updateListValue('flow_id', v)} sectionLabel={t('fields.flow')} />
+        <FilterInput onSubmit={(v) => updateListValue('flow_id', v)} sectionLabel={t('fields.flow')} />
 
         <TagParameterList paramKey="flow_id" updateList={updateListValue} value={params.flow_id} />
       </Section>
 
       <Section>
-        <TagInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} sectionLabel={t('fields.project')} />
+        <FilterInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} sectionLabel={t('fields.project')} />
 
         <TagParameterList
           paramKey="_tags"
@@ -114,7 +114,7 @@ const HomeSidebar: React.FC<{
       </Section>
 
       <Section>
-        <TagInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} sectionLabel={t('fields.user')} />
+        <FilterInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} sectionLabel={t('fields.user')} />
 
         <TagParameterList
           paramKey="_tags"
@@ -126,7 +126,7 @@ const HomeSidebar: React.FC<{
       </Section>
 
       <Section>
-        <TagInput onSubmit={(v) => updateListValue('_tags', v)} sectionLabel={t('fields.tag')} />
+        <FilterInput onSubmit={(v) => updateListValue('_tags', v)} sectionLabel={t('fields.tag')} />
 
         <TagParameterList
           paramKey="_tags"

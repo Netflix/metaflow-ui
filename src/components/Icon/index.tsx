@@ -16,6 +16,7 @@ import { ReactComponent as Maximize } from '../../assets/maximize.svg';
 import { ReactComponent as Collapse } from '../../assets/collapse.svg';
 import { ReactComponent as Expand } from '../../assets/expand.svg';
 import { ReactComponent as Listing } from '../../assets/listing.svg';
+import { ReactComponent as Enter } from '../../assets/enter.svg';
 
 type SupportedIcons = {
   timeline: FunctionComponent;
@@ -33,6 +34,7 @@ type SupportedIcons = {
   collapse: FunctionComponent;
   expand: FunctionComponent;
   listing: FunctionComponent;
+  enter: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -51,6 +53,7 @@ const icons: SupportedIcons = {
   collapse: Collapse,
   expand: Expand,
   listing: Listing,
+  enter: Enter,
 };
 
 type SupportedSizes = {

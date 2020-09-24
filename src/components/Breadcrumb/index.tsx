@@ -94,16 +94,22 @@ const Breadcrumb: React.FC = () => {
         setLastRoute(e.currentTarget.value);
         const parts = e.currentTarget.value.split('/').filter((item) => item);
 
-        if (parts.length === 1) {
-          history.replace(getPath.home() + '?flow_id=' + parts[0]);
+        if (parts.length === 0) {
+          history.push(getPath.home());
+        } else if (parts.length === 1) {
+          history.push(getPath.home() + '?flow_id=' + parts[0]);
         } else if (parts.length === 2) {
-          history.replace(getPath.timeline(parts[0], parts[1]));
+          history.push(getPath.timeline(parts[0], parts[1]));
         } else if (parts.length === 3) {
-          history.replace(getPath.step(parts[0], parts[1], parts[2]));
+          history.push(getPath.step(parts[0], parts[1], parts[2]));
         } else if (parts.length === 4) {
-          history.replace(getPath.task(parts[0], parts[1], parts[2], parts[3]));
+          history.push(getPath.task(parts[0], parts[1], parts[2], parts[3]));
         } else {
           setWarning(t('breadcrumb.no-match'));
+        }
+
+        if (parts.length > -1 && parts.length < 5) {
+          closeUp();
         }
       }
     }

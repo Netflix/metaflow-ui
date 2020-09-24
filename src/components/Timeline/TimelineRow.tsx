@@ -25,7 +25,7 @@ type TimelineRowProps = {
 type LabelPosition = 'left' | 'right' | 'none';
 
 const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, sticky, endTime }) => {
-  if (!item) return null;
+  if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
   return (
     <>
@@ -195,6 +195,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
 
     padding-right: 0.25rem;
     padding-left: 2.5rem;
+    white-space: nowrap;
 
     ${(p) =>
       p.group === 'none'
