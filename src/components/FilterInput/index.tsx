@@ -11,7 +11,7 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
 
   return (
     <FilterInputWrapper active={hasFocus}>
-      <div style={{ position: 'relative' }}>
+      <FitlerInputContainer>
         <input
           ref={inputEl}
           placeholder={sectionLabel}
@@ -43,7 +43,7 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
         >
           <Icon name="enter" size="xs" />
         </SubmitIconHolder>
-      </div>
+      </FitlerInputContainer>
       <Button
         iconOnly
         onClick={() => {
@@ -75,6 +75,11 @@ const FilterInputWrapper = styled(SectionHeader)<{ active: boolean }>`
   }
 `;
 
+const FitlerInputContainer = styled.div`
+  position: relative;
+  width: 100%;
+`;
+
 const SubmitIconHolder = styled.div<{ focus: boolean }>`
   position: absolute;
   right: 0;
@@ -83,7 +88,7 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
   opacity: ${(p) => (p.focus ? 1 : 0)};
   transition: opacity 0.15s;
   cursor: ${(p) => (p.focus ? 'pointer' : 'normal')};
-  margin-right: 4px;
+  margin-right: 0.75rem;
 `;
 
 export default FilterInput;
