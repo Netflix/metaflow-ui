@@ -25,7 +25,7 @@ type TimelineRowProps = {
 type LabelPosition = 'left' | 'right' | 'none';
 
 const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, sticky, endTime }) => {
-  if (!item) return null;
+  if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
   return (
     <>
@@ -33,22 +33,18 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
         <RowLabel onClick={() => onOpen()} type={item.type} isOpen={isOpen} group={graph.groupBy}>
           {item.type === 'task' ? (
             <Link
-              to={
-                item.data && item.data[0]
-                  ? getPath.task(
-                      item.data[0].flow_id,
-                      item.data[0].run_number,
-                      item.data[0].step_name,
-                      item.data[0].task_id,
-                    )
-                  : ''
-              }
+              to={getPath.task(
+                item.data[0].flow_id,
+                item.data[0].run_number,
+                item.data[0].step_name,
+                item.data[0].task_id,
+              )}
               data-testid="timeline-row-link"
             >
-              <RowStepName>{graph.groupBy === 'none' ? item.data && item.data[0].step_name : ''}</RowStepName>
+              <RowStepName>{graph.groupBy === 'none' ? item.data[0].step_name : ''}</RowStepName>
               <span>
                 {graph.groupBy === 'none' ? '/' : ''}
-                {item.data && item.data[0].task_id}
+                {item.data[0].task_id}
               </span>
             </Link>
           ) : (
@@ -68,7 +64,6 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
               isFirst
             />
           ) : (
-            item.data &&
             item.data
               .sort((a, b) => (b.finished_at || 0) - (a.finished_at || 0))
               .map((task, index) => (

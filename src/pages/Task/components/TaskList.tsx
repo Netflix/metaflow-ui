@@ -63,6 +63,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
         // Add new rows if step is open
         newRows = Object.keys(step.data)
           .filter((key) => results.status === 'NotAsked' || matchIds.indexOf(parseInt(key)) > -1)
+          .filter((key) => step.data[parseInt(key)] && step.data[parseInt(key)].length > 0)
           .map((key) => ({
             type: 'task',
             data: step.data[parseInt(key)][0],
