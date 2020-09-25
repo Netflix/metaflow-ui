@@ -53,11 +53,29 @@ const WebsocketNotifications = () => {
 
   useEffect(() => {
     const onOpen = () => {
-      addNotification({
-        uuid: 'websocket-connection-established',
-        type: NotificationType.Success,
-        message: 'Websocket connection established',
-      });
+      addNotification(
+        {
+          uuid: 'websocket-connection-established',
+          type: NotificationType.Success,
+          message: 'Websocket connection established',
+        },
+        {
+          type: NotificationType.Info,
+          message: 'Websocket connection established',
+        },
+        {
+          type: NotificationType.Warning,
+          message: 'Websocket connection established',
+        },
+        {
+          type: NotificationType.Danger,
+          message: 'Websocket connection established',
+        },
+        {
+          type: NotificationType.Default,
+          message: 'Websocket connection established',
+        },
+      );
     };
 
     const onClose = () => {

@@ -17,8 +17,9 @@ import { ReactComponent as Collapse } from '../../assets/collapse.svg';
 import { ReactComponent as Expand } from '../../assets/expand.svg';
 import { ReactComponent as Listing } from '../../assets/listing.svg';
 import { ReactComponent as Enter } from '../../assets/enter.svg';
+import { ReactComponent as Danger } from '../../assets/danger.svg';
 
-type SupportedIcons = {
+export type SupportedIcons = {
   timeline: FunctionComponent;
   arrowDown: FunctionComponent;
   times: FunctionComponent;
@@ -35,6 +36,7 @@ type SupportedIcons = {
   expand: FunctionComponent;
   listing: FunctionComponent;
   enter: FunctionComponent;
+  danger: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -54,6 +56,7 @@ const icons: SupportedIcons = {
   expand: Expand,
   listing: Listing,
   enter: Enter,
+  danger: Danger,
 };
 
 type SupportedSizes = {

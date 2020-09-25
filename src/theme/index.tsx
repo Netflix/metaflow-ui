@@ -113,8 +113,8 @@ const defaultTheme: DefaultTheme = {
       text: bgColor.red, // TODO
     },
     default: {
-      bg: bgColor.blueLight,
-      fg: textColor.white,
+      bg: bgColor.silver,
+      fg: textColor.mid,
       text: textColor.mid,
     },
   },

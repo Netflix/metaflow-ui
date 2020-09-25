@@ -2,6 +2,7 @@
 import React, { useState, useCallback, useContext } from 'react';
 import { v4 as generateIdentifier } from 'uuid';
 import styled from 'styled-components';
+import Icon, { SupportedIcons } from '../Icon';
 
 export enum NotificationType {
   Success = 'success',
@@ -10,6 +11,10 @@ export enum NotificationType {
   Danger = 'danger',
   Default = 'default',
 }
+
+const NotificationIcon: Record<string, keyof SupportedIcons> = {
+  [NotificationType.Danger]: 'danger',
+};
 
 export interface Notification {
   uuid?: string;
@@ -70,6 +75,7 @@ export const Notifications: React.FC = () => {
   return (
     <NotificationsWrapper>
       {(notifications || []).map((notification: Notification) => {
+        const iconName = NotificationIcon[notification.type];
         return (
           <NotificationWrapper
             key={notification.uuid}
@@ -78,7 +84,8 @@ export const Notifications: React.FC = () => {
               removeNotification(notification);
             }}
           >
-            {notification.message}
+            {iconName && <Icon name={iconName} size="md" />}
+            <NotificationMessage>{notification.message}</NotificationMessage>
           </NotificationWrapper>
         );
       })}
@@ -88,7 +95,7 @@ export const Notifications: React.FC = () => {
 
 const NotificationsWrapper = styled.div`
   z-index: 999999;
-  position: absolute;
+  position: fixed;
   top: ${(p) => p.theme.spacer.md}rem;
   right: ${(p) => p.theme.spacer.md}rem;
   display: flex;
@@ -98,10 +105,16 @@ const NotificationsWrapper = styled.div`
 `;
 
 const NotificationWrapper = styled.div<{ type: NotificationType }>`
+  display: flex;
+  align-items: center;
   padding: ${(p) => p.theme.spacer.md}rem;
   margin: ${(p) => p.theme.spacer.xs}rem;
   border-radius: 0.5rem;
   background: ${({ theme, type }) => theme.notification[type].bg};
   color: ${({ theme, type }) => theme.notification[type].fg};
   cursor: pointer;
+`;
+
+const NotificationMessage = styled.span`
+  margin-left: ${(p) => p.theme.spacer.sm}rem;
 `;
