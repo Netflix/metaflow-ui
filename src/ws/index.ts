@@ -1,4 +1,5 @@
-import ReconnectingWebSocket from 'reconnecting-websocket';
+import ReconnectingWebSocket, { Event as WSEvent, CloseEvent, ErrorEvent } from 'reconnecting-websocket';
+import { WebSocketEventListenerMap } from 'reconnecting-websocket/events';
 import { METAFLOW_SERVICE_WS } from '../constants';
 
 enum SubscribeType {
@@ -43,25 +44,27 @@ type WebSocketConnection = {
     queryParams: Record<string, string>,
     onUpdate: OnUpdate<T>,
   ) => Unsubscribe;
+  addEventListener<T extends keyof WebSocketEventListenerMap>(type: T, listener: WebSocketEventListenerMap[T]): void;
+  removeEventListener<T extends keyof WebSocketEventListenerMap>(type: T, listener: WebSocketEventListenerMap[T]): void;
 };
 
 export function createWebsocketConnection(url: string): WebSocketConnection {
   let subscriptions: Array<Subscription<unknown>> = [];
 
   const conn = new ReconnectingWebSocket(url, [], {});
-  conn.addEventListener('open', (_e) => {
+  conn.addEventListener('open', (_e: WSEvent) => {
     // Always re-subscribe to events when connection is established
     // This operation is safe since backend makes sure there's no duplicate identifiers
     subscriptions.forEach((subscription) => {
       conn.send(JSON.stringify(subscribeMessage(subscription.uuid, subscription.resource)));
     });
   });
-  conn.addEventListener('close', (_e) => {
+  conn.addEventListener('close', (_e: CloseEvent) => {
     if (_e.code !== 1000) {
       console.log('Websocket closed with error');
     }
   });
-  conn.addEventListener('message', (e) => {
+  conn.addEventListener('message', (e: MessageEvent) => {
     if (e.data) {
       try {
         const event = JSON.parse(e.data) as Event<unknown>;
@@ -71,7 +74,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
       }
     }
   });
-  conn.addEventListener('error', (e) => {
+  conn.addEventListener('error', (e: ErrorEvent) => {
     console.error('Websocket error', e);
   });
 
@@ -102,8 +105,19 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     return unsubscribe;
   };
 
+  const addEventListener = <T extends keyof WebSocketEventListenerMap>(
+    type: T,
+    listener: WebSocketEventListenerMap[T],
+  ) => conn.addEventListener(type, listener);
+  const removeEventListener = <T extends keyof WebSocketEventListenerMap>(
+    type: T,
+    listener: WebSocketEventListenerMap[T],
+  ) => conn.addEventListener(type, listener);
+
   return {
     subscribe,
+    addEventListener,
+    removeEventListener,
   };
 }
 

@@ -12,6 +12,9 @@ import GlobalStyle from './GlobalStyle';
 import './theme/font/roboto.css';
 import theme from './theme';
 
+import { NotificationsProvider, Notifications, useNotifications, NotificationType } from './components/Foo';
+import ResourceEvents from './ws';
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -25,18 +28,47 @@ function ScrollToTop() {
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <Router>
-        <ScrollToTop />
-        <QueryParamProvider ReactRouterRoute={Route}>
-          <AppBar />
-          <Page>
-            <Root />
-          </Page>
-        </QueryParamProvider>
-      </Router>
+      <NotificationsProvider>
+        <WebsocketNotifications />
+        <GlobalStyle />
+        <Router>
+          <ScrollToTop />
+          <QueryParamProvider ReactRouterRoute={Route}>
+            <Notifications />
+            <AppBar />
+            <Page>
+              <Root />
+            </Page>
+          </QueryParamProvider>
+        </Router>
+      </NotificationsProvider>
     </ThemeProvider>
   );
 };
 
 export default App;
+
+const WebsocketNotifications = () => {
+  const { addNotification } = useNotifications();
+
+  useEffect(() => {
+    const onOpen = () => {
+      addNotification({ type: NotificationType.Success, message: 'Websocket connection established' });
+    };
+
+    const onClose = () => {
+      addNotification({ type: NotificationType.Warning, message: 'Websocket connection lost' });
+      addNotification({ type: NotificationType.Info, message: 'Reconnecting to websocket' });
+    };
+
+    ResourceEvents.addEventListener('open', onOpen);
+    ResourceEvents.addEventListener('close', onClose);
+
+    return () => {
+      ResourceEvents.removeEventListener('open', onOpen);
+      ResourceEvents.removeEventListener('close', onClose);
+    };
+  }, []);
+
+  return <></>;
+};
