@@ -112,7 +112,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
   const removeEventListener = <T extends keyof WebSocketEventListenerMap>(
     type: T,
     listener: WebSocketEventListenerMap[T],
-  ) => conn.addEventListener(type, listener);
+  ) => conn.removeEventListener(type, listener);
 
   return {
     subscribe,

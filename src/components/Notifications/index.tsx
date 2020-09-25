@@ -1,4 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useCallback, useContext } from 'react';
+import { v4 as generateIdentifier } from 'uuid';
 import styled from 'styled-components';
 
 export enum NotificationType {
@@ -9,14 +11,15 @@ export enum NotificationType {
   Default = 'default',
 }
 
-interface Notification {
+export interface Notification {
+  uuid?: string;
   type: NotificationType;
   message: string;
 }
 
 interface IContextProps {
   notifications: Notification[];
-  addNotification: (notification: Notification) => void;
+  addNotification: (...notification: Notification[]) => void;
   removeNotification: (notification: Notification) => void;
   clearNotifications: () => void;
 }
@@ -28,14 +31,27 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const removeNotification = (notification: Notification) =>
-    setNotifications(notifications.filter((n) => n !== notification));
-  const addNotification = (notification: Notification) =>
-    setNotifications([notification, ...notifications].slice(0, MAX_NOTIFICATIONS));
+    setNotifications(notifications.filter((n) => n.uuid !== notification.uuid));
+
+  const addNotification = (...notification: Notification[]) => {
+    const notificationsToAdd = notification
+      .map((n) => {
+        return { uuid: n.uuid || generateIdentifier(), ...n };
+      })
+      .reverse();
+
+    // Remove incoming notifications from existing notifications
+    const existingNotifications = notifications.filter((a) => !notificationsToAdd.some((b) => a.uuid === b.uuid));
+
+    setNotifications([...notificationsToAdd, ...existingNotifications].slice(0, MAX_NOTIFICATIONS));
+    return notificationsToAdd;
+  };
+
   const clearNotifications = () => setNotifications([]);
 
   const contextValue = {
     notifications,
-    addNotification: useCallback((notification) => addNotification(notification), [addNotification]),
+    addNotification: useCallback((...notification) => addNotification(...notification), [addNotification]),
     removeNotification: useCallback((notification) => removeNotification(notification), [removeNotification]),
     clearNotifications: useCallback(() => clearNotifications(), [clearNotifications]),
   };
@@ -49,29 +65,14 @@ export function useNotifications(): IContextProps {
 }
 
 export const Notifications: React.FC = () => {
-  const { notifications, addNotification, removeNotification, clearNotifications } = useNotifications();
+  const { notifications, removeNotification } = useNotifications();
 
   return (
     <NotificationsWrapper>
-      <span
-        onClick={() => {
-          addNotification({ type: NotificationType.Warning, message: `ugfks ${new Date().toString()}` });
-        }}
-      >
-        Add
-      </span>
-      <span
-        onClick={() => {
-          clearNotifications();
-        }}
-      >
-        Clear
-      </span>
-
       {(notifications || []).map((notification: Notification) => {
         return (
           <NotificationWrapper
-            key={notification.message}
+            key={notification.uuid}
             type={notification.type}
             onClick={() => {
               removeNotification(notification);
@@ -102,6 +103,5 @@ const NotificationWrapper = styled.div<{ type: NotificationType }>`
   border-radius: 0.5rem;
   background: ${({ theme, type }) => theme.notification[type].bg};
   color: ${({ theme, type }) => theme.notification[type].text};
-  background-color: #f1f1f1;
   cursor: pointer;
 `;

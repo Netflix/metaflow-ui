@@ -12,7 +12,7 @@ import GlobalStyle from './GlobalStyle';
 import './theme/font/roboto.css';
 import theme from './theme';
 
-import { NotificationsProvider, Notifications, useNotifications, NotificationType } from './components/Foo';
+import { NotificationsProvider, Notifications, useNotifications, NotificationType } from './components/Notifications';
 import ResourceEvents from './ws';
 
 function ScrollToTop() {
@@ -53,12 +53,26 @@ const WebsocketNotifications = () => {
 
   useEffect(() => {
     const onOpen = () => {
-      addNotification({ type: NotificationType.Success, message: 'Websocket connection established' });
+      addNotification({
+        uuid: 'websocket-connection-established',
+        type: NotificationType.Success,
+        message: 'Websocket connection established',
+      });
     };
 
     const onClose = () => {
-      addNotification({ type: NotificationType.Warning, message: 'Websocket connection lost' });
-      addNotification({ type: NotificationType.Info, message: 'Reconnecting to websocket' });
+      addNotification(
+        {
+          uuid: 'websocket-connection-lost',
+          type: NotificationType.Warning,
+          message: 'Websocket connection lost',
+        },
+        {
+          uuid: 'websocket-reconnecting',
+          type: NotificationType.Info,
+          message: 'Reconnecting to websocket',
+        },
+      );
     };
 
     ResourceEvents.addEventListener('open', onOpen);
@@ -68,7 +82,7 @@ const WebsocketNotifications = () => {
       ResourceEvents.removeEventListener('open', onOpen);
       ResourceEvents.removeEventListener('close', onClose);
     };
-  }, []);
+  }, [addNotification]);
 
   return <></>;
 };
