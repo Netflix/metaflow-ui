@@ -30,7 +30,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
   return (
     <>
       <Element>
-        <RowLabel onClick={() => onOpen()} type={item.type} isOpen={isOpen} group={graph.groupBy}>
+        <RowLabel type={item.type} isOpen={isOpen} group={graph.groupBy}>
           {item.type === 'task' ? (
             <Link
               to={getPath.task(
@@ -49,7 +49,13 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
             </Link>
           ) : (
             <StepLabel>
-              <Icon name="arrowDown" size="xs" rotate={isOpen ? 0 : -90} data-testid="timeline-row-icon" />
+              <Icon
+                onClick={() => onOpen()}
+                name="arrowDown"
+                size="xs"
+                rotate={isOpen ? 0 : -90}
+                data-testid="timeline-row-icon"
+              />
               <div data-testid="timeline-row-label">{item.data.step_name}</div>
             </StepLabel>
           )}
@@ -61,6 +67,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
               row={{ type: 'step', data: item.data }}
               grayed={isOpen}
               finishedAt={endTime}
+              onOpen={onOpen}
               isFirst
             />
           ) : (
@@ -88,9 +95,17 @@ type BoxGraphicElementProps = {
   finishedAt: number | undefined;
   grayed?: boolean;
   isFirst: boolean;
+  onOpen?: () => void;
 };
 
-export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({ row, graph, finishedAt, grayed, isFirst }) => {
+export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
+  row,
+  graph,
+  finishedAt,
+  grayed,
+  isFirst,
+  onOpen,
+}) => {
   const { push } = useHistory();
   const visibleDuration = graph.timelineEnd - graph.timelineStart;
 
@@ -114,6 +129,10 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({ row, graph
         onClick={() => {
           if (row.type === 'task') {
             push(getPath.task(row.data.flow_id, row.data.run_number, row.data.step_name, row.data.task_id));
+          } else {
+            if (onOpen) {
+              onOpen();
+            }
           }
         }}
         data-testid="boxgraphic"
@@ -179,7 +198,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
   flex: 0 0 225px;
   max-width: 225px;
   overflow: hidden;
-  cursor: pointer;
+  cursor: ${(p) => (p.type === 'task' ? 'pointer' : 'normal')};
   font-size: ${(p) => (p.type === 'task' ? '12px' : '14px')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
   font-family: monospace;
@@ -208,6 +227,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
 
   i {
     line-height: 0px;
+    cursor: pointer;
   }
 `;
 
@@ -220,8 +240,11 @@ const StepLabel = styled.div`
   align-items: center;
   padding-left: ${(p) => p.theme.spacer.sm}rem;
   font-size: 12px;
+  user-select: text;
+
   i {
     width: 30px;
+    height: 28px;
   }
 `;
 

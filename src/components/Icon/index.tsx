@@ -79,6 +79,7 @@ interface IconProps {
   className?: string;
   padLeft?: boolean;
   padRight?: boolean;
+  onClick?: () => void;
 }
 
 const Icon: React.FC<IconProps> = ({ name, size = 'sm', rotate, ...rest }) => {
