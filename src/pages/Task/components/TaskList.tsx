@@ -84,14 +84,16 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
   }, [rowData, stepData, results]);
 
   useEffect(() => {
-    setStepData(
-      Object.keys(rowData).reduce((obj, key) => {
-        if (stepData[key]) {
-          return obj;
-        }
-        return { ...obj, [key]: { isOpen: true } };
-      }, {}),
-    );
+    if (Object.keys(rowData).length !== Object.keys(stepData).length) {
+      setStepData(
+        Object.keys(rowData).reduce((obj, key) => {
+          if (stepData[key]) {
+            return obj;
+          }
+          return { ...obj, [key]: { isOpen: true } };
+        }, {}),
+      );
+    }
   }, [rowData]); // eslint-disable-line
 
   useEffect(() => {
@@ -169,23 +171,28 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
                   key={index}
                   style={style}
                   onClick={() => {
-                    if (item.type === 'step') {
-                      if (item.data.step) {
-                        const sname = item.data.step.step_name;
-                        setStepData({
-                          ...stepData,
-                          [sname]: { isOpen: stepData[sname] ? !stepData[sname].isOpen : true },
-                        });
-                      }
-                    } else {
+                    if (item.type === 'task') {
                       history.push(
                         getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id),
                       );
                     }
                   }}
                 >
-                  <RowContainer>
-                    <RowIconSection rowType={item.type}>
+                  <RowContainer rowType={item.type}>
+                    <RowIconSection
+                      rowType={item.type}
+                      onClick={() => {
+                        if (item.type === 'step') {
+                          if (item.data.step) {
+                            const sname = item.data.step.step_name;
+                            setStepData({
+                              ...stepData,
+                              [sname]: { isOpen: stepData[sname] ? !stepData[sname].isOpen : true },
+                            });
+                          }
+                        }
+                      }}
+                    >
                       {item.type === 'step' ? (
                         <Icon
                           name="arrowDown"
@@ -241,9 +248,9 @@ const TaskListInputContainer = styled.div`
   }
 `;
 
-const RowContainer = styled.div`
+const RowContainer = styled.div<{ rowType: 'step' | 'task' }>`
   display: flex;
-  cursor: pointer;
+  cursor: ${(p) => (p.rowType === 'task' ? 'pointer' : 'normal')};
 `;
 
 const RowMainLabel = styled.div<{ itemType: string }>`
@@ -272,6 +279,7 @@ const RowIconSection = styled.div<{ rowType: 'step' | 'task' }>`
   width: 30px;
   color: #717171;
   flex-shrink: 0;
+  cursor: pointer;
   ${(p) =>
     p.rowType === 'step'
       ? css`
