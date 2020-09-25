@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-export enum NotificationType {
+export enum LabelType {
   Success = 'success',
   Info = 'info',
   Warning = 'warning',
@@ -9,13 +9,13 @@ export enum NotificationType {
   Default = 'default',
 }
 
-export interface NotificationProps {
-  type?: NotificationType;
+export interface LabelProps {
+  type?: LabelType;
   children: React.ReactNode;
   className?: string;
 }
 
-const Notification: React.FC<NotificationProps> = ({ type = NotificationType.Default, children, className = '' }) => {
+const Label: React.FC<LabelProps> = ({ type = LabelType.Default, children, className = '' }) => {
   return (
     <Wrapper type={type} className={className}>
       {children}
@@ -23,10 +23,9 @@ const Notification: React.FC<NotificationProps> = ({ type = NotificationType.Def
   );
 };
 
-const Wrapper = styled.div<{ type: NotificationType }>`
+const Wrapper = styled.div<{ type: LabelType }>`
   border-radius: 0.5rem;
-  background: ${({ theme, type }) => theme.notification[type].bg};
   color: ${({ theme, type }) => theme.notification[type].text};
 `;
 
-export default Notification;
+export default Label;

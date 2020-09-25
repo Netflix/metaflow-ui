@@ -102,6 +102,6 @@ const NotificationWrapper = styled.div<{ type: NotificationType }>`
   margin: ${(p) => p.theme.spacer.xs}rem;
   border-radius: 0.5rem;
   background: ${({ theme, type }) => theme.notification[type].bg};
-  color: ${({ theme, type }) => theme.notification[type].text};
+  color: ${({ theme, type }) => theme.notification[type].fg};
   cursor: pointer;
 `;

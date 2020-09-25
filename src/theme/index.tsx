@@ -93,23 +93,28 @@ const defaultTheme: DefaultTheme = {
 
   notification: {
     success: {
-      bg: bgColor.white,
+      bg: bgColor.green,
+      fg: textColor.white,
       text: '#28a745', // TODO
     },
     info: {
-      bg: bgColor.white,
+      bg: bgColor.blue,
+      fg: textColor.white,
       text: '#107177', // TODO
     },
     warning: {
-      bg: bgColor.white,
+      bg: bgColor.yellow,
+      fg: textColor.white,
       text: bgColor.yellow, // TODO
     },
     danger: {
-      bg: bgColor.white,
+      bg: bgColor.red,
+      fg: textColor.white,
       text: bgColor.red, // TODO
     },
     default: {
-      bg: bgColor.white,
+      bg: bgColor.blueLight,
+      fg: textColor.white,
       text: textColor.mid,
     },
   },

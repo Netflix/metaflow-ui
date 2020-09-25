@@ -1,13 +1,13 @@
 import React from 'react';
-import Notification from '..';
+import Label from '..';
 import { render } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
 
-describe('Notification component', () => {
-  test('<Notification /> - health check', () => {
+describe('Label component', () => {
+  test('<Label /> - health check', () => {
     render(
       <TestWrapper>
-        <Notification>Hei maailma!</Notification>
+        <Label>Hei maailma!</Label>
       </TestWrapper>,
     );
   });
