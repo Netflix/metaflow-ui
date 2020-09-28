@@ -77,7 +77,7 @@ const TabsContainer = styled.div`
   flex: 1;
 `;
 
-const TabsHeading = styled.div<{ widen?: boolean }>`
+export const TabsHeading = styled.div<{ widen?: boolean }>`
   display: flex;
   border-bottom: 2px solid ${(p) => p.theme.color.border.light};
   margin: ${(p) => (p.widen ? `0 -${p.theme.layout.pagePaddingX}rem` : 'initial')};
@@ -94,7 +94,7 @@ const TabsHeading = styled.div<{ widen?: boolean }>`
   }
 `;
 
-const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean }>`
+export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean }>`
   margin-right: ${(p) => p.theme.spacer.md}rem;
   margin-bottom: -2px;
   padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.md}rem;
@@ -103,6 +103,7 @@ const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean }>`
   border-bottom: 2px solid ${(p) => (p.active ? p.theme.color.bg.blue : p.theme.color.border.mid)};
   background: ${(p) => (p.temporary ? p.theme.color.bg.blueLight : 'transparent')};
   font-weight: ${(p) => (p.active ? '500' : '400')};
+  cursor: pointer;
 `;
 
 const ActiveTab = styled.div`

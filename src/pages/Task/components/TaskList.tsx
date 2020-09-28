@@ -207,6 +207,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
                         />
                       ) : null}
                     </RowIconSection>
+
                     <RowTextContent
                       rowType={item.type}
                       active={item.type === 'task' && item.data.task_id === activeTaskId}

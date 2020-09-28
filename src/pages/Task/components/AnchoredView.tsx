@@ -16,15 +16,17 @@ type AnchoredViewSection = {
 };
 
 type AnchoredViewProps = {
+  header?: JSX.Element;
   sections: AnchoredViewSection[];
 };
 
-const AnchoredView: React.FC<AnchoredViewProps> = ({ sections }) => {
+const AnchoredView: React.FC<AnchoredViewProps> = ({ sections, header }) => {
   const [sectionPositions, setSectionPositions] = useState<Record<number, number>>({});
 
   return (
     <AnchoredViewContainer>
       <TaskContent>
+        {header}
         {sections.map((section, index) => (
           <TaskSection
             key={section.key}
