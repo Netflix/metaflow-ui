@@ -18,6 +18,9 @@ import { ReactComponent as Expand } from '../../assets/expand.svg';
 import { ReactComponent as Listing } from '../../assets/listing.svg';
 import { ReactComponent as Enter } from '../../assets/enter.svg';
 import { ReactComponent as Danger } from '../../assets/danger.svg';
+import { ReactComponent as Success } from '../../assets/success.svg';
+import { ReactComponent as Info } from '../../assets/info.svg';
+import { ReactComponent as Warning } from '../../assets/warning.svg';
 
 export type SupportedIcons = {
   timeline: FunctionComponent;
@@ -37,6 +40,9 @@ export type SupportedIcons = {
   listing: FunctionComponent;
   enter: FunctionComponent;
   danger: FunctionComponent;
+  success: FunctionComponent;
+  info: FunctionComponent;
+  warning: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -57,6 +63,9 @@ const icons: SupportedIcons = {
   listing: Listing,
   enter: Enter,
   danger: Danger,
+  success: Success,
+  info: Info,
+  warning: Warning,
 };
 
 type SupportedSizes = {

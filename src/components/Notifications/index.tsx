@@ -13,7 +13,10 @@ export enum NotificationType {
 }
 
 const NotificationIcon: Record<string, keyof SupportedIcons> = {
+  [NotificationType.Success]: 'success',
+  [NotificationType.Info]: 'info',
   [NotificationType.Danger]: 'danger',
+  [NotificationType.Warning]: 'warning',
 };
 
 export interface Notification {
@@ -94,7 +97,7 @@ export const Notifications: React.FC = () => {
 };
 
 const NotificationsWrapper = styled.div`
-  z-index: 999999;
+  z-index: 99999;
   position: fixed;
   top: ${(p) => p.theme.spacer.md}rem;
   right: ${(p) => p.theme.spacer.md}rem;
