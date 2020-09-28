@@ -55,12 +55,20 @@ type TaskViewProps = {
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowDataDispatch }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
-  const { data: task, status, error } = useResource<ITask, ITask>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
+  const [task, setTask] = useState<ITask | null>(null);
+
+  const { data: tasks, status, error } = useResource<ITask[], ITask>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks?taskId=${taskId}`,
     subscribeToEvents: true,
     initialData: null,
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
+
+  useEffect(() => {
+    if (status === 'Ok' && tasks && tasks.length > 0) {
+      setTask(tasks[tasks.length - 1]);
+    }
+  }, [tasks, status]);
 
   const { data: artifacts } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
@@ -113,6 +121,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
+    pause: status !== 'Ok',
     onUpdate: (items) => {
       setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -125,6 +134,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
+    pause: status !== 'Ok',
     onUpdate: (items) => {
       setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -133,7 +143,12 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   useEffect(() => {
     setStdout([]);
     setStderr([]);
+    setTask(null);
   }, [taskId]);
+
+  const selectTask = (task: ITask) => {
+    setTask(task);
+  };
 
   //
   // Search features
@@ -157,125 +172,140 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
       )}
       {error && status !== 'Loading' && t('task.could-not-find-task')}
       {taskId === 'not-selected' && status !== 'Loading' && t('task.no-task-selected')}
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        {status === 'Ok' && tasks && tasks.length > 1 && (
+          <div style={{ display: 'flex' }}>
+            {tasks.map((item, index) => (
+              <div
+                key={index}
+                onClick={() => selectTask(item)}
+                style={{ fontWeight: item === task ? 'bold' : 'normal' }}
+              >
+                Attempt {index + 1}
+              </div>
+            ))}
+          </div>
+        )}
 
-      {task && task.task_id && fullscreen === null && status !== 'Loading' && (
-        <AnchoredView
-          sections={[
-            {
-              key: 'taskinfo',
-              order: 1,
-              label: t('task.task-info'),
-              component: (
-                <>
-                  <InformationRow spaceless>
-                    <PropertyTable
-                      items={[task]}
-                      columns={[
-                        {
-                          label: t('fields.task-id') + ':',
-                          accessor: (item) => <ForceBreakText>{item.task_id}</ForceBreakText>,
-                        },
-                        { label: t('items.step') + ':', prop: 'step_name' },
-                        {
-                          label: t('fields.status') + ':',
-                          accessor: (_item) => <StatusField status={_item.finished_at ? 'completed' : 'running'} />,
-                        },
-                        {
-                          label: t('fields.started-at') + ':',
-                          accessor: (item) => (item.ts_epoch ? getISOString(new Date(item.ts_epoch)) : ''),
-                        },
-                        {
-                          label: t('fields.finished-at') + ':',
-                          accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
-                        },
-                        {
-                          label: t('fields.duration') + ':',
-                          accessor: (item) => (item.duration ? formatDuration(item.duration) : ''),
-                        },
-                      ]}
-                    />
-                  </InformationRow>
-                  {renderComponentsForSection('taskinfo')}
-                </>
-              ),
-            },
-            {
-              key: 'stdout',
-              order: 2,
-              label: t('task.std-out'),
-              component: (
-                <>
-                  <LogList
-                    rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
-                    onShowFullscreen={() => setFullscreen('stdout')}
-                  />
-                  {renderComponentsForSection('stdout')}
-                </>
-              ),
-            },
-            {
-              key: 'stderr',
-              order: 3,
-              label: t('task.std-err'),
-              component: (
-                <>
-                  <LogList
-                    rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
-                    onShowFullscreen={() => setFullscreen('stderr')}
-                  />
-                  {renderComponentsForSection('stderr')}
-                </>
-              ),
-            },
-            {
-              key: 'artifacts',
-              order: 4,
-              label: t('task.artifacts'),
-              component: (
-                <>
-                  <InformationRow spaceless>
-                    <PropertyTable
-                      items={artifacts || []}
-                      columns={[
-                        { label: t('fields.artifact-name') + ':', prop: 'name' },
-                        {
-                          label: t('fields.location') + ':',
-                          accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
-                        },
-                        { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
-                        { label: t('fields.type') + ':', prop: 'type' },
-                        { label: t('fields.content-type') + ':', prop: 'content_type' },
-                      ]}
-                    />
-                  </InformationRow>
-                  {renderComponentsForSection('artifacts')}
-                </>
-              ),
-            },
-            ...pluginSectionsCustom.map((sectionKey, index) => {
-              const sections = pluginComponentsForSection(sectionKey).filter((s) => s.component);
-              // Get order and label for each section
-              // Plugin that is registered first is the priority
-              const order = sections.find((s) => s.order)?.order;
-              const label = sections.find((s) => s.label)?.label;
-
-              return {
-                key: sectionKey,
-                order: order || 100 + index,
-                label: label || sectionKey,
+        {task && task.task_id && fullscreen === null && status !== 'Loading' && (
+          <AnchoredView
+            sections={[
+              {
+                key: 'taskinfo',
+                order: 1,
+                noTitle: true,
+                label: t('task.task-info'),
                 component: (
                   <>
-                    {sections.map(({ component: Component }, index) => {
-                      return Component ? <Component key={index} task={task} artifacts={artifacts} /> : null;
-                    })}
+                    <InformationRow spaceless>
+                      <PropertyTable
+                        items={[task]}
+                        columns={[
+                          {
+                            label: t('fields.task-id') + ':',
+                            accessor: (item) => <ForceBreakText>{item.task_id}</ForceBreakText>,
+                          },
+                          { label: t('items.step') + ':', prop: 'step_name' },
+                          {
+                            label: t('fields.status') + ':',
+                            accessor: (_item) => <StatusField status={_item.finished_at ? 'completed' : 'running'} />,
+                          },
+                          {
+                            label: t('fields.started-at') + ':',
+                            accessor: (item) => (item.ts_epoch ? getISOString(new Date(item.ts_epoch)) : ''),
+                          },
+                          {
+                            label: t('fields.finished-at') + ':',
+                            accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
+                          },
+                          {
+                            label: t('fields.duration') + ':',
+                            accessor: (item) => (item.duration ? formatDuration(item.duration) : ''),
+                          },
+                        ]}
+                      />
+                    </InformationRow>
+                    {renderComponentsForSection('taskinfo')}
                   </>
                 ),
-              };
-            }),
-          ].sort((a, b) => a.order - b.order)}
-        />
-      )}
+              },
+              {
+                key: 'stdout',
+                order: 2,
+                label: t('task.std-out'),
+                component: (
+                  <>
+                    <LogList
+                      rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
+                      onShowFullscreen={() => setFullscreen('stdout')}
+                    />
+                    {renderComponentsForSection('stdout')}
+                  </>
+                ),
+              },
+              {
+                key: 'stderr',
+                order: 3,
+                label: t('task.std-err'),
+                component: (
+                  <>
+                    <LogList
+                      rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
+                      onShowFullscreen={() => setFullscreen('stderr')}
+                    />
+                    {renderComponentsForSection('stderr')}
+                  </>
+                ),
+              },
+              {
+                key: 'artifacts',
+                order: 4,
+                label: t('task.artifacts'),
+                component: (
+                  <>
+                    <InformationRow spaceless>
+                      <PropertyTable
+                        items={artifacts || []}
+                        columns={[
+                          { label: t('fields.artifact-name') + ':', prop: 'name' },
+                          {
+                            label: t('fields.location') + ':',
+                            accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
+                          },
+                          { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
+                          { label: t('fields.type') + ':', prop: 'type' },
+                          { label: t('fields.content-type') + ':', prop: 'content_type' },
+                        ]}
+                      />
+                    </InformationRow>
+                    {renderComponentsForSection('artifacts')}
+                  </>
+                ),
+              },
+              ...pluginSectionsCustom.map((sectionKey, index) => {
+                const sections = pluginComponentsForSection(sectionKey).filter((s) => s.component);
+                // Get order and label for each section
+                // Plugin that is registered first is the priority
+                const order = sections.find((s) => s.order)?.order;
+                const label = sections.find((s) => s.label)?.label;
 
+                return {
+                  key: sectionKey,
+                  order: order || 100 + index,
+                  label: label || sectionKey,
+                  component: (
+                    <>
+                      {sections.map(({ component: Component }, index) => {
+                        return Component ? <Component key={index} task={task} artifacts={artifacts} /> : null;
+                      })}
+                    </>
+                  ),
+                };
+              }),
+            ].sort((a, b) => a.order - b.order)}
+          />
+        )}
+      </div>
       {fullscreen && (
         <FullPageContainer
           onClose={() => setFullscreen(null)}

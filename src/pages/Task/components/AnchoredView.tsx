@@ -11,6 +11,7 @@ type AnchoredViewSection = {
   key: string;
   label: string;
   order: number;
+  noTitle?: boolean;
   component: React.ReactNode;
 };
 
@@ -29,6 +30,7 @@ const AnchoredView: React.FC<AnchoredViewProps> = ({ sections }) => {
             key={section.key}
             label={section.label}
             sectionkey={section.key}
+            noTitle={section.noTitle}
             updatePosition={(offsetTop) => {
               const exists = sectionPositions[index];
               if (!exists || (exists && exists !== offsetTop)) {
