@@ -4,6 +4,29 @@ import { v4 as generateIdentifier } from 'uuid';
 import styled from 'styled-components';
 import Icon, { SupportedIcons } from '../Icon';
 
+/**
+ * Usage example:
+ * 
+
+const ComponentWithNotifications = () => {
+  const { addNotification } = useNotifications();
+
+  return (
+    <div
+      onClick={() =>
+        addNotification({
+          type: NotificationType.Default,
+          message: 'This is a notification',
+        })
+      }
+    >
+      Click me
+    </div>
+  );
+};
+
+*/
+
 export enum NotificationType {
   Success = 'success',
   Info = 'info',

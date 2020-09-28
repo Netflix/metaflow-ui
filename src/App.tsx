@@ -12,8 +12,7 @@ import GlobalStyle from './GlobalStyle';
 import './theme/font/roboto.css';
 import theme from './theme';
 
-import { NotificationsProvider, Notifications, useNotifications, NotificationType } from './components/Notifications';
-import ResourceEvents from './ws';
+import { NotificationsProvider, Notifications } from './components/Notifications';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -29,7 +28,6 @@ const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <NotificationsProvider>
-        <WebsocketNotifications />
         <GlobalStyle />
         <Router>
           <ScrollToTop />
@@ -47,60 +45,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-const WebsocketNotifications = () => {
-  const { addNotification } = useNotifications();
-
-  useEffect(() => {
-    const onOpen = () => {
-      addNotification(
-        {
-          uuid: 'websocket-connection-established',
-          type: NotificationType.Success,
-          message: 'Websocket connection established',
-        },
-        {
-          type: NotificationType.Info,
-          message: 'Websocket connection established',
-        },
-        {
-          type: NotificationType.Warning,
-          message: 'Websocket connection established',
-        },
-        {
-          type: NotificationType.Danger,
-          message: 'Websocket connection established',
-        },
-        {
-          type: NotificationType.Default,
-          message: 'Websocket connection established',
-        },
-      );
-    };
-
-    const onClose = () => {
-      addNotification(
-        {
-          uuid: 'websocket-connection-lost',
-          type: NotificationType.Warning,
-          message: 'Websocket connection lost',
-        },
-        {
-          uuid: 'websocket-reconnecting',
-          type: NotificationType.Info,
-          message: 'Reconnecting to websocket',
-        },
-      );
-    };
-
-    ResourceEvents.addEventListener('open', onOpen);
-    ResourceEvents.addEventListener('close', onClose);
-
-    return () => {
-      ResourceEvents.removeEventListener('open', onOpen);
-      ResourceEvents.removeEventListener('close', onClose);
-    };
-  }, [addNotification]);
-
-  return <></>;
-};
