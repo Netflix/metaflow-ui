@@ -216,7 +216,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                         },
                         {
                           label: t('fields.duration') + ':',
-                          accessor: (item) => (item.duration ? formatDuration(item.duration) : ''),
+                          accessor: (item) => (tasks ? getDuration(tasks, item) : ''),
                         },
                       ]}
                     />
@@ -337,6 +337,17 @@ const Loader: React.FC<{ status: AsyncStatus; component: JSX.Element }> = ({ sta
   }
   return component;
 };
+
+function getDuration(tasks: ITask[], task: ITask) {
+  if (tasks && tasks.length > 1) {
+    const attemptBefore = tasks[tasks.indexOf(task) - 1];
+
+    if (attemptBefore && attemptBefore.duration && task.duration) {
+      return formatDuration(task.duration - attemptBefore.duration);
+    }
+  }
+  return task.duration ? formatDuration(task.duration) : '';
+}
 
 const TaskContainer = styled.div`
   display: flex;

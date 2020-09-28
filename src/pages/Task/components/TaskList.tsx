@@ -165,7 +165,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
             rowHeight={28}
             rowRenderer={({ index, style }) => {
               const item = rows[index];
-              const itemDuration = item.type === 'step' ? item.data.duration : item.data.duration;
+
               return (
                 <div
                   key={index}
@@ -182,14 +182,12 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
                     <RowIconSection
                       rowType={item.type}
                       onClick={() => {
-                        if (item.type === 'step') {
-                          if (item.data.step) {
-                            const sname = item.data.step.step_name;
-                            setStepData({
-                              ...stepData,
-                              [sname]: { isOpen: stepData[sname] ? !stepData[sname].isOpen : true },
-                            });
-                          }
+                        if (item.type === 'step' && item.data.step) {
+                          const sname = item.data.step.step_name;
+                          setStepData({
+                            ...stepData,
+                            [sname]: { isOpen: stepData[sname] ? !stepData[sname].isOpen : true },
+                          });
                         }
                       }}
                     >
@@ -215,7 +213,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
                       <RowMainLabel itemType={item.type}>
                         {item.type === 'step' ? item.data.step?.step_name || '' : item.data.task_id}
                       </RowMainLabel>
-                      <RowDuration>{itemDuration ? formatDuration(itemDuration, 1) : '-'}</RowDuration>
+                      <RowDuration>{item.data.duration ? formatDuration(item.data.duration, 1) : '-'}</RowDuration>
                     </RowTextContent>
                   </RowContainer>
                 </div>
