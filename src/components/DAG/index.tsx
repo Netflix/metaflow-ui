@@ -8,7 +8,7 @@ import { ItemRow } from '../Structure';
 import useResource from '../../hooks/useResource';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
-import Notification, { NotificationType } from '../Notification';
+import Label, { LabelType } from '../Label';
 import FullPageContainer from '../FullPageContainer';
 import { useTranslation } from 'react-i18next';
 import Icon from '../Icon';
@@ -89,7 +89,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
 
   const error_content = !dagTree.length && (
     <div style={{ padding: '0 0 10px 0' }} data-testid="dag-container-Error">
-      <Notification type={NotificationType.Danger}>{t('run.dag-not-available')}</Notification>
+      <Label type={LabelType.Danger}>{t('run.dag-not-available')}</Label>
     </div>
   );
 

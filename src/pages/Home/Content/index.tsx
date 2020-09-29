@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 
 import { Run as IRun } from '../../../types';
 import { useTranslation } from 'react-i18next';
-import Notification, { NotificationType } from '../../../components/Notification';
+import Label, { LabelType } from '../../../components/Label';
 import Spinner from '../../../components/Spinner';
 import ResultGroup from '../ResultGroup';
 import useIsInViewport from 'use-is-in-viewport';
@@ -23,7 +23,7 @@ const HomeContentArea: React.FC<{
 
   return (
     <Content>
-      {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
+      {error && <Label type={LabelType.Warning}>{error.message}</Label>}
 
       {resultAmount > 0 &&
         Object.keys(runGroups).map((k) => {

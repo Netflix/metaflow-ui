@@ -12,6 +12,8 @@ import GlobalStyle from './GlobalStyle';
 import './theme/font/roboto.css';
 import theme from './theme';
 
+import { NotificationsProvider, Notifications } from './components/Notifications';
+
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -25,16 +27,19 @@ function ScrollToTop() {
 const App: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <GlobalStyle />
-      <Router>
-        <ScrollToTop />
-        <QueryParamProvider ReactRouterRoute={Route}>
-          <AppBar />
-          <Page>
-            <Root />
-          </Page>
-        </QueryParamProvider>
-      </Router>
+      <NotificationsProvider>
+        <GlobalStyle />
+        <Router>
+          <ScrollToTop />
+          <QueryParamProvider ReactRouterRoute={Route}>
+            <Notifications />
+            <AppBar />
+            <Page>
+              <Root />
+            </Page>
+          </QueryParamProvider>
+        </Router>
+      </NotificationsProvider>
     </ThemeProvider>
   );
 };
