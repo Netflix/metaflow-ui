@@ -8,7 +8,7 @@ export const PopoverStyles = css`
   border-radius: 0.25rem;
 `;
 
-const PopoverWrapper = styled.div<{ show: boolean }>`
+export const PopoverWrapper = styled.div<{ show: boolean }>`
   ${PopoverStyles}
   position: absolute;
   z-index: 11;

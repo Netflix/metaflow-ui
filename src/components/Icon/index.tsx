@@ -17,6 +17,7 @@ import { ReactComponent as Collapse } from '../../assets/collapse.svg';
 import { ReactComponent as Expand } from '../../assets/expand.svg';
 import { ReactComponent as Listing } from '../../assets/listing.svg';
 import { ReactComponent as Enter } from '../../assets/enter.svg';
+import { ReactComponent as QuestionCircled } from '../../assets/question-circled.svg';
 import { ReactComponent as ListItemNotFound } from '../../assets/list-item-not-found.svg';
 import { ReactComponent as ListNotFound } from '../../assets/list-not-found.svg';
 import { ReactComponent as NoDag } from '../../assets/no-dag.svg';
@@ -44,6 +45,7 @@ export type SupportedIcons = {
   expand: FunctionComponent;
   listing: FunctionComponent;
   enter: FunctionComponent;
+  questionCircled: FunctionComponent;
   listItemNotFound: FunctionComponent;
   listNotFound: FunctionComponent;
   noDag: FunctionComponent;
@@ -72,6 +74,7 @@ const icons: SupportedIcons = {
   expand: Expand,
   listing: Listing,
   enter: Enter,
+  questionCircled: QuestionCircled,
   listItemNotFound: ListItemNotFound,
   listNotFound: ListNotFound,
   noDag: NoDag,

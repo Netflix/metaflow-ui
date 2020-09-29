@@ -17,6 +17,10 @@ const en = {
       'show-all-runs': 'Show all runs',
     },
 
+    help: {
+      'links-and-faq': 'Links and FAQ',
+    },
+
     fields: {
       group: {
         none: 'No grouping',
