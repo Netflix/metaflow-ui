@@ -71,11 +71,12 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     }
   }, [tasks, status]);
 
+  const attemptId = task && tasks ? tasks.indexOf(task) : null;
   const { data: artifacts, status: artifactStatus } = useResource<Artifact[], Artifact>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts?attempt_id=${attemptId}`,
     subscribeToEvents: true,
     initialData: [],
-    pause: stepName === 'not-selected' || taskId === 'not-selected',
+    pause: stepName === 'not-selected' || taskId === 'not-selected' || attemptId === null,
   });
 
   //
@@ -117,11 +118,12 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 
   const [stdout, setStdout] = useState<Log[]>([]);
   const { status: statusOut } = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out?attempt_id=${attemptId}`,
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
+    pause: attemptId === null,
     onUpdate: (items) => {
       setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -129,11 +131,12 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 
   const [stderr, setStderr] = useState<Log[]>([]);
   const { status: statusErr } = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err?attempt_id=${attemptId}`,
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
+    pause: attemptId === null,
     onUpdate: (items) => {
       setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
