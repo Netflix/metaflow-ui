@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import Icon from '../Icon';
@@ -9,15 +9,35 @@ type HelpMenuLink = {
   label: string;
 };
 
-const links = [
-  { href: 'https://slack.com/', label: 'Join our Slack channel' },
+const DEFAULT_LINKS = [
   { href: 'https://metaflow.org/', label: 'Metaflow help docs' },
   { href: 'https://github.com/Netflix/metaflow', label: 'Github' },
 ];
 
 const HelpMenu: React.FC = () => {
+  const [links, setLinks] = useState<HelpMenuLink[]>(DEFAULT_LINKS);
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+
+  useEffect(() => {
+    fetch('/static/links.json', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json().then((data) => {
+            if (Array.isArray(data)) {
+              setLinks(data.concat(DEFAULT_LINKS));
+            }
+          });
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
   return (
     <HelpMenuContainer>
       <Icon name="questionCircled" size="sm" onClick={() => setOpen(!open)} />
