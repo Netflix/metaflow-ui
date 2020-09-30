@@ -30,10 +30,6 @@ type TaskListRowItem =
 const HEADER_SIZE_PX = 112;
 const SEARCH_SIZE_PX = 40;
 
-type TaskListStepData = {
-  isOpen: boolean;
-};
-
 type Props = {
   rowData: RowDataModel;
   rowDataDispatch: (action: RowDataAction) => void;
@@ -45,7 +41,6 @@ type Props = {
 const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, results, searchFieldProps }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [rows, setRows] = useState<TaskListRowItem[]>([]);
-  const [stepData, setStepData] = useState<Record<string, TaskListStepData>>({});
   const history = useHistory();
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
@@ -58,7 +53,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
       const step = rowData[stepname];
       if (!stepname.startsWith('_')) {
         let newRows: TaskListRowItem[] = [];
-        const isOpen = stepData[stepname] ? stepData[stepname].isOpen : step.isOpen;
+        const isOpen = step.isOpen;
 
         // Add new rows if step is open
         newRows = Object.keys(step.data)
@@ -81,20 +76,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
     }
 
     setRows(taskRows);
-  }, [rowData, stepData, results]);
-
-  useEffect(() => {
-    if (Object.keys(rowData).length !== Object.keys(stepData).length) {
-      setStepData(
-        Object.keys(rowData).reduce((obj, key) => {
-          if (stepData[key]) {
-            return obj;
-          }
-          return { ...obj, [key]: { isOpen: true } };
-        }, {}),
-      );
-    }
-  }, [rowData]); // eslint-disable-line
+  }, [rowData, results]);
 
   useEffect(() => {
     const listener = () => {
@@ -165,7 +147,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
             rowHeight={28}
             rowRenderer={({ index, style }) => {
               const item = rows[index];
-              const itemDuration = item.type === 'step' ? item.data.duration : item.data.duration;
+
               return (
                 <div
                   key={index}
@@ -182,14 +164,8 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
                     <RowIconSection
                       rowType={item.type}
                       onClick={() => {
-                        if (item.type === 'step') {
-                          if (item.data.step) {
-                            const sname = item.data.step.step_name;
-                            setStepData({
-                              ...stepData,
-                              [sname]: { isOpen: stepData[sname] ? !stepData[sname].isOpen : true },
-                            });
-                          }
+                        if (item.type === 'step' && item.data.step) {
+                          rowDataDispatch({ type: 'toggle', id: item.data.step.step_name });
                         }
                       }}
                     >
@@ -198,8 +174,8 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
                           name="arrowDown"
                           rotate={
                             item.data.step &&
-                            stepData[item.data.step.step_name] &&
-                            !stepData[item.data.step.step_name].isOpen
+                            rowData[item.data.step.step_name] &&
+                            !rowData[item.data.step.step_name].isOpen
                               ? -90
                               : 0
                           }
@@ -207,6 +183,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
                         />
                       ) : null}
                     </RowIconSection>
+
                     <RowTextContent
                       rowType={item.type}
                       active={item.type === 'task' && item.data.task_id === activeTaskId}
@@ -214,7 +191,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
                       <RowMainLabel itemType={item.type}>
                         {item.type === 'step' ? item.data.step?.step_name || '' : item.data.task_id}
                       </RowMainLabel>
-                      <RowDuration>{itemDuration ? formatDuration(itemDuration, 1) : '-'}</RowDuration>
+                      <RowDuration>{item.data.duration ? formatDuration(item.data.duration, 1) : '-'}</RowDuration>
                     </RowTextContent>
                   </RowContainer>
                 </div>

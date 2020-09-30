@@ -5,12 +5,12 @@ import styled from 'styled-components';
 // Task section presents one title section of task view
 //
 
-const TaskSection: React.FC<{ label: string; sectionkey: string; updatePosition: (offsetTop: number) => void }> = ({
-  label,
-  sectionkey,
-  updatePosition,
-  children,
-}) => {
+const TaskSection: React.FC<{
+  label: string;
+  sectionkey: string;
+  noTitle?: boolean;
+  updatePosition: (offsetTop: number) => void;
+}> = ({ label, sectionkey, updatePosition, noTitle, children }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,9 +22,11 @@ const TaskSection: React.FC<{ label: string; sectionkey: string; updatePosition:
 
   return (
     <TaskSectionContainer ref={ref} id={sectionkey}>
-      <TaskSectionHeader>
-        <h3>{label}</h3>
-      </TaskSectionHeader>
+      {!noTitle && (
+        <TaskSectionHeader>
+          <h3>{label}</h3>
+        </TaskSectionHeader>
+      )}
       <TaskSectionContent>{children}</TaskSectionContent>
     </TaskSectionContainer>
   );
