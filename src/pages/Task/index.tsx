@@ -114,7 +114,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     fullyDisableCache: true,
     useBatching: true,
     onUpdate: (items) => {
-      setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
+      items && setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
   });
 
@@ -126,7 +126,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     fullyDisableCache: true,
     useBatching: true,
     onUpdate: (items) => {
-      setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
+      items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
   });
 
