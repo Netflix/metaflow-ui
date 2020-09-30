@@ -226,56 +226,58 @@ export default function useResource<T, U>({
   }
 
   function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, isSilent?: boolean) {
-    fetch(targetUrl, { signal }).then((response) => {
-      if (response.status === 200) {
-        response
-          .json()
-          .then((result: DataModel<T>) => {
-            const cacheItem = {
-              result,
-              data: result.data,
-            };
-            // If silent mode, we dont want cache to trigger update cycle, but we use onUpdate function.
-            if (!fullyDisableCache) {
-              const cacheSet = isSilent ? cache.setInBackground : cache.set;
-              cacheSet(targetUrl, cacheItem);
-            }
+    fetch(targetUrl, { signal })
+      .then((response) => {
+        if (response.status === 200) {
+          response
+            .json()
+            .then((result: DataModel<T>) => {
+              const cacheItem = {
+                result,
+                data: result.data,
+              };
+              // If silent mode, we dont want cache to trigger update cycle, but we use onUpdate function.
+              if (!fullyDisableCache) {
+                const cacheSet = isSilent ? cache.setInBackground : cache.set;
+                cacheSet(targetUrl, cacheItem);
+              }
 
-            if (onUpdate) {
-              onUpdate(cacheItem.data as T);
-            }
+              if (onUpdate) {
+                onUpdate(cacheItem.data as T);
+              }
 
-            // If we want all data and we are have next page available we fetch it.
-            // Else this fetch is done and we call the callback
-            if (
-              fetchAllData &&
-              cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
-              cacheItem.result.links.next !== targetUrl
-            ) {
-              fetchData(cacheItem.result.links.next || targetUrl, signal, cb, true);
-            } else {
-              cb(true);
-            }
-          })
-          .catch(() => {
-            newError({
-              id: 'something',
-              traceback: 'string',
-              status: 500,
-              title: 'string',
-              type: 'string',
+              // If we want all data and we are have next page available we fetch it.
+              // Else this fetch is done and we call the callback
+              if (
+                fetchAllData &&
+                cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
+                cacheItem.result.links.next !== targetUrl
+              ) {
+                fetchData(cacheItem.result.links.next || targetUrl, signal, cb, true);
+              } else {
+                cb(true);
+              }
+            })
+            .catch(() => {
+              newError({
+                id: 'something',
+                traceback: 'string',
+                status: 500,
+                title: 'string',
+                type: 'string',
+              });
             });
+        } else {
+          newError({
+            id: 'something',
+            traceback: 'string',
+            status: 500,
+            title: 'string',
+            type: 'string',
           });
-      } else {
-        newError({
-          id: 'something',
-          traceback: 'string',
-          status: 500,
-          title: 'string',
-          type: 'string',
-        });
-      }
-    });
+        }
+      })
+      .catch((_e) => null);
   }
 
   useEffect(() => {

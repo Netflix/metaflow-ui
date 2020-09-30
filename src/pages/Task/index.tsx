@@ -336,12 +336,15 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 };
 
 const Loader: React.FC<{ status: AsyncStatus; component: JSX.Element }> = ({ status, component }) => {
+  const { t } = useTranslation();
   if (status === 'Loading') {
     return (
       <div style={{ textAlign: 'center' }}>
         <Spinner />
       </div>
     );
+  } else if (status === 'Error') {
+    return <GenericError message={t('error.load-error')} />;
   }
   return component;
 };
