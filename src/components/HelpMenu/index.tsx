@@ -10,7 +10,7 @@ type HelpMenuLink = {
 };
 
 const DEFAULT_LINKS = [
-  { href: 'https://metaflow.org/', label: 'Metaflow help docs' },
+  { href: 'https://docs.metaflow.org/', label: 'Metaflow documentation' },
   { href: 'https://github.com/Netflix/metaflow', label: 'Github' },
 ];
 
@@ -20,7 +20,7 @@ const HelpMenu: React.FC = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    fetch('/static/links.json', {
+    fetch('/need-api-end-point-for-this', {
       headers: {
         'Content-Type': 'application/json',
       },
@@ -29,7 +29,7 @@ const HelpMenu: React.FC = () => {
         if (response.status === 200) {
           return response.json().then((data) => {
             if (Array.isArray(data)) {
-              setLinks(data.concat(DEFAULT_LINKS));
+              setLinks(data);
             }
           });
         }
