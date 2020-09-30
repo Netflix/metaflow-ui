@@ -15,7 +15,6 @@ const en = {
     home: {
       home: 'Home',
       'show-all-runs': 'Show all runs',
-      'no-results': 'No runs found',
     },
 
     fields: {
@@ -115,6 +114,14 @@ const en = {
 
     search: {
       'no-results': 'No tasks found',
+    },
+
+    error: {
+      'generic-error': 'Error happened',
+      'load-error': 'Error loading data',
+      'no-results': 'No results found',
+      'no-runs': 'No runs found',
+      'no-tasks': 'No tasks found',
     },
   },
 };

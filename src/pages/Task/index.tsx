@@ -18,6 +18,7 @@ import LogList from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
 import useSeachField from '../../hooks/useSearchField';
 import Spinner from '../../components/Spinner';
+import GenericError from '../../components/GenericError';
 
 //
 // View container
@@ -155,10 +156,14 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
           <Spinner md />
         </TaskLoaderContainer>
       )}
-      {error && status !== 'Loading' && t('task.could-not-find-task')}
-      {taskId === 'not-selected' && status !== 'Loading' && t('task.no-task-selected')}
 
-      {task && task.task_id && fullscreen === null && status !== 'Loading' && (
+      {error && status !== 'Loading' && <GenericError icon="listItemNotFound" message={t('task.generic-error')} />}
+
+      {taskId === 'not-selected' && status !== 'Loading' && (
+        <GenericError icon="listItemNotFound" message={t('task.no-task-selected')} />
+      )}
+
+      {fullscreen === null && status === 'Ok' && task && (
         <AnchoredView
           sections={[
             {

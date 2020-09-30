@@ -8,12 +8,13 @@ import { ItemRow } from '../Structure';
 import useResource from '../../hooks/useResource';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
-import Notification, { NotificationType } from '../Notification';
 import FullPageContainer from '../FullPageContainer';
 import { useTranslation } from 'react-i18next';
 import Icon from '../Icon';
 import useComponentSize from '@rehooks/component-size';
 import useWindowSize from '../../hooks/useWindowSize';
+import GenericError from '../GenericError';
+import Spinner from '../Spinner';
 
 //
 // DAG
@@ -47,7 +48,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     },
   });
 
-  useResource<DAGModel, DAGModel>({
+  const { status } = useResource<DAGModel, DAGModel>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
     subscribeToEvents: false,
     initialData: null,
@@ -87,9 +88,9 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     </DAGRenderingContainer>
   );
 
-  const error_content = !dagTree.length && (
-    <div style={{ padding: '0 0 10px 0' }} data-testid="dag-container-Error">
-      <Notification type={NotificationType.Danger}>{t('run.dag-not-available')}</Notification>
+  const error_content = (status === 'Ok' || status === 'Error') && !dagTree.length && (
+    <div style={{ padding: '3rem 0' }}>
+      <GenericError icon={<Icon name="noDag" customSize={5} />} message={t('run.dag-not-available')} />
     </div>
   );
 
@@ -105,6 +106,11 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   return (
     <div style={{ width: '100%' }}>
       {error_content ? error_content : fullscreen_controls}
+      {status === 'Loading' && (
+        <ItemRow justify="center">
+          <Spinner md />
+        </ItemRow>
+      )}
       {showFullscreen ? <FullPageContainer onClose={() => setFullscreen(false)}>{content}</FullPageContainer> : content}
     </div>
   );
