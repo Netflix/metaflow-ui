@@ -1,6 +1,6 @@
 import 'styled-components';
 
-type NotificationColorMap = { bg: string; text: string };
+type NotificationColorMap = { bg: string; fg: string; text: string };
 
 declare module 'styled-components' {
   export type ButtonColors = {

@@ -11,24 +11,28 @@ type AnchoredViewSection = {
   key: string;
   label: string;
   order: number;
+  noTitle?: boolean;
   component: React.ReactNode;
 };
 
 type AnchoredViewProps = {
+  header?: JSX.Element;
   sections: AnchoredViewSection[];
 };
 
-const AnchoredView: React.FC<AnchoredViewProps> = ({ sections }) => {
+const AnchoredView: React.FC<AnchoredViewProps> = ({ sections, header }) => {
   const [sectionPositions, setSectionPositions] = useState<Record<number, number>>({});
 
   return (
     <AnchoredViewContainer>
       <TaskContent>
+        {header}
         {sections.map((section, index) => (
           <TaskSection
             key={section.key}
             label={section.label}
             sectionkey={section.key}
+            noTitle={section.noTitle}
             updatePosition={(offsetTop) => {
               const exists = sectionPositions[index];
               if (!exists || (exists && exists !== offsetTop)) {

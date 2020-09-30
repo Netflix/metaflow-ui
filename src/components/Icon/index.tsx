@@ -22,8 +22,12 @@ import { ReactComponent as ListNotFound } from '../../assets/list-not-found.svg'
 import { ReactComponent as NoDag } from '../../assets/no-dag.svg';
 import { ReactComponent as NoData } from '../../assets/no-data.svg';
 import { ReactComponent as SearchNotFound } from '../../assets/search-not-found.svg';
+import { ReactComponent as Danger } from '../../assets/danger.svg';
+import { ReactComponent as Success } from '../../assets/success.svg';
+import { ReactComponent as Info } from '../../assets/info.svg';
+import { ReactComponent as Warning } from '../../assets/warning.svg';
 
-type SupportedIcons = {
+export type SupportedIcons = {
   timeline: FunctionComponent;
   arrowDown: FunctionComponent;
   times: FunctionComponent;
@@ -45,6 +49,10 @@ type SupportedIcons = {
   noDag: FunctionComponent;
   noData: FunctionComponent;
   searchNotFound: FunctionComponent;
+  danger: FunctionComponent;
+  success: FunctionComponent;
+  info: FunctionComponent;
+  warning: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -69,6 +77,10 @@ const icons: SupportedIcons = {
   noDag: NoDag,
   noData: NoData,
   searchNotFound: SearchNotFound,
+  danger: Danger,
+  success: Success,
+  info: Info,
+  warning: Warning,
 };
 
 export type IconKeys = keyof SupportedIcons;

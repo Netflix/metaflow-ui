@@ -89,7 +89,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   );
 
   const error_content = (status === 'Ok' || status === 'Error') && !dagTree.length && (
-    <div style={{ padding: '3rem 0' }}>
+    <div style={{ padding: '3rem 0' }} data-testid="dag-container-Error">
       <GenericError icon={<Icon name="noDag" customSize={5} />} message={t('run.dag-not-available')} />
     </div>
   );

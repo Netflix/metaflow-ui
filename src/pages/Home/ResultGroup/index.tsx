@@ -14,7 +14,7 @@ import { Section } from '../../../components/Structure';
 import Icon from '../../../components/Icon';
 import { Text, ForceNoBreakText } from '../../../components/Text';
 import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
-import Notification, { NotificationType } from '../../../components/Notification';
+import Label, { LabelType } from '../../../components/Label';
 import StatusField from '../../../components/Status';
 import { formatDuration } from '../../../utils/format';
 import Button from '../../../components/Button';
@@ -154,7 +154,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
         <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
           {label}
         </ResultGroupTitle>
-        {error && <Notification type={NotificationType.Warning}>{error.message}</Notification>}
+        {error && <Label type={LabelType.Warning}>{error.message}</Label>}
       </th>
     </TR>
     <TR>

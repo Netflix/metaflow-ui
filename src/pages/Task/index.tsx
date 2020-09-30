@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
-import { Run as IRun, Task as ITask, Artifact, Log } from '../../types';
+import { Run as IRun, Task as ITask, Artifact, Log, AsyncStatus } from '../../types';
 import useResource from '../../hooks/useResource';
 import { formatDuration } from '../../utils/format';
 import { getISOString } from '../../utils/date';
@@ -19,6 +19,7 @@ import FullPageContainer from '../../components/FullPageContainer';
 import useSeachField from '../../hooks/useSearchField';
 import Spinner from '../../components/Spinner';
 import GenericError from '../../components/GenericError';
+import { TabsHeading, TabsHeadingItem } from '../../components/Tabs';
 
 //
 // View container
@@ -56,18 +57,27 @@ type TaskViewProps = {
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowDataDispatch }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
-  const { data: task, status, error } = useResource<ITask, ITask>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}`,
+  const [task, setTask] = useState<ITask | null>(null);
+
+  const { data: tasks, status, error } = useResource<ITask[], ITask>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks?taskId=${taskId}`,
     subscribeToEvents: true,
     initialData: null,
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
-  const { data: artifacts } = useResource<Artifact[], Artifact>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
+  useEffect(() => {
+    if (status === 'Ok' && tasks && tasks.length > 0) {
+      setTask(tasks[tasks.length - 1]);
+    }
+  }, [tasks, status]);
+
+  const attemptId = task && tasks ? tasks.indexOf(task) : null;
+  const { data: artifacts, status: artifactStatus } = useResource<Artifact[], Artifact>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts?attempt_id=${attemptId}`,
     subscribeToEvents: true,
     initialData: [],
-    pause: stepName === 'not-selected' || taskId === 'not-selected',
+    pause: stepName === 'not-selected' || taskId === 'not-selected' || attemptId === null,
   });
 
   //
@@ -108,33 +118,40 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   //
 
   const [stdout, setStdout] = useState<Log[]>([]);
-  useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
+  const { status: statusOut } = useResource<Log[], Log>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out?attempt_id=${attemptId}`,
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
+    pause: attemptId === null,
     onUpdate: (items) => {
-      setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
+      items && setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
   });
 
   const [stderr, setStderr] = useState<Log[]>([]);
-  useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
+  const { status: statusErr } = useResource<Log[], Log>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err?attempt_id=${attemptId}`,
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
+    pause: attemptId === null,
     onUpdate: (items) => {
-      setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
+      items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
   });
 
   useEffect(() => {
     setStdout([]);
     setStderr([]);
+    setTask(null);
   }, [taskId]);
+
+  const selectTask = (task: ITask) => {
+    setTask(task);
+  };
 
   //
   // Search features
@@ -165,10 +182,22 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 
       {fullscreen === null && status === 'Ok' && task && (
         <AnchoredView
+          header={
+            status === 'Ok' && tasks && tasks.length > 1 ? (
+              <TabsHeading>
+                {tasks.map((item, index) => (
+                  <TabsHeadingItem key={index} onClick={() => selectTask(item)} active={item === task}>
+                    Attempt {index + 1}
+                  </TabsHeadingItem>
+                ))}
+              </TabsHeading>
+            ) : undefined
+          }
           sections={[
             {
               key: 'taskinfo',
               order: 1,
+              noTitle: true,
               label: t('task.task-info'),
               component: (
                 <>
@@ -195,7 +224,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                         },
                         {
                           label: t('fields.duration') + ':',
-                          accessor: (item) => (item.duration ? formatDuration(item.duration) : ''),
+                          accessor: (item) => (tasks ? getDuration(tasks, item) : ''),
                         },
                       ]}
                     />
@@ -210,9 +239,14 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
               label: t('task.std-out'),
               component: (
                 <>
-                  <LogList
-                    rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
-                    onShowFullscreen={() => setFullscreen('stdout')}
+                  <Loader
+                    status={statusOut}
+                    component={
+                      <LogList
+                        rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
+                        onShowFullscreen={() => setFullscreen('stdout')}
+                      />
+                    }
                   />
                   {renderComponentsForSection('stdout')}
                 </>
@@ -224,10 +258,16 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
               label: t('task.std-err'),
               component: (
                 <>
-                  <LogList
-                    rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
-                    onShowFullscreen={() => setFullscreen('stderr')}
+                  <Loader
+                    status={statusErr}
+                    component={
+                      <LogList
+                        rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
+                        onShowFullscreen={() => setFullscreen('stderr')}
+                      />
+                    }
                   />
+
                   {renderComponentsForSection('stderr')}
                 </>
               ),
@@ -239,18 +279,23 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
               component: (
                 <>
                   <InformationRow spaceless>
-                    <PropertyTable
-                      items={artifacts || []}
-                      columns={[
-                        { label: t('fields.artifact-name') + ':', prop: 'name' },
-                        {
-                          label: t('fields.location') + ':',
-                          accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
-                        },
-                        { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
-                        { label: t('fields.type') + ':', prop: 'type' },
-                        { label: t('fields.content-type') + ':', prop: 'content_type' },
-                      ]}
+                    <Loader
+                      status={artifactStatus}
+                      component={
+                        <PropertyTable
+                          items={artifacts || []}
+                          columns={[
+                            { label: t('fields.artifact-name') + ':', prop: 'name' },
+                            {
+                              label: t('fields.location') + ':',
+                              accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
+                            },
+                            { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
+                            { label: t('fields.type') + ':', prop: 'type' },
+                            { label: t('fields.content-type') + ':', prop: 'content_type' },
+                          ]}
+                        />
+                      }
                     />
                   </InformationRow>
                   {renderComponentsForSection('artifacts')}
@@ -280,7 +325,6 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
           ].sort((a, b) => a.order - b.order)}
         />
       )}
-
       {fullscreen && (
         <FullPageContainer
           onClose={() => setFullscreen(null)}
@@ -290,6 +334,28 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     </TaskContainer>
   );
 };
+
+const Loader: React.FC<{ status: AsyncStatus; component: JSX.Element }> = ({ status, component }) => {
+  if (status === 'Loading') {
+    return (
+      <div style={{ textAlign: 'center' }}>
+        <Spinner />
+      </div>
+    );
+  }
+  return component;
+};
+
+function getDuration(tasks: ITask[], task: ITask) {
+  if (tasks && tasks.length > 1) {
+    const attemptBefore = tasks[tasks.indexOf(task) - 1];
+
+    if (attemptBefore && attemptBefore.duration && task.duration) {
+      return formatDuration(task.duration - attemptBefore.duration);
+    }
+  }
+  return task.duration ? formatDuration(task.duration) : '';
+}
 
 const TaskContainer = styled.div`
   display: flex;

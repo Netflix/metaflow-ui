@@ -22,6 +22,7 @@ export interface HookConfig<T, U> {
   onUpdate?: (item: T) => void;
   // Separate update function for websocket messages.
   onWSUpdate?: (item: U, eventType: EventType) => void;
+  socketParamFilter?: (params: Record<string, string>) => Record<string, string>;
   // ?
   privateCache?: boolean;
   // ?
@@ -131,6 +132,7 @@ export default function useResource<T, U>({
   initialData = null,
   subscribeToEvents = false,
   queryParams = {},
+  socketParamFilter = (params) => params,
   updatePredicate = (_a, _b) => false,
   fetchAllData = false,
   onUpdate,
@@ -172,7 +174,7 @@ export default function useResource<T, U>({
 
   useWebsocket<U>({
     url: url,
-    queryParams: queryParams,
+    queryParams: socketParamFilter ? socketParamFilter(queryParams) : queryParams,
     enabled: subscribeToEvents && !pause,
     onUpdate: (event: Event<any>) => {
       if (pause) return;
