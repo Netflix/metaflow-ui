@@ -1,16 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Task as ITask } from '../../../types';
-import { RowDataAction, RowDataModel, StepRowData } from '../../../components/Timeline/useRowData';
+import styled, { css } from 'styled-components';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { List } from 'react-virtualized';
+import { Task as ITask } from '../../../types';
 import { getPath } from '../../../utils/routing';
 import { formatDuration } from '../../../utils/format';
-import styled, { css } from 'styled-components';
-import Icon from '../../../components/Icon';
-import { useTranslation } from 'react-i18next';
 import { SearchFieldProps, SearchResultModel } from '../../../hooks/useSearchField';
-import SearchField from '../../../components/SearchField';
+import { RowDataAction, RowDataModel, StepRowData } from '../../../components/Timeline/useRowData';
 import SettingsButton from '../../../components/Timeline/SettingsButton';
+import SearchField from '../../../components/SearchField';
+import Icon from '../../../components/Icon';
 
 //
 // Tasklist

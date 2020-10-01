@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import useResource from '../../hooks/useResource';
-import { useRouteMatch } from 'react-router-dom';
-import { Run as IRun, Step, Task } from '../../types';
-import Tabs from '../../components/Tabs';
-import { FixedContent, ItemRow } from '../../components/Structure';
-import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
-import DAG from '../../components/DAG';
-import TaskViewContainer from '../Task';
-import RunHeader from './RunHeader';
-import { getPath } from '../../utils/routing';
 import { useTranslation } from 'react-i18next';
+import { useRouteMatch } from 'react-router-dom';
+import useResource from '../../hooks/useResource';
 import useRowData from '../../components/Timeline/useRowData';
+import { getPath } from '../../utils/routing';
+import { Run as IRun, Step, Task } from '../../types';
+
+import TaskViewContainer from '../Task';
 import Spinner from '../../components/Spinner';
 import GenericError from '../../components/GenericError';
+import Tabs from '../../components/Tabs';
+import { FixedContent, ItemRow } from '../../components/Structure';
+import RunHeader from './RunHeader';
+import DAG from '../../components/DAG';
+import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
 
 const RunPage: React.FC = () => {
   const { t } = useTranslation();

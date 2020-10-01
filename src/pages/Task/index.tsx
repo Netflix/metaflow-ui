@@ -346,6 +346,9 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   );
 };
 
+//
+// Conditional renderer for async components.
+//
 const Loader: React.FC<{ status: AsyncStatus; component: JSX.Element }> = ({ status, component }) => {
   const { t } = useTranslation();
   if (status === 'Loading') {
@@ -360,6 +363,10 @@ const Loader: React.FC<{ status: AsyncStatus; component: JSX.Element }> = ({ sta
   return component;
 };
 
+//
+// Figure out the duration of current attempt of current task. There might be many attempts
+// and on those cases we need to calculate duration from previous attempt
+//
 function getDuration(tasks: ITask[], task: ITask) {
   if (tasks && tasks.length > 1) {
     const attemptBefore = tasks[tasks.indexOf(task) - 1];
