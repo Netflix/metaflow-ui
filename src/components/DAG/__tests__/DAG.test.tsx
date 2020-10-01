@@ -6,7 +6,7 @@ import { Run } from '../../../types';
 
 const run: Run = {
   flow_id: 'SplitForeachFlow',
-  run_number: 26,
+  run_number: '26',
   user_name: 'SanteriCM',
   status: 'completed',
   ts_epoch: 1597034293177,
@@ -17,6 +17,15 @@ const run: Run = {
 };
 
 describe('DAG component', () => {
+  beforeAll(() => {
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        status: 500,
+        json: () => Promise.resolve({}),
+      }),
+    ) as any;
+  });
+
   test('<DAG /> - health check', async () => {
     const { findAllByTestId } = render(
       <TestWrapper>

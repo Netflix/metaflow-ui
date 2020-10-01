@@ -1,7 +1,7 @@
 import React from 'react';
 import Task from '..';
 import { render } from '@testing-library/react';
-import TestWrapper from '../../../utils/testing';
+import TestWrapper, { mockfetch } from '../../../utils/testing';
 import { Run } from '../../../types';
 import WS from 'jest-websocket-mock';
 
@@ -11,11 +11,15 @@ const run: Run = {
   ts_epoch: 123,
   tags: [],
   system_tags: [],
-  run_number: 123,
+  run_number: '123',
   status: 'completed',
 };
 
 describe('Task page', () => {
+  beforeAll(() => {
+    global.fetch = mockfetch as any;
+  });
+
   test('<Task /> - health check', async () => {
     const server = new WS('ws://localhost/api/ws', { jsonProtocol: true });
 
