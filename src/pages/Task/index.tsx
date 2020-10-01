@@ -60,7 +60,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   const [task, setTask] = useState<ITask | null>(null);
 
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/tasks?task_id=${taskId}`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks?task_id=${taskId}`,
     subscribeToEvents: true,
     initialData: null,
     pause: stepName === 'not-selected' || taskId === 'not-selected',
