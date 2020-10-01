@@ -52,6 +52,7 @@ describe('useResource hook', () => {
   beforeAll(() => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
+        status: 200,
         json: () => Promise.resolve(BasicResponse),
       }),
     ) as any;
@@ -187,6 +188,7 @@ describe('useResource hook', () => {
   test('useResource - Real time automatic update (Object)', async () => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
+        status: 200,
         json: () => Promise.resolve({ ...BasicResponse, data: { id: '1', label: 'testLabel' } }),
       }),
     ) as any;

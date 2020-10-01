@@ -3,6 +3,7 @@ import { METAFLOW_SERVICE } from '../../constants';
 import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
 import useInterval from '../useInterval';
+import { APIError } from '../../types';
 
 export interface HookConfig<T, U> {
   // URL for fetch request
@@ -60,7 +61,7 @@ export type ResourceStatus = 'NotAsked' | 'Error' | 'Ok' | 'Loading';
 export interface Resource<T> {
   url: string;
   data: T | null;
-  error: Error | null;
+  error: APIError | null;
   getResult: () => DataModel<T>;
   cache: CacheInterface;
   target: string;
@@ -117,6 +118,14 @@ export function createCache(): CacheInterface {
   };
 }
 
+const defaultError = {
+  id: 'generic-error',
+  traceback: '',
+  status: 500,
+  title: 'Unkown error',
+  type: 'error',
+};
+
 // default cache
 const singletonCache = createCache();
 //
@@ -143,7 +152,7 @@ export default function useResource<T, U>({
   uuid,
 }: HookConfig<T, U>): Resource<T> {
   const cache = useRef(privateCache ? createCache() : singletonCache).current;
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<APIError | null>(null);
   const initData = cache.get<T>(url)?.data || initialData;
   const [data, setData] = useState<T | null>(initData);
   const [status, setStatus] = useState<ResourceStatus>('NotAsked');
@@ -219,91 +228,79 @@ export default function useResource<T, U>({
     uuid,
   });
 
-  function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, isSilent?: boolean) {
-    fetch(targetUrl, { signal })
-      .then((response) =>
-        response.json().then((result: DataModel<T>) => ({
-          result,
-          data: result.data,
-        })),
-      )
-      .then(
-        (cacheItem) => {
-          // If silent mode, we dont want cache to trigger update cycle, but we use onUpdate function.
-          if (!fullyDisableCache) {
-            const cacheSet = isSilent ? cache.setInBackground : cache.set;
-            cacheSet(targetUrl, cacheItem);
-          }
-
-          if (onUpdate) {
-            onUpdate(cacheItem.data as T);
-          }
-
-          // If we want all data and we are have next page available we fetch it.
-          // Else this fetch is done and we call the callback
-          if (
-            fetchAllData &&
-            cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
-            cacheItem.result.links.next !== targetUrl
-          ) {
-            fetchData(cacheItem.result.links.next || targetUrl, signal, cb, true);
-          } else {
-            cb(true);
-          }
-        },
-        (error) => {
-          if (error.name !== 'AbortError') {
-            setError(error.toString());
-          }
-          cb(false);
-        },
-      );
+  function newError(err: APIError) {
+    setStatus('Error');
+    setError(err);
   }
 
-  /**
-   * Finds data for current cache entry and checks if there is next page available.
-   * Recursively finds all data available for current query.
-   * @param currentTarget cache key (basically url of endpoint we fetched the data)
-   */
-  /*function findAllRelatedDataFromCache(currentTarget: string): any {
-    const cached = cache.get<T>(currentTarget);
-    return [
-      ...(cached.data || []),
-      ...(cached.result.pages?.self !== cached.result.pages?.last
-        ? findAllRelatedDataFromCache(cached.result.links.next || '')
-        : []),
-    ];
-  }*/
+  function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, isSilent?: boolean) {
+    fetch(targetUrl, { signal })
+      .then((response) => {
+        if (response.status === 200) {
+          response
+            .json()
+            .then((result: DataModel<T>) => {
+              const cacheItem = {
+                result,
+                data: result.data,
+              };
+              // If silent mode, we dont want cache to trigger update cycle, but we use onUpdate function.
+              if (!fullyDisableCache) {
+                const cacheSet = isSilent ? cache.setInBackground : cache.set;
+                cacheSet(targetUrl, cacheItem);
+              }
+
+              if (onUpdate) {
+                onUpdate(cacheItem.data as T);
+              }
+
+              // If we want all data and we are have next page available we fetch it.
+              // Else this fetch is done and we call the callback
+              if (
+                fetchAllData &&
+                cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
+                cacheItem.result.links.next !== targetUrl
+              ) {
+                fetchData(cacheItem.result.links.next || targetUrl, signal, cb, true);
+              } else {
+                cb(true);
+              }
+            })
+            .catch(() => {
+              newError(defaultError);
+            });
+        } else {
+          response
+            .json()
+            .then((result) => {
+              newError(result);
+            })
+            .catch(() => {
+              newError(defaultError);
+            });
+        }
+      })
+      .catch((_e) => null);
+  }
 
   useEffect(() => {
-    // const cached = cache.get<T>(target);
     const abortCtrl = new AbortController();
     const signal = abortCtrl.signal;
     let fulfilled = false;
 
-    //if ((!pause && (!cached || !cached.data || cached.stale)) || true) {
     if (!pause) {
       setStatus('Loading');
+      setError(null);
 
       fetchData(target, signal, (isSuccess) => {
         fulfilled = true;
         if (isSuccess) {
           setStatus('Ok');
         } else {
-          setStatus('Error');
+          newError(defaultError);
         }
       });
     }
-    /*} else if (cached && cached.data) {
-      setData(cached.data);
-      // If we should return all data, lets check if there is other entries in cache.
-      // Wrapped in setTimeout so it doesnt block rendering on huge data masses.
-      if (fetchAllData && onUpdate) {
-        setTimeout(() => {
-          onUpdate(findAllRelatedDataFromCache(target));
-        }, 0);
-      }
-    }*/
 
     return () => {
       if (!fulfilled) {

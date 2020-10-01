@@ -3,7 +3,7 @@ import useResource from '../../hooks/useResource';
 import { useRouteMatch } from 'react-router-dom';
 import { Run as IRun, Step, Task } from '../../types';
 import Tabs from '../../components/Tabs';
-import { FixedContent } from '../../components/Structure';
+import { FixedContent, ItemRow } from '../../components/Structure';
 import { TimelineContainer } from '../../components/Timeline/VirtualizedTimeline';
 import DAG from '../../components/DAG';
 import TaskViewContainer from '../Task';
@@ -12,6 +12,7 @@ import { getPath } from '../../utils/routing';
 import { useTranslation } from 'react-i18next';
 import useRowData from '../../components/Timeline/useRowData';
 import Spinner from '../../components/Spinner';
+import GenericError from '../../components/GenericError';
 
 const RunPage: React.FC = () => {
   const { t } = useTranslation();
@@ -23,7 +24,7 @@ const RunPage: React.FC = () => {
     taskId?: string;
   }>();
 
-  const { data: run, status } = useResource<IRun, IRun>({
+  const { data: run, status, error } = useResource<IRun, IRun>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}`,
     subscribeToEvents: true,
     initialData: null,
@@ -98,14 +99,18 @@ const RunPage: React.FC = () => {
   return (
     <FixedContent>
       {status === 'Loading' && (
-        <div style={{ textAlign: 'center' }}>
-          <Spinner />
+        <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+          <Spinner md />
         </div>
       )}
 
-      {status === 'Ok' && run && !run.run_number && t('timeline.no-run-data')}
+      {status === 'Error' && error && (
+        <ItemRow margin="lg">
+          <GenericError message={t('timeline.no-run-data')} />
+        </ItemRow>
+      )}
 
-      {run && run.run_number && (
+      {status === 'Ok' && run && run.run_number && (
         <>
           <RunHeader run={run} />
           <Tabs

@@ -17,6 +17,11 @@ import { ReactComponent as Collapse } from '../../assets/collapse.svg';
 import { ReactComponent as Expand } from '../../assets/expand.svg';
 import { ReactComponent as Listing } from '../../assets/listing.svg';
 import { ReactComponent as Enter } from '../../assets/enter.svg';
+import { ReactComponent as ListItemNotFound } from '../../assets/list-item-not-found.svg';
+import { ReactComponent as ListNotFound } from '../../assets/list-not-found.svg';
+import { ReactComponent as NoDag } from '../../assets/no-dag.svg';
+import { ReactComponent as NoData } from '../../assets/no-data.svg';
+import { ReactComponent as SearchNotFound } from '../../assets/search-not-found.svg';
 import { ReactComponent as Danger } from '../../assets/danger.svg';
 import { ReactComponent as Success } from '../../assets/success.svg';
 import { ReactComponent as Info } from '../../assets/info.svg';
@@ -39,6 +44,11 @@ export type SupportedIcons = {
   expand: FunctionComponent;
   listing: FunctionComponent;
   enter: FunctionComponent;
+  listItemNotFound: FunctionComponent;
+  listNotFound: FunctionComponent;
+  noDag: FunctionComponent;
+  noData: FunctionComponent;
+  searchNotFound: FunctionComponent;
   danger: FunctionComponent;
   success: FunctionComponent;
   info: FunctionComponent;
@@ -62,11 +72,18 @@ const icons: SupportedIcons = {
   expand: Expand,
   listing: Listing,
   enter: Enter,
+  listItemNotFound: ListItemNotFound,
+  listNotFound: ListNotFound,
+  noDag: NoDag,
+  noData: NoData,
+  searchNotFound: SearchNotFound,
   danger: Danger,
   success: Success,
   info: Info,
   warning: Warning,
 };
+
+export type IconKeys = keyof SupportedIcons;
 
 type SupportedSizes = {
   xs: number;
@@ -87,6 +104,7 @@ const sizeTable: SupportedSizes = {
 interface IconProps {
   name: keyof SupportedIcons;
   size?: keyof SupportedSizes;
+  customSize?: number;
   rotate?: number;
   className?: string;
   padLeft?: boolean;
@@ -105,7 +123,13 @@ const Icon: React.FC<IconProps> = ({ name, size = 'sm', rotate, ...rest }) => {
 
 export default Icon;
 
-const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number; padLeft?: boolean; padRight?: boolean }>`
+const Wrapper = styled.i<{
+  size: keyof SupportedSizes;
+  customSize?: number;
+  rotate?: number;
+  padLeft?: boolean;
+  padRight?: boolean;
+}>`
   vertical-align: text-top;
   display: inline-flex;
   align-items: center;
@@ -115,7 +139,7 @@ const Wrapper = styled.i<{ size: keyof SupportedSizes; rotate?: number; padLeft?
   padding-right: ${(p) => (p.padRight ? p.theme.spacer.sm : 0)}rem;
 
   svg {
-    height: ${(p) => sizeTable[p.size]}rem;
+    height: ${(p) => p.customSize || sizeTable[p.size]}rem;
     width: auto;
     transform: ${(p) => (p.rotate ? `rotate(${p.rotate}deg)` : 'none')};
   }

@@ -1,19 +1,21 @@
 import React, { useState, useRef } from 'react';
 
 import { DAGModel, convertDAGModelToTree, DAGStructureTree, DAGTreeNode, StepTree } from './DAGUtils';
-import { Run, Step } from '../../types';
+import { APIError, Run, Step } from '../../types';
 import styled, { css } from 'styled-components';
 import Button from '../Button';
 import { ItemRow } from '../Structure';
 import useResource from '../../hooks/useResource';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
-import Label, { LabelType } from '../Label';
 import FullPageContainer from '../FullPageContainer';
 import { useTranslation } from 'react-i18next';
 import Icon from '../Icon';
 import useComponentSize from '@rehooks/component-size';
 import useWindowSize from '../../hooks/useWindowSize';
+import GenericError, { knownErrorIds } from '../GenericError';
+import Spinner from '../Spinner';
+import { TFunction } from 'i18next';
 
 //
 // DAG
@@ -47,7 +49,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     },
   });
 
-  useResource<DAGModel, DAGModel>({
+  const { status, error } = useResource<DAGModel, DAGModel>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
     subscribeToEvents: false,
     initialData: null,
@@ -87,9 +89,9 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     </DAGRenderingContainer>
   );
 
-  const error_content = !dagTree.length && (
-    <div style={{ padding: '0 0 10px 0' }} data-testid="dag-container-Error">
-      <Label type={LabelType.Danger}>{t('run.dag-not-available')}</Label>
+  const error_content = (status === 'Ok' || status === 'Error') && !dagTree.length && (
+    <div style={{ padding: '3rem 0' }} data-testid="dag-container-Error">
+      <GenericError icon={<Icon name="noDag" customSize={5} />} message={DAGErrorMessage(t, error)} />
     </div>
   );
 
@@ -105,10 +107,26 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   return (
     <div style={{ width: '100%' }}>
       {error_content ? error_content : fullscreen_controls}
+      {status === 'Loading' && (
+        <ItemRow justify="center">
+          <Spinner md />
+        </ItemRow>
+      )}
       {showFullscreen ? <FullPageContainer onClose={() => setFullscreen(false)}>{content}</FullPageContainer> : content}
     </div>
   );
 };
+
+function DAGErrorMessage(t: TFunction, error: APIError | null): string {
+  if (error && knownErrorIds.indexOf(error.id) > -1) {
+    if (error.id === 'dag-processing-error') {
+      return t('error.dag-processing-error');
+    }
+
+    return t(`error.failed-to-load-dag`) + ' ' + t(`error.${error.id}`);
+  }
+  return t('error.failed-to-load-dag');
+}
 
 function stateOfStep(item: StepTree, stepIds: string[]) {
   if (stepIds.indexOf(item.step_name) > -1) {
