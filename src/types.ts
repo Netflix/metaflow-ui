@@ -37,6 +37,7 @@ export interface Task extends MetaDataBaseObject {
   run_number: string;
   step_name: string;
   task_id: string;
+  attempt_id: number;
   finished_at?: number;
   duration?: number;
 }

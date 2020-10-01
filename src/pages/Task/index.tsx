@@ -60,7 +60,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   const [task, setTask] = useState<ITask | null>(null);
 
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks?taskId=${taskId}`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/tasks?task_id=${taskId}`,
     subscribeToEvents: true,
     initialData: null,
     pause: stepName === 'not-selected' || taskId === 'not-selected',
@@ -72,9 +72,12 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     }
   }, [tasks, status]);
 
-  const attemptId = task && tasks ? tasks.indexOf(task) : null;
+  const attemptId = task ? task.attempt_id : null;
   const { data: artifacts, status: artifactStatus } = useResource<Artifact[], Artifact>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts?attempt_id=${attemptId}`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
+    queryParams: {
+      attempt_id: attemptId !== null ? attemptId.toString() : '',
+    },
     subscribeToEvents: true,
     initialData: [],
     pause: stepName === 'not-selected' || taskId === 'not-selected' || attemptId === null,
@@ -119,7 +122,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 
   const [stdout, setStdout] = useState<Log[]>([]);
   const { status: statusOut } = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out?attempt_id=${attemptId}`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
+    queryParams: {
+      attempt_id: attemptId !== null ? attemptId.toString() : '',
+    },
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
@@ -132,7 +138,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 
   const [stderr, setStderr] = useState<Log[]>([]);
   const { status: statusErr } = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err?attempt_id=${attemptId}`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
+    queryParams: {
+      attempt_id: attemptId !== null ? attemptId.toString() : '',
+    },
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
@@ -147,7 +156,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     setStdout([]);
     setStderr([]);
     setTask(null);
-  }, [taskId]);
+  }, [stepName, taskId]);
 
   const selectTask = (task: ITask) => {
     setTask(task);
@@ -174,7 +183,9 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
         </TaskLoaderContainer>
       )}
 
-      {error && status !== 'Loading' && <GenericError icon="listItemNotFound" message={t('task.generic-error')} />}
+      {((error && status !== 'Loading') || (status === 'Ok' && tasks && tasks.length === 0)) && (
+        <GenericError icon="listItemNotFound" message={t('error.load-error')} />
+      )}
 
       {taskId === 'not-selected' && status !== 'Loading' && (
         <GenericError icon="listItemNotFound" message={t('task.no-task-selected')} />

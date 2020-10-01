@@ -118,6 +118,14 @@ export function createCache(): CacheInterface {
   };
 }
 
+const defaultError = {
+  id: 'generic-error',
+  traceback: '',
+  status: 500,
+  title: 'Unkown error',
+  type: 'error',
+};
+
 // default cache
 const singletonCache = createCache();
 //
@@ -259,22 +267,17 @@ export default function useResource<T, U>({
               }
             })
             .catch(() => {
-              newError({
-                id: 'something',
-                traceback: 'string',
-                status: 500,
-                title: 'string',
-                type: 'string',
-              });
+              newError(defaultError);
             });
         } else {
-          newError({
-            id: 'something',
-            traceback: 'string',
-            status: 500,
-            title: 'string',
-            type: 'string',
-          });
+          response
+            .json()
+            .then((result) => {
+              newError(result);
+            })
+            .catch(() => {
+              newError(defaultError);
+            });
         }
       })
       .catch((_e) => null);
@@ -294,13 +297,7 @@ export default function useResource<T, U>({
         if (isSuccess) {
           setStatus('Ok');
         } else {
-          newError({
-            id: 'something',
-            traceback: 'string',
-            status: 500,
-            title: 'string',
-            type: 'string',
-          });
+          newError(defaultError);
         }
       });
     }
