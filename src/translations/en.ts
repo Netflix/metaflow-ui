@@ -122,6 +122,15 @@ const en = {
       'no-results': 'No results found',
       'no-runs': 'No runs found',
       'no-tasks': 'No tasks found',
+
+      'failed-to-load-dag': 'Failed to load DAG.',
+      's3-access-denied': 'Access denied. There was a problem with AWS credentials.',
+      's3-not-found': 'S3 bucket was not found.',
+      's3-bad-url': 'Error in S3 URL.',
+      's3-missing-credentials': 'Server is missing AWS credentials.',
+      's3-generic-error': 'There was an error on S3 access.',
+
+      'dag-processing-error': 'DAG was found but something went wrong with processing the data.',
     },
   },
 };
