@@ -55,14 +55,20 @@ const HomeContentArea: React.FC<{
   );
 };
 
+//
+// Component which triggers update function when ever in viewport. Max once per 250ms
+//
+
 const AutoLoadTrigger: React.FC<{
   updateVisibility: () => void;
   status: 'NotAsked' | 'Loading' | 'Error' | 'Ok';
   resultAmount: number;
 }> = ({ updateVisibility, status, resultAmount }) => {
   const [isInViewport, targetRef] = useIsInViewport();
+  // Track active status so we don't ever spam requests
   const [isUpdatable, setIsUpdatable] = useState(false);
 
+  // If component is in viewport, is ready from earlier request AND request is OK we can load more.
   useEffect(() => {
     if (isInViewport && isUpdatable && status === 'Ok') {
       updateVisibility();
@@ -70,6 +76,7 @@ const AutoLoadTrigger: React.FC<{
     }
   }, [isInViewport, updateVisibility, isUpdatable, status]);
 
+  // Set updatable AFTER previous request was OK
   useEffect(() => {
     if (status === 'Ok' && !isUpdatable) {
       setTimeout(() => {
@@ -78,6 +85,7 @@ const AutoLoadTrigger: React.FC<{
     }
   }, [status]); // eslint-disable-line
 
+  // Let trigger be disabled for half a second on initial render
   useEffect(() => {
     setTimeout(() => {
       setIsUpdatable(true);
