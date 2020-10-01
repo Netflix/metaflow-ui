@@ -61,6 +61,7 @@ export const ItemRow = styled.div<{
 }>`
   display: flex;
   align-items: center;
+  width: 100%;
 
   ${(p) => (p.justify ? `justify-content: ${p.justify};` : '')}
 

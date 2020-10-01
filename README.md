@@ -55,6 +55,10 @@ $ docker run -p 3000:3000 metaflow-ui:latest
 $ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://custom-ui-backend/api metaflow-ui:latest
 ```
 
+## Editing "Help menu" links
+
+To change links presented in help menu you need to edit links_example.json file in build/static folder after building the project. We cannot set links in build time since they can vary a lot and build folder needs to be neutral. There is default links for Metaflow github and website.
+
 ## Documentation
 
 See [docs/README.md](docs/README.md) to learn more.

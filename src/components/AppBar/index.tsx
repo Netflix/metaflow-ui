@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import logo from '../../assets/logo_dark_horizontal.svg';
 import Breadcrumb from '../Breadcrumb';
 import { ItemRow } from '../Structure';
+import HelpMenu from '../HelpMenu';
 
 const AppBar: React.FC = () => {
   return (
@@ -13,6 +14,7 @@ const AppBar: React.FC = () => {
           <Logo src={logo} />
         </Link>
         <Breadcrumb />
+        <HelpMenu />
       </ItemRow>
     </Wrapper>
   );
