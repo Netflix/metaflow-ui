@@ -125,7 +125,7 @@ function DAGErrorMessage(t: TFunction, error: APIError | null): string {
 
     return t(`error.failed-to-load-dag`) + ' ' + t(`error.${error.id}`);
   }
-  return t('run.dag-not-available');
+  return t('error.failed-to-load-dag');
 }
 
 function stateOfStep(item: StepTree, stepIds: string[]) {
