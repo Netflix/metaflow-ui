@@ -30,18 +30,22 @@ const AutoLoadTrigger: React.FC<AutoLoadProps> = ({ updateVisibility, status, re
 
   // Set updatable AFTER previous request was OK
   useEffect(() => {
+    let to: null | number = null;
+
     if (status === 'Ok' && !isUpdatable) {
-      setTimeout(() => {
+      to = setTimeout(() => {
         setIsUpdatable(true);
       }, 250);
     }
+    return () => (to ? clearTimeout(to) : undefined);
   }, [status]); // eslint-disable-line
 
   // Let trigger be disabled for half a second on initial render
   useEffect(() => {
-    setTimeout(() => {
+    const to = setTimeout(() => {
       setIsUpdatable(true);
     }, 500);
+    return () => clearTimeout(to);
   }, []);
 
   return (
