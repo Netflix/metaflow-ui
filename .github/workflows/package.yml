@@ -3,7 +3,7 @@ name: Package
 on:
   push:
     tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
   package:
@@ -31,9 +31,7 @@ jobs:
       - run: echo ${{ env.RELEASE_VERSION}}
       - run: echo $RELEASE_VERSION
 
-      - run: cd build && zip -r release.zip .
-
       - uses: actions/upload-artifact@v2
         with:
-          name: metaflow-ui-${{ env.RELEASE_VERSION }}.zip
-          path: ./build/release.zip
+          name: metaflow-ui-${{ env.RELEASE_VERSION }}
+          path: ./build
