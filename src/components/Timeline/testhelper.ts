@@ -29,6 +29,7 @@ export function createTask(partialTask: Partial<Task>): Task {
     ts_epoch: 1595574762901,
     finished_at: 1595574762921,
     duration: 20,
+    attempt_id: 0,
     tags: ['testingtag'],
     system_tags: ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-24', 'metaflow_version:2.0.5'],
     ...partialTask,

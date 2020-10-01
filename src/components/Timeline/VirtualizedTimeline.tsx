@@ -12,6 +12,8 @@ import TimelineFooter from './TimelineFooter';
 import { useQueryParams, StringParam } from 'use-query-params';
 import FullPageContainer from '../FullPageContainer';
 import useSeachField, { SearchResultModel } from '../../hooks/useSearchField';
+import GenericError from '../GenericError';
+import { ItemRow } from '../Structure';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task[] };
@@ -322,7 +324,11 @@ const VirtualizedTimeline: React.FC<{
             />
           </div>
         )}
-        {rows.length === 0 && status !== 'NotAsked' && <NoTaskRows>{t('timeline.no-rows')}</NoTaskRows>}
+        {rows.length === 0 && status !== 'NotAsked' && (
+          <ItemRow justify="center" margin="lg">
+            <GenericError message={t('timeline.no-rows')} icon="listNotFound" />
+          </ItemRow>
+        )}
       </VirtualizedTimelineSubContainer>
     </VirtualizedTimelineContainer>
   );
@@ -433,11 +439,6 @@ const VirtualizedTimelineSubContainer = styled.div`
 const FixedListContainer = styled.div<{ sticky?: boolean }>`
   position: relative;
   padding-top: ${(p) => (p.sticky ? ROW_HEIGHT : 0)}px;
-`;
-
-const NoTaskRows = styled.div`
-  text-align: center;
-  padding: 1rem;
 `;
 
 //

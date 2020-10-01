@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from 'react';
 
-import { Run as IRun } from '../../../types';
+import { APIError, Run as IRun } from '../../../types';
 import { useTranslation } from 'react-i18next';
-import Label, { LabelType } from '../../../components/Label';
 import Spinner from '../../../components/Spinner';
 import ResultGroup from '../ResultGroup';
 import useIsInViewport from 'use-is-in-viewport';
 import styled from 'styled-components';
+import GenericError from '../../../components/GenericError';
+import { ItemRow } from '../../../components/Structure';
 
 const HomeContentArea: React.FC<{
-  error: Error | null;
+  error: APIError | null;
   status: 'Ok' | 'Error' | 'Loading' | 'NotAsked';
   runGroups: Record<string, IRun[]>;
   params: Record<string, string>;
@@ -23,8 +24,6 @@ const HomeContentArea: React.FC<{
 
   return (
     <Content>
-      {error && <Label type={LabelType.Warning}>{error.message}</Label>}
-
       {resultAmount > 0 &&
         Object.keys(runGroups).map((k) => {
           return (
@@ -42,7 +41,17 @@ const HomeContentArea: React.FC<{
           );
         })}
 
-      {status === 'Ok' && resultAmount === 0 && <Center>{t('home.no-results')}</Center>}
+      {status === 'Ok' && resultAmount === 0 && (
+        <ItemRow margin="md">
+          <GenericError icon="searchNotFound" message={t('error.no-results')} />
+        </ItemRow>
+      )}
+
+      {status === 'Error' && error && (
+        <ItemRow margin="md">
+          <GenericError message={t('error.load-error')} />
+        </ItemRow>
+      )}
 
       <AutoLoadTrigger
         status={status}
@@ -86,7 +95,7 @@ const AutoLoadTrigger: React.FC<{
 
   return (
     <>
-      {status === 'Loading' && <Center>{resultAmount > 0 ? <Spinner sm /> : <Spinner lg />}</Center>}
+      {status === 'Loading' && <Center>{resultAmount > 0 ? <Spinner sm /> : <Spinner md />}</Center>}
       <div ref={targetRef} />
     </>
   );

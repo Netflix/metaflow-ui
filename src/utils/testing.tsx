@@ -4,6 +4,13 @@ import { MemoryRouter } from 'react-router-dom';
 import '../i18n';
 import theme from '../theme';
 
+export const mockfetch = jest.fn(() =>
+  Promise.resolve({
+    status: 500,
+    json: () => Promise.resolve({}),
+  }),
+);
+
 const TestWrapper: React.FC<{ route?: string }> = ({ children, route = '/' }) => {
   return (
     <ThemeProvider theme={theme}>

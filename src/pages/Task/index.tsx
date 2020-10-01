@@ -18,6 +18,7 @@ import LogList from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
 import useSeachField from '../../hooks/useSearchField';
 import Spinner from '../../components/Spinner';
+import GenericError from '../../components/GenericError';
 import { TabsHeading, TabsHeadingItem } from '../../components/Tabs';
 
 //
@@ -59,7 +60,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   const [task, setTask] = useState<ITask | null>(null);
 
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks?taskId=${taskId}`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks?task_id=${taskId}`,
     subscribeToEvents: true,
     initialData: null,
     pause: stepName === 'not-selected' || taskId === 'not-selected',
@@ -71,9 +72,12 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     }
   }, [tasks, status]);
 
-  const attemptId = task && tasks ? tasks.indexOf(task) : null;
+  const attemptId = task ? task.attempt_id : null;
   const { data: artifacts, status: artifactStatus } = useResource<Artifact[], Artifact>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts?attempt_id=${attemptId}`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
+    queryParams: {
+      attempt_id: attemptId !== null ? attemptId.toString() : '',
+    },
     subscribeToEvents: true,
     initialData: [],
     pause: stepName === 'not-selected' || taskId === 'not-selected' || attemptId === null,
@@ -118,7 +122,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 
   const [stdout, setStdout] = useState<Log[]>([]);
   const { status: statusOut } = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out?attempt_id=${attemptId}`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
+    queryParams: {
+      attempt_id: attemptId !== null ? attemptId.toString() : '',
+    },
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
@@ -131,7 +138,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 
   const [stderr, setStderr] = useState<Log[]>([]);
   const { status: statusErr } = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err?attempt_id=${attemptId}`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
+    queryParams: {
+      attempt_id: attemptId !== null ? attemptId.toString() : '',
+    },
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
@@ -146,7 +156,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     setStdout([]);
     setStderr([]);
     setTask(null);
-  }, [taskId]);
+  }, [stepName, taskId]);
 
   const selectTask = (task: ITask) => {
     setTask(task);
@@ -172,10 +182,16 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
           <Spinner md />
         </TaskLoaderContainer>
       )}
-      {error && status !== 'Loading' && t('task.could-not-find-task')}
-      {taskId === 'not-selected' && status !== 'Loading' && t('task.no-task-selected')}
 
-      {task && task.task_id && fullscreen === null && status !== 'Loading' && (
+      {((error && status !== 'Loading') || (status === 'Ok' && tasks && tasks.length === 0)) && (
+        <GenericError icon="listItemNotFound" message={t('error.load-error')} />
+      )}
+
+      {taskId === 'not-selected' && status !== 'Loading' && (
+        <GenericError icon="listItemNotFound" message={t('task.no-task-selected')} />
+      )}
+
+      {fullscreen === null && status === 'Ok' && task && (
         <AnchoredView
           header={
             status === 'Ok' && tasks && tasks.length > 1 ? (
@@ -331,12 +347,15 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 };
 
 const Loader: React.FC<{ status: AsyncStatus; component: JSX.Element }> = ({ status, component }) => {
+  const { t } = useTranslation();
   if (status === 'Loading') {
     return (
       <div style={{ textAlign: 'center' }}>
         <Spinner />
       </div>
     );
+  } else if (status === 'Error') {
+    return <GenericError message={t('error.load-error')} />;
   }
   return component;
 };

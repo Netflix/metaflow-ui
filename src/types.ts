@@ -37,6 +37,7 @@ export interface Task extends MetaDataBaseObject {
   run_number: string;
   step_name: string;
   task_id: string;
+  attempt_id: number;
   finished_at?: number;
   duration?: number;
 }
@@ -72,3 +73,11 @@ export interface Log {
 export type QueryParam = string | null;
 
 export type AsyncStatus = 'NotAsked' | 'Ok' | 'Error' | 'Loading';
+
+export type APIError = {
+  id: string;
+  traceback: string;
+  status: number;
+  title: string;
+  type: string;
+};
