@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { METAFLOW_SERVICE } from '../../constants';
 import styled from 'styled-components';
 import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
@@ -20,7 +21,7 @@ const HelpMenu: React.FC = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
-    fetch('/need-api-end-point-for-this', {
+    fetch(`${METAFLOW_SERVICE}/links`, {
       headers: {
         'Content-Type': 'application/json',
       },
