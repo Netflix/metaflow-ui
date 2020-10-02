@@ -1,23 +1,19 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 import { List } from 'react-virtualized';
 import { Task as ITask } from '../../../types';
-import { getPath } from '../../../utils/routing';
-import { formatDuration } from '../../../utils/format';
 import { SearchFieldProps, SearchResultModel } from '../../../hooks/useSearchField';
 import { RowDataAction, RowDataModel, StepRowData } from '../../../components/Timeline/useRowData';
 import SettingsButton from '../../../components/Timeline/SettingsButton';
 import SearchField from '../../../components/SearchField';
-import Icon from '../../../components/Icon';
+import TaskListRow from './TaskListRow';
 
 //
 // Tasklist
-// TODO FIX ELEMENT HEIGHT SO ITS ALWAYS SCREEN SIZE MAX
 //
 
-type TaskListRowItem =
+export type TaskListRowItem =
   | {
       type: 'task';
       data: ITask;
@@ -41,7 +37,6 @@ type Props = {
 const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, results, searchFieldProps }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [rows, setRows] = useState<TaskListRowItem[]>([]);
-  const history = useHistory();
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
@@ -51,6 +46,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
 
     for (const stepname of Object.keys(rowData)) {
       const step = rowData[stepname];
+      // Filter out steps that starts with _ since those are not interesting for user
       if (!stepname.startsWith('_')) {
         let newRows: TaskListRowItem[] = [];
         const isOpen = step.isOpen;
@@ -149,52 +145,25 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
               const item = rows[index];
 
               return (
-                <div
+                <TaskListRow
                   key={index}
+                  index={index}
                   style={style}
-                  onClick={() => {
-                    if (item.type === 'task') {
-                      history.push(
-                        getPath.task(item.data.flow_id, item.data.run_number, item.data.step_name, item.data.task_id),
-                      );
-                    }
-                  }}
-                >
-                  <RowContainer rowType={item.type}>
-                    <RowIconSection
-                      rowType={item.type}
-                      onClick={() => {
-                        if (item.type === 'step' && item.data.step) {
-                          rowDataDispatch({ type: 'toggle', id: item.data.step.step_name });
-                        }
-                      }}
-                    >
-                      {item.type === 'step' ? (
-                        <Icon
-                          name="arrowDown"
-                          rotate={
-                            item.data.step &&
-                            rowData[item.data.step.step_name] &&
-                            !rowData[item.data.step.step_name].isOpen
-                              ? -90
-                              : 0
-                          }
-                          size="xs"
-                        />
-                      ) : null}
-                    </RowIconSection>
-
-                    <RowTextContent
-                      rowType={item.type}
-                      active={item.type === 'task' && item.data.task_id === activeTaskId}
-                    >
-                      <RowMainLabel itemType={item.type}>
-                        {item.type === 'step' ? item.data.step?.step_name || '' : item.data.task_id}
-                      </RowMainLabel>
-                      <RowDuration>{item.data.duration ? formatDuration(item.data.duration, 1) : '-'}</RowDuration>
-                    </RowTextContent>
-                  </RowContainer>
-                </div>
+                  item={item}
+                  toggle={
+                    item.type === 'step' && item.data.step
+                      ? () =>
+                          item.data.step ? rowDataDispatch({ type: 'toggle', id: item.data.step.step_name }) : null
+                      : undefined
+                  }
+                  active={item.type === 'task' && item.data.task_id === activeTaskId}
+                  isOpen={
+                    item.type === 'step' &&
+                    item.data.step &&
+                    rowData[item.data.step.step_name] &&
+                    !rowData[item.data.step.step_name].isOpen
+                  }
+                />
               );
             }}
             height={listSize}
@@ -213,6 +182,10 @@ const TaskListContainer = styled.div`
   font-size: 12px;
   width: 245px;
   flex-shrink: 0;
+
+  .ReactVirtualized__List:focus {
+    outline: none;
+  }
 `;
 
 const TaskListInputContainer = styled.div`
@@ -223,54 +196,6 @@ const TaskListInputContainer = styled.div`
   .field-text {
     width: 100%;
   }
-`;
-
-const RowContainer = styled.div<{ rowType: 'step' | 'task' }>`
-  display: flex;
-  cursor: ${(p) => (p.rowType === 'task' ? 'pointer' : 'normal')};
-`;
-
-const RowMainLabel = styled.div<{ itemType: string }>`
-  font-family: monospace;
-  font-weight: ${(p) => (p.itemType === 'step' ? 'bold' : 'normal')};
-  overflow-x: hidden;
-  white-space: nowrap;
-`;
-
-const RowTextContent = styled.div<{ rowType: 'step' | 'task'; active?: boolean }>`
-  display: flex;
-  justify-content: space-between;
-  flex: 1;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  line-height: 27px;
-  max-width: 200px;
-  padding: 0 10px;
-  color: #333;
-  background: ${(p) => (p.active ? '#E4F0FF' : 'transparent')};
-`;
-
-const RowIconSection = styled.div<{ rowType: 'step' | 'task' }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  color: #717171;
-  flex-shrink: 0;
-  cursor: pointer;
-  ${(p) =>
-    p.rowType === 'step'
-      ? css`
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        `
-      : ''}
-`;
-
-const RowDuration = styled.div`
-  min-width: 50px;
-  text-align: right;
-  white-space: nowrap;
-  padding-left: 0.5rem;
-  color: #666;
 `;
 
 export default TaskList;
