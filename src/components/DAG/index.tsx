@@ -26,8 +26,9 @@ interface IDAG {
 }
 
 const DAGContainer: React.FC<IDAG> = ({ run }) => {
+  const { t } = useTranslation();
   if (!run || !run.run_number) {
-    return <>No run data</>;
+    return <GenericError message={t('error.load-error')} />;
   }
 
   return <DAG run={run} />;
@@ -89,13 +90,13 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     </DAGRenderingContainer>
   );
 
-  const error_content = (status === 'Ok' || status === 'Error') && !dagTree.length && (
+  const errorContent = (status === 'Ok' || status === 'Error') && !dagTree.length && (
     <div style={{ padding: '3rem 0' }} data-testid="dag-container-Error">
       <GenericError icon={<Icon name="noDag" customSize={5} />} message={DAGErrorMessage(t, error)} />
     </div>
   );
 
-  const fullscreen_controls = (
+  const fullscreenControls = (
     <ItemRow pad="sm" justify="flex-end">
       <Button onClick={() => setFullscreen(true)} withIcon>
         <Icon name="maximize" />
@@ -106,7 +107,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {error_content ? error_content : fullscreen_controls}
+      {errorContent ? errorContent : fullscreenControls}
       {status === 'Loading' && (
         <ItemRow justify="center">
           <Spinner md />
@@ -116,6 +117,10 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     </div>
   );
 };
+
+//
+// Figure out correct error message for a situation
+//
 
 function DAGErrorMessage(t: TFunction, error: APIError | null): string {
   if (error && knownErrorIds.indexOf(error.id) > -1) {
@@ -127,6 +132,10 @@ function DAGErrorMessage(t: TFunction, error: APIError | null): string {
   }
   return t('error.failed-to-load-dag');
 }
+
+//
+// Find out correct state for a step. Step doesn't have status field so we need to figure it out ourselves
+//
 
 function stateOfStep(item: StepTree, stepIds: string[]) {
   if (stepIds.indexOf(item.step_name) > -1) {

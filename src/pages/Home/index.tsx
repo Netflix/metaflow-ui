@@ -50,9 +50,11 @@ const Home: React.FC = () => {
   });
 
   const activeParams = cleanParams(qp);
+  // If we are grouping, we should have max 6 in one group.
   activeParams._group_limit = activeParams._group ? '6' : '15';
 
   const resetAllFilters = useCallback(() => {
+    // Reseting filter still keeps grouping settings as before.
     setQp({ ...defaultParams, _group: activeParams._group }, 'replace');
   }, [setQp, activeParams]);
 
@@ -65,6 +67,7 @@ const Home: React.FC = () => {
     setQp({ [key]: value });
   };
 
+  // Update parameter list
   const updateListValue = (key: string, val: string) => {
     const vals = new Set(paramList(activeParams[key]));
 
@@ -77,6 +80,7 @@ const Home: React.FC = () => {
     handleParamChange(key, [...vals.values()].join(','));
   };
 
+  // Jump to page 1 if we change filters
   useEffect(() => {
     if (page !== 1) {
       setPage(1);
@@ -87,71 +91,16 @@ const Home: React.FC = () => {
   // Data
   //
 
-  function isGrouping() {
-    if (activeParams._group) {
-      if (activeParams._group === 'flow_id' && activeParams.flow_id && activeParams.flow_id.split(',').length === 1) {
-        return false;
-      } else if (activeParams._group === 'user_name' && activeParams._tags) {
-        // Parse user tags from tags string and check if there is only 1
-        const userTags = activeParams._tags.split(',').filter((str) => str.startsWith('user:'));
-        if (userTags.length === 1) {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
-
-    return true;
-  }
-
-  function makeParams() {
-    const params: Record<string, string> = { ...activeParams, _page: String(page), ...(fakeParams || {}) };
-
-    // We want to remove groupping from request in some cases
-    // 1) When grouping is flow_id and only 1 flow_id filter is active, we want to show all runs of this group
-    // 2) When grouping is user_name and only 1 user_name filter is active, we want to show all runs of this group
-    if (params._group) {
-      if (params._group === 'flow_id' && params.flow_id && params.flow_id.split(',').length === 1) {
-        return omit(['_group'], params);
-      } else if (params._group === 'user_name' && params._tags) {
-        // Parse user tags from tags string and check if there is only 1
-        const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
-        if (userTags.length === 1) {
-          return omit(['_group'], params);
-        }
-      }
-    }
-
-    // Separate user tags from other so because they need to be handles with OR operator
-    if (params._tags) {
-      const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
-      if (userTags.length > 0) {
-        // Remove tags from normal tags
-        params._tags = params._tags
-          .split(',')
-          .filter((str) => !str.startsWith('user:'))
-          .join(',');
-
-        if (params._tags === '') {
-          delete params._tags;
-        }
-
-        params['_tags:any'] = userTags.join(',');
-      }
-    }
-
-    params._group_limit = String(parseInt(params._group_limit) + 1);
-
-    return params;
-  }
-
   const { error, status, getResult } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: true,
     updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
-    queryParams: makeParams(),
+    queryParams: makeActiveRequestParameters({ ...activeParams, _page: String(page), ...(fakeParams || {}) }),
+    //
+    // onUpdate handles HTTP request updates. In practise on start OR when filters/sorts changes.
+    // is most cases we want to replace existing data EXCEPT when we are loading next page.
+    //
     onUpdate: (items) => {
       const newItems = items
         ? fromPairs<IRun[]>(
@@ -179,6 +128,10 @@ const Home: React.FC = () => {
         setRunGroups(newItems);
       }
     },
+    //
+    // On websocket update we want to merge, or add given result to existing groups (if any).
+    // For now if we are not grouping, groupKey is 'undefined'
+    //
     onWSUpdate: (item, eventType) => {
       const groupKey = item[activeParams._group] || 'undefined';
       if (typeof groupKey === 'string') {
@@ -294,12 +247,21 @@ const Home: React.FC = () => {
         handleOrderChange={handleOrderChange}
         handleGroupTitleClick={handleGroupTitleClick}
         loadMore={handleLoadMore}
-        targetCount={isGrouping() ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page}
+        targetCount={
+          isGrouping(activeParams) ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page
+        }
       />
     </div>
   );
 };
 
+//
+// Helper functions
+//
+
+//
+// Make sure that params object is type of Record<string, string>
+//
 function cleanParams(qp: any): Record<string, string> {
   return Object.keys(qp).reduce((obj, key) => {
     const value = qp[key];
@@ -310,6 +272,52 @@ function cleanParams(qp: any): Record<string, string> {
   }, {});
 }
 
+//
+//
+//
+
+function makeActiveRequestParameters(params: Record<string, string>) {
+  // We want to remove groupping from request in some cases
+  // 1) When grouping is flow_id and only 1 flow_id filter is active, we want to show all runs of this group
+  // 2) When grouping is user_name and only 1 user_name filter is active, we want to show all runs of this group
+  if (params._group) {
+    if (params._group === 'flow_id' && params.flow_id && params.flow_id.split(',').length === 1) {
+      return omit(['_group'], params);
+    } else if (params._group === 'user_name' && params._tags) {
+      // Parse user tags from tags string and check if there is only 1
+      const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
+      if (userTags.length === 1) {
+        return omit(['_group'], params);
+      }
+    }
+  }
+
+  // Separate user tags from other so because they need to be handles with OR operator
+  if (params._tags) {
+    const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
+    if (userTags.length > 0) {
+      // Remove tags from normal tags
+      params._tags = params._tags
+        .split(',')
+        .filter((str) => !str.startsWith('user:'))
+        .join(',');
+
+      if (params._tags === '') {
+        delete params._tags;
+      }
+
+      params['_tags:any'] = userTags.join(',');
+    }
+  }
+
+  params._group_limit = String(parseInt(params._group_limit) + 1);
+
+  return params;
+}
+
+//
+// Check if current parameters are default params
+//
 export function isDefaultParams(params: Record<string, string>): boolean {
   if (Object.keys(params).length === 3) {
     if (
@@ -323,10 +331,36 @@ export function isDefaultParams(params: Record<string, string>): boolean {
   return false;
 }
 
+//
+// See if we are grouping view. We are not grouping if we:
+// - Are grouping by flow_ID BUT have one flow in flow filters
+// - Are grouping by user_name BUT have one user in user filters
+// - have set grouping to none
+//
+function isGrouping(params: Record<string, string>) {
+  if (params._group) {
+    if (params._group === 'flow_id' && params.flow_id && params.flow_id.split(',').length === 1) {
+      return false;
+    } else if (params._group === 'user_name' && params._tags) {
+      // Parse user tags from tags string and check if there is only 1
+      const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
+      if (userTags.length === 1) {
+        return false;
+      }
+    }
+  } else {
+    return false;
+  }
+
+  return true;
+}
+
+// Split possible query param to string array.
 export function paramList(param: QueryParam): Array<string> {
   return param ? param.split(',').filter((p: string) => p !== '') : [];
 }
 
+// Generic string sorting
 const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
   const val1 = dir === 'down' ? a[key] : b[key];
   const val2 = dir === 'down' ? b[key] : a[key];
@@ -338,6 +372,7 @@ const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
   return 0;
 };
 
+// Generic number sorting
 const nmbSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
   const val1 = dir === 'down' ? a[key] : b[key];
   const val2 = dir === 'down' ? b[key] : a[key];
@@ -349,6 +384,9 @@ const nmbSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
   return 0;
 };
 
+//
+// We sort list on client side as well so we can align websocket updates properly
+//
 export function sortRuns(runs: IRun[], order: string): IRun[] {
   const [dir, key] = parseOrderParam(order);
 

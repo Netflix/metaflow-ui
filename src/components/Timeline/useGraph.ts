@@ -217,11 +217,18 @@ export function resetTimeline(graph: GraphState): GraphState {
   };
 }
 
-export function validatedParameter<X>(value: any, currentValue: any, allowed: X[], defaultValue: X): X | null {
+type PossibleParameterValue = string | number | undefined | null;
+
+export function validatedParameter<X extends PossibleParameterValue>(
+  value: PossibleParameterValue,
+  currentValue: PossibleParameterValue,
+  allowed: X[],
+  defaultValue: X,
+): X | null {
   if (!value && currentValue !== defaultValue) {
     return defaultValue;
-  } else if (value && value !== currentValue && allowed.indexOf(value) > -1) {
-    return value;
+  } else if (value && value !== currentValue && !!allowed.find((aval) => aval === value)) {
+    return value as X;
   }
 
   return null;

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
-import { Run as IRun, Task as ITask, Artifact, Log, AsyncStatus } from '../../types';
+import { Run as IRun, Task as ITask, Artifact, Log } from '../../types';
 import useResource from '../../hooks/useResource';
 import { formatDuration } from '../../utils/format';
 import { getISOString } from '../../utils/date';
@@ -20,6 +20,7 @@ import useSeachField from '../../hooks/useSearchField';
 import Spinner from '../../components/Spinner';
 import GenericError from '../../components/GenericError';
 import { TabsHeading, TabsHeadingItem } from '../../components/Tabs';
+import SectionLoader from './components/SectionLoader';
 
 //
 // View container
@@ -66,12 +67,6 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
-  useEffect(() => {
-    if (status === 'Ok' && tasks && tasks.length > 0) {
-      setTask(tasks[tasks.length - 1]);
-    }
-  }, [tasks, status]);
-
   const attemptId = task ? task.attempt_id : null;
   const { data: artifacts, status: artifactStatus } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
@@ -82,6 +77,13 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     initialData: [],
     pause: stepName === 'not-selected' || taskId === 'not-selected' || attemptId === null,
   });
+
+  // Task data will be array so we need to set one of them as active task when they arrive
+  useEffect(() => {
+    if (status === 'Ok' && tasks && tasks.length > 0) {
+      setTask(tasks[tasks.length - 1]);
+    }
+  }, [tasks, status]);
 
   //
   // Plugins helpers begin
@@ -198,7 +200,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
               <TabsHeading>
                 {tasks.map((item, index) => (
                   <TabsHeadingItem key={index} onClick={() => selectTask(item)} active={item === task}>
-                    Attempt {index + 1}
+                    {t('task.attempt')} {index + 1}
                   </TabsHeadingItem>
                 ))}
               </TabsHeading>
@@ -250,7 +252,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
               label: t('task.std-out'),
               component: (
                 <>
-                  <Loader
+                  <SectionLoader
                     status={statusOut}
                     component={
                       <LogList
@@ -269,7 +271,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
               label: t('task.std-err'),
               component: (
                 <>
-                  <Loader
+                  <SectionLoader
                     status={statusErr}
                     component={
                       <LogList
@@ -290,7 +292,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
               component: (
                 <>
                   <InformationRow spaceless>
-                    <Loader
+                    <SectionLoader
                       status={artifactStatus}
                       component={
                         <PropertyTable
@@ -346,20 +348,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   );
 };
 
-const Loader: React.FC<{ status: AsyncStatus; component: JSX.Element }> = ({ status, component }) => {
-  const { t } = useTranslation();
-  if (status === 'Loading') {
-    return (
-      <div style={{ textAlign: 'center' }}>
-        <Spinner />
-      </div>
-    );
-  } else if (status === 'Error') {
-    return <GenericError message={t('error.load-error')} />;
-  }
-  return component;
-};
-
+//
+// Figure out the duration of current attempt of current task. There might be many attempts
+// and on those cases we need to calculate duration from previous attempt
+//
 function getDuration(tasks: ITask[], task: ITask) {
   if (tasks && tasks.length > 1) {
     const attemptBefore = tasks[tasks.indexOf(task) - 1];
