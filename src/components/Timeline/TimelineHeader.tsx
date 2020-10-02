@@ -101,7 +101,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             </TimelineHeaderItem>
           </ItemRow>
 
-          <ItemRow>
+          <ItemRow noWidth>
             <Text>{t('timeline.zoom')}:</Text>
             <ButtonGroup>
               <Button
