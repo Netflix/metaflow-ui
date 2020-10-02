@@ -5,39 +5,17 @@ import { useTranslation } from 'react-i18next';
 import useIsInViewport from 'use-is-in-viewport';
 
 import { Run as IRun, RunStatus } from '../../../types';
-
 import { getISOString } from '../../../utils/date';
-
 import { getPath } from '../../../utils/routing';
-
-import { Section } from '../../../components/Structure';
-import Icon from '../../../components/Icon';
-import { Text, ForceNoBreakText } from '../../../components/Text';
-import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
-import Label, { LabelType } from '../../../components/Label';
-import StatusField from '../../../components/Status';
 import { formatDuration } from '../../../utils/format';
+
+import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
+import { Text, ForceNoBreakText } from '../../../components/Text';
+import Label, { LabelType } from '../../../components/Label';
+import { Section } from '../../../components/Structure';
+import StatusField from '../../../components/Status';
+import Icon from '../../../components/Icon';
 import Button from '../../../components/Button';
-
-const statusColors: RunStatus = {
-  completed: 'green',
-  running: 'yellow',
-  failed: 'red',
-};
-
-const statusCellCSS = css`
-  width: 0.25rem;
-  padding: 1px;
-`;
-
-export const StatusColorCell = styled(TD)<{ status: keyof RunStatus }>`
-  background: ${(p) => p.theme.color.bg[statusColors[p.status]] || 'transparent'} !important;
-  ${statusCellCSS};
-`;
-
-export const StatusColorHeaderCell = styled(TH)`
-  ${statusCellCSS};
-`;
 
 type Props = {
   label: string;
@@ -50,13 +28,6 @@ type Props = {
   targetCount: number;
 };
 
-const HeaderColumn = (props: {
-  label: string;
-  queryKey: string;
-  onSort: (p: string) => void;
-  currentOrder: string;
-}) => <HeaderColumnBase {...props} />;
-
 const ResultGroup: React.FC<Props> = ({
   label,
   initialData: rows,
@@ -67,10 +38,6 @@ const ResultGroup: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const history = useHistory();
-
-  //
-  // STICKY HEADER
-  //
   const [isInViewport, targetRef] = useIsInViewport();
 
   const cols = [
@@ -129,44 +96,9 @@ const ResultGroup: React.FC<Props> = ({
   );
 };
 
-type TableHeaderProps = {
-  handleClick: (str: string) => void;
-  error: Error | null;
-  cols: { label: string; key: string; hidden?: boolean }[];
-  onOrderChange: (p: string) => void;
-  order: string;
-  label: string;
-  clickable: boolean;
-};
-
-const TableHeader: React.FC<TableHeaderProps> = ({
-  handleClick,
-  error,
-  cols,
-  onOrderChange,
-  order,
-  label,
-  clickable,
-}) => (
-  <>
-    <TR>
-      <th colSpan={cols.length + 2} style={{ textAlign: 'left' }}>
-        <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
-          {label}
-        </ResultGroupTitle>
-        {error && <Label type={LabelType.Warning}>{error.message}</Label>}
-      </th>
-    </TR>
-    <TR>
-      <StatusColorHeaderCell />
-      {cols.map((col) => (
-        <HeaderColumn key={col.key} label={col.label} queryKey={col.key} onSort={onOrderChange} currentOrder={order} />
-      ))}
-
-      <th></th>
-    </TR>
-  </>
-);
+//
+// Table row
+//
 
 type TableRowsProps = {
   r: IRun;
@@ -214,6 +146,78 @@ const TableRows: React.FC<TableRowsProps> = React.memo(
   (prev, next) => {
     return prev.r == next.r; // eslint-disable-line
   },
+);
+
+const statusColors: RunStatus = {
+  completed: 'green',
+  running: 'yellow',
+  failed: 'red',
+};
+
+const statusCellCSS = css`
+  width: 0.25rem;
+  padding: 1px;
+`;
+
+export const StatusColorCell = styled(TD)<{ status: keyof RunStatus }>`
+  background: ${(p) => p.theme.color.bg[statusColors[p.status]] || 'transparent'} !important;
+  ${statusCellCSS};
+`;
+
+export const StatusColorHeaderCell = styled(TH)`
+  ${statusCellCSS};
+`;
+
+//
+// Table header
+//
+
+type HeaderColumnProps = {
+  label: string;
+  queryKey: string;
+  onSort: (p: string) => void;
+  currentOrder: string;
+};
+
+const HeaderColumn = (props: HeaderColumnProps) => <HeaderColumnBase {...props} />;
+
+type TableHeaderProps = {
+  handleClick: (str: string) => void;
+  error: Error | null;
+  cols: { label: string; key: string; hidden?: boolean }[];
+  onOrderChange: (p: string) => void;
+  order: string;
+  label: string;
+  clickable: boolean;
+};
+
+const TableHeader: React.FC<TableHeaderProps> = ({
+  handleClick,
+  error,
+  cols,
+  onOrderChange,
+  order,
+  label,
+  clickable,
+}) => (
+  <>
+    <TR>
+      <th colSpan={cols.length + 2} style={{ textAlign: 'left' }}>
+        <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
+          {label}
+        </ResultGroupTitle>
+        {error && <Label type={LabelType.Warning}>{error.message}</Label>}
+      </th>
+    </TR>
+    <TR>
+      <StatusColorHeaderCell />
+      {cols.map((col) => (
+        <HeaderColumn key={col.key} label={col.label} queryKey={col.key} onSort={onOrderChange} currentOrder={order} />
+      ))}
+
+      <th></th>
+    </TR>
+  </>
 );
 
 const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = ({ tableRef, children }) => {

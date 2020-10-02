@@ -5,12 +5,17 @@ import styled from 'styled-components';
 // Task section presents one title section of task view
 //
 
-const TaskSection: React.FC<{
+type Props = {
+  // Visible title for the section
   label: string;
   sectionkey: string;
+  // Should title be hidden?
   noTitle?: boolean;
+  // Notify absolute position to parent
   updatePosition: (offsetTop: number) => void;
-}> = ({ label, sectionkey, updatePosition, noTitle, children }) => {
+};
+
+const TaskSection: React.FC<Props> = ({ label, sectionkey, updatePosition, noTitle, children }) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

@@ -103,6 +103,7 @@ const en = {
       artifacts: 'Artifacts',
       'search-tasks': 'Search: artifact_name=value',
       'no-logs': 'No logs',
+      attempt: 'Attempt',
     },
 
     breadcrumb: {

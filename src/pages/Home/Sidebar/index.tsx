@@ -1,58 +1,28 @@
 import React from 'react';
-import { CheckboxField, SelectField } from '../../../components/Form';
-
-import { paramList, isDefaultParams } from '../index';
+import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { paramList, isDefaultParams } from '../index';
+
+import { CheckboxField, SelectField } from '../../../components/Form';
 import { Section, SectionHeader } from '../../../components/Structure';
 import Button from '../../../components/Button';
 import Icon from '../../../components/Icon';
 import { Text } from '../../../components/Text';
-import styled from 'styled-components';
 import { RemovableTag } from '../../../components/Tag';
 import FilterInput from '../../../components/FilterInput';
 
-const TagParameterList: React.FC<{
-  paramKey: string;
-  mapList?: (xs: string[]) => string[];
-  mapValue?: (x: string) => string;
-  updateList: (key: string, value: string) => void;
-  value?: string;
-}> = ({ paramKey, mapList = (xs) => xs, mapValue = (x) => x, updateList, value }) => (
-  <>
-    {value
-      ? mapList(paramList(value)).map((x, i) => (
-          <StyledRemovableTag key={i} onClick={() => updateList(paramKey, mapValue(x))}>
-            {x}
-          </StyledRemovableTag>
-        ))
-      : null}
-  </>
-);
-
-const StatusCheckboxField: React.FC<{
-  value: string;
-  label: string;
-  updateField: (key: string, value: string) => void;
-  activeStatus?: string | null;
-}> = ({ value, label, updateField, activeStatus }) => {
-  return (
-    <CheckboxField
-      label={label}
-      className={`status-${value}`}
-      checked={!!(activeStatus && activeStatus.indexOf(value) > -1)}
-      onChange={() => {
-        updateField('status', value);
-      }}
-    />
-  );
+type Props = {
+  // Update queryparameter
+  handleParamChange: (key: string, value: string) => void;
+  // Update parameter that is type of list
+  updateListValue: (key: string, value: string) => void;
+  // Current active parameters
+  params: Record<string, string>;
+  // Reset all params
+  resetAllFilters: () => void;
 };
 
-const HomeSidebar: React.FC<{
-  handleParamChange: (key: string, value: string) => void;
-  updateListValue: (key: string, value: string) => void;
-  params: Record<string, string>;
-  resetAllFilters: () => void;
-}> = ({ handleParamChange, updateListValue, params, resetAllFilters }) => {
+const HomeSidebar: React.FC<Props> = ({ handleParamChange, updateListValue, params, resetAllFilters }) => {
   const { t } = useTranslation();
 
   return (
@@ -159,3 +129,57 @@ const Sidebar = styled.div`
 `;
 
 export default HomeSidebar;
+
+//
+// Tag list
+//
+
+type TagParameterListProps = {
+  paramKey: string;
+  mapList?: (xs: string[]) => string[];
+  mapValue?: (x: string) => string;
+  updateList: (key: string, value: string) => void;
+  value?: string;
+};
+
+const TagParameterList: React.FC<TagParameterListProps> = ({
+  paramKey,
+  mapList = (xs) => xs,
+  mapValue = (x) => x,
+  updateList,
+  value,
+}) => (
+  <>
+    {value
+      ? mapList(paramList(value)).map((x, i) => (
+          <StyledRemovableTag key={i} onClick={() => updateList(paramKey, mapValue(x))}>
+            {x}
+          </StyledRemovableTag>
+        ))
+      : null}
+  </>
+);
+
+//
+// Status field
+//
+
+type StatusFieldProps = {
+  value: string;
+  label: string;
+  updateField: (key: string, value: string) => void;
+  activeStatus?: string | null;
+};
+
+const StatusCheckboxField: React.FC<StatusFieldProps> = ({ value, label, updateField, activeStatus }) => {
+  return (
+    <CheckboxField
+      label={label}
+      className={`status-${value}`}
+      checked={!!(activeStatus && activeStatus.indexOf(value) > -1)}
+      onChange={() => {
+        updateField('status', value);
+      }}
+    />
+  );
+};

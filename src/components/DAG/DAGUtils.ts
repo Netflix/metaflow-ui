@@ -43,7 +43,7 @@ export type DAGModel = Record<string, DAGModelItem>;
 function DAGModelToTree(data: DAGModel, items: string[], breaks: string[], inContainer?: boolean): DAGStructureTree {
   if (items.length > 1) {
     return items.reduce<DAGStructureTree>(
-      (arr, item) => [...arr, ...(DAGModelToTree(data, [item], breaks, inContainer) as any)],
+      (arr, item) => [...arr, ...DAGModelToTree(data, [item], breaks, inContainer)],
       [],
     );
   } else if (items.length === 1) {
