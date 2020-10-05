@@ -1,6 +1,6 @@
 import ReconnectingWebSocket, { Event as WSEvent, CloseEvent, ErrorEvent } from 'reconnecting-websocket';
 import { WebSocketEventListenerMap } from 'reconnecting-websocket/events';
-import { METAFLOW_SERVICE_WS } from '../constants';
+import { apiWs } from '../constants';
 
 enum SubscribeType {
   SUBSCRIBE = 'SUBSCRIBE',
@@ -121,7 +121,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
   };
 }
 
-const ResourceEvents = createWebsocketConnection(`${METAFLOW_SERVICE_WS}/ws`);
+const ResourceEvents = createWebsocketConnection(apiWs('/ws'));
 
 // Export
 export default ResourceEvents;
