@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { METAFLOW_SERVICE } from '../../constants';
+import { apiHttp } from '../../constants';
 import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
 import useInterval from '../useInterval';
@@ -158,8 +158,7 @@ export default function useResource<T, U>({
   const [status, setStatus] = useState<ResourceStatus>('NotAsked');
 
   const q = new URLSearchParams(queryParams).toString();
-  const target = `${METAFLOW_SERVICE}${url}${q ? '?' + q : ''}`;
-
+  const target = apiHttp(`${url}${q ? '?' + q : ''}`);
   // Call batch update
   useInterval(() => {
     if (useBatching && onUpdate && updateBatcher[target] && updateBatcher[target].length > 0) {

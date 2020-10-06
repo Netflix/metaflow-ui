@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { Run } from '../../types';
+import { Run, RunParam } from '../../types';
 
 import { getISOString } from '../../utils/date';
 import { formatDuration } from '../../utils/format';
@@ -14,7 +14,7 @@ import Tag from '../../components/Tag';
 import { SmallText } from '../../components/Text';
 import StatusField from '../../components/Status';
 import InformationRow from '../../components/InformationRow';
-import PropertyTable from '../../components/PropertyTable';
+import PropertyTable, { PropertyTableColumns } from '../../components/PropertyTable';
 import { useHistory } from 'react-router-dom';
 
 function mergeTags(run: Run) {
@@ -24,10 +24,20 @@ function mergeTags(run: Run) {
   return [...baseTags, ...sysTags];
 }
 
-const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
+const RunHeader: React.FC<{ run?: Run | null; parameters: RunParam[] | null }> = ({ run, parameters }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const [expanded, setExpanded] = useState(false);
+
+  const parameterTableItems = [
+    (parameters || []).reduce((obj, param) => {
+      return { ...obj, [param.name]: param.value };
+    }, {}),
+  ];
+
+  const parameterTableColumns: PropertyTableColumns<Record<string, string>>[] = (parameters || []).map((param) => {
+    return { label: param.name, prop: param.name };
+  });
 
   return (
     <RunHeaderContainer>
@@ -74,20 +84,12 @@ const RunHeader: React.FC<{ run?: Run | null }> = ({ run }) => {
             </ItemRow>
           </InformationRow>
 
-          {expanded && (
+          {parameterTableItems && parameterTableColumns && expanded && (
             <InformationRow>
               <ParametersTitleRow>
                 <LabelText>{t('run.parameters') + ':'}</LabelText>
               </ParametersTitleRow>
-              <PropertyTable
-                scheme="bright"
-                items={[{ a: 1, b: 2, c: 3 }]}
-                columns={[
-                  { label: 'A:', prop: 'a' },
-                  { label: 'B:', prop: 'b' },
-                  { label: 'C:', prop: 'c' },
-                ]}
-              />
+              <PropertyTable scheme="bright" items={parameterTableItems} columns={parameterTableColumns} />
             </InformationRow>
           )}
         </div>

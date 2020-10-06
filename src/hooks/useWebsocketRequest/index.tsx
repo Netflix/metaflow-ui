@@ -1,6 +1,6 @@
 import ReconnectingWebSocket, { Event as OpenEvent, CloseEvent, ErrorEvent } from 'reconnecting-websocket';
 
-import { METAFLOW_SERVICE_WS } from '../../constants';
+import { apiWs } from '../../constants';
 
 import { useEffect } from 'react';
 
@@ -66,7 +66,7 @@ export default function useWebsocketRequest<T>({
       const q = new URLSearchParams(queryParams).toString();
       const target = `${url}${q ? '?' + q : ''}`;
 
-      conn = new ReconnectingWebSocket(`${METAFLOW_SERVICE_WS}${target}`, [], { maxRetries: 0 });
+      conn = new ReconnectingWebSocket(apiWs(target), [], { maxRetries: 0 });
 
       conn.addEventListener('open', _onOpen);
       conn.addEventListener('close', _onClose);

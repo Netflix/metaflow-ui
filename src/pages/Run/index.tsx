@@ -4,7 +4,7 @@ import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
 import useRowData from '../../components/Timeline/useRowData';
 import { getPath } from '../../utils/routing';
-import { Run as IRun, Step, Task } from '../../types';
+import { Run as IRun, Step, Task, RunParam } from '../../types';
 
 import TaskViewContainer from '../Task';
 import Spinner from '../../components/Spinner';
@@ -29,6 +29,12 @@ const RunPage: React.FC = () => {
     url: `/flows/${params.flowId}/runs/${params.runNumber}`,
     subscribeToEvents: true,
     initialData: null,
+  });
+
+  const { data: runParameters } = useResource<RunParam[], RunParam>({
+    url: `/flows/${params.flowId}/runs/${params.runNumber}/parameters`,
+    subscribeToEvents: true,
+    initialData: [],
   });
 
   // Store active tab. Is defined by URL
@@ -113,7 +119,7 @@ const RunPage: React.FC = () => {
 
       {status === 'Ok' && run && run.run_number && (
         <>
-          <RunHeader run={run} />
+          <RunHeader run={run} parameters={runParameters} />
           <Tabs
             widen
             activeTab={tab}

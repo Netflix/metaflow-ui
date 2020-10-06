@@ -65,6 +65,11 @@ export interface Artifact extends MetaDataBaseObject {
   attempt_id: number;
 }
 
+export interface RunParam {
+  name: string;
+  value: string;
+}
+
 export interface Log {
   row: number;
   line: string;
