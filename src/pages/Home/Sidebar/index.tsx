@@ -107,14 +107,22 @@ const HomeSidebar: React.FC<Props> = ({ handleParamChange, updateListValue, para
       </Section>
 
       <Section>
-        <Button onClick={() => resetAllFilters()} disabled={isDefaultParams(params)}>
+        <ButtonResetAll size="sm" onClick={() => resetAllFilters()} disabled={isDefaultParams(params)}>
           <Icon name="times" padRight />
           <Text>{t('filters.reset-all')}</Text>
-        </Button>
+        </ButtonResetAll>
       </Section>
     </Sidebar>
   );
 };
+
+const ButtonResetAll = styled(Button)`
+  width: 100%;
+  span {
+    display: inline-block;
+    width: 100%;
+  }
+`;
 
 const StyledRemovableTag = styled(RemovableTag)`
   margin-right: ${(p) => p.theme.spacer.xs}rem;
