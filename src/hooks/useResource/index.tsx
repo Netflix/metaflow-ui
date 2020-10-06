@@ -126,6 +126,14 @@ const defaultError = {
   type: 'error',
 };
 
+const notFoundError = {
+  id: 'not-found',
+  traceback: undefined,
+  status: 404,
+  title: 'Resource not found',
+  type: 'error',
+};
+
 // default cache
 const singletonCache = createCache();
 //
@@ -277,14 +285,20 @@ export default function useResource<T, U>({
           response
             .json()
             .then((result) => {
-              newError(result);
+              if (typeof result === 'object' && result.id) {
+                newError(result);
+              } else if (response.status === 404) {
+                newError(notFoundError);
+              } else {
+                newError(defaultError);
+              }
             })
             .catch(() => {
               newError(defaultError);
             });
         }
       })
-      .catch((_e) => null);
+      .catch((_e) => newError(defaultError));
   }
 
   useEffect(() => {
