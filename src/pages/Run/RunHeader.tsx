@@ -15,7 +15,7 @@ import { SmallText } from '../../components/Text';
 import StatusField from '../../components/Status';
 import InformationRow from '../../components/InformationRow';
 import PropertyTable, { PropertyTableColumns } from '../../components/PropertyTable';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 function mergeTags(run: Run) {
   const baseTags = run.tags || [];
@@ -55,7 +55,12 @@ const RunHeader: React.FC<{ run?: Run | null; parameters: RunParam | null }> = (
               columns={[
                 { label: t('fields.run-id') + ':', prop: 'run_number' as const },
                 { label: t('fields.status') + ':', accessor: (item) => <StatusField status={item.status} /> },
-                { label: t('fields.user') + ':', prop: 'user_name' },
+                {
+                  label: t('fields.user') + ':',
+                  accessor: (item) => (
+                    <Link to={`/?_tags=user:${encodeURIComponent(item.user_name)}`}>{item.user_name}</Link>
+                  ),
+                },
                 { label: t('fields.project') + ':', prop: '?' },
                 { label: t('fields.language') + ':', prop: '?' },
                 { label: t('fields.started-at') + ':', accessor: (item) => getISOString(new Date(item.ts_epoch)) },
@@ -75,15 +80,22 @@ const RunHeader: React.FC<{ run?: Run | null; parameters: RunParam | null }> = (
               <SmallText>{t('run.tags')}</SmallText>
               <ItemRow pad="xs">
                 {mergeTags(run).map((tag) => (
-                  <Tag
+                  <TagNoWrap
                     key={tag}
                     onClick={() => {
                       history.push('/?_tags=' + encodeURIComponent(tag));
                     }}
                   >
                     {tag}
-                  </Tag>
+                  </TagNoWrap>
                 ))}
+                <TagNoWrap
+                  onClick={() => {
+                    history.push('/?_tags=' + encodeURIComponent(mergeTags(run).join(',')));
+                  }}
+                >
+                  <Icon name="plus" /> {t('run.select-all-tags')}
+                </TagNoWrap>
               </ItemRow>
             </ItemRow>
           </InformationRow>
@@ -128,6 +140,10 @@ const ParametersTitleRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+`;
+
+const TagNoWrap = styled(Tag)`
+  white-space: nowrap;
 `;
 
 export default RunHeader;

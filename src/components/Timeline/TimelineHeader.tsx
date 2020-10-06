@@ -73,7 +73,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
           <ItemRow>
-            <Text>{t('timeline.order-by')}:</Text>
+            <Text style={{ whiteSpace: 'nowrap' }}>{t('timeline.order-by')}:</Text>
             <ButtonGroup>
               {SortButtonDef(t('timeline.started-at'), 'startTime')}
               {SortButtonDef(t('timeline.finished-at'), 'endTime')}
