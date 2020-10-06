@@ -54,6 +54,7 @@ const HelpMenu: React.FC = () => {
           </HelpMenuLink>
         ))}
       </PopoverContainer>
+      {open && <HelpMenuClickOverlay onClick={() => setOpen(false)} />}
     </HelpMenuContainer>
   );
 };
@@ -98,6 +99,14 @@ const HelpMenuLink = styled.a`
   &:hover {
     color: ${(p) => p.theme.color.text.blue};
   }
+`;
+
+const HelpMenuClickOverlay = styled.div`
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
 `;
 
 export default HelpMenu;
