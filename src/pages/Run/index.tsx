@@ -31,10 +31,10 @@ const RunPage: React.FC = () => {
     initialData: null,
   });
 
-  const { data: runParameters } = useResource<RunParam[], RunParam>({
+  const { data: runParameters } = useResource<RunParam, RunParam>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}/parameters`,
     subscribeToEvents: true,
-    initialData: [],
+    initialData: {},
   });
 
   // Store active tab. Is defined by URL

@@ -24,19 +24,23 @@ function mergeTags(run: Run) {
   return [...baseTags, ...sysTags];
 }
 
-const RunHeader: React.FC<{ run?: Run | null; parameters: RunParam[] | null }> = ({ run, parameters }) => {
+const RunHeader: React.FC<{ run?: Run | null; parameters: RunParam | null }> = ({ run, parameters }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const [expanded, setExpanded] = useState(false);
 
   const parameterTableItems = [
-    (parameters || []).reduce((obj, param) => {
-      return { ...obj, [param.name]: param.value };
+    (parameters ? Object.entries(parameters) : []).reduce((obj, param) => {
+      const [param_name, param_props] = param;
+      return { ...obj, [param_name]: param_props.value };
     }, {}),
   ];
 
-  const parameterTableColumns: PropertyTableColumns<Record<string, string>>[] = (parameters || []).map((param) => {
-    return { label: param.name, prop: param.name };
+  const parameterTableColumns: PropertyTableColumns<Record<string, string>>[] = (parameters
+    ? Object.keys(parameters)
+    : []
+  ).map((name) => {
+    return { label: name, prop: name };
   });
 
   return (
