@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { APIError } from '../../types';
@@ -47,7 +47,79 @@ export const APIErrorRendered: React.FC<{ error: APIError }> = ({ error }) => {
     message = t(`error.${error.id}`);
   }
 
-  return <GenericError message={message} />;
+  return (
+    <div>
+      <GenericError message={message} />
+    </div>
+  );
 };
+
+export const APIErrorDetails: React.FC<{ error: APIError }> = ({ error }) => {
+  const [open, setOpen] = useState(false);
+
+  if (!open) {
+    return (
+      <DetailContainer>
+        <DetailsOpenLink onClick={() => setOpen(true)}>Show error details</DetailsOpenLink>
+      </DetailContainer>
+    );
+  }
+
+  return (
+    <DetailContainer>
+      <DetailsTitle>
+        <span>
+          {error.status} - {error.title} <span style={{ fontSize: '16px' }}>({error.id})</span>
+        </span>
+        <DetailsCloseButton onClick={() => setOpen(false)}>
+          <Icon name="times" size="lg" />
+        </DetailsCloseButton>
+      </DetailsTitle>
+      {error.detail && <DetailsSubTitle>{error.detail}</DetailsSubTitle>}
+
+      {error.traceback && <DetailsLog>{error.traceback}</DetailsLog>}
+    </DetailContainer>
+  );
+};
+
+const DetailContainer = styled.div`
+  padding: 2rem;
+`;
+
+const DetailsOpenLink = styled.div`
+  color: ${(p) => p.theme.color.text.blue};
+  text-align: center;
+  cursor: pointer;
+`;
+
+const DetailsTitle = styled.div`
+  font-size: 30px;
+  padding: 0.5rem 0;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const DetailsCloseButton = styled.div`
+  cursor: pointer;
+`;
+
+const DetailsSubTitle = styled.div`
+  font-size: 18px;
+  padding: 0.5rem 0;
+`;
+
+const DetailsLog = styled.div`
+  margin-top: 0.5rem;
+  font-size: 14px;
+  line-height: 1.2rem;
+  background: #fafafa;
+  color: #6d6d6d;
+  white-space: pre;
+  border: 1px solid #e6e6e6;
+  border-radius: 3px;
+  padding: 1rem;
+  overflow: hidden;
+  font-family: monospace;
+`;
 
 export default GenericError;
