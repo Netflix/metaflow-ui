@@ -82,8 +82,9 @@ export type AsyncStatus = 'NotAsked' | 'Ok' | 'Error' | 'Loading';
 
 export type APIError = {
   id: string;
-  traceback: string;
+  traceback?: string;
   status: number;
   title: string;
   type: string;
+  detail?: string;
 };
