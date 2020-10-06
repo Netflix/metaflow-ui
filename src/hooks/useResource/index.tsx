@@ -298,7 +298,7 @@ export default function useResource<T, U>({
             });
         }
       })
-      .catch((_e) => null);
+      .catch((_e) => newError(defaultError));
   }
 
   useEffect(() => {
