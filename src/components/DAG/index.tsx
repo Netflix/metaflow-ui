@@ -13,26 +13,13 @@ import { useTranslation } from 'react-i18next';
 import Icon from '../Icon';
 import useComponentSize from '@rehooks/component-size';
 import useWindowSize from '../../hooks/useWindowSize';
-import GenericError, { APIErrorDetails, knownErrorIds } from '../GenericError';
+import { APIErrorRenderer, knownErrorIds } from '../GenericError';
 import Spinner from '../Spinner';
 import { TFunction } from 'i18next';
 
 //
 // DAG
 //
-
-interface IDAG {
-  run: Run | null;
-}
-
-const DAGContainer: React.FC<IDAG> = ({ run }) => {
-  const { t } = useTranslation();
-  if (!run || !run.run_number) {
-    return <GenericError message={t('error.load-error')} />;
-  }
-
-  return <DAG run={run} />;
-};
 
 const DAG: React.FC<{ run: Run }> = ({ run }) => {
   const { t } = useTranslation();
@@ -92,8 +79,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
 
   const errorContent = (status === 'Ok' || status === 'Error') && !dagTree.length && (
     <div style={{ padding: '3rem 0' }} data-testid="dag-container-Error">
-      <GenericError icon={<Icon name="noDag" customSize={5} />} message={DAGErrorMessage(t, error)} />
-      {error && <APIErrorDetails error={error} />}
+      <APIErrorRenderer error={error} icon={<Icon name="noDag" customSize={5} />} message={DAGErrorMessage(t, error)} />
     </div>
   );
 
@@ -295,4 +281,4 @@ const ForeachItem = styled.div`
   flex: 1;
 `;
 
-export default DAGContainer;
+export default DAG;
