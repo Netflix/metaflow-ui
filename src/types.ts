@@ -66,8 +66,9 @@ export interface Artifact extends MetaDataBaseObject {
 }
 
 export interface RunParam {
-  name: string;
-  value: string;
+  [key: string]: {
+    value: string;
+  };
 }
 
 export interface Log {

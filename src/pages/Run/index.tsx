@@ -31,22 +31,10 @@ const RunPage: React.FC = () => {
     initialData: null,
   });
 
-  const [runParameters, setRunParameters] = useState<RunParam[]>([]);
-  useResource<RunParam[], RunParam[]>({
+  const { data: runParameters } = useResource<RunParam, RunParam>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}/parameters`,
     subscribeToEvents: true,
-    initialData: [],
-    fullyDisableCache: true,
-    onUpdate: (items) => {
-      setRunParameters(items);
-    },
-    onWSUpdate: (items) => {
-      /* 
-      custom handler because the /parameters subscription returns a list of parameters,
-      instead of single objects.
-      */
-      setRunParameters(items);
-    },
+    initialData: {},
   });
 
   // Store active tab. Is defined by URL
