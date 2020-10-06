@@ -1,6 +1,5 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import GenericError, { APIErrorRendered } from '../../../components/GenericError';
+import { APIErrorRenderer } from '../../../components/GenericError';
 import Spinner from '../../../components/Spinner';
 import { APIError, AsyncStatus } from '../../../types';
 
@@ -10,7 +9,6 @@ import { APIError, AsyncStatus } from '../../../types';
 type Props = { status: AsyncStatus; error: APIError | null; component: JSX.Element };
 
 const SectionLoader: React.FC<Props> = ({ status, error, component }) => {
-  const { t } = useTranslation();
   if (status === 'Loading') {
     return (
       <div style={{ textAlign: 'center' }}>
@@ -20,8 +18,7 @@ const SectionLoader: React.FC<Props> = ({ status, error, component }) => {
   } else if (status === 'Error') {
     return (
       <div>
-        <GenericError message={t('error.load-error')} />
-        {error && <APIErrorRendered error={error} />}
+        <APIErrorRenderer error={error} />
       </div>
     );
   }

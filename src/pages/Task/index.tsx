@@ -185,8 +185,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
         </TaskLoaderContainer>
       )}
 
-      {((error && status !== 'Loading') || (status === 'Ok' && tasks && tasks.length === 0)) && (
-        <GenericError icon="listItemNotFound" message={t('error.load-error')} />
+      {error && status !== 'Loading' && <GenericError icon="listItemNotFound" message={t('error.load-error')} />}
+
+      {status === 'Ok' && tasks && tasks.length === 0 && (
+        <GenericError icon="listItemNotFound" message={t('error.not-found')} />
       )}
 
       {taskId === 'not-selected' && status !== 'Loading' && (

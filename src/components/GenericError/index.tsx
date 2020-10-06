@@ -37,19 +37,25 @@ export const knownErrorIds = [
   's3-missing-credentials',
   's3-generic-error',
   'dag-processing-error',
+  'not-found',
 ];
 
-export const APIErrorRendered: React.FC<{ error: APIError }> = ({ error }) => {
-  const { t } = useTranslation();
-  let message = t('error.generic-error');
+type APIErrorRendererProps = { error: APIError | null; message?: string; icon?: IconKeys | JSX.Element };
 
-  if (knownErrorIds.indexOf(error.id) > -1) {
-    message = t(`error.${error.id}`);
+export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, message, icon }) => {
+  const { t } = useTranslation();
+  let msg = t('error.generic-error');
+
+  if (error && knownErrorIds.indexOf(error.id) > -1) {
+    msg = t(`error.${error.id}`);
   }
+
+  msg = message || msg;
 
   return (
     <div>
-      <GenericError message={message} />
+      <GenericError message={msg} icon={icon} />
+      {error && error.status !== 404 && <APIErrorDetails error={error} />}
     </div>
   );
 };
