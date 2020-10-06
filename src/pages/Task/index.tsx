@@ -68,7 +68,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   });
 
   const attemptId = task ? task.attempt_id : null;
-  const { data: artifacts, status: artifactStatus } = useResource<Artifact[], Artifact>({
+  const { data: artifacts, status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     queryParams: {
       attempt_id: attemptId !== null ? attemptId.toString() : '',
@@ -123,7 +123,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   //
 
   const [stdout, setStdout] = useState<Log[]>([]);
-  const { status: statusOut } = useResource<Log[], Log>({
+  const { status: statusOut, error: logStdError } = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
     queryParams: {
       attempt_id: attemptId !== null ? attemptId.toString() : '',
@@ -139,7 +139,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   });
 
   const [stderr, setStderr] = useState<Log[]>([]);
-  const { status: statusErr } = useResource<Log[], Log>({
+  const { status: statusErr, error: logErrError } = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
     queryParams: {
       attempt_id: attemptId !== null ? attemptId.toString() : '',
@@ -254,6 +254,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                 <>
                   <SectionLoader
                     status={statusOut}
+                    error={logStdError}
                     component={
                       <LogList
                         rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
@@ -273,6 +274,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                 <>
                   <SectionLoader
                     status={statusErr}
+                    error={logErrError}
                     component={
                       <LogList
                         rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
@@ -294,6 +296,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                   <InformationRow spaceless>
                     <SectionLoader
                       status={artifactStatus}
+                      error={artifactError}
                       component={
                         <PropertyTable
                           items={artifacts || []}
