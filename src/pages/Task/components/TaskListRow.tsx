@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import Icon from '../../../components/Icon';
 import { formatDuration } from '../../../utils/format';
@@ -64,7 +64,7 @@ const RowTextContent = styled.div<{ rowType: 'step' | 'task'; active?: boolean }
   flex: 1;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   line-height: 27px;
-  max-width: 200px;
+  max-width: 215px;
   padding: 0 10px;
   color: #333;
   background: ${(p) => (p.active ? '#E4F0FF' : 'transparent')};
@@ -78,12 +78,7 @@ const RowIconSection = styled.div<{ rowType: 'step' | 'task' }>`
   color: #717171;
   flex-shrink: 0;
   cursor: pointer;
-  ${(p) =>
-    p.rowType === 'step'
-      ? css`
-          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-        `
-      : ''}
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
 const RowDuration = styled.div`

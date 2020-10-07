@@ -195,8 +195,8 @@ const StickyStyledRow = styled(StyledRow)`
 `;
 
 const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: 'none' | 'step' }>`
-  flex: 0 0 225px;
-  max-width: 225px;
+  flex: 0 0 245px;
+  max-width: 245px;
   overflow: hidden;
   cursor: ${(p) => (p.type === 'task' ? 'pointer' : 'normal')};
   font-size: ${(p) => (p.type === 'task' ? '12px' : '14px')};
