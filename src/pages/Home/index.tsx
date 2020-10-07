@@ -108,7 +108,7 @@ const Home: React.FC = () => {
     } else {
       localStorage.setItem(LSKey, JSON.stringify(activeParams));
     }
-  }, []); // eslint-disable-line
+  }, [qp]); // eslint-disable-line
 
   //
   // Data
