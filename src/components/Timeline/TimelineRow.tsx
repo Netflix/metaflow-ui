@@ -203,7 +203,6 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
   font-family: monospace;
   line-height: 27px;
-  padding: 0 0.25rem;
 
   a {
     display: flex;
@@ -238,13 +237,19 @@ const RowStepName = styled.span`
 const StepLabel = styled.div`
   display: flex;
   align-items: center;
-  padding-left: ${(p) => p.theme.spacer.sm}rem;
-  font-size: 12px;
   user-select: text;
+  font-size: 12px;
 
   i {
     width: 30px;
     height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  > div {
+    padding-left: 10px;
   }
 `;
 
