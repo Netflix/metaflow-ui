@@ -92,11 +92,11 @@ const Home: React.FC = () => {
   }, [activeParams.flow_id, activeParams._tags, activeParams.status, activeParams._group]); // eslint-disable-line
 
   useEffect(() => {
+    // On start up check if we have no params AND if we have some old params on localstorage
     if (isDefaultParams(cleanParams(qp))) {
       const filtersFromLS = localStorage.getItem(LSKey);
       if (filtersFromLS) {
         const settings = JSON.parse(filtersFromLS);
-
         if (settings) {
           setQp(settings);
         } else {
