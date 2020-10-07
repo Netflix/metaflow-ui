@@ -84,32 +84,6 @@ const Home: React.FC = () => {
     handleParamChange(key, [...vals.values()].join(','));
   };
 
-  // Jump to page 1 if we change filters
-  useEffect(() => {
-    if (page !== 1) {
-      setPage(1);
-    }
-  }, [activeParams.flow_id, activeParams._tags, activeParams.status, activeParams._group]); // eslint-disable-line
-
-  useEffect(() => {
-    // On start up check if we have no params AND if we have some old params on localstorage
-    if (isDefaultParams(cleanParams(qp))) {
-      const filtersFromLS = localStorage.getItem(LSKey);
-      if (filtersFromLS) {
-        const settings = JSON.parse(filtersFromLS);
-        if (settings) {
-          setQp(settings);
-        } else {
-          resetAllFilters();
-        }
-      } else {
-        resetAllFilters();
-      }
-    } else {
-      localStorage.setItem(LSKey, JSON.stringify(activeParams));
-    }
-  }, [qp]); // eslint-disable-line
-
   //
   // Data
   //
@@ -246,6 +220,32 @@ const Home: React.FC = () => {
       resetAllFilters();
     }
   }, [activeParams, resetAllFilters]);
+
+  // Jump to page 1 if we change filters
+  useEffect(() => {
+    if (page !== 1) {
+      setPage(1);
+    }
+  }, [activeParams.flow_id, activeParams._tags, activeParams.status, activeParams._group]); // eslint-disable-line
+
+  useEffect(() => {
+    // On start up check if we have no params AND if we have some old params on localstorage
+    if (isDefaultParams(cleanParams(qp))) {
+      const filtersFromLS = localStorage.getItem(LSKey);
+      if (filtersFromLS) {
+        const settings = JSON.parse(filtersFromLS);
+        if (settings) {
+          setQp(settings);
+        } else {
+          resetAllFilters();
+        }
+      } else {
+        resetAllFilters();
+      }
+    } else {
+      localStorage.setItem(LSKey, JSON.stringify(activeParams));
+    }
+  }, [qp]); // eslint-disable-line
 
   return (
     <div style={{ display: 'flex', flex: 1 }}>

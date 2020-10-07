@@ -140,7 +140,7 @@ const Breadcrumb: React.FC = () => {
 
   return (
     <StyledBreadcrumb pad="md">
-      <ButtonLink to="/" tabIndex={0} data-testid={'home-button'}>
+      <ButtonLink to={location.pathname === '/' ? '/' + location.search : '/'} tabIndex={0} data-testid={'home-button'}>
         {t('home.home')}
       </ButtonLink>
 
