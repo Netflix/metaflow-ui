@@ -9,8 +9,6 @@ const ButtonGroup = styled.div`
     margin-left: -1px;
 
     white-space: nowrap;
-    overflow-x: hidden;
-    max-width: 200px;
 
     &:first-of-type {
       margin-left: 0;
