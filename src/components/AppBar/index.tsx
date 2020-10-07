@@ -1,16 +1,18 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import logo from '../../assets/logo_dark_horizontal.svg';
 import Breadcrumb from '../Breadcrumb';
 import { ItemRow } from '../Structure';
 import HelpMenu from '../HelpMenu';
 
 const AppBar: React.FC = () => {
+  const location = useLocation();
+
   return (
     <Wrapper>
       <ItemRow pad="lg">
-        <Link to="/">
+        <Link to={location.pathname === '/' ? '/' + location.search : '/'}>
           <Logo src={logo} />
         </Link>
         <Breadcrumb />
