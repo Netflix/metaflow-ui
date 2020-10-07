@@ -18,6 +18,8 @@ const defaultParams = {
   status: 'running,completed,failed',
 };
 
+const LSKey = 'home-filters';
+
 const Home: React.FC = () => {
   //
   // State
@@ -56,6 +58,7 @@ const Home: React.FC = () => {
   const resetAllFilters = useCallback(() => {
     // Reseting filter still keeps grouping settings as before.
     setQp({ ...defaultParams, _group: activeParams._group }, 'replace');
+    localStorage.setItem(LSKey, JSON.stringify({ ...defaultParams, _group: activeParams._group }));
   }, [setQp, activeParams]);
 
   const handleParamChange = (key: string, value: string, keepFakeParams?: boolean) => {
@@ -65,6 +68,7 @@ const Home: React.FC = () => {
       setPage(1);
     }
     setQp({ [key]: value });
+    localStorage.setItem(LSKey, JSON.stringify({ ...qp, [key]: value }));
   };
 
   // Update parameter list
@@ -86,6 +90,25 @@ const Home: React.FC = () => {
       setPage(1);
     }
   }, [activeParams.flow_id, activeParams._tags, activeParams.status, activeParams._group]); // eslint-disable-line
+
+  useEffect(() => {
+    if (isDefaultParams(cleanParams(qp))) {
+      const filtersFromLS = localStorage.getItem(LSKey);
+      if (filtersFromLS) {
+        const settings = JSON.parse(filtersFromLS);
+
+        if (settings) {
+          setQp(settings);
+        } else {
+          resetAllFilters();
+        }
+      } else {
+        resetAllFilters();
+      }
+    } else {
+      localStorage.setItem(LSKey, JSON.stringify(activeParams));
+    }
+  }, []); // eslint-disable-line
 
   //
   // Data
@@ -224,12 +247,6 @@ const Home: React.FC = () => {
     }
   }, [activeParams, resetAllFilters]);
 
-  useEffect(() => {
-    if (isDefaultParams(activeParams)) {
-      resetAllFilters();
-    }
-  }, []); // eslint-disable-line
-
   return (
     <div style={{ display: 'flex', flex: 1 }}>
       <HomeSidebar
@@ -319,7 +336,7 @@ function makeActiveRequestParameters(params: Record<string, string>) {
 // Check if current parameters are default params
 //
 export function isDefaultParams(params: Record<string, string>): boolean {
-  if (Object.keys(params).length === 3) {
+  if (Object.keys(params).length === 4) {
     if (
       params._order === defaultParams._order &&
       params._limit === defaultParams._limit &&
