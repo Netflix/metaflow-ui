@@ -32,9 +32,10 @@ type Props = {
   activeTaskId: string;
   results: SearchResultModel;
   searchFieldProps: SearchFieldProps;
+  groupBy: { value: boolean; set: (val: boolean) => void };
 };
 
-const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, results, searchFieldProps }) => {
+const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, results, searchFieldProps, groupBy }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [rows, setRows] = useState<TaskListRowItem[]>([]);
   const ref = useRef<HTMLDivElement>(null);
@@ -62,17 +63,18 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
 
         // Only add step row if there was tasks. Should we check if we have filter active?
         if (newRows.length > 0) {
+          const stepRow = groupBy.value ? [{ type: 'step' as const, data: step }] : [];
           if (isOpen) {
-            taskRows = taskRows.concat([{ type: 'step' as const, data: step }], newRows);
+            taskRows = taskRows.concat(stepRow, newRows);
           } else {
-            taskRows = taskRows.concat([{ type: 'step' as const, data: step }]);
+            taskRows = taskRows.concat(stepRow);
           }
         }
       }
     }
 
     setRows(taskRows);
-  }, [rowData, results]);
+  }, [rowData, results, groupBy]);
 
   useEffect(() => {
     const listener = () => {
@@ -125,8 +127,8 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
           <SettingsButton
             expand={() => expandAll()}
             collapse={() => collapseAll()}
-            groupBy={'step'}
-            toggleGroupBy={() => null}
+            groupBy={groupBy.value}
+            toggleGroupBy={(value) => groupBy.set(value)}
           />
         </TaskListInputContainer>
 
