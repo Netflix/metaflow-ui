@@ -4,6 +4,7 @@ import { apiHttp } from '../../constants';
 import styled from 'styled-components';
 import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
+import Button from '../Button';
 
 type HelpMenuLink = {
   href: string;
@@ -41,10 +42,13 @@ const HelpMenu: React.FC = () => {
   }, []);
   return (
     <HelpMenuContainer>
-      <Icon name="questionCircled" size="sm" onClick={() => setOpen(!open)} />
+      <ToggleButton onClick={() => setOpen(!open)} withIcon size="sm" variant="primaryText">
+        <span>{t('help.quick-links')}</span>
+        <Icon name="external" size="xs" onClick={() => setOpen(!open)} />
+      </ToggleButton>
       <PopoverContainer show={open}>
         <HelpMenuTitle>
-          <span>{t('help.links-and-faq')}</span>
+          <span>{t('help.quick-links')}</span>
           <Icon name="times" size="sm" onClick={() => setOpen(false)} />
         </HelpMenuTitle>
 
@@ -65,6 +69,14 @@ const HelpMenuContainer = styled.div`
 
   i {
     cursor: pointer;
+  }
+`;
+
+const ToggleButton = styled(Button)`
+  white-space: nowrap;
+  border-color: ${(p) => p.theme.color.bg.blue};
+  &:hover {
+    background: ${(p) => p.theme.color.bg.blueLight};
   }
 `;
 

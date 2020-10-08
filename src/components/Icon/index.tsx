@@ -27,6 +27,7 @@ import { ReactComponent as Danger } from '../../assets/danger.svg';
 import { ReactComponent as Success } from '../../assets/success.svg';
 import { ReactComponent as Info } from '../../assets/info.svg';
 import { ReactComponent as Warning } from '../../assets/warning.svg';
+import { ReactComponent as External } from '../../assets/external.svg';
 
 export type SupportedIcons = {
   timeline: FunctionComponent;
@@ -55,6 +56,7 @@ export type SupportedIcons = {
   success: FunctionComponent;
   info: FunctionComponent;
   warning: FunctionComponent;
+  external: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -84,6 +86,7 @@ const icons: SupportedIcons = {
   success: Success,
   info: Info,
   warning: Warning,
+  external: External,
 };
 
 export type IconKeys = keyof SupportedIcons;
