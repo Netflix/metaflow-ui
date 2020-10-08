@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraphState, GraphGroupBy, GraphSortBy } from './useGraph';
+import { GraphState, GraphSortBy } from './useGraph';
 import { DropdownField } from '../Form';
 import { ItemRow } from '../Structure';
 import { Text } from '../Text';
