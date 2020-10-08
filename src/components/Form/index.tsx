@@ -4,8 +4,9 @@ import { v4 as uuid } from 'uuid';
 import Icon from '../Icon';
 import caretDownURL from '../../assets/caret_down.svg';
 import Spinner from '../Spinner';
+import Dropdown from './Dropdown';
 
-type CommonFieldProps<T> = {
+export type CommonFieldProps<T> = {
   className?: string;
   horizontal?: boolean;
   active?: boolean;
@@ -72,6 +73,26 @@ export const SelectField: React.FC<
           </option>
         ))}
       </select>
+    </Field>
+  );
+};
+
+export const DropdownField: React.FC<
+  {
+    label?: string;
+    options: [string, string][];
+    disabled?: boolean;
+    noMinWidth?: boolean;
+    maxWidth?: boolean;
+  } & CommonFieldProps<HTMLSelectElement>
+> = ({ label, options, horizontal, noMinWidth, ...rest }) => {
+  const [id] = useState(uuid());
+  const testid = rest['data-testid'];
+
+  return (
+    <Field horizontal={horizontal} type="select" data-testid={testid} noMinWidth={noMinWidth}>
+      {label && <label htmlFor={id}>{label}</label>}
+      <Dropdown id={id} options={options} {...rest} />
     </Field>
   );
 };

@@ -15,7 +15,8 @@ import { EventType } from '../../ws';
 const defaultParams = {
   _order: '-ts_epoch',
   _limit: '15',
-  status: 'running,completed,failed',
+  _group_limit: '15',
+  status: 'completed,failed,running',
 };
 
 const LSKey = 'home-filters';
@@ -45,7 +46,7 @@ const Home: React.FC = () => {
     _group: StringParam,
     _order: withDefault(StringParam, defaultParams._order),
     _limit: withDefault(StringParam, defaultParams._limit),
-    _group_limit: withDefault(StringParam, '6'),
+    _group_limit: withDefault(StringParam, defaultParams._group_limit),
     _tags: StringParam,
     status: withDefault(StringParam, defaultParams.status),
     flow_id: StringParam,
@@ -53,13 +54,15 @@ const Home: React.FC = () => {
 
   const activeParams = cleanParams(qp);
   // If we are grouping, we should have max 6 in one group.
-  activeParams._group_limit = activeParams._group ? '6' : '15';
+  activeParams._group_limit = activeParams._group ? '6' : defaultParams._group_limit;
+
+  const defaultFiltersActive = JSON.stringify(defaultParams) === JSON.stringify(activeParams);
 
   const resetAllFilters = useCallback(() => {
     // Reseting filter still keeps grouping settings as before.
-    setQp({ ...defaultParams, _group: activeParams._group }, 'replace');
-    localStorage.setItem(LSKey, JSON.stringify({ ...defaultParams, _group: activeParams._group }));
-  }, [setQp, activeParams]);
+    setQp({ ...defaultParams }, 'replace');
+    localStorage.setItem(LSKey, JSON.stringify({ ...defaultParams }));
+  }, [setQp]);
 
   const handleParamChange = (key: string, value: string, keepFakeParams?: boolean) => {
     // We want to reset page when changing filters, but not when reordering
@@ -253,6 +256,7 @@ const Home: React.FC = () => {
         handleParamChange={handleParamChange}
         updateListValue={updateListValue}
         params={activeParams}
+        defaultFiltersActive={defaultFiltersActive}
         resetAllFilters={resetAllFilters}
       />
 

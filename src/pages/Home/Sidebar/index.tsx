@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { paramList, isDefaultParams } from '../index';
 
-import { CheckboxField, SelectField } from '../../../components/Form';
+import { CheckboxField, DropdownField } from '../../../components/Form';
 import { Section, SectionHeader } from '../../../components/Structure';
 import Button from '../../../components/Button';
 import Icon from '../../../components/Icon';
@@ -18,18 +18,26 @@ type Props = {
   updateListValue: (key: string, value: string) => void;
   // Current active parameters
   params: Record<string, string>;
+  // Are default filters currently active
+  defaultFiltersActive: boolean;
   // Reset all params
   resetAllFilters: () => void;
 };
 
-const HomeSidebar: React.FC<Props> = ({ handleParamChange, updateListValue, params, resetAllFilters }) => {
+const HomeSidebar: React.FC<Props> = ({
+  handleParamChange,
+  updateListValue,
+  params,
+  defaultFiltersActive,
+  resetAllFilters,
+}) => {
   const { t } = useTranslation();
 
   return (
     <Sidebar className="sidebar">
       <Section>
         <SectionHeader>
-          <SelectField
+          <DropdownField
             horizontal
             noMinWidth
             value={params._group || ''}
@@ -106,12 +114,14 @@ const HomeSidebar: React.FC<Props> = ({ handleParamChange, updateListValue, para
         />
       </Section>
 
-      <Section>
-        <ButtonResetAll size="sm" onClick={() => resetAllFilters()} disabled={isDefaultParams(params)}>
-          <Icon name="times" padRight />
-          <Text>{t('filters.reset-all')}</Text>
-        </ButtonResetAll>
-      </Section>
+      {!defaultFiltersActive && (
+        <Section>
+          <ButtonResetAll size="sm" onClick={() => resetAllFilters()} disabled={isDefaultParams(params)}>
+            <Icon name="times" padRight />
+            <Text>{t('filters.reset-all')}</Text>
+          </ButtonResetAll>
+        </Section>
+      )}
     </Sidebar>
   );
 };

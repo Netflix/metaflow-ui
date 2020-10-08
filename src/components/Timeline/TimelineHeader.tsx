@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { GraphState, GraphSortBy } from './useGraph';
-import { SelectField } from '../Form';
+import { DropdownField } from '../Form';
 import { ItemRow } from '../Structure';
 import { Text } from '../Text';
 import ButtonGroup from '../ButtonGroup';
@@ -55,6 +55,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
     />
   );
 
+  const [status, setStatus] = useState('all');
+
   return (
     <TimelineHeaderContainer>
       <TimelineHeaderBottom>
@@ -82,16 +84,17 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
 
             <TimelineHeaderItem pad="sm">
               <Text>{t('fields.status')}:</Text>
-              <SelectField
+              <DropdownField
                 horizontal
-                noMinWidth
                 onChange={(e) => {
+                  setStatus(e?.target.value || 'all');
                   if (e?.target.value === 'all') {
                     updateStatusFilter(null);
                   } else {
                     updateStatusFilter(e?.target.value || null);
                   }
                 }}
+                value={status}
                 options={[
                   ['all', t('run.filter-all')],
                   ['done', t('run.filter-completed')],
