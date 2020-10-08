@@ -389,7 +389,7 @@ function getDuration(tasks: ITask[], task: ITask) {
 
 const TaskContainer = styled.div`
   display: flex;
-  padding: 13px 0 25px 0;
+  padding: 0px 0 25px 0;
   width: 100%;
 `;
 

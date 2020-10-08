@@ -177,7 +177,7 @@ const TimelineHeaderBottomLeft = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: ${(p) => `${p.theme.spacer.md}rem ${p.theme.spacer.sm}rem ${p.theme.spacer.md}rem 0`};
-  width: 225px;
+  width: 245px;
   border-right: 1px solid ${(p) => p.theme.color.border.light};
 
   .field-text {

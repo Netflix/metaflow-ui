@@ -177,7 +177,7 @@ const TimelineFooterContainer = styled.div`
   position: relative;
   width: 100%;
   height: 40px;
-  padding-left: 225px;
+  padding-left: 245px;
   margin-bottom: 25px;
 `;
 

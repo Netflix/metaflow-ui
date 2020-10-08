@@ -54,6 +54,7 @@ const AnchoredView: React.FC<AnchoredViewProps> = ({ sections, header }) => {
 
 const AnchoredViewContainer = styled.div`
   display: flex;
+  padding: 0.75rem 0;
   width 100%;
 `;
 

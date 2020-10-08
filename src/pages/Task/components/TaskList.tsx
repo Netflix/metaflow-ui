@@ -114,8 +114,8 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
       <div
         style={
           isScrolledOver
-            ? { position: 'fixed', top: HEADER_SIZE_PX + 'px', paddingRight: '0.75rem' }
-            : { paddingRight: '0.75rem' }
+            ? { position: 'fixed', top: HEADER_SIZE_PX + 'px', paddingRight: '0.5rem' }
+            : { paddingRight: '0.5rem' }
         }
       >
         <TaskListInputContainer>
@@ -137,7 +137,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
             style={
               // Adding header height here manually.
               {
-                borderTop: '1px solid rgba(0,0,0,0.1)',
+                borderTop: '2px solid rgba(0,0,0,0.1)',
               }
             }
             overscanRowCount={5}
@@ -169,7 +169,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
               );
             }}
             height={listSize}
-            width={230}
+            width={245}
           />
         )}
 
@@ -182,7 +182,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
 
 const TaskListContainer = styled.div`
   font-size: 12px;
-  width: 245px;
+  width: 244px;
   flex-shrink: 0;
 
   .ReactVirtualized__List:focus {
@@ -192,7 +192,7 @@ const TaskListContainer = styled.div`
 
 const TaskListInputContainer = styled.div`
   display: flex;
-  height: 40px;
+  height: 66px;
   align-items: center;
 
   .field-text {
