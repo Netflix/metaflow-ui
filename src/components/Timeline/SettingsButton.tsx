@@ -4,13 +4,12 @@ import styled from 'styled-components';
 import Button from '../Button';
 import { CheckboxField } from '../Form';
 import Icon from '../Icon';
-import { GraphGroupBy } from './useGraph';
 
 const SettingsButton: React.FC<{
   expand: () => void;
   collapse: () => void;
-  groupBy: GraphGroupBy;
-  toggleGroupBy: (gb: GraphGroupBy) => void;
+  groupBy: boolean;
+  toggleGroupBy: (gb: boolean) => void;
 }> = ({ expand, collapse, groupBy, toggleGroupBy }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -24,8 +23,8 @@ const SettingsButton: React.FC<{
           <TemporaryPopup>
             <CheckboxField
               label={t('timeline.group-by-step')}
-              checked={groupBy === 'step'}
-              onChange={() => toggleGroupBy(groupBy === 'step' ? 'none' : 'step')}
+              checked={groupBy}
+              onChange={() => toggleGroupBy(!groupBy)}
               data-testid="timeline-header-groupby-step"
             />
 
