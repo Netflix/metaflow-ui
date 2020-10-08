@@ -1,14 +1,11 @@
 import { useReducer } from 'react';
 
 export type GraphAlignment = 'fromLeft' | 'fromStartTime';
-export type GraphGroupBy = 'step' | 'none';
 export type GraphSortBy = 'startTime' | 'endTime' | 'duration';
 
 export type GraphState = {
   // Relative or absolute rendering? Absolute = just line length
   alignment: GraphAlignment;
-  // Groupped by
-  groupBy: GraphGroupBy;
   // Sorting for tasks
   // Note that sorting works little differently depending on grouping. If we have grouping on, we sort
   // tasks within the steps. Else we sort tasks as one list.
@@ -37,8 +34,6 @@ export type GraphAction =
   | { type: 'updateMax'; end: number }
   // Update active alignment which defines where should lines start.
   | { type: 'alignment'; alignment: GraphAlignment }
-  // Update group by method
-  | { type: 'groupBy'; by: GraphGroupBy }
   // Update sorting method
   | { type: 'sortBy'; by: GraphSortBy }
   // Update sorting direction
@@ -100,9 +95,6 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
 
     case 'alignment':
       return { ...state, alignment: action.alignment };
-
-    case 'groupBy':
-      return { ...state, groupBy: action.by };
 
     case 'sortBy':
       return { ...state, sortBy: action.by, alignment: action.by === 'duration' ? 'fromLeft' : 'fromStartTime' };
@@ -238,13 +230,11 @@ export function validatedParameter<X extends PossibleParameterValue>(
 // Hook to contain timelines graphical presentation data. We would not have to use hook here but
 // we might need some extra functionality later so why not.
 //
-export default function useGraph(
-  start: number,
-  end: number,
-): { graph: GraphState; dispatch: React.Dispatch<GraphAction> } {
+type GraphHook = { graph: GraphState; dispatch: React.Dispatch<GraphAction> };
+
+export default function useGraph(start: number, end: number): GraphHook {
   const [graph, dispatch] = useReducer(graphReducer, {
     alignment: 'fromStartTime',
-    groupBy: 'step',
     sortBy: 'startTime',
     sortDir: 'asc',
     min: start,

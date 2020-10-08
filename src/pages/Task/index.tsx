@@ -27,20 +27,37 @@ import SectionLoader from './components/SectionLoader';
 //
 
 type TaskViewContainer = {
-  run: IRun | null;
+  run: IRun;
   stepName?: string;
   taskId?: string;
   rowData: RowDataModel;
   rowDataDispatch: (action: RowDataAction) => void;
+  groupBy: { value: boolean; set: (val: boolean) => void };
 };
 
-const TaskViewContainer: React.FC<TaskViewContainer> = ({ run, stepName, taskId, rowData, rowDataDispatch }) => {
+const TaskViewContainer: React.FC<TaskViewContainer> = ({
+  run,
+  stepName,
+  taskId,
+  rowData,
+  rowDataDispatch,
+  groupBy,
+}) => {
   const { t } = useTranslation();
-  if (!run?.run_number || !stepName || !taskId) {
+  if (!stepName || !taskId) {
     return <>{t('run.no-run-data')}</>;
   }
 
-  return <Task run={run} stepName={stepName} taskId={taskId} rowData={rowData} rowDataDispatch={rowDataDispatch} />;
+  return (
+    <Task
+      run={run}
+      stepName={stepName}
+      taskId={taskId}
+      rowData={rowData}
+      rowDataDispatch={rowDataDispatch}
+      groupBy={groupBy}
+    />
+  );
 };
 
 //
@@ -53,9 +70,10 @@ type TaskViewProps = {
   taskId: string;
   rowData: RowDataModel;
   rowDataDispatch: (action: RowDataAction) => void;
+  groupBy: { value: boolean; set: (val: boolean) => void };
 };
 
-const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowDataDispatch }) => {
+const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowDataDispatch, groupBy }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const [task, setTask] = useState<ITask | null>(null);
@@ -177,6 +195,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
         activeTaskId={taskId}
         results={results}
         searchFieldProps={fieldProps}
+        groupBy={groupBy}
       />
 
       {status === 'Loading' && (

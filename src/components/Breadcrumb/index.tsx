@@ -157,12 +157,26 @@ const Breadcrumb: React.FC = () => {
 
       {/* Rendering breadcrumb items when not in home and not editing. */}
       {!edit && buttonList.length > 0 && (
-        <ButtonGroup data-testid="breadcrumb-button-container">
-          {buttonList.map(({ label, path }, index) => (
-            <ButtonLink key={index} to={path} active={index + 1 === buttonList.length}>
-              {label}
-            </ButtonLink>
-          ))}
+        <>
+          <ButtonGroup data-testid="breadcrumb-button-container">
+            {buttonList.map(({ label, path }, index) => {
+              const isLastItem = index + 1 === buttonList.length;
+              return (
+                <>
+                  <ButtonLinkCrumb
+                    key={index}
+                    variant="primaryText"
+                    textOnly
+                    to={path}
+                    active={index + 1 === buttonList.length}
+                  >
+                    {label}
+                  </ButtonLinkCrumb>
+                  {!isLastItem && <BreadcrumbDivider />}
+                </>
+              );
+            })}
+          </ButtonGroup>
           <EditButton
             onClick={openModal}
             onKeyPress={(e) => {
@@ -171,10 +185,11 @@ const Breadcrumb: React.FC = () => {
               }
             }}
             tabIndex={0}
+            textOnly
           >
             <Icon name="pen" size="md" />
           </EditButton>
-        </ButtonGroup>
+        </>
       )}
 
       {/* Rendering edit block when active */}
@@ -229,9 +244,34 @@ const BreadcrumbKeyValueList: React.FC<{ items: { key: string; value: string }[]
   </div>
 );
 
-const EditButton = styled(Button)`
-  background: #fff;
+const ButtonLinkCrumb = styled(ButtonLink)`
+  display: inline-block;
 
+  padding-left: ${(p) => p.theme.spacer.sm}rem;
+  padding-right: ${(p) => p.theme.spacer.sm}rem;
+
+  overflow-x: hidden;
+  max-width: 300px;
+  text-overflow: ellipsis;
+
+  &.active {
+    background: transparent;
+  }
+`;
+
+const BreadcrumbDivider = styled.div`
+  display: inline-block;
+  pointer-events: none;
+  color: ${(p) => p.theme.color.text.dark};
+  font-weight: bold;
+  &:after {
+    content: '/';
+  }
+  z-index: 1;
+`;
+
+const EditButton = styled(Button)`
+  background: transparent;
   .icon {
     height: 1.5rem;
   }

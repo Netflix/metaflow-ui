@@ -15,6 +15,7 @@ type TimelineRowProps = {
   // Overall graph state (used to calculate dimensions)
   graph: GraphState;
   onOpen: () => void;
+  isGroupped: boolean;
   isOpen?: boolean;
   // Flag row as sticky for some absolute stylings
   sticky?: boolean;
@@ -24,13 +25,13 @@ type TimelineRowProps = {
 
 type LabelPosition = 'left' | 'right' | 'none';
 
-const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, sticky, endTime }) => {
+const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, isGroupped, sticky, endTime }) => {
   if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
   return (
     <>
       <Element>
-        <RowLabel type={item.type} isOpen={isOpen} group={graph.groupBy}>
+        <RowLabel type={item.type} isOpen={isOpen} group={isGroupped}>
           {item.type === 'task' ? (
             <Link
               to={getPath.task(
@@ -41,9 +42,9 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
               )}
               data-testid="timeline-row-link"
             >
-              <RowStepName>{graph.groupBy === 'none' ? item.data[0].step_name : ''}</RowStepName>
+              <RowStepName>{!isGroupped ? item.data[0].step_name : ''}</RowStepName>
               <span>
-                {graph.groupBy === 'none' ? '/' : ''}
+                {!isGroupped ? '/' : ''}
                 {item.data[0].task_id}
               </span>
             </Link>
@@ -194,7 +195,7 @@ const StickyStyledRow = styled(StyledRow)`
   left: 0;
 `;
 
-const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: 'none' | 'step' }>`
+const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: boolean }>`
   flex: 0 0 245px;
   max-width: 245px;
   overflow: hidden;
@@ -216,7 +217,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: '
     white-space: nowrap;
 
     ${(p) =>
-      p.group === 'none'
+      !p.group
         ? css`
             display: flex;
             justify-content: flex-end;
