@@ -255,7 +255,7 @@ const ButtonLinkCrumb = styled(ButtonLink)`
   padding-right: ${(p) => p.theme.spacer.sm}rem;
 
   overflow-x: hidden;
-  max-width: 300px;
+  max-width: none;
   text-overflow: ellipsis;
 
   &.active {
