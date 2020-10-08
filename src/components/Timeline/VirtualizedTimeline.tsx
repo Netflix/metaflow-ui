@@ -19,24 +19,6 @@ export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task[] };
 type StepIndex = { name: string; index: number };
 
-//
-// Container component for timeline. We might wanna show different states here if we havent
-// gotten run data yet.
-//
-export const TimelineContainer: React.FC<{
-  run?: Run | null;
-  rowData: RowDataModel;
-  rowDataDispatch: React.Dispatch<RowDataAction>;
-  status: AsyncStatus;
-}> = ({ run, rowData, rowDataDispatch, status }) => {
-  const { t } = useTranslation();
-  if (!run || !run.run_number) {
-    return <>{t('timeline.no-run-data')}</>;
-  }
-
-  return <VirtualizedTimeline run={run} rowData={rowData} rowDataDispatch={rowDataDispatch} status={status} />;
-};
-
 type TimelineFilters = {
   steps: string[];
   tasks: string[];
@@ -46,12 +28,15 @@ type TimelineFilters = {
 // Self containing component for rendering everything related to timeline. Component fetched (and subscribes for live events) steps and tasks from different
 // endpoints. View is supposed to be full page (and full page only) since component itself will use virtualised scrolling.
 //
-const VirtualizedTimeline: React.FC<{
+type TimelineProps = {
   run: Run;
   rowData: RowDataModel;
   rowDataDispatch: React.Dispatch<RowDataAction>;
   status: AsyncStatus;
-}> = ({ run, rowData, rowDataDispatch, status }) => {
+  groupBy: { value: boolean; set: (val: boolean) => void };
+};
+
+const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDispatch, status, groupBy }) => {
   const [q, sq] = useQueryParams({
     group: StringParam,
     order: StringParam,
@@ -117,11 +102,6 @@ const VirtualizedTimeline: React.FC<{
     if (sortBy) {
       graphDispatch({ type: 'sortBy', by: sortBy });
     }
-
-    const groupBy = validatedParameter<'none' | 'step'>(q.group, graph.groupBy, ['none', 'step'], 'step');
-    if (groupBy) {
-      graphDispatch({ type: 'groupBy', by: groupBy });
-    }
   }, [q, graph, graphDispatch]);
 
   //
@@ -151,16 +131,16 @@ const VirtualizedTimeline: React.FC<{
       );
 
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
-    const newRows: Row[] = makeVisibleRows(rowData, graph, visibleSteps, statusFilter, searchResults);
+    const newRows: Row[] = makeVisibleRows(rowData, graph, visibleSteps, statusFilter, searchResults, groupBy.value);
 
     if (visibleSteps.length > 0) {
       // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
-      const highestTimestamp = findHighestTimestampForGraph(rowData, graph, visibleSteps);
+      const highestTimestamp = findHighestTimestampForGraph(rowData, graph, visibleSteps, groupBy.value);
 
       graphDispatch({ type: 'init', start: visibleSteps[0].ts_epoch, end: highestTimestamp });
     }
 
-    const rowsToUpdate = graph.groupBy === 'none' ? newRows.sort(sortRows(graph.sortBy, graph.sortDir)) : newRows;
+    const rowsToUpdate = !groupBy.value ? newRows.sort(sortRows(graph.sortBy, graph.sortDir)) : newRows;
 
     // If no grouping, sort tasks here.
     setRows(rowsToUpdate);
@@ -169,10 +149,10 @@ const VirtualizedTimeline: React.FC<{
     rowData,
     graphDispatch,
     filters.steps,
-    graph.groupBy,
     graph.min,
     graph.sortBy,
     graph.sortDir,
+    groupBy,
     statusFilter,
     searchResults,
   ]);
@@ -246,10 +226,10 @@ const VirtualizedTimeline: React.FC<{
           graph={graph}
           zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
           zoomReset={() => graphDispatch({ type: 'resetZoom' })}
-          toggleGroupBy={(by) => sq({ group: by }, 'replaceIn')}
           updateSortBy={(by) => sq({ order: by }, 'replaceIn')}
           updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')}
           expandAll={expandAll}
+          groupBy={groupBy}
           collapseAll={collapseAll}
           setFullscreen={() => setFullscreen(true)}
           isFullscreen={showFullscreen}
@@ -268,7 +248,7 @@ const VirtualizedTimeline: React.FC<{
               onTouchEnd={() => stopMove()}
               onTouchMove={(e) => move(e.touches[0].clientX)}
               onTouchCancel={() => stopMove()}
-              sticky={!!stickyHeader && graph.groupBy !== 'none'}
+              sticky={!!stickyHeader && groupBy.value}
               style={{
                 height:
                   (listContainer.height - 69 > rows.length * ROW_HEIGHT
@@ -294,12 +274,18 @@ const VirtualizedTimeline: React.FC<{
                   }
                 }}
                 rowHeight={ROW_HEIGHT}
-                rowRenderer={createRowRenderer({ rows, graph, dispatch: rowDataDispatch, rowDataState: rowData })}
+                rowRenderer={createRowRenderer({
+                  rows,
+                  graph,
+                  dispatch: rowDataDispatch,
+                  rowDataState: rowData,
+                  isGroupped: groupBy.value,
+                })}
                 height={listContainer.height - (stickyHeader ? ROW_HEIGHT : 0) - 69}
                 width={listContainer.width}
               />
 
-              {stickyHeader && graph.groupBy === 'step' && (
+              {stickyHeader && groupBy.value && (
                 <StickyHeader
                   stickyStep={stickyHeader}
                   items={rows}
@@ -345,9 +331,10 @@ type RowRendererProps = {
   graph: GraphState;
   dispatch: (action: RowDataAction) => void;
   rowDataState: RowDataModel;
+  isGroupped: boolean;
 };
 
-function createRowRenderer({ rows, graph, dispatch, rowDataState }: RowRendererProps) {
+function createRowRenderer({ rows, graph, dispatch, rowDataState, isGroupped }: RowRendererProps) {
   return ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = rows[index];
     return (
@@ -356,6 +343,7 @@ function createRowRenderer({ rows, graph, dispatch, rowDataState }: RowRendererP
         row={rows[index]}
         graph={graph}
         style={style}
+        isGroupped={isGroupped}
         rowData={row.type === 'step' ? rowDataState[row.data.step_name] : undefined}
         toggleOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
       />
@@ -367,14 +355,16 @@ const RowRenderer: React.FC<{
   style: React.CSSProperties;
   row: Row;
   graph: GraphState;
+  isGroupped: boolean;
   rowData?: StepRowData;
   toggleOpen?: () => void;
-}> = ({ style, row, graph, rowData, toggleOpen }) => {
+}> = ({ style, row, graph, rowData, toggleOpen, isGroupped }) => {
   return (
     <div style={style}>
       <TimelineRow
         item={row}
         graph={graph}
+        isGroupped={isGroupped}
         isOpen={rowData && rowData.isOpen}
         endTime={row.type === 'step' && rowData ? rowData.finished_at : undefined}
         onOpen={() => {
@@ -403,6 +393,7 @@ const StickyHeader: React.FC<{
       item={item}
       endTime={rowData && rowData.finished_at}
       isOpen={true}
+      isGroupped={true}
       graph={graph}
       onOpen={onToggle}
       sticky
@@ -488,7 +479,12 @@ function findLongestTaskOfRow(step: StepRowData, graph: GraphState): number {
   }, 0);
 }
 
-function findHighestTimestampForGraph(rowDataState: RowDataModel, graph: GraphState, visibleSteps: Step[]): number {
+function findHighestTimestampForGraph(
+  rowDataState: RowDataModel,
+  graph: GraphState,
+  visibleSteps: Step[],
+  groupBy: boolean,
+): number {
   const visibleStepNames = visibleSteps.map((item) => item.step_name);
   return Object.keys(rowDataState).reduce((val, key) => {
     const step = rowDataState[key];
@@ -498,12 +494,12 @@ function findHighestTimestampForGraph(rowDataState: RowDataModel, graph: GraphSt
       return step.finished_at;
     }
     // When sorting by duration and grouping by step, we want to find longest step
-    if (graph.sortBy === 'duration' && graph.groupBy === 'step' && step.finished_at) {
+    if (graph.sortBy === 'duration' && groupBy && step.finished_at) {
       if (visibleStepNames.indexOf(key) === -1) return val;
       return graph.min + step.duration > val ? graph.min + step.duration : val;
     }
     // When sorting by duration and grouping by none (so just tasks) we want to find longest task
-    if (graph.sortBy === 'duration' && graph.groupBy === 'none' && step.finished_at) {
+    if (graph.sortBy === 'duration' && !groupBy && step.finished_at) {
       const longestTask = findLongestTaskOfRow(step, graph);
 
       if (longestTask > val) {
@@ -524,13 +520,14 @@ function makeVisibleRows(
   visibleSteps: Step[],
   statusFilter: string | null,
   searchResults: SearchResultModel,
+  groupBy: boolean,
 ) {
   const matchIds = searchResults.result.map((item) => item.task_id);
 
   return visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
     const rowData = rowDataState[current.step_name];
     // If step row is open, add its tasks to the list.
-    if (rowData?.isOpen || graph.groupBy === 'none') {
+    if (rowData?.isOpen || !groupBy) {
       let rowTasks = Object.keys(rowData.data).map((item) => ({
         type: 'task' as const,
         data: rowData.data[item],
@@ -551,13 +548,13 @@ function makeVisibleRows(
       return rowTasks.length === 0
         ? arr
         : arr.concat(
-            graph.groupBy === 'step' ? [{ type: 'step' as const, data: current }] : [],
-            graph.groupBy === 'step' ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks,
+            groupBy ? [{ type: 'step' as const, data: current }] : [],
+            groupBy ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks,
           );
     }
 
     // Add step if we are grouping.
-    if (graph.groupBy === 'step') {
+    if (groupBy) {
       return arr.concat([{ type: 'step', data: current }]);
     }
 

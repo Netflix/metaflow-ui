@@ -15,6 +15,8 @@ const run: Run = {
   status: 'completed',
 };
 
+const GROUP_BY = { value: true, set: () => null };
+
 describe('Task page', () => {
   beforeAll(() => {
     global.fetch = mockfetch as any;
@@ -25,7 +27,7 @@ describe('Task page', () => {
 
     render(
       <TestWrapper>
-        <Task run={run} stepName="test" taskId="test" rowData={{}} />
+        <Task run={run} stepName="test" taskId="test" rowData={{}} groupBy={GROUP_BY} />
       </TestWrapper>,
     );
 
