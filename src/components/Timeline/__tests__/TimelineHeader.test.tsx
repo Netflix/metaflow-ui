@@ -4,6 +4,7 @@ import { render, fireEvent } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
 import { createGraphState } from '../testhelper';
 
+const GROUP_BY = { value: true, set: () => null };
 const headerFunctionProps = {
   zoom: () => null,
   zoomReset: () => null,
@@ -15,6 +16,7 @@ const headerFunctionProps = {
   setFullscreen: () => null,
   isFullscreen: false,
   updateStatusFilter: () => null,
+  groupBy: GROUP_BY,
   searchFieldProps: { text: '', setText: () => null },
   searchResults: { status: 'NotAsked' as const, result: [] },
 };
@@ -29,10 +31,14 @@ describe('TimelineHeader component', () => {
   });
 
   test('<TimelineHeader> - group by', () => {
+    const gb = {
+      value: true,
+      set: jest.fn(),
+    };
     const props: TimelineHeaderProps = {
       graph: createGraphState({}),
       ...headerFunctionProps,
-      toggleGroupBy: jest.fn(),
+      groupBy: gb,
     };
     const { getByTestId } = render(
       <TestWrapper>
@@ -47,7 +53,7 @@ describe('TimelineHeader component', () => {
     expect(getByTestId('timeline-header-groupby-step')).toHaveClass('active');
 
     fireEvent.click(getByTestId('timeline-header-groupby-step'));
-    expect(props.toggleGroupBy).toBeCalledTimes(1);
+    expect(gb.set).toBeCalledTimes(1);
   });
 
   test('<SettingsButton> - settings button', () => {

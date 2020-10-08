@@ -8,7 +8,12 @@ describe('TimelineRow component', () => {
   test('<TimelineRow> - should render', () => {
     render(
       <TestWrapper>
-        <TimelineRow graph={createGraphState({})} onOpen={jest.fn()} item={{ type: 'task', data: [createTask({})] }} />
+        <TimelineRow
+          graph={createGraphState({})}
+          onOpen={jest.fn()}
+          item={{ type: 'task', data: [createTask({})] }}
+          isGroupped={true}
+        />
       </TestWrapper>,
     );
   });
@@ -20,6 +25,7 @@ describe('TimelineRow component', () => {
         <TimelineRow
           graph={createGraphState({})}
           onOpen={jest.fn()}
+          isGroupped={true}
           item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
         />
       </TestWrapper>,
@@ -41,6 +47,7 @@ describe('TimelineRow component', () => {
         <TimelineRow
           graph={createGraphState({})}
           onOpen={jest.fn()}
+          isGroupped={true}
           item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
         />
       </TestWrapper>,
@@ -58,8 +65,9 @@ describe('TimelineRow component', () => {
     rerender(
       <TestWrapper>
         <TimelineRow
-          graph={createGraphState({ groupBy: 'none' })}
+          graph={createGraphState({})}
           onOpen={jest.fn()}
+          isGroupped={false}
           item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
         />
       </TestWrapper>,
@@ -78,7 +86,7 @@ describe('TimelineRow component', () => {
 
     const { getByTestId, rerender } = render(
       <TestWrapper>
-        <TimelineRow {...props} />
+        <TimelineRow {...props} isGroupped={true} />
       </TestWrapper>,
     );
 
@@ -91,7 +99,7 @@ describe('TimelineRow component', () => {
 
     rerender(
       <TestWrapper>
-        <TimelineRow {...props} isOpen={false} />
+        <TimelineRow {...props} isOpen={false} isGroupped={true} />
       </TestWrapper>,
     );
 

@@ -32,9 +32,10 @@ type Props = {
   activeTaskId: string;
   results: SearchResultModel;
   searchFieldProps: SearchFieldProps;
+  groupBy: { value: boolean; set: (val: boolean) => void };
 };
 
-const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, results, searchFieldProps }) => {
+const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, results, searchFieldProps, groupBy }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [rows, setRows] = useState<TaskListRowItem[]>([]);
   const ref = useRef<HTMLDivElement>(null);
@@ -62,17 +63,18 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
 
         // Only add step row if there was tasks. Should we check if we have filter active?
         if (newRows.length > 0) {
+          const stepRow = groupBy.value ? [{ type: 'step' as const, data: step }] : [];
           if (isOpen) {
-            taskRows = taskRows.concat([{ type: 'step' as const, data: step }], newRows);
+            taskRows = taskRows.concat(stepRow, newRows);
           } else {
-            taskRows = taskRows.concat([{ type: 'step' as const, data: step }]);
+            taskRows = taskRows.concat(stepRow);
           }
         }
       }
     }
 
     setRows(taskRows);
-  }, [rowData, results]);
+  }, [rowData, results, groupBy]);
 
   useEffect(() => {
     const listener = () => {
@@ -112,8 +114,8 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
       <div
         style={
           isScrolledOver
-            ? { position: 'fixed', top: HEADER_SIZE_PX + 'px', paddingRight: '0.75rem' }
-            : { paddingRight: '0.75rem' }
+            ? { position: 'fixed', top: HEADER_SIZE_PX + 'px', paddingRight: '0.5rem' }
+            : { paddingRight: '0.5rem' }
         }
       >
         <TaskListInputContainer>
@@ -125,8 +127,8 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
           <SettingsButton
             expand={() => expandAll()}
             collapse={() => collapseAll()}
-            groupBy={'step'}
-            toggleGroupBy={() => null}
+            groupBy={groupBy.value}
+            toggleGroupBy={(value) => groupBy.set(value)}
           />
         </TaskListInputContainer>
 
@@ -135,7 +137,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
             style={
               // Adding header height here manually.
               {
-                borderTop: '1px solid rgba(0,0,0,0.1)',
+                borderTop: '2px solid rgba(0,0,0,0.1)',
               }
             }
             overscanRowCount={5}
@@ -167,7 +169,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
               );
             }}
             height={listSize}
-            width={230}
+            width={245}
           />
         )}
 
@@ -180,7 +182,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
 
 const TaskListContainer = styled.div`
   font-size: 12px;
-  width: 245px;
+  width: 244px;
   flex-shrink: 0;
 
   .ReactVirtualized__List:focus {
@@ -190,7 +192,7 @@ const TaskListContainer = styled.div`
 
 const TaskListInputContainer = styled.div`
   display: flex;
-  height: 40px;
+  height: 66px;
   align-items: center;
 
   .field-text {

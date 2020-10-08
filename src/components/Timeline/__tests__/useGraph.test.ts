@@ -12,7 +12,6 @@ import {
 
 const DEFAULT_GRAPH: GraphState = {
   alignment: 'fromStartTime',
-  groupBy: 'step',
   sortBy: 'startTime',
   sortDir: 'asc',
   min: 1000,
@@ -101,11 +100,6 @@ describe('useGraph hook - reducer', () => {
     expect(graphReducer(DEFAULT_GRAPH, { type: 'alignment', alignment: 'fromStartTime' }).alignment).toBe(
       'fromStartTime',
     );
-  });
-
-  it('groupBy', () => {
-    expect(graphReducer(DEFAULT_GRAPH, { type: 'groupBy', by: 'step' }).groupBy).toBe('step');
-    expect(graphReducer(DEFAULT_GRAPH, { type: 'groupBy', by: 'none' }).groupBy).toBe('none');
   });
 
   it('sortBy', () => {

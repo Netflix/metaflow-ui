@@ -15,7 +15,6 @@ import SettingsButton from './SettingsButton';
 export type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
   zoomReset: () => void;
-  toggleGroupBy: (by: GraphGroupBy) => void;
   updateSortBy: (by: GraphSortBy) => void;
   updateSortDir: () => void;
   expandAll: () => void;
@@ -23,6 +22,7 @@ export type TimelineHeaderProps = {
   setFullscreen: () => void;
   isFullscreen: boolean;
   updateStatusFilter: (status: null | string) => void;
+  groupBy: { value: boolean; set: (val: boolean) => void };
   graph: GraphState;
   searchFieldProps: SearchFieldProps;
   searchResults: SearchResultModel;
@@ -32,9 +32,9 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   graph,
   zoom,
   zoomReset,
-  toggleGroupBy,
   updateSortBy,
   updateSortDir,
+  groupBy,
   expandAll,
   collapseAll,
   isFullscreen,
@@ -69,8 +69,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
           <SettingsButton
             expand={() => expandAll()}
             collapse={() => collapseAll()}
-            groupBy={graph.groupBy}
-            toggleGroupBy={toggleGroupBy}
+            groupBy={groupBy.value}
+            toggleGroupBy={(val) => groupBy.set(val)}
           />
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
@@ -180,7 +180,7 @@ const TimelineHeaderBottomLeft = styled.div`
   justify-content: space-between;
   align-items: center;
   padding: ${(p) => `${p.theme.spacer.md}rem ${p.theme.spacer.sm}rem ${p.theme.spacer.md}rem 0`};
-  width: 225px;
+  width: 245px;
   border-right: 1px solid ${(p) => p.theme.color.border.light};
 
   .field-text {

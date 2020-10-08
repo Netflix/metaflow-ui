@@ -7,7 +7,6 @@ import { Task, Step } from '../../types';
 export function createGraphState(partialGraph: Partial<GraphState>): GraphState {
   return {
     alignment: 'fromStartTime',
-    groupBy: 'step',
     sortBy: 'startTime',
     sortDir: 'asc',
     min: 0,
