@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
-import Button from '../Button';
 import Icon from '../Icon';
 import { SectionHeader } from '../Structure';
 
@@ -10,7 +9,12 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
   const inputEl = useRef<HTMLInputElement>(null);
 
   return (
-    <FilterInputWrapper active={hasFocus}>
+    <FilterInputWrapper
+      active={hasFocus}
+      onClick={() => {
+        inputEl.current?.focus();
+      }}
+    >
       <FitlerInputContainer>
         <input
           ref={inputEl}
@@ -20,6 +24,7 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
             if (e.charCode === 13 && e.currentTarget.value) {
               onSubmit(e.currentTarget.value);
               setVal('');
+              setHasFocus(false);
             }
           }}
           onChange={(e) => {
@@ -38,24 +43,13 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
             if (inputEl?.current?.value) {
               onSubmit(inputEl.current.value);
               setVal('');
+              setHasFocus(false);
             }
           }}
         >
           <Icon name="enter" size="xs" />
         </SubmitIconHolder>
       </FitlerInputContainer>
-      <Button
-        iconOnly
-        onClick={() => {
-          if (!hasFocus && inputEl?.current) {
-            inputEl.current.focus();
-          } else if (hasFocus && inputEl?.current?.value) {
-            onSubmit(inputEl.current.value);
-          }
-        }}
-      >
-        <Icon name={hasFocus ? 'times' : 'plus'} />
-      </Button>
     </FilterInputWrapper>
   );
 };
@@ -67,11 +61,19 @@ const FilterInputWrapper = styled(SectionHeader)<{ active: boolean }>`
   ${(p) => (p.active ? `border-bottom-color: ${p.theme.color.text.blue};` : '')}
 
   input {
+    width: 100%;
     border: none;
+    cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
+    background-color: transparent;
     &:focus {
       outline: none;
       border: none;
     }
+  }
+  cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
+
+  &:hover {
+    background-color: ${(p) => (p.active ? 'transparent' : p.theme.color.bg.light)};
   }
 `;
 
@@ -87,8 +89,7 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
   line-height: 26px;
   opacity: ${(p) => (p.focus ? 1 : 0)};
   transition: opacity 0.15s;
-  cursor: ${(p) => (p.focus ? 'pointer' : 'normal')};
-  margin-right: 0.75rem;
+  cursor: pointer;
 `;
 
 export default FilterInput;
