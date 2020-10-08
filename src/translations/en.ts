@@ -18,7 +18,7 @@ const en = {
     },
 
     help: {
-      'links-and-faq': 'Links and FAQ',
+      'quick-links': 'Quick links',
     },
 
     fields: {

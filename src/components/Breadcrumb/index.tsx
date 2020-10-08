@@ -162,7 +162,7 @@ const Breadcrumb: React.FC = () => {
             {buttonList.map(({ label, path }, index) => {
               const isLastItem = index + 1 === buttonList.length;
               return (
-                <>
+                <CrumbComponent key={index}>
                   <ButtonLinkCrumb
                     key={index}
                     variant="primaryText"
@@ -173,7 +173,7 @@ const Breadcrumb: React.FC = () => {
                     {label}
                   </ButtonLinkCrumb>
                   {!isLastItem && <BreadcrumbDivider />}
-                </>
+                </CrumbComponent>
               );
             })}
           </ButtonGroup>
@@ -243,6 +243,10 @@ const BreadcrumbKeyValueList: React.FC<{ items: { key: string; value: string }[]
     ))}
   </div>
 );
+
+const CrumbComponent = styled.div`
+  white-space: nowrap;
+`;
 
 const ButtonLinkCrumb = styled(ButtonLink)`
   display: inline-block;
