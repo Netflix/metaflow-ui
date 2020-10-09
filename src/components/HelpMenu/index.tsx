@@ -73,6 +73,8 @@ const HelpMenuContainer = styled.div`
 `;
 
 const ToggleButton = styled(Button)`
+  line-height: 1.5rem;
+  font-size: 0.875rem;
   white-space: nowrap;
   border-color: ${(p) => p.theme.color.bg.blue};
   &:hover {
