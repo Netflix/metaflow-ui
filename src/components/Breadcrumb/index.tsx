@@ -87,7 +87,7 @@ const Breadcrumb: React.FC = () => {
   const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.charCode === 13) {
       // If user presses enter without changing value, lets hide popup
-      if (e.currentTarget.value === lastRoute) {
+      if ((e.currentTarget.value || '').length > 0 && e.currentTarget.value === lastRoute) {
         closeUp();
       } else {
         setLastRoute(e.currentTarget.value);
