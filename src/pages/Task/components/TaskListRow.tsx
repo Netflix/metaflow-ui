@@ -28,12 +28,12 @@ const TaskListRow: React.FC<Props> = ({ index, style, item, toggle, isOpen, acti
         }
       }}
     >
-      <RowContainer rowType={item.type}>
-        <RowIconSection rowType={item.type} onClick={() => (toggle ? toggle() : null)}>
+      <RowContainer active={active} onClick={() => (toggle ? toggle() : null)}>
+        <RowIconSection rowType={item.type}>
           {item.type === 'step' ? <Icon name="arrowDown" rotate={isOpen ? -90 : 0} size="xs" /> : null}
         </RowIconSection>
 
-        <RowTextContent rowType={item.type} active={active}>
+        <RowTextContent rowType={item.type}>
           <RowMainLabel itemType={item.type}>
             {item.type === 'step' ? item.data.step?.step_name || '' : item.data.task_id}
           </RowMainLabel>
@@ -46,9 +46,15 @@ const TaskListRow: React.FC<Props> = ({ index, style, item, toggle, isOpen, acti
 
 export default TaskListRow;
 
-const RowContainer = styled.div<{ rowType: 'step' | 'task' }>`
+const RowContainer = styled.div<{ active?: boolean }>`
   display: flex;
-  cursor: ${(p) => (p.rowType === 'task' ? 'pointer' : 'normal')};
+  cursor: pointer;
+
+  transition: background 0.15s;
+  background: ${(p) => (p.active ? p.theme.color.bg.blueLight : 'transparent')};
+  &:hover {
+    background: ${(p) => p.theme.color.bg.blueLight};
+  }
 `;
 
 const RowMainLabel = styled.div<{ itemType: string }>`
@@ -77,7 +83,6 @@ const RowIconSection = styled.div<{ rowType: 'step' | 'task' }>`
   width: 30px;
   color: #717171;
   flex-shrink: 0;
-  cursor: pointer;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 `;
 
