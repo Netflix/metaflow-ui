@@ -93,8 +93,9 @@ const RunHeader: React.FC<{ run?: Run | null; parameters: RunParam | null }> = (
                   onClick={() => {
                     history.push('/?_tags=' + encodeURIComponent(mergeTags(run).join(',')));
                   }}
+                  highlighted
                 >
-                  <Icon name="plus" /> {t('run.select-all-tags')}
+                  {t('run.select-all-tags')} <Icon name="plus" size="xs" />
                 </TagNoWrap>
               </ItemRow>
             </ItemRow>
@@ -144,6 +145,11 @@ const ParametersTitleRow = styled.div`
 
 const TagNoWrap = styled(Tag)`
   white-space: nowrap;
+  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
+
+  .icon {
+    margin-left: ${(p) => p.theme.spacer.xs}rem;
+  }
 `;
 
 export default RunHeader;
