@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { PATHS, PathDefinition, getPath } from '../../utils/routing';
 
-import Button, { ButtonLink } from '../Button';
-import ButtonGroup from '../ButtonGroup';
+import Button, { ButtonLink, ButtonCSS } from '../Button';
 import { TextInputField } from '../Form';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
@@ -158,37 +157,43 @@ const Breadcrumb: React.FC = () => {
       {/* Rendering breadcrumb items when not in home and not editing. */}
       {!edit && buttonList.length > 0 && (
         <>
-          <ButtonGroup data-testid="breadcrumb-button-container">
+          <BreadcrumbGroup data-testid="breadcrumb-button-container">
             {buttonList.map(({ label, path }, index) => {
               const isLastItem = index + 1 === buttonList.length;
               return (
                 <CrumbComponent key={index}>
-                  <ButtonLinkCrumb
+                  <ButtonCrumb
                     key={index}
-                    variant="primaryText"
                     textOnly
-                    to={path}
-                    active={index + 1 === buttonList.length}
+                    active={isLastItem}
+                    title={label}
+                    onClick={() => {
+                      if (isLastItem) {
+                        openModal();
+                      } else {
+                        history.push(path);
+                      }
+                    }}
                   >
                     {label}
-                  </ButtonLinkCrumb>
+                  </ButtonCrumb>
                   {!isLastItem && <BreadcrumbDivider />}
                 </CrumbComponent>
               );
             })}
-          </ButtonGroup>
-          <EditButton
-            onClick={openModal}
-            onKeyPress={(e) => {
-              if (e && e.charCode === 13) {
-                openModal();
-              }
-            }}
-            tabIndex={0}
-            textOnly
-          >
-            <Icon name="pen" size="md" />
-          </EditButton>
+            <EditButton
+              onClick={openModal}
+              onKeyPress={(e) => {
+                if (e && e.charCode === 13) {
+                  openModal();
+                }
+              }}
+              tabIndex={0}
+              textOnly
+            >
+              <Icon name="pen" size="md" />
+            </EditButton>
+          </BreadcrumbGroup>
         </>
       )}
 
@@ -244,22 +249,32 @@ const BreadcrumbKeyValueList: React.FC<{ items: { key: string; value: string }[]
   </div>
 );
 
+const BreadcrumbGroup = styled.div`
+  ${ButtonCSS}
+  background-color: ${(p) => p.theme.color.bg.light};
+`;
+
 const CrumbComponent = styled.div`
   white-space: nowrap;
 `;
 
-const ButtonLinkCrumb = styled(ButtonLink)`
+const ButtonCrumb = styled(Button)`
   display: inline-block;
 
   padding-left: ${(p) => p.theme.spacer.sm}rem;
   padding-right: ${(p) => p.theme.spacer.sm}rem;
 
   overflow-x: hidden;
-  max-width: none;
+  max-width: 300px;
   text-overflow: ellipsis;
 
   &.active {
     background: transparent;
+  }
+
+  &:hover {
+    background-color: transparent;
+    color: ${(p) => p.theme.color.text.dark};
   }
 `;
 
@@ -275,7 +290,16 @@ const BreadcrumbDivider = styled.div`
 `;
 
 const EditButton = styled(Button)`
-  background: transparent;
+  background: ${(p) => p.theme.color.bg.white};
+
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+
+  border-left: 1px solid ${(p) => p.theme.color.border.light};
+  &:hover {
+    border-left: 1px solid ${(p) => p.theme.color.border.light};
+  }
+
   .icon {
     height: 1.5rem;
   }

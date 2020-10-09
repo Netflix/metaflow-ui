@@ -16,6 +16,7 @@ export type ButtonProps = {
   onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void;
   onKeyPress?: (e: React.KeyboardEvent<HTMLButtonElement>) => void;
   children: ReactNode;
+  title?: string;
 };
 
 const buttonFontSizes = {
