@@ -135,6 +135,7 @@ const ButtonResetAll = styled(Button)`
 `;
 
 const StyledRemovableTag = styled(RemovableTag)`
+  word-break: break-all;
   margin-right: ${(p) => p.theme.spacer.xs}rem;
   margin-bottom: ${(p) => p.theme.spacer.xs}rem;
 `;
