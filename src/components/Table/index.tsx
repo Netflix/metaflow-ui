@@ -1,6 +1,5 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { lighten } from 'polished';
 import { SortIcon } from '../Icon';
 import { parseOrderParam } from '../../utils/url';
 
@@ -45,16 +44,18 @@ export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
 `;
 
 export const TD = styled.td`
+  transition: background 0.15s;
   background: ${(p) => p.theme.color.bg.light};
   ${cell};
 
   &:hover {
-    background: ${(p) => lighten(0.02, p.theme.color.bg.blueLight)};
+    background: ${(p) => p.theme.color.bg.blueLight};
   }
 `;
 
 export const TR = styled.tr<{ clickable?: boolean }>`
   cursor: ${(p) => (p.clickable ? 'pointer' : 'auto')};
+  transition: background 0.15s;
   &:hover ${TD} {
     background: ${(p) => p.theme.color.bg.blueLight};
     color: ${(p) => p.theme.color.text.blue};

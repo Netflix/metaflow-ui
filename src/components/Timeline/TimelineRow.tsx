@@ -49,14 +49,8 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
               </span>
             </Link>
           ) : (
-            <StepLabel>
-              <Icon
-                onClick={() => onOpen()}
-                name="arrowDown"
-                size="xs"
-                rotate={isOpen ? 0 : -90}
-                data-testid="timeline-row-icon"
-              />
+            <StepLabel onClick={() => onOpen()}>
+              <Icon name="arrowDown" size="xs" rotate={isOpen ? 0 : -90} data-testid="timeline-row-icon" />
               <div data-testid="timeline-row-label">{item.data.step_name}</div>
             </StepLabel>
           )}
@@ -184,7 +178,7 @@ const StyledRow = styled.div`
   transition: background 0.15s;
 
   &:hover {
-    background: #f6f6f6;
+    background: ${(p) => p.theme.color.bg.blueLight};
   }
 `;
 
@@ -199,7 +193,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   flex: 0 0 245px;
   max-width: 245px;
   overflow: hidden;
-  cursor: ${(p) => (p.type === 'task' ? 'pointer' : 'normal')};
+  cursor: pointer;
   font-size: ${(p) => (p.type === 'task' ? '12px' : '14px')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
   font-family: monospace;
@@ -227,7 +221,6 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
 
   i {
     line-height: 0px;
-    cursor: pointer;
   }
 `;
 
