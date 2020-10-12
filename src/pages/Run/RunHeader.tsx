@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { Run, RunParam } from '../../types';
+import { Run, RunParam, APIError } from '../../types';
 
 import { getISOString } from '../../utils/date';
 import { formatDuration } from '../../utils/format';
@@ -14,8 +14,11 @@ import Tag from '../../components/Tag';
 import { SmallText } from '../../components/Text';
 import StatusField from '../../components/Status';
 import InformationRow from '../../components/InformationRow';
-import PropertyTable, { PropertyTableColumns } from '../../components/PropertyTable';
+import PropertyTable from '../../components/PropertyTable';
 import { Link, useHistory } from 'react-router-dom';
+import { ResourceStatus } from '../../hooks/useResource';
+import GenericError from '../../components/GenericError';
+import Spinner from '../../components/Spinner';
 
 function mergeTags(run: Run) {
   const baseTags = run.tags || [];
@@ -24,7 +27,12 @@ function mergeTags(run: Run) {
   return [...baseTags, ...sysTags];
 }
 
-const RunHeader: React.FC<{ run?: Run | null; parameters: RunParam | null }> = ({ run, parameters }) => {
+const RunHeader: React.FC<{
+  run?: Run | null;
+  parameters: RunParam | null;
+  status: ResourceStatus;
+  error: APIError | null;
+}> = ({ run, parameters, status, error }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const [expanded, setExpanded] = useState(false);
@@ -36,12 +44,23 @@ const RunHeader: React.FC<{ run?: Run | null; parameters: RunParam | null }> = (
     }, {}),
   ];
 
-  const parameterTableColumns: PropertyTableColumns<Record<string, string>>[] = (parameters
-    ? Object.keys(parameters)
-    : []
-  ).map((name) => {
-    return { label: name, prop: name };
-  });
+  const parameterTableColumns = [
+    {
+      label: t('run.parameters'),
+      accessor: (params: Record<string, string>) => (
+        <table>
+          <tbody>
+            {Object.keys(params).map((key) => (
+              <tr key={key}>
+                <ParameterKey>{key}</ParameterKey>
+                <ParameterValue>{params[key]}</ParameterValue>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ),
+    },
+  ];
 
   return (
     <RunHeaderContainer>
@@ -101,12 +120,23 @@ const RunHeader: React.FC<{ run?: Run | null; parameters: RunParam | null }> = (
             </ItemRow>
           </InformationRow>
 
-          {parameterTableItems && parameterTableColumns && expanded && (
+          {expanded && (
             <InformationRow>
-              <ParametersTitleRow>
-                <LabelText>{t('run.parameters') + ':'}</LabelText>
-              </ParametersTitleRow>
-              <PropertyTable scheme="bright" items={parameterTableItems} columns={parameterTableColumns} />
+              {status === 'Loading' && (
+                <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+                  <Spinner sm />
+                </div>
+              )}
+
+              {status === 'Ok' && parameterTableItems && parameterTableColumns && (
+                <PropertyTable scheme="bright" items={parameterTableItems} columns={parameterTableColumns} />
+              )}
+
+              {status === 'Error' && error && (
+                <ItemRow margin="lg">
+                  <GenericError message={t('run.no-run-parameters')} />
+                </ItemRow>
+              )}
             </InformationRow>
           )}
         </div>
@@ -132,15 +162,12 @@ const ShowDetailsRow = styled.div`
   justify-content: flex-end;
 `;
 
-const LabelText = styled.div`
+const ParameterKey = styled.td`
+  padding-right: ${(p) => p.theme.spacer.hg}rem;
   color: ${(p) => p.theme.color.text.mid};
-  font-size: 12px;
 `;
-
-const ParametersTitleRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+const ParameterValue = styled.td`
+  color: ${(p) => p.theme.color.text.dark};
 `;
 
 const TagNoWrap = styled(Tag)`

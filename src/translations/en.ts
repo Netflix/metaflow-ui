@@ -66,6 +66,7 @@ const en = {
       'dag-not-available': 'DAG is currently not available',
       timeline: 'Timeline',
       parameters: 'Parameters',
+      'no-run-parameters': 'No run parameters available.',
       'show-run-details': 'Show run details',
       'hide-run-details': 'Hide run details',
       tags: 'Tags',

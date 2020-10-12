@@ -60,7 +60,10 @@ type RunPageProps = {
 const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
 
-  const { data: runParameters } = useResource<RunParam, RunParam>({
+  const { data: runParameters, status: runParametersStatus, error: runParameterError } = useResource<
+    RunParam,
+    RunParam
+  >({
     url: `/flows/${params.flowId}/runs/${params.runNumber}/parameters`,
     subscribeToEvents: true,
     initialData: {},
@@ -144,7 +147,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   return (
     <>
-      <RunHeader run={run} parameters={runParameters} />
+      <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
       <Tabs
         widen
         activeTab={tab}
