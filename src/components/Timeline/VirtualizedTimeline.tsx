@@ -457,7 +457,7 @@ const VirtualizedTimelineContainer = styled.div`
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none;
 
-  .ReactVirtualized__List:focusÂ  {
+  .ReactVirtualized__List:focus  {
     outline: none;
     border: none;
   }

@@ -18,6 +18,7 @@ const ConnectionStatus: React.FC = () => {
   useEffect(() => {
     const onOpen = () => {
       setConnected(true);
+      debouncedShowError.cancel();
       setShowError(false);
     };
 
