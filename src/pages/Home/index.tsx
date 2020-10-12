@@ -390,6 +390,10 @@ const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
   const val1 = dir === 'down' ? a[key] : b[key];
   const val2 = dir === 'down' ? b[key] : a[key];
 
+  if (val1 === val2 && key !== 'ts_epoch') {
+    return nmbSort(dir, 'ts_epoch')(a, b);
+  }
+
   if (typeof val1 === 'string' && typeof val2 === 'string') {
     return val1.toUpperCase() > val2.toUpperCase() ? 1 : val1.toUpperCase() < val2.toUpperCase() ? -1 : 0;
   } else if (typeof val1 === 'string') {
