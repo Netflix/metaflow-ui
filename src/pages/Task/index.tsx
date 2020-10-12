@@ -73,6 +73,8 @@ type TaskViewProps = {
   groupBy: { value: boolean; set: (val: boolean) => void };
 };
 
+const sortTaskAttempts = (a: ITask, b: ITask) => a.attempt_id - b.attempt_id;
+
 const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowDataDispatch, groupBy }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
@@ -99,7 +101,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   // Task data will be array so we need to set one of them as active task when they arrive
   useEffect(() => {
     if (status === 'Ok' && tasks && tasks.length > 0) {
-      setTask(tasks[tasks.length - 1]);
+      setTask(tasks.sort(sortTaskAttempts)[tasks.length - 1]);
     }
   }, [tasks, status]);
 
@@ -219,7 +221,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
           header={
             status === 'Ok' && tasks && tasks.length > 1 ? (
               <TabsHeading>
-                {tasks.map((item, index) => (
+                {tasks.sort(sortTaskAttempts).map((item, index) => (
                   <TabsHeadingItem key={index} onClick={() => selectTask(item)} active={item === task}>
                     {t('task.attempt')} {index + 1}
                   </TabsHeadingItem>
