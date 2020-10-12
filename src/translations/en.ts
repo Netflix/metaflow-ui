@@ -123,6 +123,10 @@ const en = {
       'no-results': 'No tasks found',
     },
 
+    connection: {
+      'waiting-for-connection': 'Waiting for connection',
+    },
+
     error: {
       'generic-error': 'Error happened',
       'load-error': 'Error loading data',
