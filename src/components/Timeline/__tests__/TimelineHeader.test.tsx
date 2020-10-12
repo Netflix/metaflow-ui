@@ -19,6 +19,12 @@ const headerFunctionProps = {
   groupBy: GROUP_BY,
   searchFieldProps: { text: '', setText: () => null },
   searchResults: { status: 'NotAsked' as const, result: [] },
+  counts: {
+    all: 0,
+    completed: 0,
+    running: 0,
+    failed: 0,
+  },
 };
 
 describe('TimelineHeader component', () => {

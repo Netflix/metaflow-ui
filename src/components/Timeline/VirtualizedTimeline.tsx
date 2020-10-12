@@ -24,6 +24,13 @@ type TimelineFilters = {
   tasks: string[];
 };
 
+export type RowCounts = {
+  all: number;
+  completed: number;
+  running: number;
+  failed: number;
+};
+
 //
 // Self containing component for rendering everything related to timeline. Component fetched (and subscribes for live events) steps and tasks from different
 // endpoints. View is supposed to be full page (and full page only) since component itself will use virtualised scrolling.
@@ -57,6 +64,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
   const [stickyHeader, setStickyHeader] = useState<null | string>(null);
   const [showFullscreen, setFullscreen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<null | string>(null);
+  // Counts of current rows for each status
+  const [counts, setCounts] = useState<RowCounts>({ all: 0, completed: 0, running: 0, failed: 0 });
 
   //
   // Local filterings
@@ -158,6 +167,39 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
   ]);
   /* eslint-enable */
 
+  // Follow counts of rows by each status.
+  useEffect(() => {
+    const allRows = Object.keys(rowData).reduce((arr: Task[], key) => {
+      if (key.startsWith('_')) return arr;
+
+      const tasks = Object.keys(rowData[key].data).reduce((arr2: Task[], key2) => {
+        const rowTasks = rowData[key].data[key2];
+        return arr2.concat([rowTasks[rowTasks.length - 1]]);
+      }, []);
+      return arr.concat(tasks);
+    }, []);
+
+    const newCounts = {
+      all: 0,
+      completed: 0,
+      running: 0,
+      failed: 0,
+    };
+
+    for (const row of allRows) {
+      newCounts.all++;
+      if (row.status === 'completed' && row.finished_at) {
+        newCounts.completed++;
+      } else if (row.status === 'failed') {
+        newCounts.failed++;
+      } else if (row.status === 'running' || !row.finished_at) {
+        newCounts.running++;
+      }
+    }
+
+    setCounts(newCounts);
+  }, [rowData]);
+
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
     const stepPos: StepIndex[] = [];
@@ -176,6 +218,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
   // Reset everything if run is changed
   useEffect(() => {
     graphDispatch({ type: 'reset' });
+    setCounts({ all: 0, completed: 0, running: 0, failed: 0 });
   }, [run.run_number, graphDispatch]);
 
   //
@@ -236,6 +279,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
           updateStatusFilter={(status: null | string) => setStatusFilter(status)}
           searchFieldProps={searchFieldProps}
           searchResults={searchResults}
+          counts={counts}
         />
         {rows.length > 0 && (
           <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
