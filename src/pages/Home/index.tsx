@@ -388,6 +388,10 @@ const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
 
   if (typeof val1 === 'string' && typeof val2 === 'string') {
     return val1.toUpperCase() > val2.toUpperCase() ? 1 : val1.toUpperCase() < val2.toUpperCase() ? -1 : 0;
+  } else if (typeof val1 === 'string') {
+    return -1;
+  } else if (typeof val2 === 'string') {
+    return 1;
   }
 
   return 0;
@@ -400,6 +404,10 @@ const nmbSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
 
   if (typeof val1 === 'number' && typeof val2 === 'number') {
     return val1 - val2;
+  } else if (typeof val1 === 'number') {
+    return -1;
+  } else if (typeof val2 === 'number') {
+    return 1;
   }
 
   return 0;
