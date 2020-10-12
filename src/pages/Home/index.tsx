@@ -331,6 +331,10 @@ function makeActiveRequestParameters(params: Record<string, string>) {
     }
   }
 
+  if (params._order && params._order.split(',').length === 1 && params._order.indexOf('ts_epoch') === -1) {
+    params._order = `${params._order},ts_epoch`;
+  }
+
   params._group_limit = String(parseInt(params._group_limit) + 1);
 
   return params;
@@ -386,6 +390,10 @@ const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
   const val1 = dir === 'down' ? a[key] : b[key];
   const val2 = dir === 'down' ? b[key] : a[key];
 
+  if (val1 === val2 && key !== 'ts_epoch') {
+    return nmbSort(dir, 'ts_epoch')(a, b);
+  }
+
   if (typeof val1 === 'string' && typeof val2 === 'string') {
     return val1.toUpperCase() > val2.toUpperCase() ? 1 : val1.toUpperCase() < val2.toUpperCase() ? -1 : 0;
   } else if (typeof val1 === 'string') {
@@ -398,9 +406,13 @@ const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
 };
 
 // Generic number sorting
-const nmbSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
+const nmbSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun): number => {
   const val1 = dir === 'down' ? a[key] : b[key];
   const val2 = dir === 'down' ? b[key] : a[key];
+
+  if (val1 === val2 && key !== 'ts_epoch') {
+    return nmbSort(dir, 'ts_epoch')(a, b);
+  }
 
   if (typeof val1 === 'number' && typeof val2 === 'number') {
     return val1 - val2;
