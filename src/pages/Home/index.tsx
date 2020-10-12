@@ -331,6 +331,10 @@ function makeActiveRequestParameters(params: Record<string, string>) {
     }
   }
 
+  if (params._order && params._order.split(',').length === 1 && params._order.indexOf('ts_epoch') === -1) {
+    params._order = `${params._order},ts_epoch`;
+  }
+
   params._group_limit = String(parseInt(params._group_limit) + 1);
 
   return params;
