@@ -24,6 +24,7 @@ export function createTask(partialTask: Partial<Task>): Task {
     run_number: '1',
     step_name: 'askel',
     task_id: '1',
+    status: 'completed',
     user_name: 'SanteriCM',
     ts_epoch: 1595574762901,
     finished_at: 1595574762921,
