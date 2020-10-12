@@ -5,12 +5,16 @@ import logo from '../../assets/logo_dark_horizontal.svg';
 import Breadcrumb from '../Breadcrumb';
 import { ItemRow } from '../Structure';
 import HelpMenu from '../HelpMenu';
+import ConnectionStatus from '../ConnectionStatus';
 
 const AppBar: React.FC = () => {
   const location = useLocation();
 
   return (
     <Wrapper>
+      <ConnectionStatusWrapper>
+        <ConnectionStatus />
+      </ConnectionStatusWrapper>
       <ItemRow pad="lg">
         <Link to={location.pathname === '/' ? '/' + location.search : '/'}>
           <Logo src={logo} />
@@ -42,4 +46,12 @@ const Wrapper = styled.header`
 
 const Logo = styled.img`
   height: ${(p) => p.theme.layout.appbarLogoHeight}rem;
+`;
+
+const ConnectionStatusWrapper = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem;
+  padding-top: ${(p) => p.theme.spacer.md}rem;
 `;

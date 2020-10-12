@@ -51,7 +51,17 @@ type WebSocketConnection = {
 export function createWebsocketConnection(url: string): WebSocketConnection {
   let subscriptions: Array<Subscription<unknown>> = [];
 
-  const conn = new ReconnectingWebSocket(url, [], {});
+  const conn = new ReconnectingWebSocket(url, [], {
+    maxReconnectionDelay: 5000, // max delay in ms between reconnections
+    minReconnectionDelay: 1000, // min delay in ms between reconnections
+    reconnectionDelayGrowFactor: 1.05, // how fast the reconnection delay grows
+    minUptime: 5000, // min time in ms to consider connection as stable
+    connectionTimeout: 2000, // retry connect if not connected after this time, in ms
+    maxRetries: Infinity, // maximum number of retries
+    maxEnqueuedMessages: Infinity, // maximum number of messages to buffer until reconnection
+    startClosed: false, // start websocket in CLOSED state, call `.reconnect()` to connect
+    debug: false, // enables debug output
+  });
   conn.addEventListener('open', (_e: WSEvent) => {
     // Always re-subscribe to events when connection is established
     // This operation is safe since backend makes sure there's no duplicate identifiers
