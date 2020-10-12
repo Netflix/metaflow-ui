@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { SearchFieldProps, SearchResultModel } from '../../hooks/useSearchField';
 import SearchField from '../SearchField';
 import SettingsButton from './SettingsButton';
+import { RowCounts } from './VirtualizedTimeline';
 
 export type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
@@ -26,6 +27,7 @@ export type TimelineHeaderProps = {
   graph: GraphState;
   searchFieldProps: SearchFieldProps;
   searchResults: SearchResultModel;
+  counts: RowCounts;
 };
 
 const TimelineHeader: React.FC<TimelineHeaderProps> = ({
@@ -42,6 +44,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   updateStatusFilter,
   searchFieldProps,
   searchResults,
+  counts,
 }) => {
   const { t } = useTranslation();
   const SortButtonDef = (label: string, property: GraphSortBy) => (
@@ -96,9 +99,9 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 }}
                 value={status}
                 options={[
-                  ['all', t('run.filter-all')],
-                  ['done', t('run.filter-completed')],
-                  ['running', t('run.filter-running')],
+                  ['all', t('run.filter-all') + ` (${counts.all})`],
+                  ['done', t('run.filter-completed') + ` (${counts.completed})`],
+                  ['running', t('run.filter-running') + ` (${counts.running})`],
                 ]}
               />
             </TimelineHeaderItem>

@@ -40,6 +40,7 @@ export interface Task extends MetaDataBaseObject {
   attempt_id: number;
   finished_at?: number;
   duration?: number;
+  status: string;
 }
 
 export interface Metadata extends MetaDataBaseObject {
