@@ -388,6 +388,10 @@ const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
 
   if (typeof val1 === 'string' && typeof val2 === 'string') {
     return val1.toUpperCase() > val2.toUpperCase() ? 1 : val1.toUpperCase() < val2.toUpperCase() ? -1 : 0;
+  } else if (typeof val1 === 'string') {
+    return -1;
+  } else if (typeof val2 === 'string') {
+    return 1;
   }
 
   return 0;
