@@ -45,7 +45,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
               data-testid="timeline-row-link"
             >
               <RowLabelContent>
-                <div style={{ overflow: 'hidden' }}>
+                <div style={{ overflow: 'hidden' }} data-testid="timeline-row-textlabel">
                   <RowStepName>{!isGroupped ? item.data[0].step_name : ''}</RowStepName>
                   <span>
                     {!isGroupped ? '/' : ''}

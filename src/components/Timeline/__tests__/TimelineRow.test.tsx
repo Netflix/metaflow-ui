@@ -4,6 +4,8 @@ import { render } from '@testing-library/react';
 import { createGraphState, createTask, createStep } from '../testhelper';
 import TestWrapper from '../../../utils/testing';
 
+const MockT = (str: string) => str;
+
 describe('TimelineRow component', () => {
   test('<TimelineRow> - should render', () => {
     render(
@@ -13,6 +15,7 @@ describe('TimelineRow component', () => {
           onOpen={jest.fn()}
           item={{ type: 'task', data: [createTask({})] }}
           isGroupped={true}
+          t={MockT}
         />
       </TestWrapper>,
     );
@@ -27,6 +30,7 @@ describe('TimelineRow component', () => {
           onOpen={jest.fn()}
           isGroupped={true}
           item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
+          t={MockT}
         />
       </TestWrapper>,
     );
@@ -35,7 +39,7 @@ describe('TimelineRow component', () => {
     expect(getByTestId('timeline-row-link')).toBeInTheDocument();
     expect(getByTestId('timeline-row-link')).toHaveAttribute('href', '/flows/BasicFlow/runs/1/steps/askel/tasks/1');
     // Row should only have task id as label (grouping is on)
-    expect(getByTestId('timeline-row-link').textContent).toBe(task.task_id.toString());
+    expect(getByTestId('timeline-row-textlabel').textContent).toBe(task.task_id.toString());
     // Should have two graphic bars (one is retry)
     expect(getByTestId('timeline-row-graphic-container').children.length).toBe(2);
   });
@@ -49,6 +53,7 @@ describe('TimelineRow component', () => {
           onOpen={jest.fn()}
           isGroupped={true}
           item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
+          t={MockT}
         />
       </TestWrapper>,
     );
@@ -57,7 +62,7 @@ describe('TimelineRow component', () => {
     expect(getByTestId('timeline-row-link')).toBeInTheDocument();
     expect(getByTestId('timeline-row-link')).toHaveAttribute('href', '/flows/BasicFlow/runs/1/steps/askel/tasks/1');
     // Row should only have task id as label (grouping is on)
-    expect(getByTestId('timeline-row-link').textContent).toBe(task.task_id.toString());
+    expect(getByTestId('timeline-row-textlabel').textContent).toBe(task.task_id.toString());
     // Should have two graphic bars (one is retry)
     expect(getByTestId('timeline-row-graphic-container').children.length).toBe(2);
 
@@ -69,11 +74,12 @@ describe('TimelineRow component', () => {
           onOpen={jest.fn()}
           isGroupped={false}
           item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
+          t={MockT}
         />
       </TestWrapper>,
     );
 
-    expect(getByTestId('timeline-row-link').textContent).toBe('askel/' + task.task_id.toString());
+    expect(getByTestId('timeline-row-textlabel').textContent).toBe('askel/' + task.task_id.toString());
   });
 
   test('<TimelineRow> - step row', () => {
@@ -82,6 +88,7 @@ describe('TimelineRow component', () => {
       onOpen: () => null,
       item: { type: 'step' as const, data: createStep({}) },
       isOpen: true,
+      t: MockT,
     };
 
     const { getByTestId, rerender } = render(
