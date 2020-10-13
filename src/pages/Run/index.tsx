@@ -59,7 +59,6 @@ type RunPageProps = {
 
 const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
-
   const { data: runParameters, status: runParametersStatus, error: runParameterError } = useResource<
     RunParam,
     RunParam

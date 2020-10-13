@@ -30,7 +30,7 @@ describe('Breadcrumb component', () => {
       },
       {
         label: '5',
-        path: '/flows/HugeFlow/runs/5/view/timeline',
+        path: '/HugeFlow/5/view/timeline',
       },
     ]);
   });
@@ -42,11 +42,11 @@ describe('Breadcrumb component', () => {
     },
     {
       label: '5',
-      path: '/flows/HugeFlow/runs/5/view/timeline',
+      path: '/HugeFlow/5/view/timeline',
     },
     {
       label: 'start',
-      path: '/flows/HugeFlow/runs/5/view/timeline?steps=start',
+      path: '/HugeFlow/5/view/timeline?steps=start',
     },
   ];
 
@@ -69,7 +69,7 @@ describe('Breadcrumb component', () => {
   test('findAdditionalButtons - tasks', () => {
     expect(findAdditionalButtons(matchWithParams({ ...RUN_PARAMS, stepName: 'start', taskId: '14' }), '')).toEqual([
       ...STEP_RESULT,
-      { label: '14', path: '/flows/HugeFlow/runs/5/steps/start/tasks/14' },
+      { label: '14', path: '/HugeFlow/5/start/14' },
     ]);
   });
 
@@ -97,7 +97,7 @@ describe('Breadcrumb component', () => {
   });
 
   test('<Breadcrumb /> - Should render button container', () => {
-    const { getByTestId, getByText } = render(makeBreadcrumb('/flows/HugeFlow/runs/4/views/timeline'));
+    const { getByTestId, getByText } = render(makeBreadcrumb('/HugeFlow/4/views/timeline'));
 
     getByTestId('home-button');
     getByTestId('breadcrumb-button-container');
