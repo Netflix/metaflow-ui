@@ -33,7 +33,7 @@ describe('TimelineRow component', () => {
 
     // Row should have link
     expect(getByTestId('timeline-row-link')).toBeInTheDocument();
-    expect(getByTestId('timeline-row-link')).toHaveAttribute('href', '/flows/BasicFlow/runs/1/steps/askel/tasks/1');
+    expect(getByTestId('timeline-row-link')).toHaveAttribute('href', '/BasicFlow/1/askel/1');
     // Row should only have task id as label (grouping is on)
     expect(getByTestId('timeline-row-link').textContent).toBe(task.task_id.toString());
     // Should have two graphic bars (one is retry)
@@ -55,7 +55,7 @@ describe('TimelineRow component', () => {
 
     // Row should have link
     expect(getByTestId('timeline-row-link')).toBeInTheDocument();
-    expect(getByTestId('timeline-row-link')).toHaveAttribute('href', '/flows/BasicFlow/runs/1/steps/askel/tasks/1');
+    expect(getByTestId('timeline-row-link')).toHaveAttribute('href', '/BasicFlow/1/askel/1');
     // Row should only have task id as label (grouping is on)
     expect(getByTestId('timeline-row-link').textContent).toBe(task.task_id.toString());
     // Should have two graphic bars (one is retry)
