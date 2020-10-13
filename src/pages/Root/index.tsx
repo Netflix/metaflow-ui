@@ -1,30 +1,32 @@
 import React from 'react';
-import { Route, Switch, Redirect, useRouteMatch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import NotFound from '../NotFound';
 import HomePage from '../Home';
 import RunPage from '../Run';
-import { PATHS } from '../../utils/routing';
-
-const defaultRunTab = 'view/timeline';
+import { SHORT_PATHS } from '../../utils/routing';
 
 const RootPage: React.FC = () => {
   return (
     <>
       <Switch>
-        <Route exact path={PATHS.home}>
+        <Route exact path={SHORT_PATHS.home}>
           <HomePage />
         </Route>
 
-        <Route path={PATHS.task} exact>
+        <Route path={SHORT_PATHS.runSubview} exact>
           <RunPage />
         </Route>
 
-        <Route path={PATHS.runSubview}>
+        <Route path={SHORT_PATHS.task} exact>
           <RunPage />
         </Route>
 
-        <Route path={PATHS.run} exact>
-          <DefaultSubRoute path={defaultRunTab} />
+        <Route exact path={SHORT_PATHS.step}>
+          <RunPage />
+        </Route>
+
+        <Route exact path={SHORT_PATHS.run}>
+          <RunPage />
         </Route>
 
         <Route>
@@ -36,11 +38,3 @@ const RootPage: React.FC = () => {
 };
 
 export default RootPage;
-
-const DefaultSubRoute = ({ path }: { path: string }) => {
-  const { url } = useRouteMatch();
-
-  const separator = url.endsWith('/') ? '' : '/';
-
-  return <Redirect to={`${url}${separator}${path}`} />;
-};
