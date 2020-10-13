@@ -8,6 +8,7 @@ import Icon from '../Icon';
 import { Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { lighten } from 'polished';
+import { TFunction } from 'i18next';
 
 type TimelineRowProps = {
   // Row type and data
@@ -21,11 +22,12 @@ type TimelineRowProps = {
   sticky?: boolean;
   // Optional end time. Used for steps since they dont have data themselves
   endTime?: number;
+  t: TFunction;
 };
 
 type LabelPosition = 'left' | 'right' | 'none';
 
-const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, isGroupped, sticky, endTime }) => {
+const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, isGroupped, sticky, endTime, t }) => {
   if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
   return (
@@ -42,16 +44,30 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
               )}
               data-testid="timeline-row-link"
             >
-              <RowStepName>{!isGroupped ? item.data[0].step_name : ''}</RowStepName>
-              <span>
-                {!isGroupped ? '/' : ''}
-                {item.data[0].task_id}
-              </span>
+              <RowLabelContent>
+                <div style={{ overflow: 'hidden' }}>
+                  <RowStepName>{!isGroupped ? item.data[0].step_name : ''}</RowStepName>
+                  <span>
+                    {!isGroupped ? '/' : ''}
+                    {item.data[0].task_id}
+                  </span>
+                </div>
+                <RowDuration>
+                  {item.data[0].status === 'running'
+                    ? t('filters.running')
+                    : item.data[0].duration
+                    ? formatDuration(item.data[0].duration, 1)
+                    : null}
+                </RowDuration>
+              </RowLabelContent>
             </Link>
           ) : (
             <StepLabel onClick={() => onOpen()}>
               <Icon name="arrowDown" size="xs" rotate={isOpen ? 0 : -90} data-testid="timeline-row-icon" />
-              <div data-testid="timeline-row-label">{item.data.step_name}</div>
+              <RowLabelContent>
+                <div data-testid="timeline-row-label">{item.data.step_name}</div>
+                <RowDuration>{endTime ? formatDuration(endTime - item.data.ts_epoch, 1) : ''}</RowDuration>
+              </RowLabelContent>
             </StepLabel>
           )}
         </RowLabel>
@@ -205,8 +221,6 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
     color: #333;
     text-decoration: none;
     max-width: 100%;
-
-    padding-right: 0.25rem;
     padding-left: 2.5rem;
     white-space: nowrap;
 
@@ -226,6 +240,16 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
 
 const RowStepName = styled.span`
   overflow: hidden;
+`;
+
+const RowDuration = styled.span`
+  padding: 0 0.25rem 0 0.5rem;
+`;
+
+const RowLabelContent = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 `;
 
 const StepLabel = styled.div`
