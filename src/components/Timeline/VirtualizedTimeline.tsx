@@ -14,6 +14,7 @@ import FullPageContainer from '../FullPageContainer';
 import useSeachField, { SearchResultModel } from '../../hooks/useSearchField';
 import GenericError from '../GenericError';
 import { ItemRow } from '../Structure';
+import { TFunction } from 'i18next';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task[] };
@@ -324,6 +325,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
                   dispatch: rowDataDispatch,
                   rowDataState: rowData,
                   isGroupped: groupBy.value,
+                  t: t,
                 })}
                 height={listContainer.height - (stickyHeader ? ROW_HEIGHT : 0) - 69}
                 width={listContainer.width}
@@ -336,6 +338,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
                   graph={graph}
                   rowData={rowData[stickyHeader]}
                   onToggle={() => rowDataDispatch({ type: 'close', id: stickyHeader })}
+                  t={t}
                 />
               )}
             </FixedListContainer>
@@ -376,9 +379,10 @@ type RowRendererProps = {
   dispatch: (action: RowDataAction) => void;
   rowDataState: RowDataModel;
   isGroupped: boolean;
+  t: TFunction;
 };
 
-function createRowRenderer({ rows, graph, dispatch, rowDataState, isGroupped }: RowRendererProps) {
+function createRowRenderer({ rows, graph, dispatch, rowDataState, isGroupped, t }: RowRendererProps) {
   return ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = rows[index];
     return (
@@ -390,6 +394,7 @@ function createRowRenderer({ rows, graph, dispatch, rowDataState, isGroupped }: 
         isGroupped={isGroupped}
         rowData={row.type === 'step' ? rowDataState[row.data.step_name] : undefined}
         toggleOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
+        t={t}
       />
     );
   };
@@ -402,7 +407,8 @@ const RowRenderer: React.FC<{
   isGroupped: boolean;
   rowData?: StepRowData;
   toggleOpen?: () => void;
-}> = ({ style, row, graph, rowData, toggleOpen, isGroupped }) => {
+  t: TFunction;
+}> = ({ style, row, graph, rowData, toggleOpen, isGroupped, t }) => {
   return (
     <div style={style}>
       <TimelineRow
@@ -416,6 +422,7 @@ const RowRenderer: React.FC<{
 
           toggleOpen();
         }}
+        t={t}
       />
     </div>
   );
@@ -426,8 +433,9 @@ const StickyHeader: React.FC<{
   items: Row[];
   graph: GraphState;
   rowData?: StepRowData;
+  t: TFunction;
   onToggle: () => void;
-}> = ({ stickyStep, items, graph, rowData, onToggle }) => {
+}> = ({ stickyStep, items, graph, rowData, onToggle, t }) => {
   const item = items.find((item) => item.type === 'step' && item.data.step_name === stickyStep);
 
   if (!item) return null;
@@ -440,6 +448,7 @@ const StickyHeader: React.FC<{
       isGroupped={true}
       graph={graph}
       onOpen={onToggle}
+      t={t}
       sticky
     />
   );
@@ -457,7 +466,7 @@ const VirtualizedTimelineContainer = styled.div`
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none;
 
-  .ReactVirtualized__List:focus  {
+  .ReactVirtualized__List:focus {
     outline: none;
     border: none;
   }
