@@ -64,6 +64,7 @@ const en = {
       'no-run-data': 'No run data',
       DAG: 'DAG',
       'dag-not-available': 'DAG is currently not available',
+      'dag-only-available-AWS': 'DAG is only available when flow is executed on AWS.',
       timeline: 'Timeline',
       parameters: 'Parameters',
       'no-run-parameters': 'No run parameters.',
@@ -106,6 +107,7 @@ const en = {
       artifacts: 'Artifacts',
       'search-tasks': 'Search: artifact_name=value',
       'no-logs': 'No logs',
+      'logs-only-available-AWS': 'Logs are only available when flow is executed on AWS.',
       attempt: 'Attempt',
     },
 
@@ -142,6 +144,7 @@ const en = {
       's3-bad-url': 'Error in S3 URL.',
       's3-missing-credentials': 'Server is missing AWS credentials.',
       's3-generic-error': 'There was an error on S3 access.',
+      'dag-unsupported-flow-language': 'Unsupported language. DAG is only supported for flows ran with Python.',
 
       'dag-processing-error': 'DAG was found but something went wrong with processing the data.',
     },

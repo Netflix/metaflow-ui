@@ -6,9 +6,9 @@ import { APIError, AsyncStatus } from '../../../types';
 //
 // Conditional renderer for async components.
 //
-type Props = { status: AsyncStatus; error: APIError | null; component: JSX.Element };
+type Props = { status: AsyncStatus; error: APIError | null; component: JSX.Element; customNotFound?: React.ReactNode };
 
-const SectionLoader: React.FC<Props> = ({ status, error, component }) => {
+const SectionLoader: React.FC<Props> = ({ status, error, component, customNotFound }) => {
   if (status === 'Loading') {
     return (
       <div style={{ textAlign: 'center' }}>
@@ -18,7 +18,7 @@ const SectionLoader: React.FC<Props> = ({ status, error, component }) => {
   } else if (status === 'Error') {
     return (
       <div>
-        <APIErrorRenderer error={error} />
+        <APIErrorRenderer error={error} customNotFound={customNotFound} />
       </div>
     );
   }

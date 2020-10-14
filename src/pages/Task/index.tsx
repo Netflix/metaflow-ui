@@ -18,7 +18,7 @@ import LogList from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
 import useSeachField from '../../hooks/useSearchField';
 import Spinner from '../../components/Spinner';
-import GenericError from '../../components/GenericError';
+import GenericError, { DefaultAdditionalErrorInfo } from '../../components/GenericError';
 import { TabsHeading, TabsHeadingItem } from '../../components/Tabs';
 import SectionLoader from './components/SectionLoader';
 
@@ -278,6 +278,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                   <SectionLoader
                     status={statusOut}
                     error={logStdError}
+                    customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
                     component={
                       <LogList
                         rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
@@ -298,6 +299,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                   <SectionLoader
                     status={statusErr}
                     error={logErrError}
+                    customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
                     component={
                       <LogList
                         rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
