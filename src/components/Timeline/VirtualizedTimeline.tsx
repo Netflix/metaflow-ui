@@ -324,7 +324,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
                   graph,
                   dispatch: rowDataDispatch,
                   rowDataState: rowData,
-                  isGroupped: groupBy.value,
+                  isGrouped: groupBy.value,
                   t: t,
                 })}
                 height={listContainer.height - (stickyHeader ? ROW_HEIGHT : 0) - 69}
@@ -378,11 +378,11 @@ type RowRendererProps = {
   graph: GraphState;
   dispatch: (action: RowDataAction) => void;
   rowDataState: RowDataModel;
-  isGroupped: boolean;
+  isGrouped: boolean;
   t: TFunction;
 };
 
-function createRowRenderer({ rows, graph, dispatch, rowDataState, isGroupped, t }: RowRendererProps) {
+function createRowRenderer({ rows, graph, dispatch, rowDataState, isGrouped, t }: RowRendererProps) {
   return ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = rows[index];
     return (
@@ -391,7 +391,7 @@ function createRowRenderer({ rows, graph, dispatch, rowDataState, isGroupped, t 
         row={rows[index]}
         graph={graph}
         style={style}
-        isGroupped={isGroupped}
+        isGrouped={isGrouped}
         rowData={row.type === 'step' ? rowDataState[row.data.step_name] : undefined}
         toggleOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
         t={t}
@@ -404,17 +404,17 @@ const RowRenderer: React.FC<{
   style: React.CSSProperties;
   row: Row;
   graph: GraphState;
-  isGroupped: boolean;
+  isGrouped: boolean;
   rowData?: StepRowData;
   toggleOpen?: () => void;
   t: TFunction;
-}> = ({ style, row, graph, rowData, toggleOpen, isGroupped, t }) => {
+}> = ({ style, row, graph, rowData, toggleOpen, isGrouped, t }) => {
   return (
     <div style={style}>
       <TimelineRow
         item={row}
         graph={graph}
-        isGroupped={isGroupped}
+        isGrouped={isGrouped}
         isOpen={rowData && rowData.isOpen}
         endTime={row.type === 'step' && rowData ? rowData.finished_at : undefined}
         onOpen={() => {
@@ -445,7 +445,7 @@ const StickyHeader: React.FC<{
       item={item}
       endTime={rowData && rowData.finished_at}
       isOpen={true}
-      isGroupped={true}
+      isGrouped={true}
       graph={graph}
       onOpen={onToggle}
       t={t}
