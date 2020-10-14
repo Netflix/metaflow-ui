@@ -37,12 +37,20 @@ export const knownErrorIds = [
   's3-missing-credentials',
   's3-generic-error',
   'dag-processing-error',
+  'dag-unsupported-flow-language',
   'not-found',
+  'log-error-s3',
+  'log-error',
 ];
 
-type APIErrorRendererProps = { error: APIError | null; message?: string; icon?: IconKeys | JSX.Element };
+type APIErrorRendererProps = {
+  error: APIError | null;
+  message?: string;
+  icon?: IconKeys | JSX.Element;
+  customNotFound?: React.ReactNode;
+};
 
-export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, message, icon }) => {
+export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, message, customNotFound, icon }) => {
   const { t } = useTranslation();
   let msg = t('error.generic-error');
 
@@ -56,6 +64,7 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
     <div>
       <GenericError message={msg} icon={icon} />
       {error && error.status !== 404 && <APIErrorDetails error={error} />}
+      {error && error.status === 404 && customNotFound && <div>{customNotFound}</div>}
     </div>
   );
 };
@@ -127,5 +136,9 @@ const DetailsLog = styled.div`
   overflow: hidden;
   font-family: monospace;
 `;
+
+export const DefaultAdditionalErrorInfo = (str: string): JSX.Element => (
+  <div style={{ textAlign: 'center', margin: '1rem 0' }}>{str}</div>
+);
 
 export default GenericError;
