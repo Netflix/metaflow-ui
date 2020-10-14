@@ -16,10 +16,11 @@ type AutoLoadProps = {
 };
 
 const AutoLoadTrigger: React.FC<AutoLoadProps> = ({ updateVisibility, status, resultAmount }) => {
-  const [isInViewport, targetRef] = useIsInViewport();
+  const [isInViewport, targetRef] = useIsInViewport({
+    modBottom: '100px',
+  });
   // Track active status so we don't ever spam requests
   const [isUpdatable, setIsUpdatable] = useState(false);
-
   // If component is in viewport, is ready from earlier request AND request is OK we can load more.
   useEffect(() => {
     if (isInViewport && isUpdatable && status === 'Ok') {
