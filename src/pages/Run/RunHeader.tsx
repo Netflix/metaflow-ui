@@ -94,10 +94,10 @@ const RunHeader: React.FC<{
               ]}
             />
           </InformationRow>
-          <InformationRow>
+          <InformationRow scrollOverflow={false}>
             <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
               <SmallText>{t('run.tags')}</SmallText>
-              <ItemRow pad="xs">
+              <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
                 {mergeTags(run).map((tag) => (
                   <TagNoWrap
                     key={tag}
