@@ -238,7 +238,7 @@ const Home: React.FC = () => {
       if (filtersFromLS) {
         const settings = JSON.parse(filtersFromLS);
         if (settings) {
-          setQp(settings);
+          setQp(settings, 'replace');
         } else {
           resetAllFilters();
         }
