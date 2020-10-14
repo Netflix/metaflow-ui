@@ -34,52 +34,8 @@ describe('TimelineRow component', () => {
         />
       </TestWrapper>,
     );
-
-    // Row should have link
-    expect(getByTestId('timeline-row-link')).toBeInTheDocument();
-    expect(getByTestId('timeline-row-link')).toHaveAttribute('href', '/BasicFlow/1/askel/1');
-    // Row should only have task id as label (grouping is on)
-    expect(getByTestId('timeline-row-textlabel').textContent).toBe(task.task_id.toString());
     // Should have two graphic bars (one is retry)
     expect(getByTestId('timeline-row-graphic-container').children.length).toBe(2);
-  });
-
-  test('<TimelineRow> - task row', () => {
-    const task = createTask({});
-    const { getByTestId, rerender } = render(
-      <TestWrapper>
-        <TimelineRow
-          graph={createGraphState({})}
-          onOpen={jest.fn()}
-          isGroupped={true}
-          item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
-          t={MockT}
-        />
-      </TestWrapper>,
-    );
-
-    // Row should have link
-    expect(getByTestId('timeline-row-link')).toBeInTheDocument();
-    expect(getByTestId('timeline-row-link')).toHaveAttribute('href', '/BasicFlow/1/askel/1');
-    // Row should only have task id as label (grouping is on)
-    expect(getByTestId('timeline-row-textlabel').textContent).toBe(task.task_id.toString());
-    // Should have two graphic bars (one is retry)
-    expect(getByTestId('timeline-row-graphic-container').children.length).toBe(2);
-
-    // Rerender with grouping off. Shoudl change label rendering
-    rerender(
-      <TestWrapper>
-        <TimelineRow
-          graph={createGraphState({})}
-          onOpen={jest.fn()}
-          isGroupped={false}
-          item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
-          t={MockT}
-        />
-      </TestWrapper>,
-    );
-
-    expect(getByTestId('timeline-row-textlabel').textContent).toBe('askel/' + task.task_id.toString());
   });
 
   test('<TimelineRow> - step row', () => {
@@ -91,26 +47,13 @@ describe('TimelineRow component', () => {
       t: MockT,
     };
 
-    const { getByTestId, rerender } = render(
+    const { getByTestId } = render(
       <TestWrapper>
         <TimelineRow {...props} isGroupped={true} />
       </TestWrapper>,
     );
-
-    // Row should only have step name as label
-    expect(getByTestId('timeline-row-label').textContent).toBe(props.item.data.step_name);
     // Should have only one line graphic
     expect(getByTestId('timeline-row-graphic-container').children.length).toBe(1);
-
-    expect(getByTestId('timeline-row-icon').attributes.getNamedItem('rotate')?.value).toBe('0');
-
-    rerender(
-      <TestWrapper>
-        <TimelineRow {...props} isOpen={false} isGroupped={true} />
-      </TestWrapper>,
-    );
-
-    expect(getByTestId('timeline-row-icon').attributes.getNamedItem('rotate')?.value).toBe('-90');
   });
 
   test('<BoxGraphicElement>', () => {

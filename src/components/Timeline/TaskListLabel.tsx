@@ -23,17 +23,17 @@ const TaskListLabel: React.FC<Props> = (props) => {
       {props.type === 'task' ? (
         <Link
           to={getPath.task(props.item.flow_id, props.item.run_number, props.item.step_name, props.item.task_id)}
-          data-testid="timeline-row-link"
+          data-testid="tasklistlabel-link"
         >
           <RowLabelContent>
-            <RowLabelTaskName data-testid="timeline-row-textlabel">
+            <RowLabelTaskName data-testid="tasklistlabel-text">
               <RowStepName>{!groupped ? props.item.step_name : ''}</RowStepName>
               <span>
                 {!groupped ? '/' : ''}
                 {props.item.task_id}
               </span>
             </RowLabelTaskName>
-            <RowDuration>
+            <RowDuration data-testid="tasklistlabel-duration">
               {props.item.status === 'running'
                 ? t('filters.running')
                 : props.item.duration
@@ -43,11 +43,11 @@ const TaskListLabel: React.FC<Props> = (props) => {
           </RowLabelContent>
         </Link>
       ) : (
-        <StepLabel onClick={() => props.toggle()}>
-          <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="timeline-row-icon" />
+        <StepLabel onClick={() => props.toggle()} data-testid="tasklistlabel-step-container">
+          <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="tasklistlabel-open-icon" />
           <RowLabelContent>
-            <RowStepName data-testid="timeline-row-label">{props.item.step_name}</RowStepName>
-            <RowDuration>{formatDuration(props.duration, 1)}</RowDuration>
+            <RowStepName data-testid="tasklistlabel-text">{props.item.step_name}</RowStepName>
+            <RowDuration data-testid="tasklistlabel-duration">{formatDuration(props.duration, 1)}</RowDuration>
           </RowLabelContent>
         </StepLabel>
       )}
