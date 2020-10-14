@@ -1,16 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const InformationRow: React.FC<{ spaceless?: boolean }> = ({ spaceless = false, children }) => {
-  return <StyledRow spaceless={spaceless}>{children}</StyledRow>;
+const InformationRow: React.FC<{ spaceless?: boolean; scrollOverflow?: boolean }> = ({
+  spaceless = false,
+  scrollOverflow = true,
+  children,
+}) => {
+  return (
+    <StyledRow spaceless={spaceless} scrollOverflow={scrollOverflow}>
+      {children}
+    </StyledRow>
+  );
 };
 
-const StyledRow = styled.div<{ spaceless: boolean }>`
+const StyledRow = styled.div<{ spaceless: boolean; scrollOverflow: boolean }>`
   overflow: hidden;
-  overflow-x: scroll;
+  overflow-x: ${(p) => (p.scrollOverflow ? 'auto' : 'hidden')};
   background: ${({ theme }) => theme.color.bg.light};
   border-bottom: ${({ theme }) => '1px solid ' + theme.color.border.light};
-  padding: ${(props) => (props.spaceless ? '0px' : '10px')};
+  padding: ${(p) => (p.spaceless ? '0px' : '10px')};
 
   &:first-of-type {
     border-top-left-radius: 0.25rem;
