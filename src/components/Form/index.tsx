@@ -251,7 +251,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
 
   &.active {
     span.checkbox.checked {
-      color: #fff;
+      color: ${(p) => p.theme.color.text.white};
       border-color: transparent;
       font-weight: 500;
       background: ${(p) => p.theme.color.bg.blue};

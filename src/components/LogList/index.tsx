@@ -137,7 +137,7 @@ const ScrollToBottomButton = styled.div`
   border-radius: 4px;
 
   background: rgba(0, 0, 0, 0.5);
-  color: #fff;
+  color: ${(p) => p.theme.color.text.white};
 `;
 
 export default LogList;

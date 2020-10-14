@@ -101,14 +101,14 @@ const HelpMenuTitle = styled.div`
   }
 
   i {
-    color: #888;
+    color: ${(p) => p.theme.color.text.mid};
   }
 `;
 
 const HelpMenuLink = styled.a`
   display: flex;
   padding: 0.5rem 1rem;
-  color: #333;
+  color: ${(p) => p.theme.color.text.mid};
   text-decoration: none;
   &:hover {
     color: ${(p) => p.theme.color.text.blue};
