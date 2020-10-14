@@ -184,7 +184,7 @@ const StyledRow = styled.div`
 
 const StickyStyledRow = styled(StyledRow)`
   position: absolute;
-  background: #fff;
+  background: ${(p) => p.theme.color.bg.white};
   top: 0;
   left: 0;
 `;
@@ -233,7 +233,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isFirst: bo
 const BoxGraphicMarker = css`
   height: 3px;
   width: 1px;
-  background: #717171;
+  background: ${(p) => p.theme.color.bg.dark};
   position: absolute;
   bottom: 0;
 `;

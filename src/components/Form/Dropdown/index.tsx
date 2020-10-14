@@ -109,7 +109,7 @@ const DropdownOptions = styled.div`
   left: 0;
 
   padding: 10px;
-  background: #fff;
+  background: ${(p) => p.theme.color.bg.white};
   border: ${(p) => p.theme.border.thinMid};
   z-index: 2;
   white-space: nowrap;

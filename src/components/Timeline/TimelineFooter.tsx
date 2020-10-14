@@ -115,7 +115,7 @@ const MiniTimelineRow: React.FC<{
     <div
       style={{
         position: 'relative',
-        background: 'green',
+        background: '#20AF2E',
         height: '2px',
         width: width + '%',
         left: left + '%',
@@ -183,7 +183,7 @@ const TimelineFooterContainer = styled.div`
 
 const TimelineFooterContent = styled.div`
   position: relative;
-  background: #f6f6f6;
+  background: ${(p) => p.theme.color.bg.light};
   border-bottom: ${(p) => p.theme.border.thinLight};
   height: 49px;
 `;
@@ -219,7 +219,7 @@ const MiniTimelineHandle = styled.div`
   top: 7px;
   height: 29px;
   width: 10px;
-  background: #2f80ed;
+  background: ${(p) => p.theme.color.bg.blue};
   z-index: 2;
 
   display: flex;
@@ -230,7 +230,7 @@ const MiniTimelineHandle = styled.div`
   > div {
     height: 1px;
     width: 4px;
-    background: #fff;
+    background: ${(p) => p.theme.color.bg.white};
     margin-bottom: 2px;
   }
 `;

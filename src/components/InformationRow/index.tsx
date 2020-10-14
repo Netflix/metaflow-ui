@@ -16,7 +16,7 @@ const InformationRow: React.FC<{ spaceless?: boolean; scrollOverflow?: boolean }
 const StyledRow = styled.div<{ spaceless: boolean; scrollOverflow: boolean }>`
   overflow: hidden;
   overflow-x: ${(p) => (p.scrollOverflow ? 'auto' : 'hidden')};
-  background: ${({ theme }) => theme.color.bg.light};
+  background: ${(p) => p.theme.color.bg.light};
   border-bottom: ${(p) => p.theme.border.thinLight};
   padding: ${(p) => (p.spaceless ? '0px' : '10px')};
 

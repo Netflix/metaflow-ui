@@ -16,7 +16,7 @@ export default styled.table`
 `;
 
 export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
-  background: #fff;
+  background: ${(p) => p.theme.color.bg.white};
   color: ${(p) => p.theme.color.text.light};
   font-weight: 400;
   white-space: nowrap;
