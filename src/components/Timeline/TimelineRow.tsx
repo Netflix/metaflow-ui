@@ -27,7 +27,16 @@ type TimelineRowProps = {
 
 type LabelPosition = 'left' | 'right' | 'none';
 
-const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, isGroupped, sticky, endTime, t }) => {
+const TimelineRow: React.FC<TimelineRowProps> = ({
+  item,
+  graph,
+  onOpen,
+  isOpen = true,
+  isGroupped,
+  sticky,
+  endTime,
+  t,
+}) => {
   if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
   return (
@@ -39,12 +48,12 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
             item={item.data}
             duration={endTime ? endTime - item.data.ts_epoch : 0}
             toggle={onOpen}
-            open={isOpen || true}
+            open={isOpen}
             groupped={isGroupped}
             t={t}
           />
         ) : (
-          <TaskListLabel type="task" item={item.data[0]} open={isOpen || true} groupped={isGroupped} t={t} />
+          <TaskListLabel type="task" item={item.data[0]} open={isOpen} groupped={isGroupped} t={t} />
         )}
         <RowGraphContainer data-testid="timeline-row-graphic-container">
           {item.type === 'step' ? (
