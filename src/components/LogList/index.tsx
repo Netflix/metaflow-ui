@@ -66,7 +66,7 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
               )}
               height={
                 fixedHeight
-                  ? fixedHeight - ItemRowSize.height
+                  ? fixedHeight - (ItemRowSize.height || 16)
                   : ROW_HEIGHT * rows.length < 400
                   ? ROW_HEIGHT * rows.length
                   : 400
