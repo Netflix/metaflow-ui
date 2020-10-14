@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import Icon from '../Icon';
 import useComponentSize from '@rehooks/component-size';
 import useWindowSize from '../../hooks/useWindowSize';
-import { APIErrorRenderer, knownErrorIds } from '../GenericError';
+import { APIErrorRenderer, DefaultAdditionalErrorInfo, knownErrorIds } from '../GenericError';
 import Spinner from '../Spinner';
 import { TFunction } from 'i18next';
 
@@ -79,7 +79,12 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
 
   const errorContent = (status === 'Ok' || status === 'Error') && !dagTree.length && (
     <div style={{ padding: '3rem 0' }} data-testid="dag-container-Error">
-      <APIErrorRenderer error={error} icon={<Icon name="noDag" customSize={5} />} message={DAGErrorMessage(t, error)} />
+      <APIErrorRenderer
+        error={error}
+        icon={<Icon name="noDag" customSize={5} />}
+        message={DAGErrorMessage(t, error)}
+        customNotFound={DefaultAdditionalErrorInfo(t('run.dag-only-available-AWS'))}
+      />
     </div>
   );
 
@@ -111,8 +116,8 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
 
 function DAGErrorMessage(t: TFunction, error: APIError | null): string {
   if (error && knownErrorIds.indexOf(error.id) > -1) {
-    if (error.id === 'dag-processing-error') {
-      return t('error.dag-processing-error');
+    if (error.id === 'dag-processing-error' || error.id === 'dag-unsupported-flow-language') {
+      return t('error.' + error.id);
     }
 
     return t(`error.failed-to-load-dag`) + ' ' + t(`error.${error.id}`);
