@@ -39,6 +39,8 @@ export const knownErrorIds = [
   'dag-processing-error',
   'dag-unsupported-flow-language',
   'not-found',
+  'log-error-s3',
+  'log-error',
 ];
 
 type APIErrorRendererProps = {

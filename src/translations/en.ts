@@ -145,8 +145,10 @@ const en = {
       's3-missing-credentials': 'Server is missing AWS credentials.',
       's3-generic-error': 'There was an error on S3 access.',
       'dag-unsupported-flow-language': 'Unsupported language. DAG is only supported for flows ran with Python.',
-
       'dag-processing-error': 'DAG was found but something went wrong with processing the data.',
+
+      'log-error-s3': 'There was a problem loading logs from AWS',
+      'log-error': 'There was a problem loading logs.',
     },
   },
 };
