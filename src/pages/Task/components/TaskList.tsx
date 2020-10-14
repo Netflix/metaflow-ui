@@ -24,7 +24,7 @@ export type TaskListRowItem =
     };
 
 const HEADER_SIZE_PX = 112;
-const SEARCH_SIZE_PX = 40;
+const SEARCH_SIZE_PX = 66;
 
 type Props = {
   rowData: RowDataModel;
@@ -134,12 +134,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
 
         {rows.length > 0 && (
           <List
-            style={
-              // Adding header height here manually.
-              {
-                borderTop: '2px solid rgba(0,0,0,0.1)',
-              }
-            }
+            style={{ borderTop: '2px solid rgba(0,0,0,0.1)' }}
             overscanRowCount={5}
             rowCount={rows.length}
             rowHeight={28}

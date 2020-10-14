@@ -7,6 +7,7 @@ import '@testing-library/jest-dom/extend-expect';
 const noop = () => null;
 Object.defineProperty(window, 'scrollTo', { value: noop, writable: true });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (global as any).IntersectionObserver = class IntersectionObserver {
   disconnect() {
     return null;

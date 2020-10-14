@@ -27,7 +27,7 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items }) => {
       setScrollTop(window.scrollY);
       const current = [...items]
         .reverse()
-        .find((item) => item.position && item.position < window.scrollY + HEADER_SIZE_PX);
+        .find((item) => item.position && item.position < window.scrollY + HEADER_SIZE_PX + 20);
       setActive((current && current.key) || items[0]?.key);
     };
 
@@ -52,7 +52,7 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items }) => {
             active={key === active}
             onClick={() => {
               if (position) {
-                window.scroll({ top: position - HEADER_SIZE_PX - 1 });
+                window.scroll({ top: position - HEADER_SIZE_PX + 2 });
               }
             }}
           >

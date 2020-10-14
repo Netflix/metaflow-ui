@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useLocation, matchPath, match, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { PATHS, PathDefinition, getPath } from '../../utils/routing';
+import { PathDefinition, getPath, SHORT_PATHS } from '../../utils/routing';
 
 import Button, { ButtonLink, ButtonCSS } from '../Button';
 import { TextInputField } from '../Form';
@@ -73,7 +73,7 @@ const Breadcrumb: React.FC = () => {
 
   const routeMatch = matchPath<KnownParams>(
     location.pathname,
-    Object.keys(PATHS).map((key) => PATHS[key as keyof PathDefinition]),
+    Object.keys(SHORT_PATHS).map((key) => SHORT_PATHS[key as keyof PathDefinition]),
   );
 
   const buttonList = findAdditionalButtons(routeMatch, location.search);
