@@ -11,11 +11,12 @@ type Props = {
   style: React.CSSProperties;
   item: TaskListRowItem;
   active: boolean;
+  groupped: boolean;
   isOpen?: boolean;
   toggle?: () => void;
 };
 
-const TaskListRow: React.FC<Props> = ({ index, style, item, toggle, isOpen, active }) => {
+const TaskListRow: React.FC<Props> = ({ index, style, item, toggle, groupped, isOpen, active }) => {
   const history = useHistory();
 
   return (
@@ -35,6 +36,7 @@ const TaskListRow: React.FC<Props> = ({ index, style, item, toggle, isOpen, acti
 
         <RowTextContent rowType={item.type}>
           <RowMainLabel itemType={item.type}>
+            {!groupped && item.type === 'task' && item.data.step_name + '/'}
             {item.type === 'step' ? item.data.step?.step_name || '' : item.data.task_id}
           </RowMainLabel>
           <RowDuration>{item.data.duration ? formatDuration(item.data.duration, 1) : '-'}</RowDuration>
