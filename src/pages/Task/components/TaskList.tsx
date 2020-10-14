@@ -184,10 +184,6 @@ const TaskListContainer = styled.div`
   font-size: 12px;
   width: 244px;
   flex-shrink: 0;
-
-  .ReactVirtualized__List:focus {
-    outline: none;
-  }
 `;
 
 const TaskListInputContainer = styled.div`

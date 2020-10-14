@@ -456,11 +456,6 @@ const VirtualizedTimelineContainer = styled.div`
   -moz-user-select: none; /* Old versions of Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none;
-
-  .ReactVirtualized__List:focus  {
-    outline: none;
-    border: none;
-  }
 `;
 
 const VirtualizedTimelineSubContainer = styled.div`
