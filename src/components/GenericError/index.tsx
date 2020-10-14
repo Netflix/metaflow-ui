@@ -121,7 +121,7 @@ const DetailsLog = styled.div`
   background: #fafafa;
   color: #6d6d6d;
   white-space: pre;
-  border: 1px solid #e6e6e6;
+  border: ${(p) => p.theme.border.thinLight};
   border-radius: 3px;
   padding: 1rem;
   overflow: hidden;

@@ -94,8 +94,8 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
 };
 
 const LogListContainer = styled.div`
-  background: ${(props) => props.theme.color.bg.light};
-  border-bottom: 1px solid ${(props) => props.theme.color.border.light};
+  background: ${(p) => p.theme.color.bg.light};
+  border-bottom: ${(p) => p.theme.border.thinLight};
   font-family: monospace;
   border-radius: 4px;
   font-size: 14px;

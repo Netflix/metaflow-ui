@@ -221,7 +221,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
 
   input[type='text'] {
     background: ${(p) => p.theme.color.bg.light};
-    border: 1px solid ${(p) => p.theme.color.border.light};
+    border: ${(p) => p.theme.border.thinLight};
 
     &:focus,
     &:not(:disabled):hover {
@@ -238,7 +238,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     border-radius: 0.125rem;
     text-align: center;
     background: ${(p) => p.theme.color.bg.light};
-    border: 1px solid ${(p) => p.theme.color.border.light};
+    border: ${(p) => p.theme.border.thinLight};
   }
 
   &.field-checkbox {

@@ -38,7 +38,7 @@ const TaskListRow: React.FC<Props> = ({ index, style, item, toggle = () => null,
 };
 
 const TaskListRowContainer = styled.div<{ active: boolean }>`
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: ${(p) => p.theme.border.thinLight};
 
   transition: 0.15s background;
   background: ${(p) => (p.active ? p.theme.color.bg.blueLight : 'transparent')};

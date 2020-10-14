@@ -174,7 +174,7 @@ const StyledRow = styled.div`
   display: flex;
   width: 100%;
   min-height: 28px;
-  border-bottom: 1px solid #e8e8e8;
+  border-bottom: ${(p) => p.theme.border.thinLight};
   transition: background 0.15s;
 
   &:hover {
@@ -192,7 +192,7 @@ const StickyStyledRow = styled(StyledRow)`
 const RowGraphContainer = styled.div`
   position: relative;
   width: 100%;
-  border-left: 1px solid #e8e8e8;
+  border-left: ${(p) => p.theme.border.thinLight};
   overflow-x: hidden;
   cursor: grab;
 `;

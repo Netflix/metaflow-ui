@@ -184,7 +184,7 @@ const TimelineFooterContainer = styled.div`
 const TimelineFooterContent = styled.div`
   position: relative;
   background: #f6f6f6;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: ${(p) => p.theme.border.thinLight};
   height: 49px;
 `;
 
@@ -208,9 +208,9 @@ const MiniTimelineActiveSection = styled.div`
   position: relative;
   height: 49px;
   background #fff;
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
-  border-right: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 8px solid rgba(0, 0, 0, 0.1);
+  border-left: ${(p) => p.theme.border.thinLight};
+  border-right: ${(p) => p.theme.border.thinLight};
+  border-bottom: 8px solid ${(p) => p.theme.color.border.light};
   cursor: grab;
 `;
 

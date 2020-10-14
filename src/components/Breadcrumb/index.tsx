@@ -293,9 +293,9 @@ const EditButton = styled(Button)`
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 
-  border-left: 1px solid ${(p) => p.theme.color.border.light};
+  border-left: ${(p) => p.theme.border.thinLight};
   &:hover {
-    border-left: 1px solid ${(p) => p.theme.color.border.light};
+    border-left: ${(p) => p.theme.border.thinLight};
   }
 
   .icon {

@@ -237,8 +237,8 @@ const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
         : p.state === 'running'
         ? p.theme.notification.warning.text
         : p.state === 'warning'
-        ? 'gray'
-        : 'gray'};
+        ? p.theme.notification.warning.text
+        : p.theme.color.border.mid};
   padding: 0.75rem 1.5rem;
 
   position: relative;
