@@ -129,12 +129,22 @@ const RunHeader: React.FC<{
               )}
 
               {status === 'Ok' && parameterTableItems && parameterTableColumns && (
-                <PropertyTable scheme="bright" items={parameterTableItems} columns={parameterTableColumns} />
+                <>
+                  {Object.keys(parameterTableItems[0]).length === 0 && (
+                    <ItemRow margin="lg">
+                      <GenericError icon="info" message={t('run.no-run-parameters')} />
+                    </ItemRow>
+                  )}
+
+                  {Object.keys(parameterTableItems[0]).length > 0 && (
+                    <PropertyTable scheme="bright" items={parameterTableItems} columns={parameterTableColumns} />
+                  )}
+                </>
               )}
 
               {status === 'Error' && error && (
                 <ItemRow margin="lg">
-                  <GenericError message={t('run.no-run-parameters')} />
+                  <GenericError message={t('run.run-parameters-error')} />
                 </ItemRow>
               )}
             </InformationRow>

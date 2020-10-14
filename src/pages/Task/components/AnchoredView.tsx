@@ -61,7 +61,7 @@ const AnchoredViewContainer = styled.div`
 const TaskContent = styled.div`
   flex: 1;
 
-  padding: 0 2rem 0 0;
+  padding: 0 2rem 0 1rem;
 `;
 
 export default AnchoredView;
