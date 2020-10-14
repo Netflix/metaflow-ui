@@ -51,6 +51,11 @@ const globalCSS = css`
   * {
     box-sizing: border-box;
   }
+
+  .ReactVirtualized__List:focus {
+    outline: none;
+    border: none;
+  }
 `;
 
 export default createGlobalStyle`${globalCSS}`;
