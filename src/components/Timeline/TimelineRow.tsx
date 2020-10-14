@@ -2,13 +2,13 @@ import React from 'react';
 import styled, { css, DefaultTheme } from 'styled-components';
 import { Row } from './VirtualizedTimeline';
 import { GraphState } from './useGraph';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { getPath } from '../../utils/routing';
-import Icon from '../Icon';
 import { Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { lighten } from 'polished';
 import { TFunction } from 'i18next';
+import TaskListLabel from './TaskListLabel';
 
 type TimelineRowProps = {
   // Row type and data
@@ -33,44 +33,19 @@ const TimelineRow: React.FC<TimelineRowProps> = ({ item, graph, onOpen, isOpen, 
   return (
     <>
       <Element>
-        <RowLabel type={item.type} isOpen={isOpen} group={isGroupped}>
-          {item.type === 'task' ? (
-            <Link
-              to={getPath.task(
-                item.data[0].flow_id,
-                item.data[0].run_number,
-                item.data[0].step_name,
-                item.data[0].task_id,
-              )}
-              data-testid="timeline-row-link"
-            >
-              <RowLabelContent>
-                <div style={{ overflow: 'hidden' }} data-testid="timeline-row-textlabel">
-                  <RowStepName>{!isGroupped ? item.data[0].step_name : ''}</RowStepName>
-                  <span>
-                    {!isGroupped ? '/' : ''}
-                    {item.data[0].task_id}
-                  </span>
-                </div>
-                <RowDuration>
-                  {item.data[0].status === 'running'
-                    ? t('filters.running')
-                    : item.data[0].duration
-                    ? formatDuration(item.data[0].duration, 1)
-                    : null}
-                </RowDuration>
-              </RowLabelContent>
-            </Link>
-          ) : (
-            <StepLabel onClick={() => onOpen()}>
-              <Icon name="arrowDown" size="xs" rotate={isOpen ? 0 : -90} data-testid="timeline-row-icon" />
-              <RowLabelContent>
-                <div data-testid="timeline-row-label">{item.data.step_name}</div>
-                <RowDuration>{endTime ? formatDuration(endTime - item.data.ts_epoch, 1) : ''}</RowDuration>
-              </RowLabelContent>
-            </StepLabel>
-          )}
-        </RowLabel>
+        {item.type === 'step' ? (
+          <TaskListLabel
+            type="step"
+            item={item.data}
+            duration={endTime ? endTime - item.data.ts_epoch : 0}
+            toggle={onOpen}
+            open={isOpen || true}
+            groupped={isGroupped}
+            t={t}
+          />
+        ) : (
+          <TaskListLabel type="task" item={item.data[0]} open={isOpen || true} groupped={isGroupped} t={t} />
+        )}
         <RowGraphContainer data-testid="timeline-row-graphic-container">
           {item.type === 'step' ? (
             <BoxGraphicElement
@@ -203,72 +178,6 @@ const StickyStyledRow = styled(StyledRow)`
   background: #fff;
   top: 0;
   left: 0;
-`;
-
-const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: boolean }>`
-  flex: 0 0 245px;
-  max-width: 245px;
-  overflow: hidden;
-  cursor: pointer;
-  font-size: ${(p) => (p.type === 'task' ? '12px' : '14px')};
-  font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
-  font-family: monospace;
-  line-height: 27px;
-
-  a {
-    display: flex;
-    width: 100%;
-    color: #333;
-    text-decoration: none;
-    max-width: 100%;
-    padding-left: 2.5rem;
-    white-space: nowrap;
-
-    ${(p) =>
-      !p.group
-        ? css`
-            display: flex;
-            justify-content: flex-end;
-          `
-        : ''}
-  }
-
-  i {
-    line-height: 0px;
-  }
-`;
-
-const RowStepName = styled.span`
-  overflow: hidden;
-`;
-
-const RowDuration = styled.span`
-  padding: 0 0.25rem 0 0.5rem;
-`;
-
-const RowLabelContent = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-`;
-
-const StepLabel = styled.div`
-  display: flex;
-  align-items: center;
-  user-select: text;
-  font-size: 12px;
-
-  i {
-    width: 30px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  > div {
-    padding-left: 10px;
-  }
 `;
 
 const RowGraphContainer = styled.div`
