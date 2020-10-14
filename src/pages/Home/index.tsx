@@ -111,7 +111,7 @@ const Home: React.FC = () => {
           )
         : {};
 
-      // If we changed just page (of groupped items), we need to merge old and new result.
+      // If we changed just page (of grouped items), we need to merge old and new result.
       // Also don't merge when using fakeParams since it means we are reordering, in that case everything needs to change.
       if (page > 1 && !fakeParams) {
         const merged = Object.keys(newItems).reduce((obj, key) => {

@@ -147,7 +147,7 @@ const TaskList: React.FC<Props> = ({ rowData, rowDataDispatch, activeTaskId, res
                   index={index}
                   style={style}
                   item={item}
-                  groupped={groupBy.value}
+                  grouped={groupBy.value}
                   toggle={
                     item.type === 'step' && item.data.step
                       ? () =>

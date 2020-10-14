@@ -9,7 +9,7 @@ import Icon from '../Icon';
 
 type BaseProps = {
   open: boolean;
-  groupped: boolean;
+  grouped: boolean;
   t: TFunction;
 };
 type TaskRow = { type: 'task'; item: Task } & BaseProps;
@@ -17,9 +17,9 @@ type StepRow = { type: 'step'; item: Step; toggle: () => void; duration: number 
 type Props = TaskRow | StepRow;
 
 const TaskListLabel: React.FC<Props> = (props) => {
-  const { open, groupped, t } = props;
+  const { open, grouped, t } = props;
   return (
-    <RowLabel type={props.type} isOpen={open} group={groupped}>
+    <RowLabel type={props.type} isOpen={open} group={grouped}>
       {props.type === 'task' ? (
         <Link
           to={getPath.task(props.item.flow_id, props.item.run_number, props.item.step_name, props.item.task_id)}
@@ -27,9 +27,9 @@ const TaskListLabel: React.FC<Props> = (props) => {
         >
           <RowLabelContent>
             <RowLabelTaskName data-testid="tasklistlabel-text">
-              <RowStepName>{!groupped ? props.item.step_name : ''}</RowStepName>
+              <RowStepName>{!grouped ? props.item.step_name : ''}</RowStepName>
               <span>
-                {!groupped ? '/' : ''}
+                {!grouped ? '/' : ''}
                 {props.item.task_id}
               </span>
             </RowLabelTaskName>

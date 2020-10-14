@@ -8,7 +8,7 @@ const MockT = (str: string) => str;
 
 const BASE_PROPS = {
   open: true,
-  groupped: true,
+  grouped: true,
   t: MockT,
 };
 
@@ -36,7 +36,7 @@ describe('TaskListLabel component', () => {
   test('<TaskListLabel> - Task when not grouping', () => {
     const { getByTestId } = render(
       <TestWrapper>
-        <TaskListLabel type="task" item={createTask({})} {...BASE_PROPS} groupped={false} />
+        <TaskListLabel type="task" item={createTask({})} {...BASE_PROPS} grouped={false} />
       </TestWrapper>,
     );
 

@@ -50,22 +50,22 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
       return { ...state, [action.id]: action.data };
     case 'fillTasks': {
       // Group incoming tasks by step
-      const groupped: Record<string, Task[]> = {};
+      const grouped: Record<string, Task[]> = {};
 
       for (const row of action.data) {
         const step = row.step_name;
 
-        if (groupped[step]) {
-          groupped[step].push(row);
+        if (grouped[step]) {
+          grouped[step].push(row);
         } else {
-          groupped[step] = [row];
+          grouped[step] = [row];
         }
       }
 
       // And fill them to current state
-      const newState = Object.keys(groupped).reduce((obj: RowDataModel, key: string): RowDataModel => {
+      const newState = Object.keys(grouped).reduce((obj: RowDataModel, key: string): RowDataModel => {
         const row = obj[key];
-        const newItems = groupped[key];
+        const newItems = grouped[key];
         const [startTime, endTime] = timepointsOfTasks(newItems);
 
         if (row) {
@@ -94,7 +94,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
             isOpen: true,
             finished_at: endTime,
             duration: endTime - startTime,
-            data: groupped[key].reduce<Record<number, Task[]>>((dataobj, item) => {
+            data: grouped[key].reduce<Record<number, Task[]>>((dataobj, item) => {
               return { ...dataobj, [item.task_id]: createNewStepRowTasks(dataobj, item) };
             }, {}),
           },

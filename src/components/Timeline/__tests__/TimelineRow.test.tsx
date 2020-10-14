@@ -14,7 +14,7 @@ describe('TimelineRow component', () => {
           graph={createGraphState({})}
           onOpen={jest.fn()}
           item={{ type: 'task', data: [createTask({})] }}
-          isGroupped={true}
+          isGrouped={true}
           t={MockT}
         />
       </TestWrapper>,
@@ -28,7 +28,7 @@ describe('TimelineRow component', () => {
         <TimelineRow
           graph={createGraphState({})}
           onOpen={jest.fn()}
-          isGroupped={true}
+          isGrouped={true}
           item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
           t={MockT}
         />
@@ -49,7 +49,7 @@ describe('TimelineRow component', () => {
 
     const { getByTestId } = render(
       <TestWrapper>
-        <TimelineRow {...props} isGroupped={true} />
+        <TimelineRow {...props} isGrouped={true} />
       </TestWrapper>,
     );
     // Should have only one line graphic

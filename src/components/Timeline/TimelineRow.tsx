@@ -16,7 +16,7 @@ type TimelineRowProps = {
   // Overall graph state (used to calculate dimensions)
   graph: GraphState;
   onOpen: () => void;
-  isGroupped: boolean;
+  isGrouped: boolean;
   isOpen?: boolean;
   // Flag row as sticky for some absolute stylings
   sticky?: boolean;
@@ -32,7 +32,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   graph,
   onOpen,
   isOpen = true,
-  isGroupped,
+  isGrouped,
   sticky,
   endTime,
   t,
@@ -49,11 +49,11 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             duration={endTime ? endTime - item.data.ts_epoch : 0}
             toggle={onOpen}
             open={isOpen}
-            groupped={isGroupped}
+            grouped={isGrouped}
             t={t}
           />
         ) : (
-          <TaskListLabel type="task" item={item.data[0]} open={isOpen} groupped={isGroupped} t={t} />
+          <TaskListLabel type="task" item={item.data[0]} open={isOpen} grouped={isGrouped} t={t} />
         )}
         <RowGraphContainer data-testid="timeline-row-graphic-container">
           {item.type === 'step' ? (

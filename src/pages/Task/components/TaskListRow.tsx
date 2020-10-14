@@ -9,12 +9,12 @@ type Props = {
   style: React.CSSProperties;
   item: TaskListRowItem;
   active: boolean;
-  groupped: boolean;
+  grouped: boolean;
   isOpen?: boolean;
   toggle?: () => void;
 };
 
-const TaskListRow: React.FC<Props> = ({ index, style, item, toggle = () => null, groupped, isOpen = true, active }) => {
+const TaskListRow: React.FC<Props> = ({ index, style, item, toggle = () => null, grouped, isOpen = true, active }) => {
   const { t } = useTranslation();
   return (
     <TaskListRowContainer key={index} style={style} active={active}>
@@ -26,12 +26,12 @@ const TaskListRow: React.FC<Props> = ({ index, style, item, toggle = () => null,
             duration={item.data.duration}
             toggle={toggle}
             open={isOpen}
-            groupped={groupped}
+            grouped={grouped}
             t={t}
           />
         ) : null
       ) : (
-        <TaskListLabel type="task" item={item.data} open={isOpen} groupped={groupped} t={t} />
+        <TaskListLabel type="task" item={item.data} open={isOpen} grouped={grouped} t={t} />
       )}
     </TaskListRowContainer>
   );
