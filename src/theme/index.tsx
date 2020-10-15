@@ -44,6 +44,15 @@ const borderColor = {
   dark: rgba(0, 0, 0, 0.35),
 };
 
+const border = {
+  thinLight: `1px solid ${borderColor.light}`,
+  thinMid: `1px solid ${borderColor.mid}`,
+  thinDark: `1px solid ${borderColor.dark}`,
+  mediumLight: `2px solid ${borderColor.light}`,
+  mediumMid: `2px solid ${borderColor.mid}`,
+  mediumDark: `2px solid ${borderColor.mid}`,
+};
+
 const iconColor = {
   light: '#d9d9d9',
   mid: textColor.mid,
@@ -137,6 +146,8 @@ const defaultTheme: DefaultTheme = {
     color: brandColor.blue,
     borderWidth: 2,
   },
+
+  border,
 };
 
 export default defaultTheme;

@@ -54,10 +54,10 @@ export const ButtonLink: React.FC<Omit<ButtonProps, 'onClick'> & { to: string }>
 };
 
 const DisabledButtonCSS = css`
-  border-color: ${(p) => p.theme.color.bg.light} !important;
-  color: ${(p) => p.theme.color.text.light} !important;
+  border-color: ${(p) => p.theme.color.bg.light};
+  color: ${(p) => p.theme.color.text.light};
   cursor: not-allowed;
-  background: ${(p) => p.theme.color.bg.light} !important;
+  background: ${(p) => p.theme.color.bg.light};
 `;
 
 const ActiveButtonCSS = css`
@@ -122,7 +122,7 @@ export const ButtonCSS = css`
   cursor: pointer;
   text-decoration: none;
   border-radius: 0.25rem;
-  border: 1px solid ${(p) => p.theme.color.border.light};
+  border: ${(p) => p.theme.border.thinLight};
 `;
 
 const StyledButton = styled.button<StyledButtonProps>`

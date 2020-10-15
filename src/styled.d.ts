@@ -100,5 +100,14 @@ declare module 'styled-components' {
       color: string; // Border color
       borderWidth: number; // Border width (px)
     };
+
+    border: {
+      thinLight: string;
+      thinMid: string;
+      thinDark: string;
+      mediumLight: string;
+      mediumMid: string;
+      mediumDark: string;
+    };
   }
 }

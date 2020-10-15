@@ -166,7 +166,7 @@ const HeaderSortIcon: React.FC<{ dir: 'asc' | 'desc' }> = ({ dir }) => (
 );
 
 const TimelineHeaderContainer = styled.div`
-  border-bottom: 2px solid ${(p) => p.theme.color.border.light};
+  border-bottom: ${(p) => p.theme.border.mediumLight};
   font-size: 14px;
 `;
 

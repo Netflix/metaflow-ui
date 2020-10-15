@@ -70,7 +70,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   a {
     display: flex;
     width: 100%;
-    color: #333;
+    color: ${(p) => p.theme.color.text.dark};
     text-decoration: none;
     max-width: 100%;
     padding-left: ${(p) => (p.group ? '2.5rem' : '0rem')};

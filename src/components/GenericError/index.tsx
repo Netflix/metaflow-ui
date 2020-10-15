@@ -127,10 +127,10 @@ const DetailsLog = styled.div`
   margin-top: 0.5rem;
   font-size: 14px;
   line-height: 1.2rem;
-  background: #fafafa;
-  color: #6d6d6d;
+  background: ${(p) => p.theme.color.bg.light};
+  color: ${(p) => p.theme.color.text.light};
+  border: ${(p) => p.theme.border.thinLight};
   white-space: pre;
-  border: 1px solid #e6e6e6;
   border-radius: 3px;
   padding: 1rem;
   overflow: hidden;
