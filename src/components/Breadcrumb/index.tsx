@@ -314,7 +314,7 @@ const StyledBreadcrumb = styled(ItemRow)`
   input[type='text'] {
     line-height: 1.5rem;
     font-size: 0.875rem;
-    width: 20rem;
+    width: 35rem;
   }
 `;
 
@@ -330,7 +330,6 @@ const GoToContainer = styled.div`
   position: absolute;
   top: -${(p) => p.theme.spacer.sm}rem;
   left: -${(p) => p.theme.spacer.sm}rem;
-  width: 24rem;
   ${PopoverStyles}
 `;
 
