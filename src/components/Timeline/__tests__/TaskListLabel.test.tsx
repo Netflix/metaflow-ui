@@ -1,6 +1,6 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react';
-import { createTask, createStep } from '../testhelper';
+import { createTask, createStep } from '../../../utils/testhelper';
 import TestWrapper from '../../../utils/testing';
 import TaskListLabel from '../TaskListLabel';
 

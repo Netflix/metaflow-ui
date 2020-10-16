@@ -1,5 +1,5 @@
-import { GraphState } from './useGraph';
-import { Task, Step } from '../../types';
+import { GraphState } from '../components/Timeline/useGraph';
+import { Task, Step, Run } from '../types';
 
 //
 // LOT OF TESTS DEPEND ON THESE VALUES AS DEFAULTS SO DONT CHANGE THESE!!!
@@ -46,5 +46,18 @@ export function createStep(partialStep: Partial<Step>): Step {
     tags: ['testingtag'],
     system_tags: ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-24', 'metaflow_version:2.0.5'],
     ...partialStep,
+  };
+}
+
+export function createRun(partialRun: Partial<Run>): Run {
+  return {
+    flow_id: 'BasicFlow',
+    run_number: '1',
+    user_name: 'SanteriCM',
+    ts_epoch: 1595574762958,
+    tags: ['testingtag'],
+    status: 'completed',
+    system_tags: ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-24', 'metaflow_version:2.0.5'],
+    ...partialRun,
   };
 }
