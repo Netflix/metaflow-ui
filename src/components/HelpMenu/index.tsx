@@ -42,23 +42,29 @@ const HelpMenu: React.FC = () => {
   }, []);
   return (
     <HelpMenuContainer>
-      <ToggleButton onClick={() => setOpen(!open)} withIcon size="sm" variant="primaryText">
+      <ToggleButton
+        onClick={() => setOpen(!open)}
+        withIcon
+        size="sm"
+        variant="primaryText"
+        data-testid="helpmenu-toggle"
+      >
         <span>{t('help.quick-links')}</span>
-        <Icon name="external" size="xs" onClick={() => setOpen(!open)} />
+        <Icon name="external" size="xs" />
       </ToggleButton>
-      <PopoverContainer show={open}>
+      <PopoverContainer show={open} data-testid="helpmenu-popup">
         <HelpMenuTitle>
           <span>{t('help.quick-links')}</span>
-          <Icon name="times" size="sm" onClick={() => setOpen(false)} />
+          <Icon name="times" size="sm" onClick={() => setOpen(false)} data-testid="helpmenu-close" />
         </HelpMenuTitle>
 
         {links.map((link) => (
-          <HelpMenuLink key={link.href + link.label} href={link.href} target="_blank">
+          <HelpMenuLink key={link.href + link.label} href={link.href} target="_blank" data-testid="helpmenu-link">
             {link.label}
           </HelpMenuLink>
         ))}
       </PopoverContainer>
-      {open && <HelpMenuClickOverlay onClick={() => setOpen(false)} />}
+      {open && <HelpMenuClickOverlay onClick={() => setOpen(false)} data-testid="helpmenu-click-overlay" />}
     </HelpMenuContainer>
   );
 };

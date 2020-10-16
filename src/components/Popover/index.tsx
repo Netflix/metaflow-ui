@@ -19,7 +19,7 @@ export const PopoverWrapper = styled.div<{ show: boolean }>`
 
 const Popover: React.FC<{ children: ReactNode; show?: boolean }> = ({ children, show = false }) => {
   return (
-    <PopoverWrapper className={`popover ${show ? 'show' : 'hide'}`} show={show}>
+    <PopoverWrapper className={`popover ${show ? 'show' : 'hide'}`} show={show} data-testid="popup-wrapper">
       {children}
     </PopoverWrapper>
   );
