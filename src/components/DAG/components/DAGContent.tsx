@@ -161,7 +161,7 @@ const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; is
     top: 0;
     width: 1px;
     height: 100%;
-    background: #c0c0c0;
+    background: ${(p) => p.theme.color.border.mid};
     left: 50%;
   }
 `;
@@ -174,14 +174,14 @@ const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
         : p.state === 'running'
         ? p.theme.notification.warning.text
         : p.state === 'warning'
-        ? 'gray'
-        : 'gray'};
+        ? p.theme.notification.warning.text
+        : p.theme.color.border.mid};
   padding: 0.75rem 1.5rem;
 
   position: relative;
   border-radius: 4px;
   transition: 0.15s border;
-  background: #fff;
+  background: ${(p) => p.theme.color.bg.white};
   cursor: pointer;
 `;
 
@@ -190,8 +190,8 @@ const NormalItemChildContainer = styled.div`
 `;
 
 const BaseContainerStyle = css`
-  border: 1px solid #c0c0c0;
-  background: #f9f9f9;
+  border: ${(p) => p.theme.border.thinMid};
+  background: ${(p) => p.theme.color.bg.light};
   display: flex;
   margin: 15px;
   border-radius: 4px;
@@ -212,7 +212,7 @@ const ForeachContainer = styled.div`
 
 const ForeachItem = styled.div`
   ${BaseContainerStyle}
-  background: #f8f8f8;
+  background: ${(p) => p.theme.color.bg.light};
   margin: 0;
   transform: translateX(5px) translateY(5px);
   flex: 1;

@@ -42,7 +42,7 @@ const TaskSectionContainer = styled.div`
 `;
 const TaskSectionHeader = styled.div`
   padding: 0 1rem;
-  border-bottom: 1px solid ${(props) => props.theme.color.border.light};
+  border-bottom: ${(p) => p.theme.border.thinLight};
 
   h3 {
     margin: 0.75rem 0;

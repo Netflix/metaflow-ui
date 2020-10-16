@@ -94,21 +94,21 @@ const HelpMenuTitle = styled.div`
   display: flex;
   margin: 0 -0.5rem 0.25rem;
   width: 256px;
-  border-bottom: 1px solid #e9e9e9;
+  border-bottom: ${(p) => p.theme.border.thinLight};
 
   span {
     font-weight: 500;
   }
 
   i {
-    color: #888;
+    color: ${(p) => p.theme.color.text.mid};
   }
 `;
 
 const HelpMenuLink = styled.a`
   display: flex;
   padding: 0.5rem 1rem;
-  color: #333;
+  color: ${(p) => p.theme.color.text.mid};
   text-decoration: none;
   &:hover {
     color: ${(p) => p.theme.color.text.blue};

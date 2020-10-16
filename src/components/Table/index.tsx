@@ -2,6 +2,7 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { SortIcon } from '../Icon';
 import { parseOrderParam } from '../../utils/url';
+import { darken } from 'polished';
 
 const cell = css`
   padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.md}rem;
@@ -16,7 +17,7 @@ export default styled.table`
 `;
 
 export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
-  background: #fff;
+  background: ${(p) => p.theme.color.bg.white};
   color: ${(p) => p.theme.color.text.light};
   font-weight: 400;
   white-space: nowrap;
@@ -24,12 +25,12 @@ export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
   ${cell};
 
   .icon {
-    color: #ccc;
+    color: ${(p) => darken(0.1, p.theme.color.icon.light)};
   }
 
   &:hover {
     i {
-      color: #aaa;
+      color: ${(p) => darken(0.2, p.theme.color.icon.light)};
     }
   }
 

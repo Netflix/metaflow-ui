@@ -79,7 +79,7 @@ const TabsContainer = styled.div`
 
 export const TabsHeading = styled.div<{ widen?: boolean }>`
   display: flex;
-  border-bottom: 2px solid ${(p) => p.theme.color.border.light};
+  border-bottom: ${(p) => p.theme.border.mediumLight};
   margin: ${(p) => (p.widen ? `0 -${p.theme.layout.pagePaddingX}rem` : 'initial')};
   padding: ${(p) => (p.widen ? `0 ${p.theme.layout.pagePaddingX}rem` : 'initial')};
   color: ${(p) => p.theme.color.text.mid};

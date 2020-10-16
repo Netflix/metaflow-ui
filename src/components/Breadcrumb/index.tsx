@@ -293,9 +293,9 @@ const EditButton = styled(Button)`
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 
-  border-left: 1px solid ${(p) => p.theme.color.border.light};
+  border-left: ${(p) => p.theme.border.thinLight};
   &:hover {
-    border-left: 1px solid ${(p) => p.theme.color.border.light};
+    border-left: ${(p) => p.theme.border.thinLight};
   }
 
   .icon {
@@ -314,7 +314,7 @@ const StyledBreadcrumb = styled(ItemRow)`
   input[type='text'] {
     line-height: 1.5rem;
     font-size: 0.875rem;
-    width: 20rem;
+    width: 35rem;
   }
 `;
 
@@ -330,7 +330,6 @@ const GoToContainer = styled.div`
   position: absolute;
   top: -${(p) => p.theme.spacer.sm}rem;
   left: -${(p) => p.theme.spacer.sm}rem;
-  width: 24rem;
   ${PopoverStyles}
 `;
 

@@ -270,7 +270,7 @@ export const StyledResultGroup = styled(Section)`
   }
 
   thead {
-    background: #ffffff;
+    background: ${(p) => p.theme.color.bg.white};
   }
 
   td.timeline-link {

@@ -35,7 +35,7 @@ const FullPageStyleContainer = styled.div`
   left: 0;
   top: 0;
   z-index: 9999;
-  background: #fff;
+  background: ${(p) => p.theme.color.bg.white};
 
   display: flex;
   flex-direction: column;
