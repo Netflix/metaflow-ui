@@ -78,6 +78,7 @@ const en = {
       'filter-all': 'All',
       'filter-completed': 'Completed',
       'filter-running': 'Running',
+      'filter-failed': 'Failed',
     },
 
     timeline: {
