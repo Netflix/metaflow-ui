@@ -122,7 +122,7 @@ const defaultError = {
   id: 'generic-error',
   traceback: '',
   status: 500,
-  title: 'Unkown error',
+  title: 'Unknown error',
   type: 'error',
 };
 
