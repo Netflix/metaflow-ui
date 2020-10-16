@@ -1,21 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import { DAGModel, convertDAGModelToTree, DAGStructureTree, DAGTreeNode, StepTree } from './DAGUtils';
-import { APIError, Run, Step } from '../../types';
-import styled, { css } from 'styled-components';
-import Button from '../Button';
+import { DAGModel, convertDAGModelToTree, DAGStructureTree } from './DAGUtils';
+import { AsyncStatus, Run, Step } from '../../types';
 import { ItemRow } from '../Structure';
 import useResource from '../../hooks/useResource';
-import { useHistory } from 'react-router-dom';
-import { getPath } from '../../utils/routing';
 import FullPageContainer from '../FullPageContainer';
-import { useTranslation } from 'react-i18next';
-import Icon from '../Icon';
-import useComponentSize from '@rehooks/component-size';
-import useWindowSize from '../../hooks/useWindowSize';
-import { APIErrorRenderer, DefaultAdditionalErrorInfo, knownErrorIds } from '../GenericError';
 import Spinner from '../Spinner';
-import { TFunction } from 'i18next';
+import DAGContent from './components/DAGContent';
+import DAGError from './components/DAGError';
+import DAGControlBar from './components/DAGControlBar';
 
 //
 // DAG
@@ -23,9 +17,8 @@ import { TFunction } from 'i18next';
 
 const DAG: React.FC<{ run: Run }> = ({ run }) => {
   const { t } = useTranslation();
-  const _container = useRef(null);
-  const ContainerSize = useComponentSize(_container);
-  const WindowSize = useWindowSize();
+  const [showFullscreen, setFullscreen] = useState(false);
+  const [dagTree, setDagTree] = useState<DAGStructureTree>([]);
 
   const { data: stepData } = useResource<Step[], Step>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
@@ -46,60 +39,17 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
     },
   });
 
-  const [showFullscreen, setFullscreen] = useState(false);
-  const [dagTree, setDagTree] = useState<DAGStructureTree>([]);
-
   const content = !!dagTree.length && (
-    <DAGRenderingContainer
-      showFullscreen={showFullscreen}
-      ref={_container}
-      style={{
-        transform:
-          'scale(' +
-          (showFullscreen && ContainerSize.width > WindowSize.width ? WindowSize.width / ContainerSize.width : 1) +
-          ')',
-      }}
-    >
-      <div style={{ display: 'flex', padding: '1rem' }}>
-        <NormalItemContainer isFirst isLast>
-          {dagTree.map((elem, index) => (
-            <RenderStep
-              run={run}
-              item={elem}
-              key={index}
-              isFirst={index === 0}
-              isLast={index + 1 === dagTree.length}
-              stepIds={stepData ? stepData.map((item) => item.step_name) : []}
-            />
-          ))}
-        </NormalItemContainer>
-      </div>
-    </DAGRenderingContainer>
-  );
-
-  const errorContent = (status === 'Ok' || status === 'Error') && !dagTree.length && (
-    <div style={{ padding: '3rem 0' }} data-testid="dag-container-Error">
-      <APIErrorRenderer
-        error={error}
-        icon={<Icon name="noDag" customSize={5} />}
-        message={DAGErrorMessage(t, error)}
-        customNotFound={DefaultAdditionalErrorInfo(t('run.dag-only-available-AWS'))}
-      />
-    </div>
-  );
-
-  const fullscreenControls = (
-    <ItemRow pad="sm" justify="flex-end">
-      <Button onClick={() => setFullscreen(true)} withIcon>
-        <Icon name="maximize" />
-        <span>{t('run.show-fullscreen')}</span>
-      </Button>
-    </ItemRow>
+    <DAGContent dagTree={dagTree} showFullscreen={showFullscreen} stepData={stepData} run={run} />
   );
 
   return (
     <div style={{ width: '100%' }}>
-      {errorContent ? errorContent : fullscreenControls}
+      {isDAGError(status, dagTree) ? (
+        <DAGError error={error} t={t} />
+      ) : (
+        <DAGControlBar setFullscreen={setFullscreen} t={t} />
+      )}
       {status === 'Loading' && (
         <ItemRow justify="center">
           <Spinner md />
@@ -111,179 +61,11 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
 };
 
 //
-// Figure out correct error message for a situation
+// Is considered as error
 //
 
-function DAGErrorMessage(t: TFunction, error: APIError | null): string {
-  if (error && knownErrorIds.indexOf(error.id) > -1) {
-    if (error.id === 'dag-processing-error' || error.id === 'dag-unsupported-flow-language') {
-      return t('error.' + error.id);
-    }
-
-    return t(`error.failed-to-load-dag`) + ' ' + t(`error.${error.id}`);
-  }
-  return t('error.failed-to-load-dag');
+export function isDAGError(status: AsyncStatus, dagTree: DAGStructureTree): boolean {
+  return (status === 'Ok' || status === 'Error') && !dagTree.length;
 }
-
-//
-// Find out correct state for a step. Step doesn't have status field so we need to figure it out ourselves
-//
-
-function stateOfStep(item: StepTree, stepIds: string[]) {
-  if (stepIds.indexOf(item.step_name) > -1) {
-    if (item.original && (stepIds.indexOf(item.original.next[0]) > -1 || item.original?.next.length === 0)) {
-      return 'ok';
-    }
-    return 'running';
-  }
-
-  return 'warning';
-}
-
-const RenderStep: React.FC<{
-  item: DAGTreeNode;
-  isFirst?: boolean;
-  isLast?: boolean;
-  inContainer?: boolean;
-  stepIds: string[];
-  run: Run;
-}> = ({ item, isFirst, isLast, stepIds, run }) => {
-  const history = useHistory();
-  if (item.node_type === 'normal') {
-    const stepState = stateOfStep(item, stepIds);
-
-    return (
-      <NormalItemContainer className="itemcontainer" isFirst={isFirst} isLast={isLast}>
-        <NormalItem
-          state={stepState}
-          onClick={() => {
-            history.push(getPath.step(run.flow_id, run.run_number, item.step_name));
-          }}
-        >
-          {item.step_name}
-        </NormalItem>
-        {item.children && item.children.length > 0 && (
-          <NormalItemChildContainer className="childcontainer">
-            {item.children.map((child, index) => {
-              return (
-                <RenderStep
-                  run={run}
-                  item={child}
-                  isLast={index + 1 === item.children?.length}
-                  key={index}
-                  stepIds={stepIds}
-                />
-              );
-            })}
-          </NormalItemChildContainer>
-        )}
-      </NormalItemContainer>
-    );
-  } else {
-    return (
-      <ContainerElement containerType={item.container_type}>
-        {item.steps &&
-          item.steps.map((child, index) => (
-            <RenderStep run={run} item={child} key={index} inContainer={true} stepIds={stepIds} />
-          ))}
-      </ContainerElement>
-    );
-  }
-};
-
-const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' }> = ({ containerType, children }) => {
-  if (containerType === 'parallel') {
-    return <ContainerItem>{children}</ContainerItem>;
-  } else {
-    return (
-      <ForeachContainer>
-        <ForeachItem>{children}</ForeachItem>
-      </ForeachContainer>
-    );
-  }
-};
-
-const DAGRenderingContainer = styled.div<{ showFullscreen: boolean }>`
-  margin: ${(p) => (p.showFullscreen ? '0' : '0 -45px')};
-  overflow-x: ${(p) => (p.showFullscreen ? 'visible' : 'scroll')};
-  font-family: monospace;
-  font-size: 14px;
-`;
-
-const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; isLast?: boolean }>`
-  padding: ${(p) => (p.isRoot ? '0 1rem' : '1rem')};
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  margin: 0 auto;
-  position: relative;
-
-  padding-top: ${(p) => (p.isFirst ? '0' : '1rem')};
-  padding-bottom: ${(p) => (p.isLast ? '0' : '1rem')};
-
-  &::before {
-    content: '';
-    z-index: -1;
-    position: absolute;
-    top: 0;
-    width: 1px;
-    height: 100%;
-    background: ${(p) => p.theme.color.border.mid};
-    left: 50%;
-  }
-`;
-
-const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
-  border: 1px solid
-    ${(p) =>
-      p.state === 'ok'
-        ? p.theme.notification.success.text
-        : p.state === 'running'
-        ? p.theme.notification.warning.text
-        : p.state === 'warning'
-        ? p.theme.notification.warning.text
-        : p.theme.color.border.mid};
-  padding: 0.75rem 1.5rem;
-
-  position: relative;
-  border-radius: 4px;
-  transition: 0.15s border;
-  background: ${(p) => p.theme.color.bg.white};
-  cursor: pointer;
-`;
-
-const NormalItemChildContainer = styled.div`
-  margin-top: 15px;
-`;
-
-const BaseContainerStyle = css`
-  border: ${(p) => p.theme.border.thinMid};
-  background: ${(p) => p.theme.color.bg.light};
-  display: flex;
-  margin: 15px;
-  border-radius: 4px;
-  position: relative;
-  z-index: 1;
-`;
-
-const ContainerItem = styled.div`
-  ${BaseContainerStyle}
-`;
-
-const ForeachContainer = styled.div`
-  ${BaseContainerStyle}
-  background: rgba(192, 192, 192, 0.3);
-  transform: translateX(-5px) translateY(-5px);
-  margin-top: 19px;
-`;
-
-const ForeachItem = styled.div`
-  ${BaseContainerStyle}
-  background: ${(p) => p.theme.color.bg.light};
-  margin: 0;
-  transform: translateX(5px) translateY(5px);
-  flex: 1;
-`;
 
 export default DAG;
