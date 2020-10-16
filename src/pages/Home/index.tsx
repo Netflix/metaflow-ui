@@ -297,7 +297,7 @@ function cleanParams(qp: any): Record<string, string> {
 //
 //
 
-function makeActiveRequestParameters(params: Record<string, string>) {
+export function makeActiveRequestParameters(params: Record<string, string>): Record<string, string> {
   // We want to remove groupping from request in some cases
   // 1) When grouping is flow_id and only 1 flow_id filter is active, we want to show all runs of this group
   // 2) When grouping is user_name and only 1 user_name filter is active, we want to show all runs of this group
@@ -362,7 +362,7 @@ export function isDefaultParams(params: Record<string, string>): boolean {
 // - Are grouping by user_name BUT have one user in user filters
 // - have set grouping to none
 //
-function isGrouping(params: Record<string, string>) {
+export function isGrouping(params: Record<string, string>): boolean {
   if (params._group) {
     if (params._group === 'flow_id' && params.flow_id && params.flow_id.split(',').length === 1) {
       return false;
@@ -386,7 +386,7 @@ export function paramList(param: QueryParam): Array<string> {
 }
 
 // Generic string sorting
-const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
+export const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun): number => {
   const val1 = dir === 'down' ? a[key] : b[key];
   const val2 = dir === 'down' ? b[key] : a[key];
 
@@ -406,7 +406,7 @@ const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun) => {
 };
 
 // Generic number sorting
-const nmbSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun): number => {
+export const nmbSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun): number => {
   const val1 = dir === 'down' ? a[key] : b[key];
   const val2 = dir === 'down' ? b[key] : a[key];
 
