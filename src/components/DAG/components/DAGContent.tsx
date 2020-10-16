@@ -66,7 +66,7 @@ const RenderStep: React.FC<{
     const stepState = stateOfStep(item, stepIds);
 
     return (
-      <NormalItemContainer className="itemcontainer" isFirst={isFirst} isLast={isLast}>
+      <NormalItemContainer isFirst={isFirst} isLast={isLast}>
         <NormalItem
           state={stepState}
           onClick={() => {
@@ -76,7 +76,7 @@ const RenderStep: React.FC<{
           {item.step_name}
         </NormalItem>
         {item.children && item.children.length > 0 && (
-          <NormalItemChildContainer className="childcontainer">
+          <NormalItemChildContainer>
             {item.children.map((child, index) => {
               return (
                 <RenderStep

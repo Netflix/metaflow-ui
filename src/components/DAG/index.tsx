@@ -64,7 +64,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
 // Is considered as error
 //
 
-function isDAGError(status: AsyncStatus, dagTree: DAGStructureTree) {
+export function isDAGError(status: AsyncStatus, dagTree: DAGStructureTree): boolean {
   return (status === 'Ok' || status === 'Error') && !dagTree.length;
 }
 

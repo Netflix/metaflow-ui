@@ -1,5 +1,5 @@
 import React from 'react';
-import DAG from '..';
+import DAG, { isDAGError } from '..';
 import { render } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
 import { Run } from '../../../types';
@@ -34,5 +34,32 @@ describe('DAG component', () => {
     );
     // Expect to see error here since we don't mock websocket
     await findAllByTestId('dag-container-Error');
+  });
+
+  test('isDAGError', () => {
+    expect(isDAGError('Error', [])).toBe(true);
+    expect(isDAGError('Ok', [])).toBe(true);
+    expect(isDAGError('Loading', [])).toBe(false);
+    expect(isDAGError('NotAsked', [])).toBe(false);
+
+    expect(
+      isDAGError('Error', [
+        {
+          node_type: 'container',
+          container_type: 'parallel',
+          steps: [],
+        },
+      ]),
+    ).toBe(false);
+
+    expect(
+      isDAGError('Ok', [
+        {
+          node_type: 'container',
+          container_type: 'parallel',
+          steps: [],
+        },
+      ]),
+    ).toBe(false);
   });
 });
