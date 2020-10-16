@@ -40,8 +40,10 @@ export interface Task extends MetaDataBaseObject {
   attempt_id: number;
   finished_at?: number;
   duration?: number;
-  status: string;
+  status: TaskStatus;
 }
+
+export type TaskStatus = 'running' | 'completed' | 'failed';
 
 export interface Metadata extends MetaDataBaseObject {
   id: number;
