@@ -346,6 +346,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
             <TimelineFooter
               graph={graph}
               rowData={rowData}
+              hasStepFilter={filters.steps.length > 0}
+              resetSteps={() => sq({ steps: null })}
               move={(value) => graphDispatch({ type: 'move', value: value })}
               updateHandle={(which, to) => {
                 if (which === 'left') {
