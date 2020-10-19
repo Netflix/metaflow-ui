@@ -15,6 +15,7 @@ import useSeachField, { SearchResultModel } from '../../hooks/useSearchField';
 import GenericError from '../GenericError';
 import { ItemRow } from '../Structure';
 import { TFunction } from 'i18next';
+import Spinner from '../Spinner';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task[] };
@@ -359,9 +360,14 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
             />
           </div>
         )}
-        {rows.length === 0 && status !== 'NotAsked' && (
+        {rows.length === 0 && status !== 'NotAsked' && status !== 'Loading' && (
           <ItemRow justify="center" margin="lg">
             <GenericError message={t('timeline.no-rows')} icon="listNotFound" />
+          </ItemRow>
+        )}
+        {rows.length === 0 && status === 'Loading' && (
+          <ItemRow justify="center" margin="lg">
+            <Spinner md />
           </ItemRow>
         )}
       </VirtualizedTimelineSubContainer>
