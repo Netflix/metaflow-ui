@@ -2,7 +2,7 @@ import React from 'react';
 import TimelineHeader, { TimelineHeaderProps } from '../TimelineHeader';
 import { render, fireEvent } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
-import { createGraphState } from '../testhelper';
+import { createGraphState } from '../../../utils/testhelper';
 
 const GROUP_BY = { value: true, set: () => null };
 const headerFunctionProps = {

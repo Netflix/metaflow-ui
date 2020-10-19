@@ -1,3 +1,4 @@
+import { TFunction } from 'i18next';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -10,7 +11,7 @@ type Props = {
 };
 
 const GenericError: React.FC<Props> = ({ message, icon }) => (
-  <GenericErrorContainer>
+  <GenericErrorContainer data-testid="generic-error">
     {icon && typeof icon !== 'string' ? icon : <Icon name={icon || 'noData'} size="lg" />}
     <div>{message}</div>
   </GenericErrorContainer>
@@ -63,36 +64,38 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
   return (
     <div>
       <GenericError message={msg} icon={icon} />
-      {error && error.status !== 404 && <APIErrorDetails error={error} />}
+      {error && error.status !== 404 && <APIErrorDetails error={error} t={t} />}
       {error && error.status === 404 && customNotFound && <div>{customNotFound}</div>}
     </div>
   );
 };
 
-export const APIErrorDetails: React.FC<{ error: APIError }> = ({ error }) => {
+export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ error, t }) => {
   const [open, setOpen] = useState(false);
 
   if (!open) {
     return (
-      <DetailContainer>
-        <DetailsOpenLink onClick={() => setOpen(true)}>Show error details</DetailsOpenLink>
+      <DetailContainer data-testid="error-details">
+        <DetailsOpenLink onClick={() => setOpen(true)} data-testid="error-details-seemore">
+          {t('error.show-more-details')}
+        </DetailsOpenLink>
       </DetailContainer>
     );
   }
 
   return (
-    <DetailContainer>
+    <DetailContainer data-testid="error-details">
       <DetailsTitle>
-        <span>
+        <span data-testid="error-details-title">
           {error.status} - {error.title} <span style={{ fontSize: '16px' }}>({error.id})</span>
         </span>
-        <DetailsCloseButton onClick={() => setOpen(false)}>
+        <DetailsCloseButton onClick={() => setOpen(false)} data-testid="error-details-close">
           <Icon name="times" size="lg" />
         </DetailsCloseButton>
       </DetailsTitle>
-      {error.detail && <DetailsSubTitle>{error.detail}</DetailsSubTitle>}
+      {error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
 
-      {error.traceback && <DetailsLog>{error.traceback}</DetailsLog>}
+      {error.traceback && <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>}
     </DetailContainer>
   );
 };

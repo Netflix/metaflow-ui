@@ -131,6 +131,7 @@ const en = {
     },
 
     error: {
+      'show-more-details': 'Show error details',
       'generic-error': 'Error happened',
       'load-error': 'Error loading data',
       'no-results': 'No results found',

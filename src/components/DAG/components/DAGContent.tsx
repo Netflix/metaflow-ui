@@ -53,7 +53,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, s
 
 export default DAGContent;
 
-const RenderStep: React.FC<{
+export const RenderStep: React.FC<{
   item: DAGTreeNode;
   isFirst?: boolean;
   isLast?: boolean;
@@ -66,8 +66,9 @@ const RenderStep: React.FC<{
     const stepState = stateOfStep(item, stepIds);
 
     return (
-      <NormalItemContainer isFirst={isFirst} isLast={isLast}>
+      <NormalItemContainer isFirst={isFirst} isLast={isLast} data-testid="dag-normalitem">
         <NormalItem
+          data-testid="dag-normalitem-box"
           state={stepState}
           onClick={() => {
             history.push(getPath.step(run.flow_id, run.run_number, item.step_name));
@@ -76,7 +77,7 @@ const RenderStep: React.FC<{
           {item.step_name}
         </NormalItem>
         {item.children && item.children.length > 0 && (
-          <NormalItemChildContainer>
+          <NormalItemChildContainer data-testid="dag-normalitem-children">
             {item.children.map((child, index) => {
               return (
                 <RenderStep
@@ -104,12 +105,12 @@ const RenderStep: React.FC<{
   }
 };
 
-const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' }> = ({ containerType, children }) => {
+export const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' }> = ({ containerType, children }) => {
   if (containerType === 'parallel') {
-    return <ContainerItem>{children}</ContainerItem>;
+    return <ContainerItem data-testid="dag-parallel-container">{children}</ContainerItem>;
   } else {
     return (
-      <ForeachContainer>
+      <ForeachContainer data-testid="dag-foreach-container">
         <ForeachItem>{children}</ForeachItem>
       </ForeachContainer>
     );

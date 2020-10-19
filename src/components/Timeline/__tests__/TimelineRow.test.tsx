@@ -1,7 +1,7 @@
 import React from 'react';
 import TimelineRow, { BoxGraphicElement } from '../TimelineRow';
 import { render } from '@testing-library/react';
-import { createGraphState, createTask, createStep } from '../testhelper';
+import { createGraphState, createTask, createStep } from '../../../utils/testhelper';
 import TestWrapper from '../../../utils/testing';
 
 const MockT = (str: string) => str;
