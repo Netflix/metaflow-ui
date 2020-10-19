@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import styled, { css } from 'styled-components';
-import useComponentSize from '@rehooks/component-size';
+import useComponentSize, { ComponentSize } from '@rehooks/component-size';
 import useWindowSize from '../../../hooks/useWindowSize';
 import { Run, Step } from '../../../types';
 import { DAGStructureTree, DAGTreeNode, StepTree } from '../DAGUtils';
@@ -27,10 +27,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, s
       showFullscreen={showFullscreen}
       ref={_container}
       style={{
-        transform:
-          'scale(' +
-          (showFullscreen && ContainerSize.width > WindowSize.width ? WindowSize.width / ContainerSize.width : 1) +
-          ')',
+        transform: 'scale(' + getGraphScale(showFullscreen, ContainerSize, WindowSize) + ')',
       }}
     >
       <div style={{ display: 'flex', padding: '1rem' }}>
@@ -52,6 +49,30 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, s
 };
 
 export default DAGContent;
+
+function getGraphScale(
+  showFullscreen: boolean,
+  ContainerSize: ComponentSize,
+  WindowSize: { height: number; width: number },
+) {
+  if (!showFullscreen) {
+    return 1;
+  }
+  if (ContainerSize.width > WindowSize.width) {
+    // Check if height is still too big after scaling with width..
+    const newScale = WindowSize.width / ContainerSize.width;
+    if (ContainerSize.height * newScale + 96 > WindowSize.height) {
+      return (WindowSize.height - 96) / ContainerSize.height;
+    }
+    return newScale;
+  }
+
+  if (ContainerSize.height + 96 > WindowSize.height) {
+    return (WindowSize.height - 96) / ContainerSize.height;
+  }
+
+  return 1;
+}
 
 export const RenderStep: React.FC<{
   item: DAGTreeNode;
