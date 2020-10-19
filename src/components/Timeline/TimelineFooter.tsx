@@ -7,6 +7,7 @@ import { Step } from '../../types';
 import { formatDuration } from '../../utils/format';
 import Button from '../Button';
 import Icon from '../Icon';
+import { useTranslation } from 'react-i18next';
 
 type TimelineFooterProps = {
   rowData: RowDataModel;
@@ -25,6 +26,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({
   move,
   updateHandle,
 }) => {
+  const { t } = useTranslation();
   const _container = createRef<HTMLDivElement>();
   const [drag, setDrag] = useState({ dragging: false, start: 0 });
   const [handleDrag, setHandleDrag] = useState<{ dragging: boolean; which: 'left' | 'right' }>({
@@ -74,7 +76,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({
         {hasStepFilter && (
           <Button withIcon="left" onClick={() => resetSteps()}>
             <Icon name="timeline" size="md" padRight />
-            <span>Show all steps</span>
+            <span>{t('timeline.show-all-steps')}</span>
           </Button>
         )}
       </TimelineFooterLeft>

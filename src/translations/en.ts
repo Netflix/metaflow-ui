@@ -94,6 +94,7 @@ const en = {
       duration: 'Duration',
       zoom: 'Zoom',
       'fit-to-screen': 'Fit to screen',
+      'show-all-steps': 'Show all steps',
     },
 
     task: {
