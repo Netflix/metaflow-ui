@@ -5,15 +5,28 @@ import styled from 'styled-components';
 import { RowDataModel } from './useRowData';
 import { Step } from '../../types';
 import { formatDuration } from '../../utils/format';
+import Button from '../Button';
+import Icon from '../Icon';
+import { useTranslation } from 'react-i18next';
 
 type TimelineFooterProps = {
   rowData: RowDataModel;
   graph: GraphState;
+  hasStepFilter: boolean;
+  resetSteps: () => void;
   move: (change: number) => void;
   updateHandle: (which: 'left' | 'right', to: number) => void;
 };
 
-const TimelineFooter: React.FC<TimelineFooterProps> = ({ rowData, graph, move, updateHandle }) => {
+const TimelineFooter: React.FC<TimelineFooterProps> = ({
+  rowData,
+  graph,
+  hasStepFilter,
+  resetSteps,
+  move,
+  updateHandle,
+}) => {
+  const { t } = useTranslation();
   const _container = createRef<HTMLDivElement>();
   const [drag, setDrag] = useState({ dragging: false, start: 0 });
   const [handleDrag, setHandleDrag] = useState<{ dragging: boolean; which: 'left' | 'right' }>({
@@ -59,6 +72,14 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ rowData, graph, move, u
 
   return (
     <TimelineFooterContainer>
+      <TimelineFooterLeft>
+        {hasStepFilter && (
+          <Button withIcon="left" onClick={() => resetSteps()}>
+            <Icon name="timeline" size="md" padRight />
+            <span>{t('timeline.show-all-steps')}</span>
+          </Button>
+        )}
+      </TimelineFooterLeft>
       <TimelineFooterContent>
         <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
         <MiniTimelineContainer ref={_container}>
@@ -174,15 +195,28 @@ const MiniTimelineZoomHandle: React.FC<{ which: 'left' | 'right'; label: string;
 );
 
 const TimelineFooterContainer = styled.div`
+  display: flex;
   position: relative;
   width: 100%;
   height: 40px;
-  padding-left: 245px;
   margin-bottom: 25px;
+`;
+
+const TimelineFooterLeft = styled.div`
+  display: inline-block;
+  width: 245px;
+  margin: 0.5rem 0;
+  padding: 0 0.5rem;
+
+  button {
+    justify-content: center;
+    width: 100%;
+  }
 `;
 
 const TimelineFooterContent = styled.div`
   position: relative;
+  flex: 1;
   background: ${(p) => p.theme.color.bg.light};
   border-bottom: ${(p) => p.theme.border.thinLight};
   height: 49px;
