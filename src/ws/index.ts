@@ -52,7 +52,7 @@ type WebSocketConnection = {
 export function createWebsocketConnection(url: string): WebSocketConnection {
   let subscriptions: Array<Subscription<unknown>> = [];
 
-  let sinceConnectedUnixTime: number | null = null;
+  let connectedSinceUnixTime: number | null = null;
 
   const conn = new ReconnectingWebSocket(url, [], {
     maxReconnectionDelay: 5000, // max delay in ms between reconnections
@@ -69,17 +69,17 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     // Always re-subscribe to events when connection is established
     // This operation is safe since backend makes sure there's no duplicate identifiers
     subscriptions.forEach((subscription) => {
-      conn.send(JSON.stringify(subscribeMessage(subscription.uuid, subscription.resource, sinceConnectedUnixTime)));
+      conn.send(JSON.stringify(subscribeMessage(subscription.uuid, subscription.resource, connectedSinceUnixTime)));
     });
 
-    // Reset `sinceConnectedUnixTime` so that next disconnect timestamp can be recorder
-    sinceConnectedUnixTime = null;
+    // Reset `connectedSinceUnixTime` so that next disconnect timestamp can be recorder
+    connectedSinceUnixTime = null;
   });
   conn.addEventListener('close', (_e: CloseEvent) => {
-    if (!sinceConnectedUnixTime) {
+    if (!connectedSinceUnixTime) {
       // This timestamp will be used to define gap between realtime data
       // Once connection is re-established the missing data will be returned to client
-      sinceConnectedUnixTime = Math.floor(new Date().getTime() / 1000);
+      connectedSinceUnixTime = Math.floor(new Date().getTime() / 1000);
     }
 
     if (_e.code !== 1000) {
