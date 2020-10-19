@@ -590,11 +590,7 @@ function makeVisibleRows(
       }));
 
       if (statusFilter) {
-        rowTasks = rowTasks.filter((item) =>
-          statusFilter === 'done'
-            ? item.data.find((task) => task.finished_at)
-            : item.data.find((task) => !task.finished_at),
-        );
+        rowTasks = rowTasks.filter((item) => item.data.find((task) => task.status === statusFilter));
       }
 
       if (shouldApplySearchFilter(searchResults)) {

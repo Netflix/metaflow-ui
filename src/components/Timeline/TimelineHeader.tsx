@@ -100,8 +100,9 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 value={status}
                 options={[
                   ['all', t('run.filter-all') + ` (${counts.all})`],
-                  ['done', t('run.filter-completed') + ` (${counts.completed})`],
+                  ['completed', t('run.filter-completed') + ` (${counts.completed})`],
                   ['running', t('run.filter-running') + ` (${counts.running})`],
+                  ['failed', t('run.filter-failed') + ` (${counts.failed})`],
                 ]}
               />
             </TimelineHeaderItem>
