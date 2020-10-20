@@ -424,6 +424,7 @@ const RowRenderer: React.FC<{
         graph={graph}
         isGrouped={isGrouped}
         isOpen={rowData && rowData.isOpen}
+        isFailed={rowData ? rowData.isFailed : false}
         endTime={row.type === 'step' && rowData ? rowData.finished_at : undefined}
         onOpen={() => {
           if (row.type === 'task' || !toggleOpen) return;

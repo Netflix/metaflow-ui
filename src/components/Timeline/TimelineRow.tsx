@@ -18,6 +18,7 @@ type TimelineRowProps = {
   onOpen: () => void;
   isGrouped: boolean;
   isOpen?: boolean;
+  isFailed?: boolean;
   // Flag row as sticky for some absolute stylings
   sticky?: boolean;
   // Optional end time. Used for steps since they dont have data themselves
@@ -32,6 +33,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   graph,
   onOpen,
   isOpen = true,
+  isFailed = false,
   isGrouped,
   sticky,
   endTime,
@@ -63,6 +65,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               grayed={isOpen}
               finishedAt={endTime}
               onOpen={onOpen}
+              isFailed={isFailed}
               isFirst
             />
           ) : (
@@ -90,6 +93,7 @@ type BoxGraphicElementProps = {
   finishedAt: number | undefined;
   grayed?: boolean;
   isFirst: boolean;
+  isFailed?: boolean;
   onOpen?: () => void;
 };
 
@@ -99,6 +103,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   finishedAt,
   grayed,
   isFirst,
+  isFailed,
   onOpen,
 }) => {
   const { push } = useHistory();
@@ -140,17 +145,25 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
             data-testid="boxgraphic-label"
           />
         )}
-        <BoxGraphicLine
-          grayed={grayed}
-          state={row.type === 'task' && row.data.status ? row.data.status : finishedAt ? 'completed' : 'running'}
-          isFirst={isFirst}
-        />
+        <BoxGraphicLine grayed={grayed} state={getRowStatus(row, isFailed)} isFirst={isFirst} />
         <BoxGraphicMarkerStart />
         <BoxGraphicMarkerEnd />
       </BoxGraphic>
     </div>
   );
 };
+
+function getRowStatus(row: { type: 'step'; data: Step } | { type: 'task'; data: Task }, isFailed?: boolean): string {
+  if (row.type === 'step') {
+    return isFailed ? 'failed' : 'completed';
+  } else {
+    if (row.data.status) {
+      return row.data.status;
+    } else {
+      return row.data.finished_at ? 'completed' : 'running';
+    }
+  }
+}
 
 const RowMetricLabel: React.FC<{
   item: Task | Step;
@@ -234,6 +247,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isFirst: bo
   height: 6px;
   top: 50%;
   transform: translateY(-50%);
+  transition: background 0.15s;
 `;
 
 const BoxGraphicMarker = css`

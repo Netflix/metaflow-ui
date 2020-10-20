@@ -11,6 +11,7 @@ export type StepRowData = {
   // We have to compute finished_at value so let it live in here now :(
   finished_at: number;
   duration: number;
+  isFailed: boolean;
   step?: Step;
   // Tasks for this step
   data: Record<string, Task[]>;
@@ -35,7 +36,10 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
         if (obj[step.step_name]) {
           return { ...obj, [step.step_name]: { ...state[step.step_name], step: step, isOpen: true } };
         }
-        return { ...obj, [step.step_name]: { step: step, isOpen: true, finished_at: 0, duration: 0, data: {} } };
+        return {
+          ...obj,
+          [step.step_name]: { step: step, isOpen: true, isFailed: false, finished_at: 0, duration: 0, data: {} },
+        };
       }, state);
       return Object.keys(steprows)
         .sort((a, b) => {
@@ -81,6 +85,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
             ...obj,
             [key]: {
               ...row,
+              isFailed: isFailedStep(newData, newItems),
               finished_at: newEndTime,
               duration: row.step ? newEndTime - row.step.ts_epoch : row.duration,
               data: newData,
@@ -92,6 +97,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
           ...obj,
           [key]: {
             isOpen: true,
+            isFailed: isFailedStep(grouped, newItems),
             finished_at: endTime,
             duration: endTime - startTime,
             data: grouped[key].reduce<Record<number, Task[]>>((dataobj, item) => {
@@ -123,6 +129,25 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
   }
 
   return state;
+}
+
+/**
+ * Check if step is failure. Only checks new tasks we just got from server. This might cause an issue
+ * though if we get successful tasks after getting failed ones (should not really happen).
+ */
+function isFailedStep(stepTaskData: Record<string, Task[]>, newTasks: Task[]) {
+  const ids = newTasks.map((t) => t.task_id);
+
+  for (const [key, tasks] of Object.entries(stepTaskData)) {
+    if (ids.indexOf(key) > -1) {
+      // IF ALL OF TASKS ON ROW IS FAILED, WE CAN SAY THAT STEP IS FAILURE.
+      const hasFailed = tasks.every((t) => t.status === 'failed');
+      if (hasFailed) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 /**
