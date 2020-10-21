@@ -171,16 +171,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
 
   // Follow counts of rows by each status.
   useEffect(() => {
-    const allRows = Object.keys(rowData).reduce((arr: Task[], key) => {
-      if (key.startsWith('_')) return arr;
-
-      const tasks = Object.keys(rowData[key].data).reduce((arr2: Task[], key2) => {
-        const rowTasks = rowData[key].data[key2];
-        return arr2.concat([rowTasks[rowTasks.length - 1]]);
-      }, []);
-      return arr.concat(tasks);
-    }, []);
-
     const newCounts = {
       all: 0,
       completed: 0,
@@ -188,14 +178,29 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
       failed: 0,
     };
 
-    for (const row of allRows) {
-      newCounts.all++;
-      if (row.status === 'completed' && row.finished_at) {
-        newCounts.completed++;
-      } else if (row.status === 'failed') {
-        newCounts.failed++;
-      } else if (row.status === 'running' || !row.finished_at) {
-        newCounts.running++;
+    // Iterate steps
+    for (const stepName of Object.keys(rowData)) {
+      // ...Wihtout steps that start with underscore because user is not interested on them
+      if (!stepName.startsWith('_')) {
+        const stepRow = rowData[stepName];
+        // Iterate all task rows on step
+        for (const taskId of Object.keys(stepRow.data)) {
+          const taskRow = stepRow.data[taskId];
+          // Map statuses of all attempts on single row and count
+          const allStatuses = taskRow.map((t) => t.status);
+
+          newCounts.all++;
+          if (allStatuses.indexOf('completed') > -1) {
+            newCounts.completed++;
+          } else if (allStatuses.indexOf('running') > -1) {
+            newCounts.running++;
+          }
+          // If there is more than 1 task on one row, there must be multiple attempts which means that some
+          // of them has failed
+          if (allStatuses.indexOf('failed') > -1 || taskRow.length > 1) {
+            newCounts.failed++;
+          }
+        }
       }
     }
 
@@ -216,12 +221,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
 
     setStepPositions(stepPos);
   }, [rows]);
-
-  // Reset everything if run is changed
-  useEffect(() => {
-    graphDispatch({ type: 'reset' });
-    setCounts({ all: 0, completed: 0, running: 0, failed: 0 });
-  }, [run.run_number, graphDispatch]);
 
   //
   // Button behaviour
@@ -590,7 +589,11 @@ function makeVisibleRows(
       }));
 
       if (statusFilter) {
-        rowTasks = rowTasks.filter((item) => item.data.find((task) => task.status === statusFilter));
+        rowTasks = rowTasks.filter(
+          (item) =>
+            (statusFilter === 'failed' && item.data.length > 1) ||
+            item.data.find((task) => task.status === statusFilter),
+        );
       }
 
       if (shouldApplySearchFilter(searchResults)) {
