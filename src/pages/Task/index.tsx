@@ -79,6 +79,8 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const [task, setTask] = useState<ITask | null>(null);
+  const attemptId = task ? task.attempt_id : null;
+  const isCurrentTaskFinished = task && (task.finished_at || task.status === 'failed');
 
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts`,
@@ -87,7 +89,6 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
-  const attemptId = task ? task.attempt_id : null;
   const { data: artifacts, status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     queryParams: {
@@ -95,7 +96,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     },
     subscribeToEvents: true,
     initialData: [],
-    pause: stepName === 'not-selected' || taskId === 'not-selected' || attemptId === null,
+    pause: !isCurrentTaskFinished,
   });
 
   // Task data will be array so we need to set one of them as active task when they arrive
@@ -152,7 +153,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: attemptId === null,
+    pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
       items && setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -168,7 +169,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: attemptId === null,
+    pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
       items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
