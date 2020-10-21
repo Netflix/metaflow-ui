@@ -7,6 +7,7 @@ const ButtonGroup = styled.div`
   > .button {
     border-radius: 0;
     margin-left: -1px;
+    min-height: 28px;
 
     white-space: nowrap;
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { GraphState, GraphSortBy } from './useGraph';
-import { DropdownField } from '../Form';
+import { CheckboxField, DropdownField } from '../Form';
 import { ItemRow } from '../Structure';
 import { Text } from '../Text';
 import ButtonGroup from '../ButtonGroup';
@@ -21,7 +21,9 @@ export type TimelineHeaderProps = {
   expandAll: () => void;
   collapseAll: () => void;
   setFullscreen: () => void;
+  setMode: (str: string) => void;
   isFullscreen: boolean;
+  selectedStatus: string;
   updateStatusFilter: (status: null | string) => void;
   groupBy: { value: boolean; set: (val: boolean) => void };
   graph: GraphState;
@@ -36,8 +38,10 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   zoomReset,
   updateSortBy,
   updateSortDir,
+  selectedStatus,
   groupBy,
   expandAll,
+  setMode,
   collapseAll,
   isFullscreen,
   setFullscreen,
@@ -47,18 +51,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   counts,
 }) => {
   const { t } = useTranslation();
-  const SortButtonDef = (label: string, property: GraphSortBy) => (
-    <SortButton
-      label={label}
-      property={property}
-      current={graph.sortBy}
-      direction={graph.sortDir}
-      updateSortBy={updateSortBy}
-      updateSortDir={updateSortDir}
-    />
-  );
-
-  const [status, setStatus] = useState('all');
+  const [customFiltersOpen, setCustomFiltersOpen] = useState(false);
+  const activeMode = getMode(graph, groupBy, selectedStatus);
 
   return (
     <TimelineHeaderContainer>
@@ -78,34 +72,33 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
           <ItemRow>
-            <Text style={{ whiteSpace: 'nowrap' }}>{t('timeline.order-by')}:</Text>
             <ButtonGroup>
-              {SortButtonDef(t('timeline.started-at'), 'startTime')}
-              {SortButtonDef(t('timeline.finished-at'), 'endTime')}
-              {SortButtonDef(t('timeline.duration'), 'duration')}
+              <Button active={activeMode === 'overview'} onClick={() => setMode('overview')}>
+                Overview
+              </Button>
+              <Button active={activeMode === 'monitoring'} onClick={() => setMode('monitoring')}>
+                Monitoring
+              </Button>
+              <Button active={activeMode === 'error-tracker'} onClick={() => setMode('error-tracker')}>
+                Error tracker
+              </Button>
+              <Button active={activeMode === 'custom'} onClick={() => setCustomFiltersOpen(true)}>
+                <Icon name="ellipsis" />
+              </Button>
             </ButtonGroup>
 
-            <TimelineHeaderItem pad="sm">
-              <Text>{t('fields.status')}:</Text>
-              <DropdownField
-                horizontal
-                onChange={(e) => {
-                  setStatus(e?.target.value || 'all');
-                  if (e?.target.value === 'all') {
-                    updateStatusFilter(null);
-                  } else {
-                    updateStatusFilter(e?.target.value || null);
-                  }
-                }}
-                value={status}
-                options={[
-                  ['all', t('run.filter-all') + ` (${counts.all})`],
-                  ['completed', t('run.filter-completed') + ` (${counts.completed})`],
-                  ['running', t('run.filter-running') + ` (${counts.running})`],
-                  ['failed', t('run.filter-failed') + ` (${counts.failed})`],
-                ]}
+            <AdvancedFiltersOverlay show={customFiltersOpen}>
+              <CustomFilters
+                updateSortBy={updateSortBy}
+                updateSortDir={updateSortDir}
+                updateStatusFilter={updateStatusFilter}
+                selectedStatus={selectedStatus}
+                groupBy={groupBy}
+                graph={graph}
+                counts={counts}
+                onClose={() => setCustomFiltersOpen(false)}
               />
-            </TimelineHeaderItem>
+            </AdvancedFiltersOverlay>
           </ItemRow>
 
           <ItemRow noWidth>
@@ -135,6 +128,97 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
         </TimelineHeaderBottomRight>
       </TimelineHeaderBottom>
     </TimelineHeaderContainer>
+  );
+};
+
+function getMode(graph: GraphState, groupBy: { value: boolean; set: (val: boolean) => void }, status: string) {
+  if (groupBy.value === true && status === 'all' && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
+    return 'overview';
+  } else if (groupBy.value === false && status === 'all' && graph.sortBy === 'startTime' && graph.sortDir === 'desc') {
+    return 'monitoring';
+  } else if (groupBy.value === true && status === 'failed' && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
+    return 'error-tracker';
+  }
+  return 'custom';
+}
+
+export type CustomFiltersProps = {
+  updateSortBy: (by: GraphSortBy) => void;
+  updateSortDir: () => void;
+  updateStatusFilter: (status: null | string) => void;
+  selectedStatus: string;
+  groupBy: { value: boolean; set: (val: boolean) => void };
+  graph: GraphState;
+  counts: RowCounts;
+  onClose: () => void;
+};
+
+const CustomFilters: React.FC<CustomFiltersProps> = ({
+  updateStatusFilter,
+  updateSortBy,
+  updateSortDir,
+  graph,
+  selectedStatus,
+  counts,
+  onClose,
+  groupBy,
+}) => {
+  const { t } = useTranslation();
+  const SortButtonDef = (label: string, property: GraphSortBy) => (
+    <SortButton
+      label={label}
+      property={property}
+      current={graph.sortBy}
+      direction={graph.sortDir}
+      updateSortBy={updateSortBy}
+      updateSortDir={updateSortDir}
+    />
+  );
+
+  return (
+    <ItemRow style={{ height: '100%' }}>
+      <ItemRow>
+        <Text style={{ whiteSpace: 'nowrap' }}>{t('timeline.order-by')}:</Text>
+        <ButtonGroup>
+          {SortButtonDef(t('timeline.started-at'), 'startTime')}
+          {SortButtonDef(t('timeline.finished-at'), 'endTime')}
+          {SortButtonDef(t('timeline.duration'), 'duration')}
+        </ButtonGroup>
+
+        <TimelineHeaderItem pad="sm">
+          <Text>{t('fields.status')}:</Text>
+          <DropdownField
+            horizontal
+            onChange={(e) => {
+              // setStatus(e?.target.value || 'all');
+              if (e?.target.value === 'all') {
+                updateStatusFilter(null);
+              } else {
+                updateStatusFilter(e?.target.value || null);
+              }
+            }}
+            value={selectedStatus}
+            options={[
+              ['all', t('run.filter-all') + ` (${counts.all})`],
+              ['completed', t('run.filter-completed') + ` (${counts.completed})`],
+              ['running', t('run.filter-running') + ` (${counts.running})`],
+              ['failed', t('run.filter-failed') + ` (${counts.failed})`],
+            ]}
+          />
+          <div style={{ marginLeft: '1rem' }}>
+            <CheckboxField
+              label={t('timeline.group-by-step')}
+              checked={groupBy.value}
+              onChange={() => groupBy.set(!groupBy.value)}
+              data-testid="timeline-header-groupby-step"
+            />
+          </div>
+        </TimelineHeaderItem>
+      </ItemRow>
+      <div onClick={onClose} style={{ cursor: 'pointer' }}>
+        <Icon size="lg" name="times" />
+      </div>
+    </ItemRow>
   );
 };
 
@@ -169,6 +253,7 @@ const HeaderSortIcon: React.FC<{ dir: 'asc' | 'desc' }> = ({ dir }) => (
 const TimelineHeaderContainer = styled.div`
   border-bottom: ${(p) => p.theme.border.mediumLight};
   font-size: 14px;
+  position: relative;
 `;
 
 const TimelineHeaderBottom = styled.div`
@@ -203,6 +288,19 @@ const TimelineHeaderBottomRight = styled.div`
 
 const TimelineHeaderItem = styled(ItemRow)`
   margin: 0 1rem;
+`;
+
+const AdvancedFiltersOverlay = styled.div<{ show: boolean }>`
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+
+  pointer-events: ${(p) => (p.show ? 'all' : 'none')};
+  opacity: ${(p) => (p.show ? 1 : 0)};
+  transition: 0.15s opacity;
 `;
 
 export default TimelineHeader;

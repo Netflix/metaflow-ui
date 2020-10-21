@@ -263,6 +263,31 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
     }
   };
 
+  function setMode(mode: string) {
+    if (mode === 'overview') {
+      sq({
+        order: 'startTime',
+        direction: 'asc',
+      });
+      groupBy.set(true);
+      setStatusFilter(null);
+    } else if (mode === 'monitoring') {
+      sq({
+        order: 'startTime',
+        direction: 'desc',
+      });
+      groupBy.set(false);
+      setStatusFilter(null);
+    } else if (mode === 'error-tracker') {
+      sq({
+        order: 'startTime',
+        direction: 'asc',
+      });
+      groupBy.set(true);
+      setStatusFilter('failed');
+    }
+  }
+
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
@@ -272,11 +297,13 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
           zoomReset={() => graphDispatch({ type: 'resetZoom' })}
           updateSortBy={(by) => sq({ order: by }, 'replaceIn')}
           updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')}
+          setMode={setMode}
           expandAll={expandAll}
           groupBy={groupBy}
           collapseAll={collapseAll}
           setFullscreen={() => setFullscreen(true)}
           isFullscreen={showFullscreen}
+          selectedStatus={statusFilter || 'all'}
           updateStatusFilter={(status: null | string) => setStatusFilter(status)}
           searchFieldProps={searchFieldProps}
           searchResults={searchResults}
