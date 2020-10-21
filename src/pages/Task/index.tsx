@@ -278,6 +278,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
               component: (
                 <>
                   <SectionLoader
+                    minHeight={110}
                     status={statusOut}
                     error={logStdError}
                     customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
@@ -299,6 +300,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
               component: (
                 <>
                   <SectionLoader
+                    minHeight={110}
                     status={statusErr}
                     error={logErrError}
                     customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
@@ -322,6 +324,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                 <>
                   <InformationRow spaceless>
                     <SectionLoader
+                      minHeight={200}
                       status={artifactStatus}
                       error={artifactError}
                       component={

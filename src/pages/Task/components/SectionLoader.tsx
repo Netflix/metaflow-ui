@@ -6,18 +6,24 @@ import { APIError, AsyncStatus } from '../../../types';
 //
 // Conditional renderer for async components.
 //
-type Props = { status: AsyncStatus; error: APIError | null; component: JSX.Element; customNotFound?: React.ReactNode };
+type Props = {
+  status: AsyncStatus;
+  error: APIError | null;
+  component: JSX.Element;
+  customNotFound?: React.ReactNode;
+  minHeight?: number;
+};
 
-const SectionLoader: React.FC<Props> = ({ status, error, component, customNotFound }) => {
+const SectionLoader: React.FC<Props> = ({ status, error, component, customNotFound, minHeight }) => {
   if (status === 'Loading') {
     return (
-      <div style={{ textAlign: 'center' }}>
+      <div style={{ textAlign: 'center', minHeight: minHeight || 'unset' }}>
         <Spinner />
       </div>
     );
   } else if (status === 'Error') {
     return (
-      <div>
+      <div style={{ minHeight: minHeight || 'unset' }}>
         <APIErrorRenderer error={error} customNotFound={customNotFound} />
       </div>
     );
