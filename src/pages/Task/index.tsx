@@ -100,10 +100,10 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
 
   // Task data will be array so we need to set one of them as active task when they arrive
   useEffect(() => {
-    if (status === 'Ok' && tasks && tasks.length > 0) {
+    if (status === 'Ok' && task === null && tasks && tasks.length > 0) {
       setTask(tasks.sort(sortTaskAttempts)[tasks.length - 1]);
     }
-  }, [tasks, status]);
+  }, [tasks, status, task]);
 
   //
   // Plugins helpers begin
