@@ -54,7 +54,7 @@ const en = {
 
     filters: {
       'group-by': 'Group by',
-      'reset-all': 'Reset all filters',
+      'reset-all': 'Reset view',
       running: 'Running',
       failed: 'Failed',
       completed: 'Completed',
