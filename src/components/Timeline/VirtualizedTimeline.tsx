@@ -217,12 +217,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
     setStepPositions(stepPos);
   }, [rows]);
 
-  // Reset everything if run is changed
-  useEffect(() => {
-    graphDispatch({ type: 'reset' });
-    setCounts({ all: 0, completed: 0, running: 0, failed: 0 });
-  }, [run.run_number, graphDispatch]);
-
   //
   // Button behaviour
   //
