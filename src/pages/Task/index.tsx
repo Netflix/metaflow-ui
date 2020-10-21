@@ -219,7 +219,7 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
       {fullscreen === null && status === 'Ok' && task && (
         <AnchoredView
           header={
-            status === 'Ok' && tasks && tasks.length > 1 ? (
+            status === 'Ok' && tasks && tasks.length > 0 ? (
               <TabsHeading>
                 {tasks.sort(sortTaskAttempts).map((item, index) => (
                   <TabsHeadingItem key={index} onClick={() => selectTask(item)} active={item === task}>
