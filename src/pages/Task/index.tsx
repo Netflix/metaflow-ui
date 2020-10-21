@@ -253,7 +253,8 @@ const Task: React.FC<TaskViewProps> = ({ run, stepName, taskId, rowData, rowData
                         },
                         {
                           label: t('fields.started-at') + ':',
-                          accessor: (item) => (item.ts_epoch ? getISOString(new Date(item.ts_epoch)) : ''),
+                          accessor: (item) =>
+                            item.ts_epoch ? getISOString(new Date(getAttemptStartTime(tasks, item))) : '',
                         },
                         {
                           label: t('fields.finished-at') + ':',
@@ -390,6 +391,18 @@ function getDuration(tasks: ITask[], task: ITask) {
     }
   }
   return task.duration ? formatDuration(task.duration) : '';
+}
+
+function getAttemptStartTime(allAttempts: ITask[] | null, task: ITask) {
+  if (!allAttempts) return task.ts_epoch;
+
+  const index = allAttempts.indexOf(task);
+  if (index === 0 || task.ts_epoch !== allAttempts[0].ts_epoch) {
+    return task.ts_epoch;
+  } else {
+    const previous = allAttempts[index - 1];
+    return previous?.finished_at || task.ts_epoch;
+  }
 }
 
 const TaskContainer = styled.div`
