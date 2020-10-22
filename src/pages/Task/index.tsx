@@ -165,17 +165,10 @@ const Task: React.FC<TaskViewProps> = ({
   return (
     <TaskContainer>
       <TimelineHeader
-        graph={graph.graph}
-        updateSortBy={(by) => graph.setQueryParam({ order: by }, 'replaceIn')}
-        updateSortDir={() =>
-          graph.setQueryParam({ direction: graph.graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')
-        }
-        updateGroup={(group) => graph.setQueryParam({ group: group ? 'true' : 'false' }, 'replaceIn')}
+        graph={graph}
         setMode={setMode}
         expandAll={() => null}
         collapseAll={() => null}
-        selectedStatus={graph.graph.statusFilter || 'all'}
-        updateStatusFilter={(status: null | string) => graph.setQueryParam({ status })}
         searchField={searchField}
         counts={counts}
       />

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { GraphState, GraphSortBy } from './useGraph';
+import { GraphState, GraphSortBy, GraphHook } from './useGraph';
 import { CheckboxField, DropdownField } from '../Form';
 import { ItemRow } from '../Structure';
 import { Text } from '../Text';
@@ -16,41 +16,32 @@ import { RowCounts } from './useRowData';
 export type TimelineHeaderProps = {
   zoom?: (dir: 'in' | 'out') => void;
   zoomReset?: () => void;
-  updateSortBy: (by: GraphSortBy) => void;
-  updateSortDir: () => void;
-  updateGroup: (group: boolean) => void;
   expandAll: () => void;
   collapseAll: () => void;
   setMode: (str: string) => void;
   setFullscreen?: () => void;
   isFullscreen?: boolean;
-  selectedStatus: string;
-  updateStatusFilter: (status: null | string) => void;
-  graph: GraphState;
+  graph: GraphHook;
   searchField: SearchFieldReturnType;
   counts: RowCounts;
 };
 
 const TimelineHeader: React.FC<TimelineHeaderProps> = ({
-  graph,
+  graph: graphHook,
   zoom,
   zoomReset,
-  updateSortBy,
-  updateSortDir,
-  selectedStatus,
-  updateGroup,
   expandAll,
   setMode,
   collapseAll,
   isFullscreen,
   setFullscreen,
-  updateStatusFilter,
   searchField,
   counts,
 }) => {
   const { t } = useTranslation();
   const [customFiltersOpen, setCustomFiltersOpen] = useState(false);
-  const activeMode = getMode(graph, selectedStatus);
+  const { graph, setQueryParam } = graphHook;
+  const activeMode = getMode(graph);
 
   return (
     <TimelineHeaderContainer>
@@ -79,14 +70,14 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 <Icon name="ellipsis" />
               </Button>
             </ButtonGroup>
-
             <AdvancedFiltersOverlay show={customFiltersOpen}>
               <CustomFilters
-                updateSortBy={updateSortBy}
-                updateSortDir={updateSortDir}
-                updateStatusFilter={updateStatusFilter}
-                updateGroupBy={updateGroup}
-                selectedStatus={selectedStatus}
+                updateSortBy={(by) => setQueryParam({ order: by }, 'replaceIn')}
+                updateSortDir={() =>
+                  setQueryParam({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')
+                }
+                updateStatusFilter={(status: null | string) => setQueryParam({ status })}
+                updateGroupBy={(group) => setQueryParam({ group: group ? 'true' : 'false' }, 'replaceIn')}
                 graph={graph}
                 counts={counts}
                 onClose={() => setCustomFiltersOpen(false)}
@@ -126,12 +117,17 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   );
 };
 
-function getMode(graph: GraphState, status: string) {
-  if (graph.group === true && status === 'all' && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
+function getMode(graph: GraphState) {
+  if (graph.group === true && !graph.statusFilter && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
     return 'overview';
-  } else if (graph.group === false && status === 'all' && graph.sortBy === 'startTime' && graph.sortDir === 'desc') {
+  } else if (graph.group === false && !graph.statusFilter && graph.sortBy === 'startTime' && graph.sortDir === 'desc') {
     return 'monitoring';
-  } else if (graph.group === true && status === 'failed' && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
+  } else if (
+    graph.group === true &&
+    graph.statusFilter === 'failed' &&
+    graph.sortBy === 'startTime' &&
+    graph.sortDir === 'asc'
+  ) {
     return 'error-tracker';
   }
   return 'custom';
@@ -142,7 +138,6 @@ export type CustomFiltersProps = {
   updateSortDir: () => void;
   updateStatusFilter: (status: null | string) => void;
   updateGroupBy: (group: boolean) => void;
-  selectedStatus: string;
   graph: GraphState;
   counts: RowCounts;
   onClose: () => void;
@@ -154,7 +149,6 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
   updateSortDir,
   updateGroupBy,
   graph,
-  selectedStatus,
   counts,
   onClose,
 }) => {
@@ -192,7 +186,7 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
                 updateStatusFilter(e?.target.value || null);
               }
             }}
-            value={selectedStatus}
+            value={graph.statusFilter || 'all'}
             options={[
               ['all', t('run.filter-all') + ` (${counts.all})`],
               ['completed', t('run.filter-completed') + ` (${counts.completed})`],

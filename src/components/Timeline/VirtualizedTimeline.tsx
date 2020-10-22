@@ -45,7 +45,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   searchField,
   setMode,
 }) => {
-  console.log('hello');
   const { t } = useTranslation();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
@@ -123,19 +122,14 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
         <TimelineHeader
-          graph={graph}
+          graph={graphHook}
           zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
           zoomReset={() => graphDispatch({ type: 'resetZoom' })}
-          updateSortBy={(by) => setQueryParam({ order: by }, 'replaceIn')}
-          updateSortDir={() => setQueryParam({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')}
-          updateGroup={(group) => setQueryParam({ group: group ? 'true' : 'false' }, 'replaceIn')}
           setMode={setMode}
           expandAll={expandAll}
           collapseAll={collapseAll}
           setFullscreen={() => setFullscreen(true)}
           isFullscreen={showFullscreen}
-          selectedStatus={graph.statusFilter || 'all'}
-          updateStatusFilter={(status: null | string) => setQueryParam({ status })}
           searchField={searchField}
           counts={counts}
         />
