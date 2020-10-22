@@ -2,7 +2,7 @@ import { TFunction } from 'i18next';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { Step, Task } from '../../types';
+import { Step, Task, ForeachStack } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { getPath } from '../../utils/routing';
 import Icon from '../Icon';
@@ -30,7 +30,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
               <RowStepName>{!grouped ? props.item.step_name : ''}</RowStepName>
               <span>
                 {!grouped ? '/' : ''}
-                {props.item.task_id}
+                {getTaskLabel(props.item)}
               </span>
             </RowLabelTaskName>
             <RowDuration data-testid="tasklistlabel-duration">
@@ -54,6 +54,19 @@ const TaskListLabel: React.FC<Props> = (props) => {
     </RowLabel>
   );
 };
+
+function getTaskLabel(item: Task): string {
+  if (item.foreach_stack !== null && item.foreach_stack.length > 0) {
+    return getForeachTaskLabel(item.foreach_stack);
+  } else {
+    return item.task_id;
+  }
+}
+
+function getForeachTaskLabel(stack: ForeachStack): string {
+  // stack format is [['step_name', 'foreach_var', 'foreach_num_tasks', 'foreach_index']]
+  return `${stack[0][1]}[${stack[0][3]}]`;
+}
 
 export default TaskListLabel;
 
