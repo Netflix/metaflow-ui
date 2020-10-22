@@ -178,7 +178,13 @@ export type RowCounts = {
 export default function useRowData(
   flowId: string,
   runNumber: string,
-): { rows: RowDataModel; dispatch: React.Dispatch<RowDataAction>; taskStatus: AsyncStatus; counts: RowCounts } {
+): {
+  rows: RowDataModel;
+  dispatch: React.Dispatch<RowDataAction>;
+  taskStatus: AsyncStatus;
+  counts: RowCounts;
+  steps: Step[];
+} {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
 
   // Fetch & subscribe to steps
@@ -204,7 +210,7 @@ export default function useRowData(
     updatePredicate: (a, b) => a.task_id === b.task_id,
     queryParams: {
       _order: '+ts_epoch',
-      _limit: '1000',
+      _limit: '200',
     },
     fetchAllData: true,
     onUpdate: (items) => {
@@ -256,5 +262,12 @@ export default function useRowData(
     setCounts(newCounts);
   }, [rows]);
 
-  return { rows, dispatch, taskStatus, counts };
+  const steps: Step[] = Object.keys(rows)
+    .map((key) => {
+      const step = rows[key].step;
+      return step ? ({ ...step, finished_at: step?.finished_at || rows[key].finished_at } as Step) : null;
+    })
+    .filter((t): t is Step => !!t);
+
+  return { rows, dispatch, taskStatus, counts, steps };
 }

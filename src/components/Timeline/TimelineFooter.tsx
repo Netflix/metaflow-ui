@@ -2,7 +2,6 @@ import React, { createRef, useState } from 'react';
 import { GraphState } from './useGraph';
 import styled from 'styled-components';
 
-import { RowDataModel } from './useRowData';
 import { Step } from '../../types';
 import { formatDuration } from '../../utils/format';
 import Button from '../Button';
@@ -10,7 +9,7 @@ import Icon from '../Icon';
 import { useTranslation } from 'react-i18next';
 
 type TimelineFooterProps = {
-  rowData: RowDataModel;
+  steps: Step[];
   graph: GraphState;
   hasStepFilter: boolean;
   resetSteps: () => void;
@@ -19,7 +18,7 @@ type TimelineFooterProps = {
 };
 
 const TimelineFooter: React.FC<TimelineFooterProps> = ({
-  rowData,
+  steps,
   graph,
   hasStepFilter,
   resetSteps,
@@ -83,19 +82,13 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({
       <TimelineFooterContent>
         <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
         <MiniTimelineContainer ref={_container}>
-          {Object.keys(rowData).map((key) => {
-            const step = rowData[key].step;
-            if (step) {
-              return (
-                <MiniTimelineRow
-                  key={step.step_name}
-                  graph={graph}
-                  step={{ ...step, finished_at: step.finished_at || rowData[key].finished_at || step.ts_epoch }}
-                />
-              );
-            }
-            return null;
-          })}
+          {steps.map((step) => (
+            <MiniTimelineRow
+              key={step.step_name}
+              graph={graph}
+              step={{ ...step, finished_at: step.finished_at || step.ts_epoch }}
+            />
+          ))}
         </MiniTimelineContainer>
       </TimelineFooterContent>
 

@@ -2,15 +2,12 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import Button from '../Button';
-import { CheckboxField } from '../Form';
 import Icon from '../Icon';
 
 const SettingsButton: React.FC<{
   expand: () => void;
   collapse: () => void;
-  groupBy: boolean;
-  toggleGroupBy: (gb: boolean) => void;
-}> = ({ expand, collapse, groupBy, toggleGroupBy }) => {
+}> = ({ expand, collapse }) => {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   return (
@@ -21,13 +18,6 @@ const SettingsButton: React.FC<{
       {open && (
         <>
           <TemporaryPopup>
-            <CheckboxField
-              label={t('timeline.group-by-step')}
-              checked={groupBy}
-              onChange={() => toggleGroupBy(!groupBy)}
-              data-testid="timeline-header-groupby-step"
-            />
-
             <Button
               onClick={() => {
                 expand();

@@ -16,6 +16,7 @@ export function createGraphState(partialGraph: Partial<GraphState>): GraphState 
     controlled: false,
     stepFilter: [],
     statusFilter: null,
+    group: true,
     ...partialGraph,
   };
 }

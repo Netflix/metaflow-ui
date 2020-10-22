@@ -8,7 +8,7 @@ export type SearchResultModel = {
 
 export type SearchFieldProps = { text: string; setText: (str: string) => void };
 
-type SearchFieldReturnType = {
+export type SearchFieldReturnType = {
   results: SearchResultModel;
   fieldProps: SearchFieldProps;
 };

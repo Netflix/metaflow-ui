@@ -8,27 +8,26 @@ import Button from '../Button';
 import styled from 'styled-components';
 import Icon, { SortIcon } from '../Icon';
 import { useTranslation } from 'react-i18next';
-import { SearchFieldProps, SearchResultModel } from '../../hooks/useSearchField';
+import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import SearchField from '../SearchField';
 import SettingsButton from './SettingsButton';
 import { RowCounts } from './useRowData';
 
 export type TimelineHeaderProps = {
-  zoom: (dir: 'in' | 'out') => void;
-  zoomReset: () => void;
+  zoom?: (dir: 'in' | 'out') => void;
+  zoomReset?: () => void;
   updateSortBy: (by: GraphSortBy) => void;
   updateSortDir: () => void;
+  updateGroup: (group: boolean) => void;
   expandAll: () => void;
   collapseAll: () => void;
-  setFullscreen: () => void;
   setMode: (str: string) => void;
-  isFullscreen: boolean;
+  setFullscreen?: () => void;
+  isFullscreen?: boolean;
   selectedStatus: string;
   updateStatusFilter: (status: null | string) => void;
-  groupBy: { value: boolean; set: (val: boolean) => void };
   graph: GraphState;
-  searchFieldProps: SearchFieldProps;
-  searchResults: SearchResultModel;
+  searchField: SearchFieldReturnType;
   counts: RowCounts;
 };
 
@@ -39,36 +38,30 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   updateSortBy,
   updateSortDir,
   selectedStatus,
-  groupBy,
+  updateGroup,
   expandAll,
   setMode,
   collapseAll,
   isFullscreen,
   setFullscreen,
   updateStatusFilter,
-  searchFieldProps,
-  searchResults,
+  searchField,
   counts,
 }) => {
   const { t } = useTranslation();
   const [customFiltersOpen, setCustomFiltersOpen] = useState(false);
-  const activeMode = getMode(graph, groupBy, selectedStatus);
+  const activeMode = getMode(graph, selectedStatus);
 
   return (
     <TimelineHeaderContainer>
       <TimelineHeaderBottom>
         <TimelineHeaderBottomLeft>
           <SearchField
-            initialValue={searchFieldProps.text}
-            onUpdate={searchFieldProps.setText}
-            status={searchResults.status}
+            initialValue={searchField.fieldProps.text}
+            onUpdate={searchField.fieldProps.setText}
+            status={searchField.results.status}
           />
-          <SettingsButton
-            expand={() => expandAll()}
-            collapse={() => collapseAll()}
-            groupBy={groupBy.value}
-            toggleGroupBy={(val) => groupBy.set(val)}
-          />
+          <SettingsButton expand={() => expandAll()} collapse={() => collapseAll()} />
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
           <ItemRow>
@@ -92,8 +85,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 updateSortBy={updateSortBy}
                 updateSortDir={updateSortDir}
                 updateStatusFilter={updateStatusFilter}
+                updateGroupBy={updateGroup}
                 selectedStatus={selectedStatus}
-                groupBy={groupBy}
                 graph={graph}
                 counts={counts}
                 onClose={() => setCustomFiltersOpen(false)}
@@ -101,42 +94,44 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             </AdvancedFiltersOverlay>
           </ItemRow>
 
-          <ItemRow noWidth>
-            <Text>{t('timeline.zoom')}:</Text>
-            <ButtonGroup>
-              <Button
-                size="sm"
-                onClick={() => zoomReset()}
-                active={!graph.controlled}
-                data-testid="timeline-header-zoom-fit"
-              >
-                {t('timeline.fit-to-screen')}
-              </Button>
-              <Button size="sm" onClick={() => zoom('out')} data-testid="timeline-header-zoom-out">
-                <Icon name="minus" />
-              </Button>
-              <Button size="sm" onClick={() => zoom('in')} data-testid="timeline-header-zoom-in">
-                <Icon name="plus" />
-              </Button>
-            </ButtonGroup>
-            {!isFullscreen && (
-              <Button onClick={() => setFullscreen()} iconOnly>
-                <Icon name="maximize" />
-              </Button>
-            )}
-          </ItemRow>
+          {zoomReset && zoom && setFullscreen && (
+            <ItemRow noWidth>
+              <Text>{t('timeline.zoom')}:</Text>
+              <ButtonGroup>
+                <Button
+                  size="sm"
+                  onClick={() => zoomReset()}
+                  active={!graph.controlled}
+                  data-testid="timeline-header-zoom-fit"
+                >
+                  {t('timeline.fit-to-screen')}
+                </Button>
+                <Button size="sm" onClick={() => zoom('out')} data-testid="timeline-header-zoom-out">
+                  <Icon name="minus" />
+                </Button>
+                <Button size="sm" onClick={() => zoom('in')} data-testid="timeline-header-zoom-in">
+                  <Icon name="plus" />
+                </Button>
+              </ButtonGroup>
+              {!isFullscreen && (
+                <Button onClick={() => setFullscreen()} iconOnly>
+                  <Icon name="maximize" />
+                </Button>
+              )}
+            </ItemRow>
+          )}
         </TimelineHeaderBottomRight>
       </TimelineHeaderBottom>
     </TimelineHeaderContainer>
   );
 };
 
-function getMode(graph: GraphState, groupBy: { value: boolean; set: (val: boolean) => void }, status: string) {
-  if (groupBy.value === true && status === 'all' && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
+function getMode(graph: GraphState, status: string) {
+  if (graph.group === true && status === 'all' && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
     return 'overview';
-  } else if (groupBy.value === false && status === 'all' && graph.sortBy === 'startTime' && graph.sortDir === 'desc') {
+  } else if (graph.group === false && status === 'all' && graph.sortBy === 'startTime' && graph.sortDir === 'desc') {
     return 'monitoring';
-  } else if (groupBy.value === true && status === 'failed' && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
+  } else if (graph.group === true && status === 'failed' && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
     return 'error-tracker';
   }
   return 'custom';
@@ -146,8 +141,8 @@ export type CustomFiltersProps = {
   updateSortBy: (by: GraphSortBy) => void;
   updateSortDir: () => void;
   updateStatusFilter: (status: null | string) => void;
+  updateGroupBy: (group: boolean) => void;
   selectedStatus: string;
-  groupBy: { value: boolean; set: (val: boolean) => void };
   graph: GraphState;
   counts: RowCounts;
   onClose: () => void;
@@ -157,11 +152,11 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
   updateStatusFilter,
   updateSortBy,
   updateSortDir,
+  updateGroupBy,
   graph,
   selectedStatus,
   counts,
   onClose,
-  groupBy,
 }) => {
   const { t } = useTranslation();
   const SortButtonDef = (label: string, property: GraphSortBy) => (
@@ -208,8 +203,8 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
           <div style={{ marginLeft: '1rem' }}>
             <CheckboxField
               label={t('timeline.group-by-step')}
-              checked={groupBy.value}
-              onChange={() => groupBy.set(!groupBy.value)}
+              checked={graph.group}
+              onChange={() => updateGroupBy(!graph.group)}
               data-testid="timeline-header-groupby-step"
             />
           </div>
