@@ -4,12 +4,11 @@ import { Step, Task, Run, AsyncStatus } from '../../types';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
-import useGraph, { GraphState, GraphSortBy, validatedParameter } from './useGraph';
-import { StepRowData, RowDataAction, RowDataModel } from './useRowData';
+import useGraph, { GraphState, GraphSortBy } from './useGraph';
+import { StepRowData, RowDataAction, RowDataModel, RowCounts } from './useRowData';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
-import { useQueryParams, StringParam } from 'use-query-params';
 import FullPageContainer from '../FullPageContainer';
 import useSeachField, { SearchResultModel } from '../../hooks/useSearchField';
 import GenericError from '../GenericError';
@@ -21,18 +20,6 @@ export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step } | { type: 'task'; data: Task[] };
 type StepIndex = { name: string; index: number };
 
-type TimelineFilters = {
-  steps: string[];
-  tasks: string[];
-};
-
-export type RowCounts = {
-  all: number;
-  completed: number;
-  running: number;
-  failed: number;
-};
-
 //
 // Self containing component for rendering everything related to timeline. Component fetched (and subscribes for live events) steps and tasks from different
 // endpoints. View is supposed to be full page (and full page only) since component itself will use virtualised scrolling.
@@ -43,15 +30,11 @@ type TimelineProps = {
   rowDataDispatch: React.Dispatch<RowDataAction>;
   status: AsyncStatus;
   groupBy: { value: boolean; set: (val: boolean) => void };
+  counts: RowCounts;
 };
 
-const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDispatch, status, groupBy }) => {
-  const [q, sq] = useQueryParams({
-    group: StringParam,
-    order: StringParam,
-    direction: StringParam,
-    steps: StringParam,
-  });
+const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDispatch, status, groupBy, counts }) => {
+  console.log('hello');
   const { t } = useTranslation();
   const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
@@ -65,55 +48,13 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
   // Name of sticky header (if should be visible)
   const [stickyHeader, setStickyHeader] = useState<null | string>(null);
   const [showFullscreen, setFullscreen] = useState(false);
-  const [statusFilter, setStatusFilter] = useState<null | string>(null);
-  // Counts of current rows for each status
-  const [counts, setCounts] = useState<RowCounts>({ all: 0, completed: 0, running: 0, failed: 0 });
-
-  //
-  // Local filterings
-  //
-
-  const [filters, setFilters] = useState<TimelineFilters>({ steps: [], tasks: [] });
-  useEffect(() => {
-    const stepFilters = q.steps;
-
-    if (stepFilters) {
-      setFilters({ ...filters, steps: stepFilters.split(',') });
-    } else {
-      setFilters({ ...filters, steps: [] });
-    }
-  }, [q.steps]); // eslint-disable-line
 
   //
   // Graph measurements and rendering logic
   //
 
   // Graph data. Need to know start and end time of run to render lines
-  const { graph, dispatch: graphDispatch } = useGraph(run.ts_epoch, run.finished_at || Date.now());
-
-  //
-  // Query parameters handling
-  //
-
-  useEffect(() => {
-    const sortDir = validatedParameter<'asc' | 'desc'>(q.direction, graph.sortDir, ['asc', 'desc'], 'asc');
-    if (sortDir) {
-      graphDispatch({
-        type: 'sortDir',
-        dir: sortDir,
-      });
-    }
-
-    const sortBy = validatedParameter<'startTime' | 'endTime' | 'duration'>(
-      q.order,
-      graph.sortBy,
-      ['startTime', 'endTime', 'duration'],
-      'startTime',
-    );
-    if (sortBy) {
-      graphDispatch({ type: 'sortBy', by: sortBy });
-    }
-  }, [q, graph, graphDispatch]);
+  const { graph, dispatch: graphDispatch, setQueryParam } = useGraph(run.ts_epoch, run.finished_at || Date.now());
 
   //
   // Search API
@@ -136,13 +77,20 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
           // Filter out possible undefined (should not really happen, might though if there is some timing issues with REST and websocket)
           item !== undefined &&
           // Check if step filter is active. Show only selected steps
-          (filters.steps.length === 0 || filters.steps.indexOf(item.step_name) > -1) &&
+          (graph.stepFilter.length === 0 || graph.stepFilter.indexOf(item.step_name) > -1) &&
           // Filter out steps starting with _ since they are not interesting to user
           !item.step_name.startsWith('_'),
       );
 
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
-    const newRows: Row[] = makeVisibleRows(rowData, graph, visibleSteps, statusFilter, searchResults, groupBy.value);
+    const newRows: Row[] = makeVisibleRows(
+      rowData,
+      graph,
+      visibleSteps,
+      graph.statusFilter || null,
+      searchResults,
+      groupBy.value,
+    );
 
     if (visibleSteps.length > 0) {
       // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
@@ -159,53 +107,15 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
   }, [
     rowData,
     graphDispatch,
-    filters.steps,
+    graph.stepFilter,
     graph.min,
     graph.sortBy,
     graph.sortDir,
+    graph.statusFilter,
     groupBy,
-    statusFilter,
     searchResults,
   ]);
   /* eslint-enable */
-
-  // Follow counts of rows by each status.
-  useEffect(() => {
-    const newCounts = {
-      all: 0,
-      completed: 0,
-      running: 0,
-      failed: 0,
-    };
-
-    // Iterate steps
-    for (const stepName of Object.keys(rowData)) {
-      // ...Wihtout steps that start with underscore because user is not interested on them
-      if (!stepName.startsWith('_')) {
-        const stepRow = rowData[stepName];
-        // Iterate all task rows on step
-        for (const taskId of Object.keys(stepRow.data)) {
-          const taskRow = stepRow.data[taskId];
-          // Map statuses of all attempts on single row and count
-          const allStatuses = taskRow.map((t) => t.status);
-
-          newCounts.all++;
-          if (allStatuses.indexOf('completed') > -1) {
-            newCounts.completed++;
-          } else if (allStatuses.indexOf('running') > -1) {
-            newCounts.running++;
-          }
-          // If there is more than 1 task on one row, there must be multiple attempts which means that some
-          // of them has failed
-          if (allStatuses.indexOf('failed') > -1 || taskRow.length > 1) {
-            newCounts.failed++;
-          }
-        }
-      }
-    }
-
-    setCounts(newCounts);
-  }, [rowData]);
 
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
@@ -265,26 +175,26 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
 
   function setMode(mode: string) {
     if (mode === 'overview') {
-      sq({
+      setQueryParam({
         order: 'startTime',
         direction: 'asc',
+        status: null,
       });
       groupBy.set(true);
-      setStatusFilter(null);
     } else if (mode === 'monitoring') {
-      sq({
+      setQueryParam({
         order: 'startTime',
         direction: 'desc',
+        status: null,
       });
       groupBy.set(false);
-      setStatusFilter(null);
     } else if (mode === 'error-tracker') {
-      sq({
+      setQueryParam({
         order: 'startTime',
         direction: 'asc',
+        status: 'failed',
       });
       groupBy.set(true);
-      setStatusFilter('failed');
     }
   }
 
@@ -295,16 +205,16 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
           graph={graph}
           zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
           zoomReset={() => graphDispatch({ type: 'resetZoom' })}
-          updateSortBy={(by) => sq({ order: by }, 'replaceIn')}
-          updateSortDir={() => sq({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')}
+          updateSortBy={(by) => setQueryParam({ order: by }, 'replaceIn')}
+          updateSortDir={() => setQueryParam({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')}
           setMode={setMode}
           expandAll={expandAll}
           groupBy={groupBy}
           collapseAll={collapseAll}
           setFullscreen={() => setFullscreen(true)}
           isFullscreen={showFullscreen}
-          selectedStatus={statusFilter || 'all'}
-          updateStatusFilter={(status: null | string) => setStatusFilter(status)}
+          selectedStatus={graph.statusFilter || 'all'}
+          updateStatusFilter={(status: null | string) => setQueryParam({ status })}
           searchFieldProps={searchFieldProps}
           searchResults={searchResults}
           counts={counts}
@@ -373,8 +283,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({ run, rowData, rowDataDis
             <TimelineFooter
               graph={graph}
               rowData={rowData}
-              hasStepFilter={filters.steps.length > 0}
-              resetSteps={() => sq({ steps: null })}
+              hasStepFilter={graph.stepFilter.length > 0}
+              resetSteps={() => setQueryParam({ steps: null })}
               move={(value) => graphDispatch({ type: 'move', value: value })}
               updateHandle={(which, to) => {
                 if (which === 'left') {

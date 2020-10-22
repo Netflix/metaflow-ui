@@ -4,7 +4,7 @@ import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
 import useRowData from '../../components/Timeline/useRowData';
 import { getPath } from '../../utils/routing';
-import { Run as IRun, Step, Task, RunParam } from '../../types';
+import { Run as IRun, RunParam } from '../../types';
 
 import TaskViewContainer from '../Task';
 import Spinner from '../../components/Spinner';
@@ -95,40 +95,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Step & Task data
   //
 
-  const { rows, dispatch } = useRowData();
-
-  // Fetch & subscribe to steps
-  useResource<Step[], Step>({
-    url: encodeURI(`/flows/${params.flowId}/runs/${params.runNumber}/steps`),
-    subscribeToEvents: true,
-    initialData: [],
-    onUpdate: (items) => {
-      dispatch({ type: 'fillStep', data: items });
-    },
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-    },
-    fullyDisableCache: true,
-  });
-
-  // Fetch & subscribe to tasks
-  const { status: taskStatus } = useResource<Task[], Task>({
-    url: encodeURI(`/flows/${params.flowId}/runs/${params.runNumber}/tasks`),
-    subscribeToEvents: true,
-    initialData: [],
-    updatePredicate: (a, b) => a.task_id === b.task_id,
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-    },
-    fetchAllData: true,
-    onUpdate: (items) => {
-      dispatch({ type: 'fillTasks', data: items });
-    },
-    fullyDisableCache: true,
-    useBatching: true,
-  });
+  const { rows, dispatch, counts, taskStatus } = useRowData(params.flowId, params.runNumber);
 
   //
   // Graph measurements and rendering logic
@@ -167,6 +134,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 rowData={rows}
                 rowDataDispatch={dispatch}
                 status={taskStatus}
+                counts={counts}
                 groupBy={{ value: groupByStep, set: setGroupByStep }}
               />
             ),

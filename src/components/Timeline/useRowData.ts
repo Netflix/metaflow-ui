@@ -2,8 +2,9 @@
 // Row data handling
 //
 
-import { Task, Step } from '../../types';
-import { useReducer } from 'react';
+import { Task, Step, AsyncStatus } from '../../types';
+import { useEffect, useReducer, useState } from 'react';
+import useResource from '../../hooks/useResource';
 
 export type StepRowData = {
   // Is row opened?
@@ -167,8 +168,93 @@ export function timepointsOfTasks(tasks: Task[]): [number, number] {
   );
 }
 
-export default function useRowData(): { rows: RowDataModel; dispatch: React.Dispatch<RowDataAction> } {
+export type RowCounts = {
+  all: number;
+  completed: number;
+  running: number;
+  failed: number;
+};
+
+export default function useRowData(
+  flowId: string,
+  runNumber: string,
+): { rows: RowDataModel; dispatch: React.Dispatch<RowDataAction>; taskStatus: AsyncStatus; counts: RowCounts } {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
 
-  return { rows, dispatch };
+  // Fetch & subscribe to steps
+  useResource<Step[], Step>({
+    url: encodeURI(`/flows/${flowId}/runs/${runNumber}/steps`),
+    subscribeToEvents: true,
+    initialData: [],
+    onUpdate: (items) => {
+      dispatch({ type: 'fillStep', data: items });
+    },
+    queryParams: {
+      _order: '+ts_epoch',
+      _limit: '1000',
+    },
+    fullyDisableCache: true,
+  });
+
+  // Fetch & subscribe to tasks
+  const { status: taskStatus } = useResource<Task[], Task>({
+    url: encodeURI(`/flows/${flowId}/runs/${runNumber}/tasks`),
+    subscribeToEvents: true,
+    initialData: [],
+    updatePredicate: (a, b) => a.task_id === b.task_id,
+    queryParams: {
+      _order: '+ts_epoch',
+      _limit: '1000',
+    },
+    fetchAllData: true,
+    onUpdate: (items) => {
+      dispatch({ type: 'fillTasks', data: items });
+    },
+    fullyDisableCache: true,
+    useBatching: true,
+  });
+
+  //
+  // Counts
+  //
+  const [counts, setCounts] = useState<RowCounts>({ all: 0, completed: 0, running: 0, failed: 0 });
+
+  useEffect(() => {
+    const newCounts = {
+      all: 0,
+      completed: 0,
+      running: 0,
+      failed: 0,
+    };
+
+    // Iterate steps
+    for (const stepName of Object.keys(rows)) {
+      // ...Wihtout steps that start with underscore because user is not interested on them
+      if (!stepName.startsWith('_')) {
+        const stepRow = rows[stepName];
+        // Iterate all task rows on step
+        for (const taskId of Object.keys(stepRow.data)) {
+          const taskRow = stepRow.data[taskId];
+          // Map statuses of all attempts on single row and count
+          const allStatuses = taskRow.map((t) => t.status);
+
+          newCounts.all++;
+          if (allStatuses.indexOf('completed') > -1) {
+            newCounts.completed++;
+          } else if (allStatuses.indexOf('running') > -1) {
+            newCounts.running++;
+          }
+          // If there is more than 1 task on one row, there must be multiple attempts which means that some
+          // of them has failed
+          if (allStatuses.indexOf('failed') > -1 || taskRow.length > 1) {
+            newCounts.failed++;
+          }
+        }
+      }
+    }
+
+    setCounts(newCounts);
+  }, [rows]);
+
+  return { rows, dispatch, taskStatus, counts };
 }

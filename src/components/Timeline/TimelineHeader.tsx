@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { SearchFieldProps, SearchResultModel } from '../../hooks/useSearchField';
 import SearchField from '../SearchField';
 import SettingsButton from './SettingsButton';
-import { RowCounts } from './VirtualizedTimeline';
+import { RowCounts } from './useRowData';
 
 export type TimelineHeaderProps = {
   zoom: (dir: 'in' | 'out') => void;
