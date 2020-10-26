@@ -147,7 +147,7 @@ export function createNewStepRowTasks(currentData: Record<string, Task[]>, item:
 
     let added = false;
     for (const index in newtasks) {
-      if (!newtasks[index].finished_at || newtasks[index].finished_at === item.finished_at) {
+      if (newtasks[index].attempt_id === item.attempt_id) {
         added = true;
         newtasks[index] = item;
       }

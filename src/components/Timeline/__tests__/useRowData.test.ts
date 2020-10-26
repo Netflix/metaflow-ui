@@ -147,9 +147,10 @@ describe('useRowData hook - supporting functions', () => {
   });
 
   it('createNewStepRowTasks - add to existing', () => {
-    expect(createNewStepRowTasks({ 1: [createTask({ finished_at: 100 })] }, createTask({ task_id: '1' })).length).toBe(
-      2,
-    );
+    expect(
+      createNewStepRowTasks({ 1: [createTask({ finished_at: 100 })] }, createTask({ task_id: '1', attempt_id: 2 }))
+        .length,
+    ).toBe(2);
   });
 
   it('createNewStepRowTasks - replace in existing', () => {
