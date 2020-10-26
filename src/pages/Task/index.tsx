@@ -194,14 +194,22 @@ const Task: React.FC<TaskViewProps> = ({
           </TaskLoaderContainer>
         )}
 
-        {error && status !== 'Loading' && <GenericError icon="listItemNotFound" message={t('error.load-error')} />}
+        {error && status !== 'Loading' && (
+          <Space>
+            <GenericError icon="listItemNotFound" message={t('error.load-error')} />
+          </Space>
+        )}
 
         {status === 'Ok' && tasks && tasks.length === 0 && (
-          <GenericError icon="listItemNotFound" message={t('error.not-found')} />
+          <Space>
+            <GenericError icon="listItemNotFound" message={t('error.not-found')} />
+          </Space>
         )}
 
         {taskId === 'not-selected' && status !== 'Loading' && (
-          <GenericError icon="listItemNotFound" message={t('task.no-task-selected')} />
+          <Space>
+            <GenericError icon="listItemNotFound" message={t('task.no-task-selected')} />
+          </Space>
         )}
 
         {fullscreen === null && status === 'Ok' && task && (
@@ -392,6 +400,11 @@ const TaskLoaderContainer = styled.div`
   justify-content: center;
   width: 100%;
   padding: 2rem;
+`;
+
+const Space = styled.div`
+  margin: 1rem 0;
+  width: 100%;
 `;
 
 export default Task;

@@ -3,14 +3,14 @@ import styled from 'styled-components';
 import Button from '../Button';
 import Icon from '../Icon';
 
-const SettingsButton: React.FC<{
+const CollapseButton: React.FC<{
   disabled?: boolean;
   expand: () => void;
   collapse: () => void;
   isAnyGroupOpen: boolean;
 }> = ({ disabled, expand, collapse, isAnyGroupOpen }) => {
   return (
-    <StyledSettingsButton>
+    <StyledCollapseButton>
       <Button
         disabled={disabled}
         onClick={() => {
@@ -20,16 +20,16 @@ const SettingsButton: React.FC<{
             expand();
           }
         }}
-        data-testid="timeline-settings-button"
+        data-testid="timeline-collapse-button"
         textOnly
       >
         <Icon name={'arrowDown'} rotate={isAnyGroupOpen ? 180 : 0} />
       </Button>
-    </StyledSettingsButton>
+    </StyledCollapseButton>
   );
 };
 
-const StyledSettingsButton = styled.div`
+const StyledCollapseButton = styled.div`
   position: relative;
   margin-left: 0.25rem;
   button {
@@ -37,4 +37,4 @@ const StyledSettingsButton = styled.div`
   }
 `;
 
-export default SettingsButton;
+export default CollapseButton;

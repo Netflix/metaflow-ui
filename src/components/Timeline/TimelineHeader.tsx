@@ -10,7 +10,7 @@ import Icon, { SortIcon } from '../Icon';
 import { useTranslation } from 'react-i18next';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import SearchField from '../SearchField';
-import SettingsButton from './SettingsButton';
+import CollapseButton from './CollapseButton';
 import { RowCounts } from './useRowData';
 
 export type TimelineHeaderProps = {
@@ -52,7 +52,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             onUpdate={searchField.fieldProps.setText}
             status={searchField.results.status}
           />
-          <SettingsButton
+          <CollapseButton
             disabled={!graph.group}
             expand={() => expandAll()}
             collapse={() => collapseAll()}
