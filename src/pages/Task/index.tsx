@@ -61,6 +61,8 @@ const Task: React.FC<TaskViewProps> = ({
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const [task, setTask] = useState<ITask | null>(null);
+  const attemptId = task ? task.attempt_id : null;
+  const isCurrentTaskFinished = task && (task.finished_at || task.status === 'failed');
 
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts`,
@@ -69,7 +71,6 @@ const Task: React.FC<TaskViewProps> = ({
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
-  const attemptId = task ? task.attempt_id : null;
   const { data: artifacts, status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     queryParams: {
@@ -77,15 +78,15 @@ const Task: React.FC<TaskViewProps> = ({
     },
     subscribeToEvents: true,
     initialData: [],
-    pause: stepName === 'not-selected' || taskId === 'not-selected' || attemptId === null,
+    pause: !isCurrentTaskFinished,
   });
 
   // Task data will be array so we need to set one of them as active task when they arrive
   useEffect(() => {
-    if (status === 'Ok' && tasks && tasks.length > 0) {
+    if (status === 'Ok' && task === null && tasks && tasks.length > 0) {
       setTask(tasks.sort(sortTaskAttempts)[tasks.length - 1]);
     }
-  }, [tasks, status]);
+  }, [tasks, status, task]);
 
   //
   // Plugins helpers begin
@@ -134,7 +135,7 @@ const Task: React.FC<TaskViewProps> = ({
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: attemptId === null,
+    pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
       items && setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -150,7 +151,7 @@ const Task: React.FC<TaskViewProps> = ({
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: attemptId === null,
+    pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
       items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -215,7 +216,7 @@ const Task: React.FC<TaskViewProps> = ({
         {fullscreen === null && status === 'Ok' && task && (
           <AnchoredView
             header={
-              status === 'Ok' && tasks && tasks.length > 1 ? (
+              status === 'Ok' && tasks && tasks.length > 0 ? (
                 <TabsHeading>
                   {tasks.sort(sortTaskAttempts).map((item, index) => (
                     <TabsHeadingItem key={index} onClick={() => selectTask(item)} active={item === task}>
@@ -248,7 +249,8 @@ const Task: React.FC<TaskViewProps> = ({
                           },
                           {
                             label: t('fields.started-at') + ':',
-                            accessor: (item) => (item.ts_epoch ? getISOString(new Date(item.ts_epoch)) : ''),
+                            accessor: (item) =>
+                              item.ts_epoch ? getISOString(new Date(getAttemptStartTime(tasks, item))) : '',
                           },
                           {
                             label: t('fields.finished-at') + ':',
@@ -272,6 +274,7 @@ const Task: React.FC<TaskViewProps> = ({
                 component: (
                   <>
                     <SectionLoader
+                      minHeight={110}
                       status={statusOut}
                       error={logStdError}
                       customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
@@ -293,6 +296,7 @@ const Task: React.FC<TaskViewProps> = ({
                 component: (
                   <>
                     <SectionLoader
+                      minHeight={110}
                       status={statusErr}
                       error={logErrError}
                       customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
@@ -316,6 +320,7 @@ const Task: React.FC<TaskViewProps> = ({
                   <>
                     <InformationRow spaceless>
                       <SectionLoader
+                        minHeight={200}
                         status={artifactStatus}
                         error={artifactError}
                         component={
@@ -386,6 +391,18 @@ function getDuration(tasks: ITask[], task: ITask) {
     }
   }
   return task.duration ? formatDuration(task.duration) : '';
+}
+
+function getAttemptStartTime(allAttempts: ITask[] | null, task: ITask) {
+  if (!allAttempts) return task.ts_epoch;
+
+  const index = allAttempts.indexOf(task);
+  if (index === 0 || task.ts_epoch !== allAttempts[0].ts_epoch) {
+    return task.ts_epoch;
+  } else {
+    const previous = allAttempts[index - 1];
+    return previous?.finished_at || task.ts_epoch;
+  }
 }
 
 const TaskContainer = styled.div`

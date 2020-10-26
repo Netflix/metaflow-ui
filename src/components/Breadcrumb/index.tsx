@@ -10,6 +10,7 @@ import { TextInputField } from '../Form';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
 import { ItemRow } from '../Structure';
+import { HOMEFILTERS_KEY } from '../../pages/Home';
 
 type KnownParams = {
   flowId?: string;
@@ -92,6 +93,7 @@ const Breadcrumb: React.FC = () => {
         const parts = e.currentTarget.value.split('/').filter((item) => item);
 
         if (parts.length === 0) {
+          localStorage.removeItem(HOMEFILTERS_KEY);
           history.push(getPath.home());
         } else if (parts.length === 1) {
           history.push(getPath.home() + '?flow_id=' + parts[0]);

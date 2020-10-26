@@ -27,10 +27,11 @@ export interface Event<T> {
 }
 
 export type OnUpdate<T> = (event: Event<T>) => void;
+export type OnReconnect = (lastConnectedTime: Date) => void;
 export type Unsubscribe = () => void;
 
-const subscribeMessage = (uuid: string, resource: string) => {
-  return { type: SubscribeType.SUBSCRIBE, uuid, resource };
+const subscribeMessage = (uuid: string, resource: string, since?: number | null) => {
+  return { type: SubscribeType.SUBSCRIBE, uuid, resource, since: since ? since : undefined };
 };
 
 const unsubscribeMessage = (uuid: string) => {
@@ -51,6 +52,8 @@ type WebSocketConnection = {
 export function createWebsocketConnection(url: string): WebSocketConnection {
   let subscriptions: Array<Subscription<unknown>> = [];
 
+  let connectedSinceUnixTime: number | null = null;
+
   const conn = new ReconnectingWebSocket(url, [], {
     maxReconnectionDelay: 5000, // max delay in ms between reconnections
     minReconnectionDelay: 1000, // min delay in ms between reconnections
@@ -66,10 +69,19 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     // Always re-subscribe to events when connection is established
     // This operation is safe since backend makes sure there's no duplicate identifiers
     subscriptions.forEach((subscription) => {
-      conn.send(JSON.stringify(subscribeMessage(subscription.uuid, subscription.resource)));
+      conn.send(JSON.stringify(subscribeMessage(subscription.uuid, subscription.resource, connectedSinceUnixTime)));
     });
+
+    // Reset `connectedSinceUnixTime` so that next disconnect timestamp can be recorder
+    connectedSinceUnixTime = null;
   });
   conn.addEventListener('close', (_e: CloseEvent) => {
+    if (!connectedSinceUnixTime) {
+      // This timestamp will be used to define gap between realtime data
+      // Once connection is re-established the missing data will be returned to client
+      connectedSinceUnixTime = Math.floor(new Date().getTime() / 1000);
+    }
+
     if (_e.code !== 1000) {
       console.log('Websocket closed with error');
     }

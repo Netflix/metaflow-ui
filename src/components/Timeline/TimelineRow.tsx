@@ -146,7 +146,11 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
             data-testid="boxgraphic-label"
           />
         )}
-        <BoxGraphicLine grayed={grayed} state={finishedAt ? 'completed' : 'running'} isFirst={isFirst} />
+        <BoxGraphicLine
+          grayed={grayed}
+          state={row.type === 'task' && row.data.status ? row.data.status : finishedAt ? 'completed' : 'running'}
+          isFirst={isFirst}
+        />
         <BoxGraphicMarkerStart />
         <BoxGraphicMarkerEnd />
       </BoxGraphic>
@@ -221,6 +225,8 @@ function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst:
         return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.green;
       case 'running':
         return theme.color.bg.yellow;
+      case 'failed':
+        return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.red;
       default:
         return theme.color.bg.red;
     }

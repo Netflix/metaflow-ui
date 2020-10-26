@@ -54,7 +54,7 @@ const en = {
 
     filters: {
       'group-by': 'Group by',
-      'reset-all': 'Reset all filters',
+      'reset-all': 'Reset view',
       running: 'Running',
       failed: 'Failed',
       completed: 'Completed',
@@ -134,6 +134,7 @@ const en = {
 
     connection: {
       'waiting-for-connection': 'Waiting for connection',
+      'data-might-be-stale': 'Reconnected, but data might be stale. Click here to reconnect',
     },
 
     error: {
