@@ -23,18 +23,20 @@ export type TimelineHeaderProps = {
   graph: GraphHook;
   searchField: SearchFieldReturnType;
   counts: RowCounts;
+  isAnyGroupOpen: boolean;
 };
 
 const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   graph: graphHook,
   expandAll,
-  setMode,
   collapseAll,
+  setMode,
   isFullscreen,
   setFullscreen,
   searchField,
   counts,
   enableZoomControl = false,
+  isAnyGroupOpen,
 }) => {
   const { t } = useTranslation();
   const [customFiltersOpen, setCustomFiltersOpen] = useState(false);
@@ -50,22 +52,27 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             onUpdate={searchField.fieldProps.setText}
             status={searchField.results.status}
           />
-          <SettingsButton expand={() => expandAll()} collapse={() => collapseAll()} />
+          <SettingsButton
+            disabled={!graph.group}
+            expand={() => expandAll()}
+            collapse={() => collapseAll()}
+            isAnyGroupOpen={isAnyGroupOpen}
+          />
         </TimelineHeaderBottomLeft>
         <TimelineHeaderBottomRight>
           <ItemRow>
             <ButtonGroup>
               <Button active={activeMode === 'overview'} onClick={() => setMode('overview')}>
-                Overview
+                {t('run.overview')}
               </Button>
               <Button active={activeMode === 'monitoring'} onClick={() => setMode('monitoring')}>
-                Monitoring
+                {t('run.monitoring')}
               </Button>
               <Button active={activeMode === 'error-tracker'} onClick={() => setMode('error-tracker')}>
-                Error tracker
+                {t('run.error-tracker')}
               </Button>
               <Button active={activeMode === 'custom'} onClick={() => setCustomFiltersOpen(true)}>
-                <Icon name="ellipsis" />
+                {t('run.custom')}
               </Button>
             </ButtonGroup>
             <AdvancedFiltersOverlay show={customFiltersOpen}>

@@ -102,7 +102,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Step & Task data
   //
 
-  const { rows, steps, dispatch, counts, taskStatus } = useRowData(params.flowId, params.runNumber);
+  const { rows, steps, dispatch, counts, taskStatus, isAnyGroupOpen } = useRowData(params.flowId, params.runNumber);
 
   //
   // Search API
@@ -223,6 +223,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 searchField={searchField}
                 setMode={setMode}
                 paramsString={urlParams}
+                isAnyGroupOpen={isAnyGroupOpen}
               />
             ),
           },
@@ -247,6 +248,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 counts={counts}
                 setMode={setMode}
                 paramsString={urlParams}
+                isAnyGroupOpen={isAnyGroupOpen}
               />
             ),
           },

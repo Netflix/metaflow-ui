@@ -34,6 +34,7 @@ type TimelineProps = {
   searchField: SearchFieldReturnType;
   setMode: (str: string) => void;
   paramsString: string;
+  isAnyGroupOpen: boolean;
 };
 
 const VirtualizedTimeline: React.FC<TimelineProps> = ({
@@ -46,6 +47,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   searchField,
   setMode,
   paramsString,
+  isAnyGroupOpen,
 }) => {
   const { t } = useTranslation();
   const _listref = createRef<List>();
@@ -113,6 +115,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
           searchField={searchField}
           counts={counts}
           enableZoomControl
+          isAnyGroupOpen={isAnyGroupOpen}
         />
         {rows.length > 0 && (
           <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>

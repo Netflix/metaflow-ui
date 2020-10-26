@@ -194,6 +194,7 @@ export default function useRowData(
   taskStatus: AsyncStatus;
   counts: RowCounts;
   steps: Step[];
+  isAnyGroupOpen: boolean;
 } {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
 
@@ -279,5 +280,7 @@ export default function useRowData(
     })
     .filter((t): t is Step => !!t);
 
-  return { rows, dispatch, taskStatus, counts, steps };
+  const anyOpen = !!Object.keys(rows).find((key) => rows[key].isOpen);
+
+  return { rows, dispatch, taskStatus, counts, steps, isAnyGroupOpen: anyOpen };
 }

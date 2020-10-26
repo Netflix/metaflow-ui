@@ -40,6 +40,7 @@ type TaskViewProps = {
   counts: RowCounts;
   setMode: (str: string) => void;
   paramsString: string;
+  isAnyGroupOpen: boolean;
 };
 
 const sortTaskAttempts = (a: ITask, b: ITask) => a.attempt_id - b.attempt_id;
@@ -55,6 +56,7 @@ const Task: React.FC<TaskViewProps> = ({
   counts,
   setMode,
   paramsString,
+  isAnyGroupOpen,
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
@@ -173,6 +175,7 @@ const Task: React.FC<TaskViewProps> = ({
         collapseAll={() => rowDataDispatch({ type: 'closeAll' })}
         searchField={searchField}
         counts={counts}
+        isAnyGroupOpen={isAnyGroupOpen}
       />
 
       <div style={{ display: 'flex' }}>
