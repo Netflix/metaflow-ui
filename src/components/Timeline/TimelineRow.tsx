@@ -20,8 +20,7 @@ type TimelineRowProps = {
   isOpen?: boolean;
   // Flag row as sticky for some absolute stylings
   sticky?: boolean;
-  // Optional end time. Used for steps since they dont have data themselves
-  endTime?: number;
+  paramsString?: string;
   t: TFunction;
 };
 
@@ -33,8 +32,8 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   onOpen,
   isOpen = true,
   isGrouped,
+  paramsString,
   sticky,
-  endTime,
   t,
 }) => {
   if (!item || !item.data) return null;
@@ -46,14 +45,21 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
           <TaskListLabel
             type="step"
             item={item.data}
-            duration={endTime ? endTime - item.data.ts_epoch : 0}
+            duration={item.rowObject.finished_at - item.data.ts_epoch}
             toggle={onOpen}
             open={isOpen}
             grouped={isGrouped}
             t={t}
           />
         ) : (
-          <TaskListLabel type="task" item={item.data[0]} open={isOpen} grouped={isGrouped} t={t} />
+          <TaskListLabel
+            type="task"
+            item={item.data[0]}
+            open={isOpen}
+            grouped={isGrouped}
+            paramsString={paramsString}
+            t={t}
+          />
         )}
         <RowGraphContainer data-testid="timeline-row-graphic-container">
           {item.type === 'step' ? (
@@ -61,7 +67,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               graph={graph}
               row={{ type: 'step', data: item.data }}
               grayed={isOpen}
-              finishedAt={endTime}
+              finishedAt={item.rowObject.finished_at}
               onOpen={onOpen}
               isFirst
             />

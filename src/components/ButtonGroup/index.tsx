@@ -7,8 +7,14 @@ const ButtonGroup = styled.div`
   > .button {
     border-radius: 0;
     margin-left: -1px;
+    min-height: 28px;
+    font-size: 0.875rem;
 
     white-space: nowrap;
+
+    &:not(.active):not(:hover) {
+      background: #fff;
+    }
 
     &:first-of-type {
       margin-left: 0;

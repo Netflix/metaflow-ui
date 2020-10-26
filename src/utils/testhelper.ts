@@ -14,6 +14,9 @@ export function createGraphState(partialGraph: Partial<GraphState>): GraphState 
     timelineStart: 0,
     timelineEnd: 1000,
     controlled: false,
+    stepFilter: [],
+    statusFilter: null,
+    group: true,
     ...partialGraph,
   };
 }

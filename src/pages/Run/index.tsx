@@ -4,7 +4,7 @@ import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
 import useRowData from '../../components/Timeline/useRowData';
 import { getPath } from '../../utils/routing';
-import { Run as IRun, Step, Task, RunParam } from '../../types';
+import { Run as IRun, RunParam, Step } from '../../types';
 
 import TaskViewContainer from '../Task';
 import Spinner from '../../components/Spinner';
@@ -13,7 +13,14 @@ import Tabs from '../../components/Tabs';
 import { FixedContent, ItemRow } from '../../components/Structure';
 import RunHeader from './RunHeader';
 import DAG from '../../components/DAG';
-import Timeline from '../../components/Timeline/VirtualizedTimeline';
+import Timeline, {
+  Row,
+  makeVisibleRows,
+  findHighestTimestampForGraph,
+  sortRows,
+} from '../../components/Timeline/VirtualizedTimeline';
+import useSeachField from '../../hooks/useSearchField';
+import useGraph from '../../components/Timeline/useGraph';
 
 type RunPageParams = {
   flowId: string;
@@ -95,41 +102,20 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Step & Task data
   //
 
-  const { rows, dispatch } = useRowData();
+  const { rows, steps, dispatch, counts, taskStatus, isAnyGroupOpen } = useRowData(params.flowId, params.runNumber);
 
-  // Fetch & subscribe to steps
-  useResource<Step[], Step>({
-    url: encodeURI(`/flows/${params.flowId}/runs/${params.runNumber}/steps`),
-    subscribeToEvents: true,
-    initialData: [],
-    onUpdate: (items) => {
-      dispatch({ type: 'fillStep', data: items });
-    },
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-    },
-    fullyDisableCache: true,
-  });
+  //
+  // Search API
+  //
 
-  // Fetch & subscribe to tasks
-  const { status: taskStatus } = useResource<Task[], Task>({
-    url: encodeURI(`/flows/${params.flowId}/runs/${params.runNumber}/tasks`),
-    subscribeToEvents: true,
-    initialData: [],
-    updatePredicate: (a, b) => a.task_id === b.task_id,
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-    },
-    fetchAllData: true,
-    onUpdate: (items) => {
-      dispatch({ type: 'fillTasks', data: items });
-    },
-    fullyDisableCache: true,
-    useBatching: true,
-  });
+  const searchField = useSeachField(run.flow_id, run.run_number);
 
+  //
+  // Listing settings and graph measurements
+  //
+
+  const graph = useGraph(run.ts_epoch, run.finished_at || Date.now());
+  const urlParams = new URLSearchParams(cleanParametersMap(graph.params)).toString();
   //
   // Graph measurements and rendering logic
   //
@@ -139,10 +125,75 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   }, [params.runNumber, dispatch]);
 
   //
-  // Store gourpping state here. TODO: Figure out where it should live
+  // Data processing
   //
+  const [visibleRows, setVisibleRows] = useState<Row[]>([]);
+  // Figure out rows that should be visible if something related to that changes
+  // This is not most performant way to do this so we might wanna update these functionalities later on.
+  useEffect(() => {
+    // Filter out steps if we have step filters on.
+    const visibleSteps: Step[] = Object.keys(rows)
+      .map((key) => rows[key].step)
+      .filter(
+        (item): item is Step =>
+          // Filter out possible undefined (should not really happen, might though if there is some timing issues with REST and websocket)
+          item !== undefined &&
+          // Check if step filter is active. Show only selected steps
+          (graph.graph.stepFilter.length === 0 || graph.graph.stepFilter.indexOf(item.step_name) > -1) &&
+          // Filter out steps starting with _ since they are not interesting to user
+          !item.step_name.startsWith('_'),
+      );
 
-  const [groupByStep, setGroupByStep] = useState(true);
+    // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
+    const newRows: Row[] = makeVisibleRows(rows, graph.graph, visibleSteps, searchField.results);
+
+    if (visibleSteps.length > 0) {
+      // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
+      const highestTimestamp = findHighestTimestampForGraph(rows, graph.graph, visibleSteps);
+
+      graph.dispatch({ type: 'init', start: visibleSteps[0].ts_epoch, end: highestTimestamp });
+    }
+
+    const rowsToUpdate = !graph.graph.group ? newRows.sort(sortRows(graph.graph.sortBy, graph.graph.sortDir)) : newRows;
+
+    // If no grouping, sort tasks here.
+    setVisibleRows(rowsToUpdate);
+    /* eslint-disable */
+  }, [
+    rows,
+    graph.graph.stepFilter,
+    graph.graph.min,
+    graph.graph.sortBy,
+    graph.graph.sortDir,
+    graph.graph.statusFilter,
+    graph.graph.group,
+    searchField.results,
+  ]);
+
+  function setMode(mode: string) {
+    if (mode === 'overview') {
+      graph.setQueryParam({
+        order: 'startTime',
+        direction: 'asc',
+        status: null,
+        group: 'true',
+      });
+    } else if (mode === 'monitoring') {
+      graph.setQueryParam({
+        order: 'startTime',
+        direction: 'desc',
+        status: null,
+        group: 'false',
+      });
+    } else if (mode === 'error-tracker') {
+      graph.setQueryParam({
+        order: 'startTime',
+        direction: 'asc',
+        status: 'failed',
+        group: 'true',
+      });
+    }
+  }
 
   return (
     <>
@@ -154,20 +205,25 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
           {
             key: 'dag',
             label: t('run.DAG'),
-            linkTo: getPath.dag(params.flowId, params.runNumber),
+            linkTo: getPath.dag(params.flowId, params.runNumber) + '?' + urlParams,
             component: <DAG run={run} />,
           },
           {
             key: 'timeline',
             label: t('run.timeline'),
-            linkTo: getPath.timeline(params.flowId, params.runNumber),
+            linkTo: getPath.timeline(params.flowId, params.runNumber) + '?' + urlParams,
             component: (
               <Timeline
-                run={run}
-                rowData={rows}
+                rows={visibleRows}
+                steps={steps}
                 rowDataDispatch={dispatch}
                 status={taskStatus}
-                groupBy={{ value: groupByStep, set: setGroupByStep }}
+                counts={counts}
+                graph={graph}
+                searchField={searchField}
+                setMode={setMode}
+                paramsString={urlParams}
+                isAnyGroupOpen={isAnyGroupOpen}
               />
             ),
           },
@@ -177,17 +233,22 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
             linkTo:
               (previousStepName &&
                 previousTaskId &&
-                getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId)) ||
-              getPath.tasks(params.flowId, params.runNumber),
+                getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId) + '?' + urlParams) ||
+              getPath.tasks(params.flowId, params.runNumber) + '?' + urlParams,
             temporary: !!(previousStepName && previousTaskId),
             component: (
               <TaskViewContainer
                 run={run}
                 stepName={previousStepName || 'not-selected'}
                 taskId={previousTaskId || 'not-selected'}
-                rowData={rows}
+                rows={visibleRows}
                 rowDataDispatch={dispatch}
-                groupBy={{ value: groupByStep, set: setGroupByStep }}
+                searchField={searchField}
+                graph={graph}
+                counts={counts}
+                setMode={setMode}
+                paramsString={urlParams}
+                isAnyGroupOpen={isAnyGroupOpen}
               />
             ),
           },
@@ -196,5 +257,14 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     </>
   );
 };
+
+function cleanParametersMap(params: any) {
+  return Object.keys(params).reduce((obj, key) => {
+    if (params[key]) {
+      return { ...obj, [key]: params[key] };
+    }
+    return obj;
+  }, {});
+}
 
 export default RunContainer;

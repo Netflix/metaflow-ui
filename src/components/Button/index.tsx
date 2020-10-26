@@ -123,6 +123,7 @@ export const ButtonCSS = css`
   text-decoration: none;
   border-radius: 0.25rem;
   border: ${(p) => p.theme.border.thinLight};
+  transition: background 0.15s;
 `;
 
 const StyledButton = styled.button<StyledButtonProps>`

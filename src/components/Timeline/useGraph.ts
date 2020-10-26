@@ -1,4 +1,12 @@
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
+import {
+  DecodedValueMap,
+  QueryParamConfig,
+  SetQuery,
+  StringParam,
+  useQueryParams,
+  withDefault,
+} from 'use-query-params';
 
 export type GraphAlignment = 'fromLeft' | 'fromStartTime';
 export type GraphSortBy = 'startTime' | 'endTime' | 'duration';
@@ -23,6 +31,10 @@ export type GraphState = {
   timelineEnd: number;
   // Is zoom level user controlled?
   controlled: boolean;
+
+  stepFilter: string[];
+  statusFilter: string | null | undefined;
+  group: boolean;
 };
 
 export type GraphAction =
@@ -45,7 +57,10 @@ export type GraphAction =
   | { type: 'resetZoom' }
   | { type: 'reset' }
   // Update zoom contol state. If controlled, we dont update zoom level.
-  | { type: 'setControlled'; value: boolean };
+  | { type: 'setControlled'; value: boolean }
+  | { type: 'setSteps'; steps: string | null | undefined }
+  | { type: 'setStatus'; status: string | null | undefined }
+  | { type: 'setGrouping'; value: boolean };
 
 export function graphReducer(state: GraphState, action: GraphAction): GraphState {
   switch (action.type) {
@@ -139,6 +154,18 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
     case 'setControlled':
       return { ...state, controlled: action.value };
 
+    case 'setSteps':
+      if (action.steps) {
+        return { ...state, stepFilter: action.steps.split(',') };
+      }
+      return { ...state, stepFilter: [] };
+
+    case 'setStatus':
+      return { ...state, statusFilter: action.status };
+
+    case 'setGrouping':
+      return { ...state, group: action.value };
+
     case 'reset':
       return { ...state, controlled: false, min: 0, max: 0, timelineStart: 0, timelineEnd: 0 };
   }
@@ -226,11 +253,24 @@ export function validatedParameter<X extends PossibleParameterValue>(
   return null;
 }
 
+type QueryParameters = {
+  group: QueryParamConfig<string | null | undefined, string>;
+  order: QueryParamConfig<string | null | undefined, string | null | undefined>;
+  direction: QueryParamConfig<string | null | undefined, string | null | undefined>;
+  steps: QueryParamConfig<string | null | undefined, string | null | undefined>;
+  status: QueryParamConfig<string | null | undefined, string | null | undefined>;
+};
+
 //
 // Hook to contain timelines graphical presentation data. We would not have to use hook here but
 // we might need some extra functionality later so why not.
 //
-type GraphHook = { graph: GraphState; dispatch: React.Dispatch<GraphAction> };
+export type GraphHook = {
+  graph: GraphState;
+  dispatch: React.Dispatch<GraphAction>;
+  setQueryParam: SetQuery<QueryParameters>;
+  params: DecodedValueMap<QueryParameters>;
+};
 
 export default function useGraph(start: number, end: number): GraphHook {
   const [graph, dispatch] = useReducer(graphReducer, {
@@ -242,7 +282,62 @@ export default function useGraph(start: number, end: number): GraphHook {
     timelineStart: start,
     timelineEnd: end,
     controlled: false,
+
+    stepFilter: [],
+    statusFilter: null,
+    group: true,
   });
 
-  return { graph, dispatch };
+  //
+  // Query parameters handling
+  //
+
+  const [q, sq] = useQueryParams({
+    group: withDefault(StringParam, 'true'),
+    order: StringParam,
+    direction: StringParam,
+    steps: StringParam,
+    status: StringParam,
+  });
+
+  useEffect(() => {
+    const sortDir = validatedParameter<'asc' | 'desc'>(q.direction, graph.sortDir, ['asc', 'desc'], 'asc');
+    if (sortDir) {
+      dispatch({
+        type: 'sortDir',
+        dir: sortDir,
+      });
+    }
+
+    const sortBy = validatedParameter<'startTime' | 'endTime' | 'duration'>(
+      q.order,
+      graph.sortBy,
+      ['startTime', 'endTime', 'duration'],
+      'startTime',
+    );
+
+    if (sortBy) {
+      dispatch({ type: 'sortBy', by: sortBy });
+    }
+
+    if (q.status !== graph.statusFilter) {
+      dispatch({ type: 'setStatus', status: q.status });
+    }
+
+    const group = validatedParameter<'true' | 'false'>(
+      q.group,
+      graph.group ? 'true' : 'false',
+      ['true', 'false'],
+      'true',
+    );
+    if (group) {
+      dispatch({ type: 'setGrouping', value: group === 'true' ? true : false });
+    }
+  }, [q, graph, dispatch]);
+
+  useEffect(() => {
+    dispatch({ type: 'setSteps', steps: q.steps });
+  }, [q.steps]);
+
+  return { graph, dispatch, setQueryParam: sq, params: q };
 }
