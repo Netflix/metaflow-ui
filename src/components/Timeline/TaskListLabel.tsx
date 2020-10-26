@@ -49,7 +49,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
       ) : (
         <StepLabel onClick={() => props.toggle()} data-testid="tasklistlabel-step-container">
           <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="tasklistlabel-open-icon" />
-          <RowLabelContent>
+          <RowLabelContent type="step">
             <RowStepName data-testid="tasklistlabel-text">{props.item.step_name}</RowStepName>
             <RowDuration data-testid="tasklistlabel-duration">{formatDuration(props.duration, 1)}</RowDuration>
           </RowLabelContent>
@@ -100,10 +100,12 @@ const RowStepName = styled.span`
 
 const RowDuration = styled.span`
   padding: 0 0.25rem 0 0.5rem;
+  white-space: nowrap;
 `;
 
-const RowLabelContent = styled.div`
-  width: 100%;
+const RowLabelContent = styled.div<{ type?: 'step' }>`
+  // In case of step row, lets remove icon width from total width so it aligns nicely
+  width: ${(p) => (p.type === 'step' ? 'calc(100% - 30px)' : '100%')};
   display: flex;
   justify-content: space-between;
 `;

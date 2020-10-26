@@ -244,7 +244,7 @@ function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped
   return ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = rows[index];
     return (
-      <div style={style}>
+      <div style={style} key={index}>
         <TimelineRow
           item={row}
           graph={graph}
