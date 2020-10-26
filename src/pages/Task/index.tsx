@@ -169,8 +169,8 @@ const Task: React.FC<TaskViewProps> = ({
       <TimelineHeader
         graph={graph}
         setMode={setMode}
-        expandAll={() => null}
-        collapseAll={() => null}
+        expandAll={() => rowDataDispatch({ type: 'openAll' })}
+        collapseAll={() => rowDataDispatch({ type: 'closeAll' })}
         searchField={searchField}
         counts={counts}
       />

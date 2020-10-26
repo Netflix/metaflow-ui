@@ -76,26 +76,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   }, [rows]);
 
   //
-  // Button behaviour
-  //
-
-  const expandAll = () => {
-    /*
-    Object.keys(rowData).forEach((stepName) => {
-      rowDataDispatch({ type: 'open', id: stepName });
-    });
-    */
-  };
-
-  const collapseAll = () => {
-    /*
-    Object.keys(rowData).forEach((stepName) => {
-      rowDataDispatch({ type: 'close', id: stepName });
-    });
-    */
-  };
-
-  //
   // Horizontal dragging of whole graph
   //
 
@@ -126,8 +106,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
         <TimelineHeader
           graph={graphHook}
           setMode={setMode}
-          expandAll={expandAll}
-          collapseAll={collapseAll}
+          expandAll={() => rowDataDispatch({ type: 'openAll' })}
+          collapseAll={() => rowDataDispatch({ type: 'closeAll' })}
           setFullscreen={() => setFullscreen(true)}
           isFullscreen={showFullscreen}
           searchField={searchField}

@@ -24,6 +24,8 @@ export type RowDataAction =
   | { type: 'toggle'; id: string }
   | { type: 'open'; id: string }
   | { type: 'close'; id: string }
+  | { type: 'openAll' }
+  | { type: 'closeAll' }
   | { type: 'sort'; ids: string[] }
   | { type: 'reset' };
 
@@ -119,6 +121,14 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
         return { ...state, [action.id]: { ...state[action.id], isOpen: false } };
       }
       return state;
+    case 'openAll':
+      return Object.keys(state).reduce((obj, current) => {
+        return { ...obj, [current]: { ...obj[current], isOpen: true } };
+      }, state);
+    case 'closeAll':
+      return Object.keys(state).reduce((obj, current) => {
+        return { ...obj, [current]: { ...obj[current], isOpen: false } };
+      }, state);
     case 'reset':
       return {};
   }
