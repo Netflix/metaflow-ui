@@ -33,6 +33,7 @@ type TimelineProps = {
   graph: GraphHook;
   searchField: SearchFieldReturnType;
   setMode: (str: string) => void;
+  paramsString: string;
 };
 
 const VirtualizedTimeline: React.FC<TimelineProps> = ({
@@ -44,6 +45,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   counts,
   searchField,
   setMode,
+  paramsString,
 }) => {
   const { t } = useTranslation();
   const _listref = createRef<List>();
@@ -123,8 +125,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
       <VirtualizedTimelineSubContainer>
         <TimelineHeader
           graph={graphHook}
-          zoom={(dir) => graphDispatch({ type: dir === 'out' ? 'zoomOut' : 'zoomIn' })}
-          zoomReset={() => graphDispatch({ type: 'resetZoom' })}
           setMode={setMode}
           expandAll={expandAll}
           collapseAll={collapseAll}
@@ -132,6 +132,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
           isFullscreen={showFullscreen}
           searchField={searchField}
           counts={counts}
+          enableZoomControl
         />
         {rows.length > 0 && (
           <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
@@ -175,6 +176,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
                   graph,
                   dispatch: rowDataDispatch,
                   isGrouped: graph.group,
+                  paramsString,
                   t: t,
                 })}
                 height={listContainer.height - (stickyHeader ? ROW_HEIGHT : 0) - 69}
@@ -234,54 +236,28 @@ type RowRendererProps = {
   graph: GraphState;
   dispatch: (action: RowDataAction) => void;
   isGrouped: boolean;
+  paramsString: string;
   t: TFunction;
 };
 
-function createRowRenderer({ rows, graph, dispatch, isGrouped, t }: RowRendererProps) {
+function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped, t }: RowRendererProps) {
   return ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = rows[index];
     return (
-      <RowRenderer
-        key={index}
-        row={rows[index]}
-        graph={graph}
-        style={style}
-        isGrouped={isGrouped}
-        rowData={row.type === 'step' ? row.rowObject : undefined}
-        toggleOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
-        t={t}
-      />
+      <div style={style}>
+        <TimelineRow
+          item={row}
+          graph={graph}
+          isGrouped={isGrouped}
+          isOpen={row.type === 'step' && row.rowObject.isOpen}
+          onOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
+          paramsString={paramsString}
+          t={t}
+        />
+      </div>
     );
   };
 }
-
-const RowRenderer: React.FC<{
-  style: React.CSSProperties;
-  row: Row;
-  graph: GraphState;
-  isGrouped: boolean;
-  rowData?: StepRowData;
-  toggleOpen?: () => void;
-  t: TFunction;
-}> = ({ style, row, graph, rowData, toggleOpen, isGrouped, t }) => {
-  return (
-    <div style={style}>
-      <TimelineRow
-        item={row}
-        graph={graph}
-        isGrouped={isGrouped}
-        isOpen={rowData && rowData.isOpen}
-        endTime={row.type === 'step' && rowData ? rowData.finished_at : undefined}
-        onOpen={() => {
-          if (row.type === 'task' || !toggleOpen) return;
-
-          toggleOpen();
-        }}
-        t={t}
-      />
-    </div>
-  );
-};
 
 const StickyHeader: React.FC<{
   stickyStep: string;
@@ -294,18 +270,7 @@ const StickyHeader: React.FC<{
 
   if (!item || item.type !== 'step') return null;
 
-  return (
-    <TimelineRow
-      item={item}
-      endTime={item.rowObject.finished_at}
-      isOpen={true}
-      isGrouped={true}
-      graph={graph}
-      onOpen={onToggle}
-      t={t}
-      sticky
-    />
-  );
+  return <TimelineRow item={item} isOpen={true} isGrouped={true} graph={graph} onOpen={onToggle} t={t} sticky />;
 };
 
 const VirtualizedTimelineContainer = styled.div`
@@ -420,7 +385,7 @@ export function makeVisibleRows(
   graph: GraphState,
   visibleSteps: Step[],
   searchResults: SearchResultModel,
-) {
+): Row[] {
   const matchIds = searchResults.result.map((item) => item.task_id);
 
   return visibleSteps.reduce((arr: Row[], current: Step): Row[] => {

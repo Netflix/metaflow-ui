@@ -12,9 +12,19 @@ type Props = {
   grouped: boolean;
   isOpen?: boolean;
   toggle?: () => void;
+  paramsString?: string;
 };
 
-const TaskListRow: React.FC<Props> = ({ index, style, item, toggle = () => null, grouped, isOpen = true, active }) => {
+const TaskListRow: React.FC<Props> = ({
+  index,
+  style,
+  item,
+  toggle = () => null,
+  grouped,
+  isOpen = true,
+  active,
+  paramsString,
+}) => {
   const { t } = useTranslation();
   return (
     <TaskListRowContainer key={index} style={style} active={active}>
@@ -31,7 +41,14 @@ const TaskListRow: React.FC<Props> = ({ index, style, item, toggle = () => null,
           />
         ) : null
       ) : (
-        <TaskListLabel type="task" item={item.data[0]} open={isOpen} grouped={grouped} t={t} />
+        <TaskListLabel
+          type="task"
+          item={item.data[0]}
+          open={isOpen}
+          grouped={grouped}
+          t={t}
+          paramsString={paramsString}
+        />
       )}
     </TaskListRowContainer>
   );

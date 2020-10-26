@@ -222,6 +222,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 graph={graph}
                 searchField={searchField}
                 setMode={setMode}
+                paramsString={urlParams}
               />
             ),
           },
@@ -245,6 +246,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 graph={graph}
                 counts={counts}
                 setMode={setMode}
+                paramsString={urlParams}
               />
             ),
           },

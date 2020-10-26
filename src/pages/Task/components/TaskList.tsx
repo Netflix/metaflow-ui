@@ -19,9 +19,10 @@ type Props = {
   activeTaskId: string;
   results: SearchResultModel;
   grouped: boolean;
+  paramsString?: string;
 };
 
-const TaskList: React.FC<Props> = ({ rows, rowDataDispatch, activeTaskId, results, grouped }) => {
+const TaskList: React.FC<Props> = ({ rows, rowDataDispatch, activeTaskId, results, grouped, paramsString }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
@@ -66,6 +67,7 @@ const TaskList: React.FC<Props> = ({ rows, rowDataDispatch, activeTaskId, result
                   style={style}
                   item={item}
                   grouped={grouped}
+                  paramsString={paramsString}
                   toggle={
                     item.type === 'step'
                       ? () => (item.data ? rowDataDispatch({ type: 'toggle', id: item.data.step_name }) : null)

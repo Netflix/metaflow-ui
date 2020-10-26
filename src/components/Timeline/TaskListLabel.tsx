@@ -11,6 +11,7 @@ type BaseProps = {
   open: boolean;
   grouped: boolean;
   t: TFunction;
+  paramsString?: string;
 };
 type TaskRow = { type: 'task'; item: Task } & BaseProps;
 type StepRow = { type: 'step'; item: Step; toggle: () => void; duration: number } & BaseProps;
@@ -22,7 +23,10 @@ const TaskListLabel: React.FC<Props> = (props) => {
     <RowLabel type={props.type} isOpen={open} group={grouped}>
       {props.type === 'task' ? (
         <Link
-          to={getPath.task(props.item.flow_id, props.item.run_number, props.item.step_name, props.item.task_id)}
+          to={
+            getPath.task(props.item.flow_id, props.item.run_number, props.item.step_name, props.item.task_id) +
+            (props.paramsString ? `?${props.paramsString}` : '')
+          }
           data-testid="tasklistlabel-link"
         >
           <RowLabelContent>

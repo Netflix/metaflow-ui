@@ -39,6 +39,7 @@ type TaskViewProps = {
   searchField: SearchFieldReturnType;
   counts: RowCounts;
   setMode: (str: string) => void;
+  paramsString: string;
 };
 
 const sortTaskAttempts = (a: ITask, b: ITask) => a.attempt_id - b.attempt_id;
@@ -53,6 +54,7 @@ const Task: React.FC<TaskViewProps> = ({
   searchField,
   counts,
   setMode,
+  paramsString,
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
@@ -180,6 +182,7 @@ const Task: React.FC<TaskViewProps> = ({
           activeTaskId={taskId}
           results={searchField.results}
           grouped={graph.graph.group}
+          paramsString={paramsString}
         />
 
         {status === 'Loading' && (

@@ -14,13 +14,12 @@ import SettingsButton from './SettingsButton';
 import { RowCounts } from './useRowData';
 
 export type TimelineHeaderProps = {
-  zoom?: (dir: 'in' | 'out') => void;
-  zoomReset?: () => void;
   expandAll: () => void;
   collapseAll: () => void;
   setMode: (str: string) => void;
   setFullscreen?: () => void;
   isFullscreen?: boolean;
+  enableZoomControl?: boolean;
   graph: GraphHook;
   searchField: SearchFieldReturnType;
   counts: RowCounts;
@@ -28,8 +27,6 @@ export type TimelineHeaderProps = {
 
 const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   graph: graphHook,
-  zoom,
-  zoomReset,
   expandAll,
   setMode,
   collapseAll,
@@ -37,6 +34,7 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   setFullscreen,
   searchField,
   counts,
+  enableZoomControl = false,
 }) => {
   const { t } = useTranslation();
   const [customFiltersOpen, setCustomFiltersOpen] = useState(false);
@@ -85,22 +83,30 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             </AdvancedFiltersOverlay>
           </ItemRow>
 
-          {zoomReset && zoom && setFullscreen && (
+          {enableZoomControl && setFullscreen && (
             <ItemRow noWidth>
               <Text>{t('timeline.zoom')}:</Text>
               <ButtonGroup>
                 <Button
                   size="sm"
-                  onClick={() => zoomReset()}
+                  onClick={() => graphHook.dispatch({ type: 'resetZoom' })}
                   active={!graph.controlled}
                   data-testid="timeline-header-zoom-fit"
                 >
                   {t('timeline.fit-to-screen')}
                 </Button>
-                <Button size="sm" onClick={() => zoom('out')} data-testid="timeline-header-zoom-out">
+                <Button
+                  size="sm"
+                  onClick={() => graphHook.dispatch({ type: 'zoomOut' })}
+                  data-testid="timeline-header-zoom-out"
+                >
                   <Icon name="minus" />
                 </Button>
-                <Button size="sm" onClick={() => zoom('in')} data-testid="timeline-header-zoom-in">
+                <Button
+                  size="sm"
+                  onClick={() => graphHook.dispatch({ type: 'zoomIn' })}
+                  data-testid="timeline-header-zoom-in"
+                >
                   <Icon name="plus" />
                 </Button>
               </ButtonGroup>
