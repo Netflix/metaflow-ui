@@ -282,6 +282,7 @@ const TimelineHeaderBottomLeft = styled.div`
 
 const TimelineHeaderBottomRight = styled.div`
   padding: ${(p) => p.theme.spacer.md}rem;
+  position: relative;
   padding-right: 0;
   display: flex;
   flex: 1;
@@ -303,6 +304,7 @@ const AdvancedFiltersOverlay = styled.div<{ show: boolean }>`
   pointer-events: ${(p) => (p.show ? 'all' : 'none')};
   opacity: ${(p) => (p.show ? 1 : 0)};
   transition: 0.15s opacity;
+  padding-left: 1rem;
 `;
 
 export default TimelineHeader;
