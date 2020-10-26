@@ -1,24 +1,19 @@
 import React from 'react';
-import TimelineHeader, { TimelineHeaderProps } from '../TimelineHeader';
+import TimelineHeader from '../TimelineHeader';
 import { render, fireEvent } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
-import { createGraphState } from '../../../utils/testhelper';
+import useGraph from '../useGraph';
+import useSeachField from '../../../hooks/useSearchField';
+import CollapseButton from '../CollapseButton';
 
-const GROUP_BY = { value: true, set: () => null };
 const headerFunctionProps = {
-  zoom: () => null,
-  zoomReset: () => null,
-  toggleGroupBy: () => null,
-  updateSortBy: () => null,
-  updateSortDir: () => null,
   expandAll: () => null,
   collapseAll: () => null,
   setFullscreen: () => null,
   isFullscreen: false,
-  updateStatusFilter: () => null,
-  groupBy: GROUP_BY,
-  searchFieldProps: { text: '', setText: () => null },
-  searchResults: { status: 'NotAsked' as const, result: [] },
+  setMode: () => null,
+  enableZoomControl: true,
+  isAnyGroupOpen: true,
   counts: {
     all: 0,
     completed: 0,
@@ -29,122 +24,40 @@ const headerFunctionProps = {
 
 describe('TimelineHeader component', () => {
   test('<TimelineHeader> - should render', () => {
-    render(
-      <TestWrapper>
-        <TimelineHeader graph={createGraphState({})} {...headerFunctionProps} />
-      </TestWrapper>,
-    );
+    const Component = () => {
+      const graph = useGraph(0, 100);
+      const searchField = useSeachField('a', 'b');
+      return (
+        <TestWrapper>
+          <TimelineHeader graph={graph} searchField={searchField} {...headerFunctionProps} />
+        </TestWrapper>
+      );
+    };
+    render(<Component />);
   });
 
-  test('<TimelineHeader> - group by', () => {
-    const gb = {
-      value: true,
-      set: jest.fn(),
-    };
-    const props: TimelineHeaderProps = {
-      graph: createGraphState({}),
-      ...headerFunctionProps,
-      groupBy: gb,
-    };
-    const { getByTestId } = render(
-      <TestWrapper>
-        <TimelineHeader {...props} />
-      </TestWrapper>,
-    );
-
-    // Click settings button
-    expect(getByTestId('timeline-settings-button')).toBeInTheDocument();
-    fireEvent.click(getByTestId('timeline-settings-button'));
-
-    expect(getByTestId('timeline-header-groupby-step')).toHaveClass('active');
-
-    fireEvent.click(getByTestId('timeline-header-groupby-step'));
-    expect(gb.set).toBeCalledTimes(1);
-  });
-
-  test('<SettingsButton> - settings button', () => {
-    const props: TimelineHeaderProps = {
-      graph: createGraphState({}),
-      ...headerFunctionProps,
-      expandAll: jest.fn(),
-      collapseAll: jest.fn(),
-    };
-    const { getByTestId } = render(
-      <TestWrapper>
-        <TimelineHeader {...props} />
-      </TestWrapper>,
-    );
-
-    // Click settings button
-    expect(getByTestId('timeline-settings-button')).toBeInTheDocument();
-    fireEvent.click(getByTestId('timeline-settings-button'));
-    // Expand and collapse should now be in document
-    expect(getByTestId('timeline-settings-expand-all')).toBeInTheDocument();
-    expect(getByTestId('timeline-settings-collapse-all')).toBeInTheDocument();
-    // Click expand and check results
-    fireEvent.click(getByTestId('timeline-settings-expand-all'));
-    expect(props.expandAll).toBeCalledTimes(1);
-    // Open pop up again and check collapse all button
-    fireEvent.click(getByTestId('timeline-settings-button'));
-    fireEvent.click(getByTestId('timeline-settings-collapse-all'));
-    expect(props.expandAll).toBeCalledTimes(1);
-  });
-
-  test('<TimelineHeader> - order by', () => {
-    const props: TimelineHeaderProps = {
-      graph: createGraphState({}),
-      ...headerFunctionProps,
-      updateSortBy: jest.fn(),
-      updateSortDir: jest.fn(),
+  test('<CollapseButton> - settings button', () => {
+    const props = {
+      expand: jest.fn(),
+      collapse: jest.fn(),
+      isAnyGroupOpen: true,
     };
     const { getByTestId, rerender } = render(
       <TestWrapper>
-        <TimelineHeader {...props} />
+        <CollapseButton {...props} />
       </TestWrapper>,
     );
 
-    expect(getByTestId('timeline-header-orderby-startTime')).toHaveClass('active');
-    expect(getByTestId('timeline-header-orderby-duration')).not.toHaveClass('active');
-    // When started at is active and we click, we should call updateSortDir function instead
-    fireEvent.click(getByTestId('timeline-header-orderby-startTime'));
-    expect(props.updateSortBy).toBeCalledTimes(0);
-    expect(props.updateSortDir).toBeCalledTimes(1);
-    // When started at is active and we click duration button, we call updateSortBy
-    fireEvent.click(getByTestId('timeline-header-orderby-duration'));
-    expect(props.updateSortBy).toBeCalledWith('duration');
+    fireEvent.click(getByTestId('timeline-collapse-button'));
+    expect(props.collapse).toHaveBeenCalled();
 
     rerender(
       <TestWrapper>
-        <TimelineHeader {...props} graph={createGraphState({ sortBy: 'duration', sortDir: 'desc' })} />
-      </TestWrapper>,
-    );
-    // Try other way around
-    fireEvent.click(getByTestId('timeline-header-orderby-startTime'));
-    expect(props.updateSortBy).toBeCalledWith('startTime');
-
-    fireEvent.click(getByTestId('timeline-header-orderby-duration'));
-    expect(props.updateSortDir).toBeCalledTimes(2);
-  });
-
-  test('<TimelineHeader> - order by', () => {
-    const props: TimelineHeaderProps = {
-      graph: createGraphState({}),
-      ...headerFunctionProps,
-      zoom: jest.fn(),
-      zoomReset: jest.fn(),
-    };
-    const { getByTestId } = render(
-      <TestWrapper>
-        <TimelineHeader {...props} />
+        <CollapseButton {...props} isAnyGroupOpen={false} />
       </TestWrapper>,
     );
 
-    expect(getByTestId('timeline-header-zoom-fit')).toHaveClass('active');
-
-    fireEvent.click(getByTestId('timeline-header-zoom-out'));
-    expect(props.zoom).toHaveBeenCalledWith('out');
-
-    fireEvent.click(getByTestId('timeline-header-zoom-in'));
-    expect(props.zoom).toHaveBeenCalledWith('in');
+    fireEvent.click(getByTestId('timeline-collapse-button'));
+    expect(props.expand).toHaveBeenCalled();
   });
 });
