@@ -38,13 +38,11 @@ export interface Task extends MetaDataBaseObject {
   step_name: string;
   task_id: string;
   attempt_id: number;
-  foreach_stack: ForeachStack | null;
+  foreach_label?: string;
   finished_at?: number;
   duration?: number;
   status: TaskStatus;
 }
-
-export type ForeachStack = Array<[string, string, number, number]>;
 
 export type TaskStatus = 'running' | 'completed' | 'failed';
 
