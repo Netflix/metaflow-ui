@@ -73,11 +73,24 @@ const ResultGroup: React.FC<Props> = ({
           <thead>{tableHeader}</thead>
         )}
         <tbody>
-          {rows.slice(0, targetCount).map((r, i) => (
-            <TR key={`r-${i}`} clickable onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}>
-              <TableRows r={r} params={queryParams} historyPush={history.push} />
-            </TR>
-          ))}
+          {rows.slice(0, targetCount).map((r, i) => {
+            // Run is seen as stale if it doesnt match status filters anymore after its status changed
+            const isStale = !!(queryParams.status && queryParams.status.indexOf(r.status) === -1);
+            // Run is highlighted as active if it was completed on last 5 minutes
+            const isRecentlyCompleted = !!(r.finished_at && r.finished_at > Date.now() - 1000 * 60 * 5);
+
+            return (
+              <TR
+                key={`r-${i}`}
+                clickable
+                stale={isStale}
+                active={isRecentlyCompleted && !isStale}
+                onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}
+              >
+                <TableRows r={r} params={queryParams} historyPush={history.push} />
+              </TR>
+            );
+          })}
         </tbody>
       </Table>
 
@@ -113,9 +126,7 @@ const TableRows: React.FC<TableRowsProps> = React.memo(
       <>
         <StatusColorCell status={r.status} />
         <TD>
-          <IDFieldContainer>
-            <strong>{r.run_number}</strong>
-          </IDFieldContainer>
+          <IDFieldContainer>{r.run_number}</IDFieldContainer>
         </TD>
         {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
         {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
@@ -300,4 +311,6 @@ const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
   }
 `;
 
-const IDFieldContainer = styled.div``;
+const IDFieldContainer = styled.div`
+  font-weight: 500;
+`;
