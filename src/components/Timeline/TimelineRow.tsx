@@ -71,6 +71,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               grayed={isOpen}
               finishedAt={item.rowObject.finished_at}
               duration={item.rowObject.duration}
+              labelDuration={item.rowObject.duration}
               onOpen={onOpen}
               isLastAttempt
             />
