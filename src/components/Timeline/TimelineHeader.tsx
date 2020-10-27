@@ -92,8 +92,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               <b>
                 {t(`timeline.${graph.sortBy}`)} ({t(`timeline.${graph.sortDir}`)})
               </b>
-              , {t('timeline.status')}: <b>{graph.statusFilter || 'All'}</b>, {t('timeline.tasks-visibility')}:{' '}
-              <b>{graph.group ? t('timeline.grouped') : t('timeline.not-grouped')}</b>
+              , {t('timeline.status')}: <b>{graph.statusFilter || t('run.filter-all')}</b>,{' '}
+              {t('timeline.tasks-visibility')}: <b>{graph.group ? t('timeline.grouped') : t('timeline.not-grouped')}</b>
             </SettingsDescription>
           </ModeContainer>
 
