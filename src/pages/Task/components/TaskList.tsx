@@ -68,6 +68,9 @@ const TaskList: React.FC<Props> = ({ rows, rowDataDispatch, activeTaskId, result
                   item={item}
                   grouped={grouped}
                   paramsString={paramsString}
+                  duration={
+                    item.type === 'step' ? item.rowObject.duration : item.data[item.data.length - 1].duration || null
+                  }
                   toggle={
                     item.type === 'step'
                       ? () => (item.data ? rowDataDispatch({ type: 'toggle', id: item.data.step_name }) : null)

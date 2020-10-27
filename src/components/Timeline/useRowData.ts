@@ -35,8 +35,20 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
   switch (action.type) {
     case 'fillStep':
       const steprows: RowDataModel = action.data.reduce((obj: RowDataModel, step: Step) => {
-        if (obj[step.step_name]) {
-          return { ...obj, [step.step_name]: { ...state[step.step_name], step: step, isOpen: true } };
+        const existingRow = obj[step.step_name];
+        if (existingRow) {
+          return {
+            ...obj,
+            [step.step_name]: {
+              ...existingRow,
+              step: step,
+              isOpen: true,
+              duration:
+                existingRow.duration === existingRow.finished_at - step.ts_epoch
+                  ? existingRow.duration
+                  : existingRow.finished_at - step.ts_epoch,
+            },
+          };
         }
         return { ...obj, [step.step_name]: { step: step, isOpen: true, finished_at: 0, duration: 0, data: {} } };
       }, state);
@@ -60,6 +72,9 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
 
         if (grouped[step]) {
           grouped[step].push(row);
+          // Make sure that we process attempts in correct attempt order. This is important when we try to figure out
+          // start time and duration
+          grouped[step] = grouped[step].sort((a, b) => a.attempt_id - b.attempt_id);
         } else {
           grouped[step] = [row];
         }
@@ -70,7 +85,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
         const row = obj[key];
         const newItems = grouped[key];
         const [startTime, endTime] = timepointsOfTasks(newItems);
-
+        // Existing step entry
         if (row) {
           const newData = row.data;
 
@@ -79,7 +94,6 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
           }
 
           const newEndTime = !row.finished_at || endTime > row.finished_at ? endTime : row.finished_at;
-
           return {
             ...obj,
             [key]: {
@@ -90,7 +104,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
             },
           };
         }
-
+        // New step entry
         return {
           ...obj,
           [key]: {
@@ -144,6 +158,20 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
 export function createNewStepRowTasks(currentData: Record<string, Task[]>, item: Task): Task[] {
   if (currentData[item.task_id]) {
     const newtasks = currentData[item.task_id];
+
+    // Process duration and start time for task since they are somewhat uncertain from API
+    // NOTE: WE ARE MUTATING TASK VALUES HERE BECAUSE VALUES GIVEN BY BACKEND MIGHT NOT BE CORRECT
+    // SINCE STARTED AT AND DURATION MIGHT BE INCORRECT IN SOME SITUATIONS!!!
+    if (!item.started_at) {
+      if (item.attempt_id === 0) {
+        item.started_at = item.ts_epoch;
+        item.duration = item.duration || (item.finished_at ? item.finished_at - item.ts_epoch : undefined);
+      } else {
+        const prevTask = currentData[item.task_id].find((t) => t.attempt_id === item.attempt_id - 1);
+        item.started_at = item.started_at || prevTask?.finished_at || undefined;
+        item.duration = item.started_at && item.finished_at ? item.finished_at - item.started_at : undefined;
+      }
+    }
 
     let added = false;
     for (const index in newtasks) {

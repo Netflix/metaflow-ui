@@ -11,10 +11,11 @@ type BaseProps = {
   open: boolean;
   grouped: boolean;
   t: TFunction;
+  duration: number | null;
   paramsString?: string;
 };
 type TaskRow = { type: 'task'; item: Task } & BaseProps;
-type StepRow = { type: 'step'; item: Step; toggle: () => void; duration: number } & BaseProps;
+type StepRow = { type: 'step'; item: Step; toggle: () => void } & BaseProps;
 type Props = TaskRow | StepRow;
 
 const TaskListLabel: React.FC<Props> = (props) => {
@@ -40,8 +41,8 @@ const TaskListLabel: React.FC<Props> = (props) => {
             <RowDuration data-testid="tasklistlabel-duration">
               {props.item.status === 'running'
                 ? t('filters.running')
-                : props.item.duration
-                ? formatDuration(props.item.duration, 1)
+                : props.duration
+                ? formatDuration(props.duration, 1)
                 : null}
             </RowDuration>
           </RowLabelContent>
@@ -51,7 +52,9 @@ const TaskListLabel: React.FC<Props> = (props) => {
           <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="tasklistlabel-open-icon" />
           <RowLabelContent type="step">
             <RowStepName data-testid="tasklistlabel-text">{props.item.step_name}</RowStepName>
-            <RowDuration data-testid="tasklistlabel-duration">{formatDuration(props.duration, 1)}</RowDuration>
+            <RowDuration data-testid="tasklistlabel-duration">
+              {props.duration ? formatDuration(props.duration, 1) : null}
+            </RowDuration>
           </RowLabelContent>
         </StepLabel>
       )}

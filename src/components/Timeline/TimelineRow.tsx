@@ -38,6 +38,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
 }) => {
   if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
+
   return (
     <>
       <Element>
@@ -45,17 +46,18 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
           <TaskListLabel
             type="step"
             item={item.data}
-            duration={item.rowObject.finished_at - item.data.ts_epoch}
             toggle={onOpen}
             open={isOpen}
             grouped={isGrouped}
             t={t}
+            duration={item.rowObject.duration}
           />
         ) : (
           <TaskListLabel
             type="task"
-            item={item.data[0]}
+            item={item.data[item.data.length - 1]}
             open={isOpen}
+            duration={item.data[item.data.length - 1].duration || null}
             grouped={isGrouped}
             paramsString={paramsString}
             t={t}
@@ -68,21 +70,23 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               row={{ type: 'step', data: item.data }}
               grayed={isOpen}
               finishedAt={item.rowObject.finished_at}
+              duration={item.rowObject.duration}
               onOpen={onOpen}
-              isFirst
+              isLastAttempt
             />
           ) : (
-            item.data
-              .sort((a, b) => b.attempt_id - a.attempt_id)
-              .map((task, index) => (
-                <BoxGraphicElement
-                  key={task.finished_at}
-                  graph={graph}
-                  row={{ type: 'task', data: task }}
-                  isFirst={index === 0}
-                  finishedAt={task.finished_at}
-                />
-              ))
+            item.data.map((task, index) => (
+              <BoxGraphicElement
+                key={task.finished_at}
+                graph={graph}
+                row={{ type: 'task', data: task }}
+                isLastAttempt={index === item.data.length - 1}
+                duration={task.duration || 0}
+                labelDuration={item.data[item.data.length - 1].duration}
+                finishedAt={task.finished_at}
+                startTimeOfFirstAttempt={graph.sortBy === 'duration' ? item.data[0].started_at || 0 : undefined}
+              />
+            ))
           )}
         </RowGraphContainer>
       </Element>
@@ -95,8 +99,11 @@ type BoxGraphicElementProps = {
   graph: GraphState;
   finishedAt: number | undefined;
   grayed?: boolean;
-  isFirst: boolean;
+  isLastAttempt: boolean;
+  duration: number | null;
+  labelDuration?: number | null;
   onOpen?: () => void;
+  startTimeOfFirstAttempt?: number;
 };
 
 export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
@@ -104,21 +111,25 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   graph,
   finishedAt,
   grayed,
-  isFirst,
+  isLastAttempt,
+  duration,
+  labelDuration,
   onOpen,
+  startTimeOfFirstAttempt,
 }) => {
   const { push } = useHistory();
   const visibleDuration = graph.timelineEnd - graph.timelineStart;
-  const startTime = row.type === 'task' && row.data.started_at ? row.data.started_at : row.data.ts_epoch;
+  const boxStartTime = row.type === 'step' ? row.data.ts_epoch : row.data.started_at || row.data.ts_epoch;
 
   // Calculate have much box needs to be pushed from (or to) left
   const valueFromLeft =
     graph.alignment === 'fromLeft'
-      ? ((graph.min - graph.timelineStart) / visibleDuration) * 100
-      : ((startTime - graph.timelineStart) / visibleDuration) * 100;
+      ? ((graph.min - graph.timelineStart + (startTimeOfFirstAttempt ? boxStartTime - startTimeOfFirstAttempt : 0)) /
+          visibleDuration) *
+        100
+      : ((boxStartTime - graph.timelineStart) / visibleDuration) * 100;
 
-  const durationValue = getRowDuration(row, finishedAt);
-  const width = durationValue ? (durationValue / visibleDuration) * 100 : 100 - valueFromLeft;
+  const width = duration ? (duration / visibleDuration) * 100 : 100 - valueFromLeft;
 
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
@@ -140,18 +151,13 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         }}
         data-testid="boxgraphic"
       >
-        {isFirst && (
-          <RowMetricLabel
-            item={row.data}
-            finishedAt={finishedAt}
-            labelPosition={labelPosition}
-            data-testid="boxgraphic-label"
-          />
+        {isLastAttempt && labelDuration && (
+          <RowMetricLabel duration={labelDuration} labelPosition={labelPosition} data-testid="boxgraphic-label" />
         )}
         <BoxGraphicLine
           grayed={grayed}
           state={row.type === 'task' && row.data.status ? row.data.status : finishedAt ? 'completed' : 'running'}
-          isFirst={isFirst}
+          isLastAttempt={isLastAttempt}
         />
         <BoxGraphicMarkerStart />
         <BoxGraphicMarkerEnd />
@@ -160,31 +166,14 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   );
 };
 
-function getRowDuration(row: { type: 'step'; data: Step } | { type: 'task'; data: Task }, finishedAt?: number) {
-  if (row.type === 'task') {
-    if (row.data.duration) {
-      return row.data.duration;
-    } else if (finishedAt) {
-      return finishedAt - (row.data.started_at || row.data.ts_epoch);
-    }
-  }
-  // Step duration
-  if (finishedAt) {
-    return finishedAt - row.data.ts_epoch;
-  }
-
-  return null;
-}
-
 const RowMetricLabel: React.FC<{
-  item: Task | Step;
-  finishedAt?: number;
+  duration: null | number;
   labelPosition: LabelPosition;
   'data-testid'?: string;
-}> = ({ item, finishedAt, labelPosition, ...rest }) =>
+}> = ({ duration, labelPosition, ...rest }) =>
   labelPosition === 'none' ? null : (
     <BoxGraphicValue position={labelPosition} {...rest}>
-      {finishedAt ? formatDuration(finishedAt - item.ts_epoch, 1) : '?'}
+      {duration ? formatDuration(duration, 1) : '?'}
     </BoxGraphicValue>
   );
 
@@ -234,30 +223,35 @@ const BoxGraphic = styled.div<{ root: boolean }>`
   line-height: 27px;
 `;
 
-function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst: boolean) {
+function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst: boolean, isHovered?: boolean) {
   if (grayed) {
     return '#c7c7c7';
   } else {
     switch (state) {
       case 'completed':
-        return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.green;
+        return !isFirst ? lighten(isHovered ? 0.2 : 0.3, theme.color.bg.red) : theme.color.bg.green;
       case 'running':
         return theme.color.bg.yellow;
       case 'failed':
-        return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.red;
+        return !isFirst ? lighten(isHovered ? 0.2 : 0.3, theme.color.bg.red) : theme.color.bg.red;
       default:
         return theme.color.bg.red;
     }
   }
 }
 
-const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isFirst: boolean }>`
+const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttempt: boolean }>`
   position: absolute;
-  background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isFirst)};
+  background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isLastAttempt)};
   width: 100%;
   height: 6px;
   top: 50%;
   transform: translateY(-50%);
+  transition: background 0.15s;
+
+  &:hover {
+    background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isLastAttempt, true)};
+  }
 `;
 
 const BoxGraphicMarker = css`
@@ -282,6 +276,7 @@ const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
   position: absolute;
   left: ${({ position }) => (position === 'right' ? '100%' : 'auto')};
   right: ${({ position }) => (position === 'left' ? '100%' : 'auto')};
+  background: rgba(255, 255, 255, 0.8);
   padding: 0 10px;
   font-size: 12px;
   white-space: nowrap;
