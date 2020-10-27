@@ -2,7 +2,7 @@ import { TFunction } from 'i18next';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { Step, Task, ForeachStack } from '../../types';
+import { Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { getPath } from '../../utils/routing';
 import Icon from '../Icon';
@@ -60,16 +60,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
 };
 
 function getTaskLabel(item: Task): string {
-  if (item.foreach_stack !== null && item.foreach_stack.length > 0) {
-    return getForeachTaskLabel(item.foreach_stack);
-  } else {
-    return item.task_id;
-  }
-}
-
-function getForeachTaskLabel(stack: ForeachStack): string {
-  // stack format is [['step_name', 'foreach_var', 'foreach_num_tasks', 'foreach_index']]
-  return `${stack[0][1]}[${stack[0][3]}]`;
+  return item.foreach_label ? item.foreach_label : item.task_id;
 }
 
 export default TaskListLabel;
