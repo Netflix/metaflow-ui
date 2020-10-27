@@ -73,7 +73,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             />
           ) : (
             item.data
-              .sort((a, b) => (b.finished_at || 0) - (a.finished_at || 0))
+              .sort((a, b) => b.attempt_id - a.attempt_id)
               .map((task, index) => (
                 <BoxGraphicElement
                   key={task.finished_at}
@@ -109,14 +109,16 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
 }) => {
   const { push } = useHistory();
   const visibleDuration = graph.timelineEnd - graph.timelineStart;
+  const startTime = row.type === 'task' && row.data.started_at ? row.data.started_at : row.data.ts_epoch;
 
   // Calculate have much box needs to be pushed from (or to) left
   const valueFromLeft =
     graph.alignment === 'fromLeft'
       ? ((graph.min - graph.timelineStart) / visibleDuration) * 100
-      : ((row.data.ts_epoch - graph.timelineStart) / visibleDuration) * 100;
+      : ((startTime - graph.timelineStart) / visibleDuration) * 100;
 
-  const width = finishedAt ? ((finishedAt - row.data.ts_epoch) / visibleDuration) * 100 : 100 - valueFromLeft;
+  const durationValue = getRowDuration(row, finishedAt);
+  const width = durationValue ? (durationValue / visibleDuration) * 100 : 100 - valueFromLeft;
 
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
@@ -157,6 +159,22 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
     </div>
   );
 };
+
+function getRowDuration(row: { type: 'step'; data: Step } | { type: 'task'; data: Task }, finishedAt?: number) {
+  if (row.type === 'task') {
+    if (row.data.duration) {
+      return row.data.duration;
+    } else if (finishedAt) {
+      return finishedAt - (row.data.started_at || row.data.ts_epoch);
+    }
+  }
+  // Step duration
+  if (finishedAt) {
+    return finishedAt - row.data.ts_epoch;
+  }
+
+  return null;
+}
 
 const RowMetricLabel: React.FC<{
   item: Task | Step;
