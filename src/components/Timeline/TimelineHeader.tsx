@@ -45,8 +45,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
 
   return (
     <TimelineHeaderContainer>
-      <TimelineHeaderBottom>
-        <TimelineHeaderBottomLeft>
+      <THeader>
+        <THeaderLeft>
           <SearchField
             initialValue={searchField.fieldProps.text}
             onUpdate={searchField.fieldProps.setText}
@@ -58,9 +58,21 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
             collapse={() => collapseAll()}
             isAnyGroupOpen={isAnyGroupOpen}
           />
-        </TimelineHeaderBottomLeft>
-        <TimelineHeaderBottomRight>
-          <ItemRow>
+        </THeaderLeft>
+        <THeaderRight>
+          <AdvancedFiltersOverlay show={customFiltersOpen}>
+            <CustomFilters
+              updateSortBy={(by) => setQueryParam({ order: by }, 'replaceIn')}
+              updateSortDir={() => setQueryParam({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')}
+              updateStatusFilter={(status: null | string) => setQueryParam({ status })}
+              updateGroupBy={(group) => setQueryParam({ group: group ? 'true' : 'false' }, 'replaceIn')}
+              graph={graph}
+              counts={counts}
+              onClose={() => setCustomFiltersOpen(false)}
+            />
+          </AdvancedFiltersOverlay>
+
+          <ModeContainer>
             <ButtonGroup>
               <Button active={activeMode === 'overview'} onClick={() => setMode('overview')}>
                 {t('run.overview')}
@@ -75,20 +87,15 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
                 {t('run.custom')}
               </Button>
             </ButtonGroup>
-            <AdvancedFiltersOverlay show={customFiltersOpen}>
-              <CustomFilters
-                updateSortBy={(by) => setQueryParam({ order: by }, 'replaceIn')}
-                updateSortDir={() =>
-                  setQueryParam({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')
-                }
-                updateStatusFilter={(status: null | string) => setQueryParam({ status })}
-                updateGroupBy={(group) => setQueryParam({ group: group ? 'true' : 'false' }, 'replaceIn')}
-                graph={graph}
-                counts={counts}
-                onClose={() => setCustomFiltersOpen(false)}
-              />
-            </AdvancedFiltersOverlay>
-          </ItemRow>
+            <SettingsDescription>
+              {t('timeline.order-tasks-by')}{' '}
+              <b>
+                {t(`timeline.${graph.sortBy}`)} ({t(`timeline.${graph.sortDir}`)})
+              </b>
+              , {t('timeline.status')}: <b>{graph.statusFilter || 'All'}</b>, {t('timeline.tasks-visibility')}:{' '}
+              <b>{graph.group ? t('timeline.grouped') : t('timeline.not-grouped')}</b>
+            </SettingsDescription>
+          </ModeContainer>
 
           {enableZoomControl && setFullscreen && (
             <ItemRow noWidth>
@@ -124,8 +131,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               )}
             </ItemRow>
           )}
-        </TimelineHeaderBottomRight>
-      </TimelineHeaderBottom>
+        </THeaderRight>
+      </THeader>
     </TimelineHeaderContainer>
   );
 };
@@ -258,7 +265,7 @@ const TimelineHeaderContainer = styled.div`
   position: relative;
 `;
 
-const TimelineHeaderBottom = styled.div`
+const THeader = styled.div`
   display: flex;
 
   .field.field-checkbox {
@@ -266,7 +273,7 @@ const TimelineHeaderBottom = styled.div`
   }
 `;
 
-const TimelineHeaderBottomLeft = styled.div`
+const THeaderLeft = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -280,10 +287,9 @@ const TimelineHeaderBottomLeft = styled.div`
   }
 `;
 
-const TimelineHeaderBottomRight = styled.div`
-  padding: ${(p) => p.theme.spacer.md}rem;
+const THeaderRight = styled.div`
+  padding-left: ${(p) => p.theme.spacer.md}rem;
   position: relative;
-  padding-right: 0;
   display: flex;
   flex: 1;
   justify-content: space-between;
@@ -305,6 +311,18 @@ const AdvancedFiltersOverlay = styled.div<{ show: boolean }>`
   opacity: ${(p) => (p.show ? 1 : 0)};
   transition: 0.15s opacity;
   padding-left: 1rem;
+`;
+
+const ModeContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const SettingsDescription = styled.div`
+  line-height: 22px;
+  font-size: 13px;
+  padding-top: 8px;
 `;
 
 export default TimelineHeader;
