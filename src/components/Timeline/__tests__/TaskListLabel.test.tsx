@@ -16,7 +16,7 @@ describe('TaskListLabel component', () => {
   test('<TaskListLabel> - should render', () => {
     render(
       <TestWrapper>
-        <TaskListLabel type="task" item={createTask({})} {...BASE_PROPS} />
+        <TaskListLabel type="task" item={createTask({})} duration={100} {...BASE_PROPS} />
       </TestWrapper>,
     );
   });
@@ -24,7 +24,7 @@ describe('TaskListLabel component', () => {
   test('<TaskListLabel> - Task when grouping', () => {
     const { getByTestId } = render(
       <TestWrapper>
-        <TaskListLabel type="task" item={createTask({ duration: 1100 })} {...BASE_PROPS} />
+        <TaskListLabel type="task" item={createTask({ duration: 1100 })} duration={1100} {...BASE_PROPS} />
       </TestWrapper>,
     );
 
@@ -36,7 +36,7 @@ describe('TaskListLabel component', () => {
   test('<TaskListLabel> - Task when not grouping', () => {
     const { getByTestId } = render(
       <TestWrapper>
-        <TaskListLabel type="task" item={createTask({})} {...BASE_PROPS} grouped={false} />
+        <TaskListLabel type="task" item={createTask({})} duration={100} {...BASE_PROPS} grouped={false} />
       </TestWrapper>,
     );
 

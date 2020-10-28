@@ -110,7 +110,7 @@ describe('useRowData hook - reducer', () => {
       finished_at: 200,
       duration: 200,
       data: {
-        '1': [createTask({ step_name: 'askel', task_id: '1', ts_epoch: 100, finished_at: 200 })],
+        '1': [createTask({ step_name: 'askel', task_id: '1', ts_epoch: 100, finished_at: 200, started_at: 100 })],
       },
     });
   });

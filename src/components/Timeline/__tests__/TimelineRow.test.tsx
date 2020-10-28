@@ -72,7 +72,9 @@ describe('TimelineRow component', () => {
       graph: createGraphState({}),
       row: { type: 'task' as const, data: task },
       finishedAt: task.finished_at,
-      isFirst: true,
+      duration: 350,
+      labelDuration: 350,
+      isLastAttempt: true,
     };
 
     const { getByTestId, rerender } = render(
@@ -111,7 +113,13 @@ describe('TimelineRow component', () => {
     // Try with unfinished item. No label since bar takes so wide space
     rerender(
       <TestWrapper>
-        <BoxGraphicElement {...props} graph={createGraphState({})} finishedAt={undefined} />
+        <BoxGraphicElement
+          {...props}
+          graph={createGraphState({})}
+          finishedAt={undefined}
+          duration={null}
+          labelDuration={undefined}
+        />
       </TestWrapper>,
     );
     expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(10%)');
