@@ -11,6 +11,7 @@ type Props = {
   active: boolean;
   grouped: boolean;
   isOpen?: boolean;
+  duration: number | null;
   toggle?: () => void;
   paramsString?: string;
 };
@@ -21,6 +22,7 @@ const TaskListRow: React.FC<Props> = ({
   item,
   toggle = () => null,
   grouped,
+  duration,
   isOpen = true,
   active,
   paramsString,
@@ -33,7 +35,7 @@ const TaskListRow: React.FC<Props> = ({
           <TaskListLabel
             type="step"
             item={item.data}
-            duration={item.rowObject.duration}
+            duration={duration}
             toggle={toggle}
             open={isOpen}
             grouped={grouped}
@@ -43,8 +45,9 @@ const TaskListRow: React.FC<Props> = ({
       ) : (
         <TaskListLabel
           type="task"
-          item={item.data[0]}
+          item={item.data[item.data.length - 1]}
           open={isOpen}
+          duration={duration}
           grouped={grouped}
           t={t}
           paramsString={paramsString}

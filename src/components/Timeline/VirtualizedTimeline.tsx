@@ -286,16 +286,31 @@ const FixedListContainer = styled.div<{ sticky?: boolean }>`
 // Utils
 //
 
+function getRowStartTime(row: Row): number {
+  if (row.type === 'task') {
+    return row.data[0].started_at || row.data[0].ts_epoch;
+  }
+  return 0;
+}
+
+function getRowFinishedTime(row: Row): number {
+  if (row.type === 'task') {
+    const lastTask = row.data[row.data.length - 1];
+    return lastTask ? lastTask.finished_at || lastTask.ts_epoch : 0;
+  }
+  return 0;
+}
+
 export function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc'): (a: Row, b: Row) => number {
   return (a: Row, b: Row) => {
     const fst = sortDir === 'asc' ? a : b;
     const snd = sortDir === 'asc' ? b : a;
 
     if (sortBy === 'startTime' && fst.type === 'task' && snd.type === 'task') {
-      return fst.data[0].ts_epoch - snd.data[0].ts_epoch;
+      return getRowStartTime(fst) - getRowStartTime(snd);
     }
     if (sortBy === 'endTime' && fst.type === 'task' && snd.type === 'task') {
-      return (fst.data[0].finished_at || 0) - (snd.data[0].finished_at || 0);
+      return getRowFinishedTime(fst) - getRowFinishedTime(snd);
     } else if (sortBy === 'duration') {
       return taskDuration(fst) - taskDuration(snd);
     }
@@ -306,7 +321,7 @@ export function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc'): (a: Row,
 
 function taskDuration(a: Row): number {
   if (a.type === 'task') {
-    return a.data[0].duration || (a.data[0].finished_at ? a.data[0].finished_at - a.data[0].ts_epoch : 0);
+    return getRowFinishedTime(a) - getRowStartTime(a);
   }
   return 0;
 }
@@ -314,13 +329,29 @@ function taskDuration(a: Row): number {
 function findLongestTaskOfRow(step: StepRowData, graph: GraphState): number {
   return Object.keys(step.data).reduce((longestTaskValue, taskid) => {
     // There might be multiple tasks in same row since there might be retries. Find longest.
-    const durationOfTasksInSameRow = step.data[taskid].reduce((value, task) => {
-      return task.finished_at
-        ? task.finished_at - task.ts_epoch > value
-          ? task.finished_at - task.ts_epoch
-          : value
-        : value;
-    }, 0);
+    const minAndMax: [number | null, number | null] = step.data[taskid].reduce(
+      ([start, end]: [number | null, number | null], task) => {
+        let newStart = null;
+        let newEnd = null;
+
+        if (start === null) {
+          newStart = task.started_at || task.ts_epoch;
+        } else {
+          newStart = start < (task.started_at || task.ts_epoch) ? start : task.started_at || task.ts_epoch;
+        }
+
+        if (end === null) {
+          newEnd = task.finished_at || null;
+        } else {
+          newEnd = !task.finished_at || end > task.finished_at ? end : task.finished_at;
+        }
+
+        return [newStart, newEnd];
+      },
+      [null, null],
+    );
+
+    const durationOfTasksInSameRow = (minAndMax[1] || 0) - (minAndMax[0] || 0);
     // Compare longest task to current longest
     if (graph.min + durationOfTasksInSameRow > longestTaskValue) {
       return graph.min + durationOfTasksInSameRow;
