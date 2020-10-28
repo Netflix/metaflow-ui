@@ -199,11 +199,14 @@ const TimelineFooterLeft = styled.div`
   display: inline-block;
   width: 245px;
   margin: 0.5rem 0;
-  padding: 0 0.5rem;
+  padding-right: 0.5rem;
 
   button {
     justify-content: center;
-    width: 100%;
+    font-size: 0.875rem;
+    height: 28px;
+    width: 200px;
+    max-width: 100%;
   }
 `;
 
