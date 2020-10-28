@@ -124,6 +124,8 @@ const en = {
       'no-logs': 'No logs',
       'logs-only-available-AWS': 'Logs are only available when flow is executed on AWS.',
       attempt: 'Attempt',
+      'copy-logs-to-clipboard': 'Copy logs to clipboard',
+      copied: 'Copied',
     },
 
     breadcrumb: {

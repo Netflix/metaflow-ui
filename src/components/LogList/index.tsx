@@ -8,6 +8,8 @@ import { useTranslation } from 'react-i18next';
 import useComponentSize from '@rehooks/component-size';
 import { ROW_HEIGHT } from '../Timeline/VirtualizedTimeline';
 import Icon from '../Icon';
+import copy from 'copy-to-clipboard';
+import { NotificationType, useNotifications } from '../Notifications';
 
 type LogProps = {
   rows: ILog[];
@@ -18,6 +20,7 @@ type LogProps = {
 // const ROW_HEIGHT = 20;
 
 const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) => {
+  const { addNotification } = useNotifications();
   const { t } = useTranslation();
   const [stickBottom, setStickBottom] = useState(true);
   const [cache] = useState(
@@ -57,7 +60,13 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
               rowRenderer={({ index, style, key, parent }) => (
                 <CellMeasurer cache={cache} columnIndex={0} key={key} rowIndex={index} parent={parent}>
                   {() => (
-                    <LogLine style={style}>
+                    <LogLine
+                      style={style}
+                      onClick={() => {
+                        copy(rows[index].line);
+                        addNotification({ type: NotificationType.Info, message: t('task.copied') });
+                      }}
+                    >
                       <LogLineNumber className="logline-number">{rows[index].row}</LogLineNumber>
                       <div>{rows[index].line}</div>
                     </LogLine>
@@ -83,10 +92,21 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
 
       <ItemRow ref={_itemRow} margin="sm">
         {onShowFullscreen && rows.length > 1 && (
-          <Button onClick={onShowFullscreen} withIcon>
-            <Icon name="maximize" />
-            <span>{t('run.show-fullscreen')}</span>
-          </Button>
+          <>
+            <Button onClick={onShowFullscreen} withIcon>
+              <Icon name="maximize" />
+              <span>{t('run.show-fullscreen')}</span>
+            </Button>
+
+            <Button
+              onClick={() => {
+                copy(rows.map((item) => item.line).join('\n'));
+                addNotification({ type: NotificationType.Info, message: t('task.copied') });
+              }}
+            >
+              <span>{t('task.copy-logs-to-clipboard')}</span>
+            </Button>
+          </>
         )}
       </ItemRow>
     </div>
@@ -107,6 +127,7 @@ const LogLine = styled.div`
   display: flex;
   transition: backgorund 0.15s;
   padding: 0.25rem 40px 0 1rem;
+  cursor: pointer;
 
   &:hover {
     background: rgba(0, 0, 0, 0.1);
