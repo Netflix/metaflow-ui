@@ -58,8 +58,8 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
                 <CellMeasurer cache={cache} columnIndex={0} key={key} rowIndex={index} parent={parent}>
                   {() => (
                     <LogLine style={style}>
-                      <div>{rows[index].line}</div>
                       <LogLineNumber className="logline-number">{rows[index].row}</LogLineNumber>
+                      <div>{rows[index].line}</div>
                     </LogLine>
                   )}
                 </CellMeasurer>
@@ -110,22 +110,15 @@ const LogLine = styled.div`
 
   &:hover {
     background: rgba(0, 0, 0, 0.1);
-    .logline-number {
-      display: block;
-    }
   }
 `;
 
 const LogLineNumber = styled.div`
-  display: none;
   opacity: 0.6;
   font-size: 12px;
-  line-height: 14px;
-  position: absolute;
-  top: 0;
-  right: 0;
-  line-height: 25px;
+  line-height: 16px;
   padding-right: 0.5rem;
+  min-width: 35px;
 `;
 
 const ScrollToBottomButton = styled.div`
