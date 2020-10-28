@@ -2,8 +2,9 @@
 // Row data handling
 //
 
-import { Task, Step } from '../../types';
-import { useReducer } from 'react';
+import { Task, Step, AsyncStatus } from '../../types';
+import { useEffect, useReducer, useState } from 'react';
+import useResource from '../../hooks/useResource';
 
 export type StepRowData = {
   // Is row opened?
@@ -24,6 +25,8 @@ export type RowDataAction =
   | { type: 'toggle'; id: string }
   | { type: 'open'; id: string }
   | { type: 'close'; id: string }
+  | { type: 'openAll' }
+  | { type: 'closeAll' }
   | { type: 'sort'; ids: string[] }
   | { type: 'reset' };
 
@@ -124,6 +127,14 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
         return { ...state, [action.id]: { ...state[action.id], isOpen: false } };
       }
       return state;
+    case 'openAll':
+      return Object.keys(state).reduce((obj, current) => {
+        return { ...obj, [current]: { ...obj[current], isOpen: true } };
+      }, state);
+    case 'closeAll':
+      return Object.keys(state).reduce((obj, current) => {
+        return { ...obj, [current]: { ...obj[current], isOpen: false } };
+      }, state);
     case 'reset':
       return {};
   }
@@ -161,7 +172,7 @@ export function createNewStepRowTasks(currentData: Record<string, Task[]>, item:
 
     let added = false;
     for (const index in newtasks) {
-      if (!newtasks[index].finished_at || newtasks[index].finished_at === item.finished_at) {
+      if (newtasks[index].attempt_id === item.attempt_id) {
         added = true;
         newtasks[index] = item;
       }
@@ -192,8 +203,109 @@ export function timepointsOfTasks(tasks: Task[]): [number, number] {
   );
 }
 
-export default function useRowData(): { rows: RowDataModel; dispatch: React.Dispatch<RowDataAction> } {
+export type RowCounts = {
+  all: number;
+  completed: number;
+  running: number;
+  failed: number;
+};
+
+export default function useRowData(
+  flowId: string,
+  runNumber: string,
+): {
+  rows: RowDataModel;
+  dispatch: React.Dispatch<RowDataAction>;
+  taskStatus: AsyncStatus;
+  counts: RowCounts;
+  steps: Step[];
+  isAnyGroupOpen: boolean;
+} {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
 
-  return { rows, dispatch };
+  // Fetch & subscribe to steps
+  useResource<Step[], Step>({
+    url: encodeURI(`/flows/${flowId}/runs/${runNumber}/steps`),
+    subscribeToEvents: true,
+    initialData: [],
+    onUpdate: (items) => {
+      dispatch({ type: 'fillStep', data: items });
+    },
+    queryParams: {
+      _order: '+ts_epoch',
+      _limit: '1000',
+    },
+    fullyDisableCache: true,
+  });
+
+  // Fetch & subscribe to tasks
+  const { status: taskStatus } = useResource<Task[], Task>({
+    url: encodeURI(`/flows/${flowId}/runs/${runNumber}/tasks`),
+    subscribeToEvents: true,
+    initialData: [],
+    updatePredicate: (a, b) => a.task_id === b.task_id,
+    queryParams: {
+      _order: '+ts_epoch',
+      _limit: '200',
+    },
+    fetchAllData: true,
+    onUpdate: (items) => {
+      dispatch({ type: 'fillTasks', data: items });
+    },
+    fullyDisableCache: true,
+    useBatching: true,
+  });
+
+  //
+  // Counts
+  //
+  const [counts, setCounts] = useState<RowCounts>({ all: 0, completed: 0, running: 0, failed: 0 });
+
+  useEffect(() => {
+    const newCounts = {
+      all: 0,
+      completed: 0,
+      running: 0,
+      failed: 0,
+    };
+
+    // Iterate steps
+    for (const stepName of Object.keys(rows)) {
+      // ...Wihtout steps that start with underscore because user is not interested on them
+      if (!stepName.startsWith('_')) {
+        const stepRow = rows[stepName];
+        // Iterate all task rows on step
+        for (const taskId of Object.keys(stepRow.data)) {
+          const taskRow = stepRow.data[taskId];
+          // Map statuses of all attempts on single row and count
+          const allStatuses = taskRow.map((t) => t.status);
+
+          newCounts.all++;
+          if (allStatuses.indexOf('completed') > -1) {
+            newCounts.completed++;
+          } else if (allStatuses.indexOf('running') > -1) {
+            newCounts.running++;
+          }
+          // If there is more than 1 task on one row, there must be multiple attempts which means that some
+          // of them has failed
+          if (allStatuses.indexOf('failed') > -1 || taskRow.length > 1) {
+            newCounts.failed++;
+          }
+        }
+      }
+    }
+
+    setCounts(newCounts);
+  }, [rows]);
+
+  const steps: Step[] = Object.keys(rows)
+    .map((key) => {
+      const step = rows[key].step;
+      return step ? ({ ...step, finished_at: step?.finished_at || rows[key].finished_at } as Step) : null;
+    })
+    .filter((t): t is Step => !!t);
+
+  const anyOpen = !!Object.keys(rows).find((key) => rows[key].isOpen);
+
+  return { rows, dispatch, taskStatus, counts, steps, isAnyGroupOpen: anyOpen };
 }

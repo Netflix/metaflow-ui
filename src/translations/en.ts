@@ -54,7 +54,7 @@ const en = {
 
     filters: {
       'group-by': 'Group by',
-      'reset-all': 'Reset all filters',
+      'reset-all': 'Reset view',
       running: 'Running',
       failed: 'Failed',
       completed: 'Completed',
@@ -79,6 +79,10 @@ const en = {
       'filter-completed': 'Completed',
       'filter-running': 'Running',
       'filter-failed': 'Failed',
+      overview: 'Overview',
+      monitoring: 'Monitoring',
+      'error-tracker': 'Error tracker',
+      custom: 'Custom',
     },
 
     timeline: {
@@ -91,11 +95,20 @@ const en = {
       'group-by-step': 'Group by step',
       'order-by': 'Order by',
       'started-at': 'Started at',
+      startTime: 'Started at',
       'finished-at': 'Finished at',
+      endTime: 'Finished at',
       duration: 'Duration',
       zoom: 'Zoom',
       'fit-to-screen': 'Fit to screen',
       'show-all-steps': 'Show all steps',
+      'order-tasks-by': 'Order tasks by',
+      status: 'Status',
+      'tasks-visibility': 'Task visibility',
+      grouped: 'Group by step',
+      'not-grouped': 'Not grouped',
+      asc: 'Ascending',
+      desc: 'Descending',
     },
 
     task: {
@@ -130,6 +143,7 @@ const en = {
 
     connection: {
       'waiting-for-connection': 'Waiting for connection',
+      'data-might-be-stale': 'Reconnected, but data might be stale. Click here to reconnect',
     },
 
     error: {

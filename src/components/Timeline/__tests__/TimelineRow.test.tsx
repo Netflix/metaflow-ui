@@ -42,7 +42,17 @@ describe('TimelineRow component', () => {
     const props = {
       graph: createGraphState({}),
       onOpen: () => null,
-      item: { type: 'step' as const, data: createStep({}) },
+      item: {
+        type: 'step' as const,
+        data: createStep({}),
+        rowObject: {
+          isOpen: true,
+          finished_at: 1000,
+          duration: 1000,
+          step: createStep({}),
+          data: {},
+        },
+      },
       isOpen: true,
       t: MockT,
     };

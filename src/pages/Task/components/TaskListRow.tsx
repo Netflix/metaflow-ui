@@ -1,29 +1,39 @@
 import React from 'react';
 import styled from 'styled-components';
-import { TaskListRowItem } from './TaskList';
 import TaskListLabel from '../../../components/Timeline/TaskListLabel';
 import { useTranslation } from 'react-i18next';
+import { Row } from '../../../components/Timeline/VirtualizedTimeline';
 
 type Props = {
   index: number;
   style: React.CSSProperties;
-  item: TaskListRowItem;
+  item: Row;
   active: boolean;
   grouped: boolean;
   isOpen?: boolean;
   toggle?: () => void;
+  paramsString?: string;
 };
 
-const TaskListRow: React.FC<Props> = ({ index, style, item, toggle = () => null, grouped, isOpen = true, active }) => {
+const TaskListRow: React.FC<Props> = ({
+  index,
+  style,
+  item,
+  toggle = () => null,
+  grouped,
+  isOpen = true,
+  active,
+  paramsString,
+}) => {
   const { t } = useTranslation();
   return (
     <TaskListRowContainer key={index} style={style} active={active}>
       {item.type === 'step' ? (
-        item.data.step ? (
+        item.data ? (
           <TaskListLabel
             type="step"
-            item={item.data.step}
-            duration={item.data.duration}
+            item={item.data}
+            duration={item.rowObject.duration}
             toggle={toggle}
             open={isOpen}
             grouped={grouped}
@@ -31,7 +41,14 @@ const TaskListRow: React.FC<Props> = ({ index, style, item, toggle = () => null,
           />
         ) : null
       ) : (
-        <TaskListLabel type="task" item={item.data} open={isOpen} grouped={grouped} t={t} />
+        <TaskListLabel
+          type="task"
+          item={item.data[0]}
+          open={isOpen}
+          grouped={grouped}
+          t={t}
+          paramsString={paramsString}
+        />
       )}
     </TaskListRowContainer>
   );

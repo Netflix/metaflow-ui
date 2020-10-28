@@ -11,6 +11,7 @@ type BaseProps = {
   open: boolean;
   grouped: boolean;
   t: TFunction;
+  paramsString?: string;
 };
 type TaskRow = { type: 'task'; item: Task } & BaseProps;
 type StepRow = { type: 'step'; item: Step; toggle: () => void; duration: number } & BaseProps;
@@ -22,7 +23,10 @@ const TaskListLabel: React.FC<Props> = (props) => {
     <RowLabel type={props.type} isOpen={open} group={grouped}>
       {props.type === 'task' ? (
         <Link
-          to={getPath.task(props.item.flow_id, props.item.run_number, props.item.step_name, props.item.task_id)}
+          to={
+            getPath.task(props.item.flow_id, props.item.run_number, props.item.step_name, props.item.task_id) +
+            (props.paramsString ? `?${props.paramsString}` : '')
+          }
           data-testid="tasklistlabel-link"
         >
           <RowLabelContent>
@@ -30,7 +34,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
               <RowStepName>{!grouped ? props.item.step_name : ''}</RowStepName>
               <span>
                 {!grouped ? '/' : ''}
-                {props.item.task_id}
+                {getTaskLabel(props.item)}
               </span>
             </RowLabelTaskName>
             <RowDuration data-testid="tasklistlabel-duration">
@@ -45,7 +49,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
       ) : (
         <StepLabel onClick={() => props.toggle()} data-testid="tasklistlabel-step-container">
           <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="tasklistlabel-open-icon" />
-          <RowLabelContent>
+          <RowLabelContent type="step">
             <RowStepName data-testid="tasklistlabel-text">{props.item.step_name}</RowStepName>
             <RowDuration data-testid="tasklistlabel-duration">{formatDuration(props.duration, 1)}</RowDuration>
           </RowLabelContent>
@@ -54,6 +58,10 @@ const TaskListLabel: React.FC<Props> = (props) => {
     </RowLabel>
   );
 };
+
+function getTaskLabel(item: Task): string {
+  return item.foreach_label ? item.foreach_label : item.task_id;
+}
 
 export default TaskListLabel;
 
@@ -96,10 +104,12 @@ const RowStepName = styled.span`
 
 const RowDuration = styled.span`
   padding: 0 0.25rem 0 0.5rem;
+  white-space: nowrap;
 `;
 
-const RowLabelContent = styled.div`
-  width: 100%;
+const RowLabelContent = styled.div<{ type?: 'step' }>`
+  // In case of step row, lets remove icon width from total width so it aligns nicely
+  width: ${(p) => (p.type === 'step' ? 'calc(100% - 30px)' : '100%')};
   display: flex;
   justify-content: space-between;
 `;
