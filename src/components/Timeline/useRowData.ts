@@ -18,6 +18,13 @@ export type StepRowData = {
   data: Record<string, Task[]>;
 };
 
+export type StepLineData = {
+  started_at: number;
+  finished_at: number;
+  isFailed: boolean;
+  original?: Step;
+};
+
 export type RowDataAction =
   | { type: 'fillStep'; data: Step[] }
   | { type: 'add'; id: string; data: StepRowData }
@@ -151,8 +158,7 @@ function isFailedStep(stepTaskData: Record<string, Task[]>, newTasks: Task[]) {
 
   for (const [key, tasks] of Object.entries(stepTaskData)) {
     if (ids.indexOf(key) > -1) {
-      // IF ALL OF TASKS ON ROW IS FAILED, WE CAN SAY THAT STEP IS FAILURE.
-      const hasFailed = tasks.every((t) => t.status === 'failed');
+      const hasFailed = tasks[tasks.length - 1].status === 'failed';
       if (hasFailed) {
         return true;
       }
@@ -218,7 +224,7 @@ export default function useRowData(
   dispatch: React.Dispatch<RowDataAction>;
   taskStatus: AsyncStatus;
   counts: RowCounts;
-  steps: Step[];
+  steps: StepLineData[];
   isAnyGroupOpen: boolean;
 } {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
@@ -298,12 +304,13 @@ export default function useRowData(
     setCounts(newCounts);
   }, [rows]);
 
-  const steps: Step[] = Object.keys(rows)
-    .map((key) => {
-      const step = rows[key].step;
-      return step ? ({ ...step, finished_at: step?.finished_at || rows[key].finished_at } as Step) : null;
-    })
-    .filter((t): t is Step => !!t);
+  const steps: StepLineData[] = Object.keys(rows).reduce((arr: StepLineData[], key) => {
+    if (key.startsWith('_')) return arr;
+    const row = rows[key];
+    return arr.concat([
+      { started_at: row.step?.ts_epoch || 0, finished_at: row.finished_at, isFailed: row.isFailed, original: row.step },
+    ]);
+  }, []);
 
   const anyOpen = !!Object.keys(rows).find((key) => rows[key].isOpen);
 

@@ -2,14 +2,14 @@ import React, { createRef, useState } from 'react';
 import { GraphState } from './useGraph';
 import styled from 'styled-components';
 
-import { Step } from '../../types';
 import { formatDuration } from '../../utils/format';
 import Button from '../Button';
 import Icon from '../Icon';
 import { useTranslation } from 'react-i18next';
+import { StepLineData } from './useRowData';
 
 type TimelineFooterProps = {
-  steps: Step[];
+  steps: StepLineData[];
   graph: GraphState;
   hasStepFilter: boolean;
   resetSteps: () => void;
@@ -84,9 +84,11 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({
         <MiniTimelineContainer ref={_container}>
           {steps.map((step) => (
             <MiniTimelineRow
-              key={step.step_name}
+              key={step.original?.step_name || step.started_at}
               graph={graph}
-              step={{ ...step, finished_at: step.finished_at || step.ts_epoch }}
+              started={step.started_at}
+              finished={step.finished_at}
+              isFailed={step.isFailed}
             />
           ))}
         </MiniTimelineContainer>
@@ -119,26 +121,33 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({
 };
 
 const MiniTimelineRow: React.FC<{
-  step: Step;
+  started: number;
+  finished: number;
+  isFailed: boolean;
   graph: GraphState;
-}> = ({ step, graph }) => {
-  const width = (((step.finished_at || 0) - step.ts_epoch) / (graph.max - graph.min)) * 100;
-  const left = ((step.ts_epoch - graph.min) / (graph.max - graph.min)) * 100;
+}> = ({ started, finished, isFailed, graph }) => {
+  const width = ((finished - started) / (graph.max - graph.min)) * 100;
+  const left = ((started - graph.min) / (graph.max - graph.min)) * 100;
 
   return (
-    <div
+    <MiniTimelineLine
+      isFailed={isFailed}
       style={{
-        position: 'relative',
-        background: '#20AF2E',
-        height: '2px',
         width: width + '%',
         left: left + '%',
-        marginBottom: '1px',
-        minWidth: '2px',
       }}
-    ></div>
+    ></MiniTimelineLine>
   );
 };
+
+const MiniTimelineLine = styled.div<{ isFailed: boolean }>`
+  position: relative;
+  transition: all 0.15s;
+  background: ${(p) => (p.isFailed ? p.theme.color.bg.red : p.theme.color.bg.green)};
+  height: 2px;
+  margin-bottom: 1px;
+  min-width: 2px;
+`;
 
 const MiniTimelineActive: React.FC<{
   graph: GraphState;

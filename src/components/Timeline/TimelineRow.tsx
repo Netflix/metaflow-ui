@@ -18,7 +18,6 @@ type TimelineRowProps = {
   onOpen: () => void;
   isGrouped: boolean;
   isOpen?: boolean;
-  isFailed?: boolean;
   // Flag row as sticky for some absolute stylings
   sticky?: boolean;
   paramsString?: string;
@@ -32,7 +31,6 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   graph,
   onOpen,
   isOpen = true,
-  isFailed = false,
   isGrouped,
   paramsString,
   sticky,
@@ -40,6 +38,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
 }) => {
   if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
+
   return (
     <>
       <Element>
@@ -71,7 +70,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               grayed={isOpen}
               finishedAt={item.rowObject.finished_at}
               onOpen={onOpen}
-              isFailed={isFailed}
+              isFailed={item.rowObject.isFailed}
               isFirst
             />
           ) : (
