@@ -119,6 +119,7 @@ const LogLineNumber = styled.div`
   line-height: 16px;
   padding-right: 0.5rem;
   min-width: 35px;
+  user-select: none;
 `;
 
 const ScrollToBottomButton = styled.div`
