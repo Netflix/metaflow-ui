@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { DAGModel, convertDAGModelToTree, DAGStructureTree } from './DAGUtils';
-import { AsyncStatus, Run, Step } from '../../types';
+import { AsyncStatus, Run } from '../../types';
 import { ItemRow } from '../Structure';
 import useResource from '../../hooks/useResource';
 import FullPageContainer from '../FullPageContainer';
@@ -10,25 +10,16 @@ import Spinner from '../Spinner';
 import DAGContent from './components/DAGContent';
 import DAGError from './components/DAGError';
 import DAGControlBar from './components/DAGControlBar';
+import { StepLineData } from '../Timeline/useRowData';
 
 //
 // DAG
 //
 
-const DAG: React.FC<{ run: Run }> = ({ run }) => {
+const DAG: React.FC<{ run: Run; steps: StepLineData[] }> = ({ run, steps }) => {
   const { t } = useTranslation();
   const [showFullscreen, setFullscreen] = useState(false);
   const [dagTree, setDagTree] = useState<DAGStructureTree>([]);
-
-  const { data: stepData } = useResource<Step[], Step>({
-    url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/steps`),
-    subscribeToEvents: true,
-    initialData: [],
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-    },
-  });
 
   const { status, error } = useResource<DAGModel, DAGModel>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
@@ -40,7 +31,7 @@ const DAG: React.FC<{ run: Run }> = ({ run }) => {
   });
 
   const content = !!dagTree.length && (
-    <DAGContent dagTree={dagTree} showFullscreen={showFullscreen} stepData={stepData} run={run} />
+    <DAGContent dagTree={dagTree} showFullscreen={showFullscreen} stepData={steps} run={run} />
   );
 
   return (

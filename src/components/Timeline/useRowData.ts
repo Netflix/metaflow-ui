@@ -22,6 +22,7 @@ export type StepLineData = {
   started_at: number;
   finished_at: number;
   isFailed: boolean;
+  step_name: string;
   original?: Step;
 };
 
@@ -336,7 +337,13 @@ export default function useRowData(
     if (key.startsWith('_')) return arr;
     const row = rows[key];
     return arr.concat([
-      { started_at: row.step?.ts_epoch || 0, finished_at: row.finished_at, isFailed: row.isFailed, original: row.step },
+      {
+        started_at: row.step?.ts_epoch || 0,
+        finished_at: row.finished_at,
+        isFailed: row.isFailed,
+        original: row.step,
+        step_name: key,
+      },
     ]);
   }, []);
 

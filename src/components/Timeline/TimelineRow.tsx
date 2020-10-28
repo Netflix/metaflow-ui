@@ -287,6 +287,7 @@ const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
   background: rgba(255, 255, 255, 0.8);
   padding: 0 10px;
   top: 1px;
+  line-height: 26px;
   font-size: 12px;
   white-space: nowrap;
 `;
