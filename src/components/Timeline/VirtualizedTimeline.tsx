@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
 import { GraphHook, GraphState, GraphSortBy } from './useGraph';
-import { StepRowData, RowDataAction, RowDataModel, RowCounts } from './useRowData';
+import { StepRowData, RowDataAction, RowDataModel, RowCounts, StepLineData } from './useRowData';
 import { useTranslation } from 'react-i18next';
 import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
@@ -26,7 +26,7 @@ type StepIndex = { name: string; index: number };
 //
 type TimelineProps = {
   rows: Row[];
-  steps: Step[];
+  steps: StepLineData[];
   rowDataDispatch: React.Dispatch<RowDataAction>;
   status: AsyncStatus;
   counts: RowCounts;

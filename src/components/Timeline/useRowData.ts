@@ -12,9 +12,18 @@ export type StepRowData = {
   // We have to compute finished_at value so let it live in here now :(
   finished_at: number;
   duration: number;
+  isFailed: boolean;
   step?: Step;
   // Tasks for this step
   data: Record<string, Task[]>;
+};
+
+export type StepLineData = {
+  started_at: number;
+  finished_at: number;
+  isFailed: boolean;
+  step_name: string;
+  original?: Step;
 };
 
 export type RowDataAction =
@@ -50,7 +59,10 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
             },
           };
         }
-        return { ...obj, [step.step_name]: { step: step, isOpen: true, finished_at: 0, duration: 0, data: {} } };
+        return {
+          ...obj,
+          [step.step_name]: { step: step, isOpen: true, isFailed: false, finished_at: 0, duration: 0, data: {} },
+        };
       }, state);
       return Object.keys(steprows)
         .sort((a, b) => {
@@ -98,6 +110,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
             ...obj,
             [key]: {
               ...row,
+              isFailed: isFailedStep(newData, newItems),
               finished_at: newEndTime,
               duration: row.step ? newEndTime - row.step.ts_epoch : row.duration,
               data: newData,
@@ -109,6 +122,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
           ...obj,
           [key]: {
             isOpen: true,
+            isFailed: isFailedStep(grouped, newItems),
             finished_at: endTime,
             duration: endTime - startTime,
             data: grouped[key].reduce<Record<number, Task[]>>((dataobj, item) => {
@@ -148,6 +162,24 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
   }
 
   return state;
+}
+
+/**
+ * Check if step is failure. Only checks new tasks we just got from server. This might cause an issue
+ * though if we get successful tasks after getting failed ones (should not really happen).
+ */
+function isFailedStep(stepTaskData: Record<string, Task[]>, newTasks: Task[]) {
+  const ids = newTasks.map((t) => t.task_id);
+
+  for (const [key, tasks] of Object.entries(stepTaskData)) {
+    if (ids.indexOf(key) > -1) {
+      const hasFailed = tasks[tasks.length - 1].status === 'failed';
+      if (hasFailed) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 /**
@@ -221,7 +253,7 @@ export default function useRowData(
   dispatch: React.Dispatch<RowDataAction>;
   taskStatus: AsyncStatus;
   counts: RowCounts;
-  steps: Step[];
+  steps: StepLineData[];
   isAnyGroupOpen: boolean;
 } {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
@@ -301,12 +333,19 @@ export default function useRowData(
     setCounts(newCounts);
   }, [rows]);
 
-  const steps: Step[] = Object.keys(rows)
-    .map((key) => {
-      const step = rows[key].step;
-      return step ? ({ ...step, finished_at: step?.finished_at || rows[key].finished_at } as Step) : null;
-    })
-    .filter((t): t is Step => !!t);
+  const steps: StepLineData[] = Object.keys(rows).reduce((arr: StepLineData[], key) => {
+    if (key.startsWith('_')) return arr;
+    const row = rows[key];
+    return arr.concat([
+      {
+        started_at: row.step?.ts_epoch || 0,
+        finished_at: row.finished_at,
+        isFailed: row.isFailed,
+        original: row.step,
+        step_name: key,
+      },
+    ]);
+  }, []);
 
   const anyOpen = !!Object.keys(rows).find((key) => rows[key].isOpen);
 

@@ -69,10 +69,10 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               graph={graph}
               row={{ type: 'step', data: item.data }}
               grayed={isOpen}
-              finishedAt={item.rowObject.finished_at}
               duration={item.rowObject.duration}
               labelDuration={item.rowObject.duration}
               onOpen={onOpen}
+              isFailed={item.rowObject.isFailed}
               isLastAttempt
             />
           ) : (
@@ -84,7 +84,6 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
                 isLastAttempt={index === item.data.length - 1}
                 duration={task.duration || 0}
                 labelDuration={item.data[item.data.length - 1].duration}
-                finishedAt={task.finished_at}
                 startTimeOfFirstAttempt={graph.sortBy === 'duration' ? item.data[0].started_at || 0 : undefined}
               />
             ))
@@ -98,8 +97,8 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
 type BoxGraphicElementProps = {
   row: { type: 'step'; data: Step } | { type: 'task'; data: Task };
   graph: GraphState;
-  finishedAt: number | undefined;
   grayed?: boolean;
+  isFailed?: boolean;
   isLastAttempt: boolean;
   duration: number | null;
   labelDuration?: number | null;
@@ -110,8 +109,8 @@ type BoxGraphicElementProps = {
 export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   row,
   graph,
-  finishedAt,
   grayed,
+  isFailed,
   isLastAttempt,
   duration,
   labelDuration,
@@ -155,17 +154,25 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         {isLastAttempt && labelDuration && (
           <RowMetricLabel duration={labelDuration} labelPosition={labelPosition} data-testid="boxgraphic-label" />
         )}
-        <BoxGraphicLine
-          grayed={grayed}
-          state={row.type === 'task' && row.data.status ? row.data.status : finishedAt ? 'completed' : 'running'}
-          isLastAttempt={isLastAttempt}
-        />
+        <BoxGraphicLine grayed={grayed} state={getRowStatus(row, isFailed)} isLastAttempt={isLastAttempt} />
         <BoxGraphicMarkerStart />
         <BoxGraphicMarkerEnd />
       </BoxGraphic>
     </div>
   );
 };
+
+function getRowStatus(row: { type: 'step'; data: Step } | { type: 'task'; data: Task }, isFailed?: boolean): string {
+  if (row.type === 'step') {
+    return isFailed ? 'failed' : 'completed';
+  } else {
+    if (row.data.status) {
+      return row.data.status;
+    } else {
+      return row.data.finished_at ? 'completed' : 'running';
+    }
+  }
+}
 
 const RowMetricLabel: React.FC<{
   duration: null | number;
@@ -279,6 +286,8 @@ const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
   right: ${({ position }) => (position === 'left' ? '100%' : 'auto')};
   background: rgba(255, 255, 255, 0.8);
   padding: 0 10px;
+  top: 1px;
+  line-height: 26px;
   font-size: 12px;
   white-space: nowrap;
 `;

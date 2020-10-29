@@ -2,10 +2,11 @@ import React, { useRef } from 'react';
 import styled, { css } from 'styled-components';
 import useComponentSize, { ComponentSize } from '@rehooks/component-size';
 import useWindowSize from '../../../hooks/useWindowSize';
-import { Run, Step } from '../../../types';
+import { Run } from '../../../types';
 import { DAGStructureTree, DAGTreeNode, StepTree } from '../DAGUtils';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../../utils/routing';
+import { StepLineData } from '../../Timeline/useRowData';
 //
 // DAG Content section for when we have dag data
 //
@@ -14,13 +15,19 @@ type DAGContentProps = {
   showFullscreen: boolean;
   dagTree: DAGStructureTree;
   run: Run;
-  stepData: Step[] | null;
+  stepData: StepLineData[];
 };
 
 const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, stepData }) => {
   const _container = useRef(null);
   const ContainerSize = useComponentSize(_container);
   const WindowSize = useWindowSize();
+
+  const stepIds = stepData.map((item) => item.step_name);
+  const failedStepIds = stepData.reduce(
+    (arr: string[], item) => (item.isFailed ? arr.concat([item.step_name]) : arr),
+    [],
+  );
 
   return (
     <DAGRenderingContainer
@@ -39,7 +46,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, s
               key={index}
               isFirst={index === 0}
               isLast={index + 1 === dagTree.length}
-              stepIds={stepData ? stepData.map((item) => item.step_name) : []}
+              stepIds={[stepIds, failedStepIds]}
             />
           ))}
         </NormalItemContainer>
@@ -79,7 +86,7 @@ export const RenderStep: React.FC<{
   isFirst?: boolean;
   isLast?: boolean;
   inContainer?: boolean;
-  stepIds: string[];
+  stepIds: [string[], string[]];
   run: Run;
 }> = ({ item, isFirst, isLast, stepIds, run }) => {
   const history = useHistory();
@@ -142,15 +149,19 @@ export const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' 
 // Find out correct state for a step. Step doesn't have status field so we need to figure it out ourselves
 //
 
-export function stateOfStep(item: StepTree, stepIds: string[]): 'ok' | 'running' | 'warning' {
+type StepBoxStatus = 'ok' | 'running' | 'warning' | 'unknown';
+
+export function stateOfStep(item: StepTree, [stepIds, failedIds]: [string[], string[]]): StepBoxStatus {
   if (stepIds.indexOf(item.step_name) > -1) {
-    if (item.original && (stepIds.indexOf(item.original.next[0]) > -1 || item.original?.next.length === 0)) {
+    if (failedIds.indexOf(item.step_name) > -1) {
+      return 'warning';
+    } else if (item.original && (stepIds.indexOf(item.original.next[0]) > -1 || item.original?.next.length === 0)) {
       return 'ok';
     }
     return 'running';
   }
 
-  return 'warning';
+  return 'unknown';
 }
 
 //
@@ -188,7 +199,7 @@ const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; is
   }
 `;
 
-const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
+const NormalItem = styled.div<{ state: StepBoxStatus }>`
   border: 1px solid
     ${(p) =>
       p.state === 'ok'
@@ -196,7 +207,7 @@ const NormalItem = styled.div<{ state: 'ok' | 'running' | 'warning' }>`
         : p.state === 'running'
         ? p.theme.notification.warning.text
         : p.state === 'warning'
-        ? p.theme.notification.warning.text
+        ? p.theme.notification.danger.text
         : p.theme.color.border.mid};
   padding: 0.75rem 1.5rem;
 
