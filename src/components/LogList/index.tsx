@@ -63,16 +63,7 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
               rowRenderer={({ index, style, key, parent }) => (
                 <CellMeasurer cache={cache} columnIndex={0} key={key} rowIndex={index} parent={parent}>
                   {() => (
-                    <LogLine
-                      style={style}
-                      onClick={() => {
-                        copy(rows[index].line);
-                        addNotification({
-                          type: NotificationType.Info,
-                          message: t('task.line-copied'),
-                        });
-                      }}
-                    >
+                    <LogLine style={style}>
                       <LogLineNumber className="logline-number">{rows[index].row}</LogLineNumber>
                       <LogLineText>{rows[index].line}</LogLineText>
                     </LogLine>
@@ -137,7 +128,6 @@ const LogLine = styled.div`
   display: flex;
   transition: backgorund 0.15s;
   padding: 0.25rem 40px 0 1rem;
-  cursor: pointer;
 
   &:hover {
     background: rgba(0, 0, 0, 0.1);
