@@ -140,7 +140,7 @@ export const Notifications: React.FC = () => {
     setNotificationState((states) =>
       n.uuid && !states[n.uuid] ? { ...states, [n.uuid]: NotificationState.Visible } : states,
     );
-    setTimeout(() => onRemove(n), 1000);
+    setTimeout(() => onRemove(n), 3000);
   };
 
   return (
