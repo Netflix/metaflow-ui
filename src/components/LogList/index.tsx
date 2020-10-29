@@ -69,7 +69,7 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
                         copy(rows[index].line);
                         addNotification({
                           type: NotificationType.Info,
-                          message: t('task.copied'),
+                          message: t('task.line-copied'),
                         });
                       }}
                     >
@@ -111,7 +111,7 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
               copy(rows.map((item) => item.line).join('\n'));
               addNotification({
                 type: NotificationType.Info,
-                message: t('task.copied'),
+                message: t('task.all-logs-copied'),
               });
             }}
           >

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useState, useCallback, useContext } from 'react';
+import React, { useState, useCallback, useContext, useEffect } from 'react';
 import { v4 as generateIdentifier } from 'uuid';
 import styled from 'styled-components';
 import Icon, { SupportedIcons } from '../Icon';
@@ -62,7 +62,7 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const removeNotification = (notification: Notification) =>
-    setNotifications(notifications.filter((n) => n.uuid !== notification.uuid));
+    setNotifications((ns) => ns.filter((n) => n.uuid !== notification.uuid));
 
   const addNotification = (...notification: Notification[]) => {
     const notificationsToAdd = notification
@@ -95,27 +95,103 @@ export function useNotifications(): IContextProps {
   return { notifications, addNotification, removeNotification, clearNotifications };
 }
 
+// Notification lifecycle
+enum NotificationState {
+  // Mounted BUT not visible. Should turn to visible almost right away (Hidden)
+  Mounted,
+  // Normal visible (animating in)
+  Visible,
+  // Removing, but data still exists. (animating out)
+  Removed,
+}
+
 export const Notifications: React.FC = () => {
   const { notifications, removeNotification } = useNotifications();
+  // Lifecycle state of unique notifications
+  const [notificationState, setNotificationState] = useState<Record<string, NotificationState>>({});
+
+  const onRemove = (n: Notification) => {
+    // Set notification state as removed. This won't remove notification data yet, but will notify rendering to animate
+    // notification out.
+    setNotificationState((states) =>
+      n.uuid && states[n.uuid] === NotificationState.Visible
+        ? { ...states, [n.uuid]: NotificationState.Removed }
+        : states,
+    );
+    // After some time remove notification for real
+    setTimeout(() => {
+      removeNotification(n);
+      // Also remove state of notification since its not needed anymore
+      setNotificationState((states) =>
+        n.uuid && states[n.uuid]
+          ? Object.keys(states).reduce((obj: Record<string, NotificationState>, key) => {
+              if (key === n.uuid) {
+                return obj;
+              }
+              return { ...obj, [key]: states[key] };
+            }, {})
+          : states,
+      );
+    }, 300);
+  };
+
+  const onMountNotification = (n: Notification) => {
+    // Create notification lifecycle state when notification has mounted for first time.
+    setNotificationState((states) =>
+      n.uuid && !states[n.uuid] ? { ...states, [n.uuid]: NotificationState.Visible } : states,
+    );
+    setTimeout(() => onRemove(n), 1000);
+  };
 
   return (
     <NotificationsWrapper>
       {(notifications || []).map((notification: Notification) => {
-        const iconName = NotificationIcon[notification.type];
         return (
-          <NotificationWrapper
+          <NotificationRenderer
+            notification={notification}
+            removeNotification={removeNotification}
+            state={
+              notification.uuid && notificationState[notification.uuid]
+                ? notificationState[notification.uuid]
+                : NotificationState.Mounted
+            }
+            onMount={onMountNotification}
             key={notification.uuid}
-            type={notification.type}
-            onClick={() => {
-              removeNotification(notification);
-            }}
-          >
-            {iconName && <Icon name={iconName} size="md" />}
-            <NotificationMessage>{notification.message}</NotificationMessage>
-          </NotificationWrapper>
+          />
         );
       })}
     </NotificationsWrapper>
+  );
+};
+
+const NotificationRenderer: React.FC<{
+  notification: Notification;
+  removeNotification: (notification: Notification) => void;
+  onMount: (n: Notification) => void;
+  state: NotificationState;
+}> = ({ notification, removeNotification, onMount, state }) => {
+  const iconName = NotificationIcon[notification.type];
+
+  // Let's notify parent that notification is mounted for first time and is ready to appear
+  useEffect(() => {
+    // But lets do this only when state is unkown since this effect also triggers if index of notification
+    // changes.
+    if (state === NotificationState.Mounted) {
+      onMount(notification);
+    }
+  }, []);
+
+  return (
+    <NotificationWrapper
+      type={notification.type}
+      state={state || NotificationState.Mounted}
+      onClick={() => {
+        removeNotification(notification);
+      }}
+    >
+      {iconName && <Icon name={iconName} size="md" />}
+      <NotificationMessage>{notification.message}</NotificationMessage>
+    </NotificationWrapper>
   );
 };
 
@@ -130,7 +206,7 @@ const NotificationsWrapper = styled.div`
   max-width: 500px;
 `;
 
-const NotificationWrapper = styled.div<{ type: NotificationType }>`
+const NotificationWrapper = styled.div<{ type: NotificationType; state: NotificationState }>`
   display: flex;
   align-items: center;
   padding: ${(p) => p.theme.spacer.md}rem;
@@ -139,6 +215,8 @@ const NotificationWrapper = styled.div<{ type: NotificationType }>`
   background: ${({ theme, type }) => theme.notification[type].bg};
   color: ${({ theme, type }) => theme.notification[type].fg};
   cursor: pointer;
+  opacity: ${(p) => (p.state === NotificationState.Visible ? '1' : '0')};
+  transition: ${(p) => (p.state === NotificationState.Mounted ? 'none' : 'all 0.25s')};
 `;
 
 const NotificationMessage = styled.span`
