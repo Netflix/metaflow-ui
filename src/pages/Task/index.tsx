@@ -195,7 +195,7 @@ const Task: React.FC<TaskViewProps> = ({
           </TaskLoaderContainer>
         )}
 
-        {error && status !== 'Loading' && (
+        {error && status !== 'Loading' && status !== 'Ok' && (
           <Space>
             <GenericError icon="listItemNotFound" message={t('error.load-error')} />
           </Space>
@@ -394,14 +394,16 @@ function getDuration(tasks: ITask[], task: ITask) {
 }
 
 function getAttemptStartTime(allAttempts: ITask[] | null, task: ITask) {
-  if (!allAttempts) return task.ts_epoch;
+  const taskTimeStamp = task.started_at || task.ts_epoch;
+
+  if (!allAttempts) return taskTimeStamp;
 
   const index = allAttempts.indexOf(task);
-  if (index === 0 || task.ts_epoch !== allAttempts[0].ts_epoch) {
-    return task.ts_epoch;
+  if (index === 0 || taskTimeStamp !== (allAttempts[0].started_at || allAttempts[0].ts_epoch)) {
+    return taskTimeStamp;
   } else {
     const previous = allAttempts[index - 1];
-    return previous?.finished_at || task.ts_epoch;
+    return previous?.finished_at || taskTimeStamp;
   }
 }
 

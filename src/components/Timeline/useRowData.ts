@@ -225,16 +225,17 @@ export function createNewStepRowTasks(currentData: Record<string, Task[]>, item:
 export function timepointsOfTasks(tasks: Task[]): [number, number] {
   return tasks.reduce(
     (val, task) => {
+      const taskStartTime = task.started_at || task.ts_epoch;
       const highpoint: number =
         task.finished_at && task.finished_at > val[1]
           ? task.finished_at
-          : task.ts_epoch > val[1]
-          ? task.ts_epoch
+          : taskStartTime > val[1]
+          ? taskStartTime
           : val[1];
-      const lowpoint: number = task.ts_epoch < val[0] ? task.ts_epoch : val[0];
+      const lowpoint: number = taskStartTime < val[0] ? taskStartTime : val[0];
       return [lowpoint, highpoint];
     },
-    [tasks[0] ? tasks[0].ts_epoch : 0, 0],
+    [tasks[0] ? tasks[0].started_at || tasks[0].ts_epoch : 0, 0],
   );
 }
 
