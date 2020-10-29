@@ -6,7 +6,6 @@ import { ItemRow } from '../Structure';
 import Button from '../Button';
 import { useTranslation } from 'react-i18next';
 import useComponentSize from '@rehooks/component-size';
-import { ROW_HEIGHT } from '../Timeline/VirtualizedTimeline';
 import Icon from '../Icon';
 import copy from 'copy-to-clipboard';
 import { NotificationType, useNotifications } from '../Notifications';
@@ -17,7 +16,7 @@ type LogProps = {
   fixedHeight?: number;
 };
 
-// const ROW_HEIGHT = 20;
+const LIST_MAX_HEIGHT = 400;
 
 const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) => {
   const { addNotification } = useNotifications();
@@ -38,6 +37,10 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
       _list.current?.scrollToRow(rows.length - 1);
     }
   }, [rows, stickBottom]);
+
+  const totalHeight = rows.reduce((val, _item, index) => {
+    return val + (cache.getHeight(index, 0) || 0);
+  }, 0);
 
   return (
     <div style={{ flex: '1 1 0' }}>
@@ -64,11 +67,14 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
                       style={style}
                       onClick={() => {
                         copy(rows[index].line);
-                        addNotification({ type: NotificationType.Info, message: t('task.copied') });
+                        addNotification({
+                          type: NotificationType.Info,
+                          message: t('task.copied'),
+                        });
                       }}
                     >
                       <LogLineNumber className="logline-number">{rows[index].row}</LogLineNumber>
-                      <div>{rows[index].line}</div>
+                      <LogLineText>{rows[index].line}</LogLineText>
                     </LogLine>
                   )}
                 </CellMeasurer>
@@ -76,9 +82,9 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
               height={
                 fixedHeight
                   ? fixedHeight - (ItemRowSize.height || 16)
-                  : ROW_HEIGHT * rows.length < 400
-                  ? ROW_HEIGHT * rows.length
-                  : 400
+                  : totalHeight < LIST_MAX_HEIGHT
+                  ? totalHeight
+                  : LIST_MAX_HEIGHT
               }
               width={width}
             />
@@ -91,22 +97,26 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
       </LogListContainer>
 
       <ItemRow ref={_itemRow} margin="sm">
-        {onShowFullscreen && rows.length > 1 && (
+        {onShowFullscreen && (rows.length > 1 || totalHeight > LIST_MAX_HEIGHT) && (
           <>
             <Button onClick={onShowFullscreen} withIcon>
               <Icon name="maximize" />
               <span>{t('run.show-fullscreen')}</span>
             </Button>
-
-            <Button
-              onClick={() => {
-                copy(rows.map((item) => item.line).join('\n'));
-                addNotification({ type: NotificationType.Info, message: t('task.copied') });
-              }}
-            >
-              <span>{t('task.copy-logs-to-clipboard')}</span>
-            </Button>
           </>
+        )}
+        {onShowFullscreen && (
+          <Button
+            onClick={() => {
+              copy(rows.map((item) => item.line).join('\n'));
+              addNotification({
+                type: NotificationType.Info,
+                message: t('task.copied'),
+              });
+            }}
+          >
+            <span>{t('task.copy-logs-to-clipboard')}</span>
+          </Button>
         )}
       </ItemRow>
     </div>
@@ -141,6 +151,10 @@ const LogLineNumber = styled.div`
   padding-right: 0.5rem;
   min-width: 35px;
   user-select: none;
+`;
+
+const LogLineText = styled.div`
+  word-break: break-all;
 `;
 
 const ScrollToBottomButton = styled.div`
