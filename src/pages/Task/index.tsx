@@ -163,6 +163,11 @@ const Task: React.FC<TaskViewProps> = ({
     setTask(null);
   }, [stepName, taskId]);
 
+  useEffect(() => {
+    setStdout([]);
+    setStderr([]);
+  }, [attemptId]);
+
   const selectTask = (task: ITask) => {
     setTask(task);
   };
