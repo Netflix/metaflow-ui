@@ -32,6 +32,7 @@ const en = {
       user: 'User',
       tag: 'Tag',
       project: 'Project',
+      'user-tags': 'User tags',
 
       flow_id: 'Flow',
 
