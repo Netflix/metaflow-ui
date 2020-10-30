@@ -98,9 +98,20 @@ const RunHeader: React.FC<{
             <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
               <SmallText>{t('run.tags')}</SmallText>
               <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
-                {mergeTags(run).map((tag) => (
+                {run.system_tags.map((tag) => (
                   <TagNoWrap
                     key={tag}
+                    onClick={() => {
+                      history.push('/?_tags=' + encodeURIComponent(tag));
+                    }}
+                  >
+                    {tag}
+                  </TagNoWrap>
+                ))}
+                {(run.tags || []).map((tag) => (
+                  <TagNoWrap
+                    key={tag}
+                    dark
                     onClick={() => {
                       history.push('/?_tags=' + encodeURIComponent(tag));
                     }}
@@ -180,9 +191,8 @@ const ParameterValue = styled.td`
   color: ${(p) => p.theme.color.text.dark};
 `;
 
-const TagNoWrap = styled(Tag)`
+const TagNoWrap = styled(Tag)<{ dark?: boolean }>`
   white-space: nowrap;
-  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
 
   .icon {
     margin-left: ${(p) => p.theme.spacer.xs}rem;

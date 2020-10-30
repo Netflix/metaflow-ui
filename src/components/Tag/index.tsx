@@ -8,7 +8,6 @@ const ActiveTagCSS = css`
   background: ${(p) => p.theme.color.bg.blueLight};
   color: ${(p) => p.theme.color.text.blue};
   border-bottom: 1px solid ${(p) => darken(0.1, p.theme.color.bg.blueLight)};
-  padding: ${(p) => p.theme.spacer.sm}rem;
   font-weight: 400;
   box-shadow: none;
 
@@ -17,15 +16,26 @@ const ActiveTagCSS = css`
   }
 `;
 
-const Tag = styled.span<{ highlighted?: boolean }>`
+const DarkTagCSS = css`
+  background: ${(p) => p.theme.color.bg.dark};
+  color: ${(p) => p.theme.color.text.white};
+  box-shadow: none;
+  font-weight: 400;
+  &:hover {
+    background: ${(p) => darken(0.03, p.theme.color.bg.dark)};
+    color: ${(p) => p.theme.color.text.white};
+  }
+`;
+
+const Tag = styled.span<{ highlighted?: boolean; dark?: boolean }>`
   display: inline-flex;
   background: ${(p) => p.theme.color.bg.white};
   color: ${(p) => p.theme.color.text.mid};
-  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.sm}rem;
+  padding: 0.375rem ${(p) => p.theme.spacer.sm}rem;
   border-radius: 0.25rem;
   border: 0;
   font-size: 0.875rem;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 1rem;
   cursor: ${(p) => (p.onClick ? 'pointer' : 'default')};
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
@@ -35,6 +45,7 @@ const Tag = styled.span<{ highlighted?: boolean }>`
   }
 
   ${(p) => p.highlighted && ActiveTagCSS};
+  ${(p) => p.dark && DarkTagCSS}
 `;
 
 export default Tag;
