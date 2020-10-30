@@ -6,12 +6,11 @@ import { SearchResultModel } from '../../../hooks/useSearchField';
 import { RowDataAction } from '../../../components/Timeline/useRowData';
 import TaskListRow from './TaskListRow';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
+import { HEADER_SIZE_PX } from '../../../constants';
 
 //
 // Tasklist
 //
-
-const HEADER_SIZE_PX = 112;
 
 type Props = {
   rows: Row[];
