@@ -24,3 +24,5 @@ export const METAFLOW_SERVICE_WS =
 export const formatUrl = (base: string, path: string): string => `${base}/${path}`.replace(/([^:]\/)\/+/g, '$1');
 export const apiHttp = (path: string): string => formatUrl(METAFLOW_SERVICE, path);
 export const apiWs = (path: string): string => formatUrl(METAFLOW_SERVICE_WS, path);
+
+export const HEADER_SIZE_PX = 112;
