@@ -26,6 +26,7 @@ type Props = {
   queryParams: Record<string, string>;
   onOrderChange: (p: string) => void;
   handleGroupTitleClick: (title: string) => void;
+  updateListValue: (key: string, value: string) => void;
   hideLoadMore?: boolean;
   targetCount: number;
 };
@@ -36,6 +37,7 @@ const ResultGroup: React.FC<Props> = ({
   queryParams,
   onOrderChange,
   handleGroupTitleClick,
+  updateListValue,
   targetCount,
 }) => {
   const { t } = useTranslation();
@@ -87,7 +89,7 @@ const ResultGroup: React.FC<Props> = ({
                 stale={isStale}
                 onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}
               >
-                <TableRows r={r} params={queryParams} historyPush={history.push} />
+                <TableRows r={r} params={queryParams} historyPush={history.push} updateListValue={updateListValue} />
               </TR>
             );
           })}
@@ -117,10 +119,11 @@ type TableRowsProps = {
   r: IRun;
   params: Record<string, string>;
   historyPush: (url: string) => void;
+  updateListValue: (key: string, value: string) => void;
 };
 
 const TableRows: React.FC<TableRowsProps> = React.memo(
-  ({ r, params, historyPush }) => {
+  ({ r, params, historyPush, updateListValue }) => {
     const { t } = useTranslation();
     return (
       <>
@@ -134,9 +137,8 @@ const TableRows: React.FC<TableRowsProps> = React.memo(
         {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
         {/* USER NAME */}
         {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
-
-        <RunTags tags={r.tags || []} historyPush={historyPush} />
-
+        {/* USER TAGS */}
+        <RunTags tags={r.tags || []} updateListValue={updateListValue} />
         {/* STATUS */}
         <TD>
           <ForceNoBreakText>
@@ -273,14 +275,19 @@ const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = 
   const isSticky = shouldStick();
 
   return (
-    <thead
+    <StickyHeaderTHead
       className={isSticky ? 'sticky' : ''}
       style={isSticky ? { transform: `translateY(${fromTop() - 15}px)` } : {}}
     >
       {children}
-    </thead>
+    </StickyHeaderTHead>
   );
 };
+
+const StickyHeaderTHead = styled.thead`
+  position: relative;
+  z-index: 12;
+`;
 
 export default ResultGroup;
 
@@ -327,7 +334,12 @@ const IDFieldContainer = styled.div`
   font-weight: 500;
 `;
 
-const RunTags: React.FC<{ tags: string[]; historyPush: (url: string) => void }> = ({ tags, historyPush }) => {
+type RunTagsProps = {
+  tags: string[];
+  updateListValue: (key: string, value: string) => void;
+};
+
+const RunTags: React.FC<RunTagsProps> = ({ tags, updateListValue }) => {
   const [open, setOpen] = useState(false);
   if (!tags || tags.length === 0) return <TD />;
   return (
@@ -346,7 +358,7 @@ const RunTags: React.FC<{ tags: string[]; historyPush: (url: string) => void }> 
                 key={tag}
                 highlighted
                 onClick={() => {
-                  historyPush('/?_tags=' + tag);
+                  updateListValue('_tags', tag);
                 }}
               >
                 {tag}

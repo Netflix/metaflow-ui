@@ -267,6 +267,7 @@ const Home: React.FC = () => {
         runGroups={runGroups}
         handleOrderChange={handleOrderChange}
         handleGroupTitleClick={handleGroupTitleClick}
+        updateListValue={updateListValue}
         loadMore={handleLoadMore}
         targetCount={
           isGrouping(activeParams) ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page
