@@ -98,15 +98,17 @@ const ResultGroup: React.FC<Props> = ({
       </Table>
 
       {targetCount < rows.length && (
-        <Button
-          className="load-more"
-          onClick={() => handleGroupTitleClick(label)}
-          size="sm"
-          variant="primaryText"
-          textOnly
-        >
-          {t('home.show-all-runs')} <Icon name="arrowDown" rotate={-90} padLeft />
-        </Button>
+        <div style={{ position: 'relative', zIndex: -1 }}>
+          <Button
+            className="load-more"
+            onClick={() => handleGroupTitleClick(label)}
+            size="sm"
+            variant="primaryText"
+            textOnly
+          >
+            {t('home.show-all-runs')} <Icon name="arrowDown" rotate={-90} padLeft />
+          </Button>
+        </div>
       )}
     </StyledResultGroup>
   );
@@ -308,7 +310,7 @@ const RunTags: React.FC<RunTagsProps> = ({ tags, updateListValue }) => {
     >
       {tags.join(', ')}
       {open && (
-        <>
+        <TagPopOverContainer>
           <TagsPopover show>
             {tags.map((tag) => (
               <Tag
@@ -323,15 +325,18 @@ const RunTags: React.FC<RunTagsProps> = ({ tags, updateListValue }) => {
             ))}
           </TagsPopover>
           <ClickOverlay />
-        </>
+        </TagPopOverContainer>
       )}
     </TagsCell>
   );
 };
 
 const TagsCell = styled(TD)`
-  position: relative;
   color: ${(p) => p.theme.color.text.blue};
+`;
+
+const TagPopOverContainer = styled.div`
+  position: relative;
 `;
 
 const TagsPopover = styled(PopoverWrapper)`
