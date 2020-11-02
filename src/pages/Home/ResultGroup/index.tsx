@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,9 @@ import { Section } from '../../../components/Structure';
 import StatusField from '../../../components/Status';
 import Icon from '../../../components/Icon';
 import Button from '../../../components/Button';
+import Tag from '../../../components/Tag';
+import { PopoverWrapper } from '../../../components/Popover';
+import StickyHeader from './StickyHeader';
 
 type Props = {
   label: string;
@@ -24,6 +27,7 @@ type Props = {
   queryParams: Record<string, string>;
   onOrderChange: (p: string) => void;
   handleGroupTitleClick: (title: string) => void;
+  updateListValue: (key: string, value: string) => void;
   hideLoadMore?: boolean;
   targetCount: number;
 };
@@ -34,6 +38,7 @@ const ResultGroup: React.FC<Props> = ({
   queryParams,
   onOrderChange,
   handleGroupTitleClick,
+  updateListValue,
   targetCount,
 }) => {
   const { t } = useTranslation();
@@ -44,6 +49,7 @@ const ResultGroup: React.FC<Props> = ({
     { label: t('fields.id'), key: 'run_number' },
     { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
     { label: t('fields.user'), key: 'user_name', hidden: queryParams._group === 'user_name' },
+    { label: t('fields.user-tags'), key: 'tags' },
     { label: t('fields.status'), key: 'status' },
     { label: t('fields.started-at'), key: 'ts_epoch' },
     { label: t('fields.finished-at'), key: 'finished_at' },
@@ -84,7 +90,7 @@ const ResultGroup: React.FC<Props> = ({
                 stale={isStale}
                 onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}
               >
-                <TableRows r={r} params={queryParams} historyPush={history.push} />
+                <TableRows r={r} params={queryParams} historyPush={history.push} updateListValue={updateListValue} />
               </TR>
             );
           })}
@@ -92,15 +98,17 @@ const ResultGroup: React.FC<Props> = ({
       </Table>
 
       {targetCount < rows.length && (
-        <Button
-          className="load-more"
-          onClick={() => handleGroupTitleClick(label)}
-          size="sm"
-          variant="primaryText"
-          textOnly
-        >
-          {t('home.show-all-runs')} <Icon name="arrowDown" rotate={-90} padLeft />
-        </Button>
+        <div style={{ position: 'relative', zIndex: -1 }}>
+          <Button
+            className="load-more"
+            onClick={() => handleGroupTitleClick(label)}
+            size="sm"
+            variant="primaryText"
+            textOnly
+          >
+            {t('home.show-all-runs')} <Icon name="arrowDown" rotate={-90} padLeft />
+          </Button>
+        </div>
       )}
     </StyledResultGroup>
   );
@@ -114,27 +122,39 @@ type TableRowsProps = {
   r: IRun;
   params: Record<string, string>;
   historyPush: (url: string) => void;
+  updateListValue: (key: string, value: string) => void;
 };
 
 const TableRows: React.FC<TableRowsProps> = React.memo(
-  ({ r, params, historyPush }) => {
+  ({ r, params, historyPush, updateListValue }) => {
     const { t } = useTranslation();
     return (
       <>
+        {/* STATUS INDICATOR */}
         <StatusColorCell status={r.status} />
+        {/* ID */}
         <TD>
           <IDFieldContainer>{r.run_number}</IDFieldContainer>
         </TD>
+        {/* FLOW ID */}
         {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
+        {/* USER NAME */}
         {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
+        {/* USER TAGS */}
+        <RunTags tags={r.tags || []} updateListValue={updateListValue} />
+        {/* STATUS */}
         <TD>
           <ForceNoBreakText>
             <StatusField status={r.status} />
           </ForceNoBreakText>
         </TD>
+        {/* STARTED AT */}
         <TD>{getISOString(new Date(r.ts_epoch))}</TD>
+        {/* FINISHED AT */}
         <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
+        {/* DURATION */}
         <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
+        {/* TIMELINE LINK */}
         <TD className="timeline-link">
           <Link
             to={getPath.run(r.flow_id, r.run_number)}
@@ -228,45 +248,6 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   </>
 );
 
-const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = ({ tableRef, children }) => {
-  const scrollState = useState(0);
-
-  useEffect(() => {
-    const listener = () => {
-      scrollState[1](window.scrollY);
-    };
-
-    window.addEventListener('scroll', listener);
-
-    return () => window.removeEventListener('scroll', listener);
-  }, []); // eslint-disable-line
-
-  function shouldStick() {
-    const rect = tableRef.current?.getBoundingClientRect();
-
-    if (rect && rect.y < 112 && rect.y + rect.height > 210) {
-      return true;
-    }
-    return false;
-  }
-
-  function fromTop() {
-    const rect = tableRef.current?.getBoundingClientRect();
-    return rect ? -(rect.y - 112) : 0;
-  }
-
-  const isSticky = shouldStick();
-
-  return (
-    <thead
-      className={isSticky ? 'sticky' : ''}
-      style={isSticky ? { transform: `translateY(${fromTop() - 15}px)` } : {}}
-    >
-      {children}
-    </thead>
-  );
-};
-
 export default ResultGroup;
 
 export const StyledResultGroup = styled(Section)`
@@ -310,4 +291,71 @@ const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
 
 const IDFieldContainer = styled.div`
   font-weight: 500;
+`;
+
+type RunTagsProps = {
+  tags: string[];
+  updateListValue: (key: string, value: string) => void;
+};
+
+const RunTags: React.FC<RunTagsProps> = ({ tags, updateListValue }) => {
+  const [open, setOpen] = useState(false);
+  if (!tags || tags.length === 0) return <TD />;
+  return (
+    <TagsCell
+      onClick={(e) => {
+        e.stopPropagation();
+        setOpen(!open);
+      }}
+    >
+      {tags.join(', ')}
+      {open && (
+        <TagPopOverContainer>
+          <TagsPopover show>
+            {tags.map((tag) => (
+              <Tag
+                key={tag}
+                highlighted
+                onClick={() => {
+                  updateListValue('_tags', tag);
+                }}
+              >
+                {tag}
+              </Tag>
+            ))}
+          </TagsPopover>
+          <ClickOverlay />
+        </TagPopOverContainer>
+      )}
+    </TagsCell>
+  );
+};
+
+const TagsCell = styled(TD)`
+  color: ${(p) => p.theme.color.text.blue};
+`;
+
+const TagPopOverContainer = styled.div`
+  position: relative;
+`;
+
+const TagsPopover = styled(PopoverWrapper)`
+  top: 100%;
+  width: 200px;
+  display: flex;
+  flex-wrap: wrap;
+
+  ${Tag} {
+    margin-bottom: 0.25rem;
+    margin-right: 0.25rem;
+  }
+`;
+
+const ClickOverlay = styled.div`
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 10;
 `;

@@ -15,6 +15,7 @@ type Props = {
   params: Record<string, string>;
   handleOrderChange: (orderProps: string) => void;
   handleGroupTitleClick: (title: string) => void;
+  updateListValue: (key: string, value: string) => void;
   loadMore: () => void;
   targetCount: number;
 };
@@ -25,6 +26,7 @@ const HomeContentArea: React.FC<Props> = ({
   runGroups,
   handleOrderChange,
   handleGroupTitleClick,
+  updateListValue,
   params,
   loadMore,
   targetCount,
@@ -44,6 +46,7 @@ const HomeContentArea: React.FC<Props> = ({
               queryParams={params}
               onOrderChange={handleOrderChange}
               handleGroupTitleClick={handleGroupTitleClick}
+              updateListValue={updateListValue}
               targetCount={targetCount}
               resourceUrl="/runs"
               hideLoadMore={k === 'undefined'}
