@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +18,7 @@ import Icon from '../../../components/Icon';
 import Button from '../../../components/Button';
 import Tag from '../../../components/Tag';
 import { PopoverWrapper } from '../../../components/Popover';
+import StickyHeader from './StickyHeader';
 
 type Props = {
   label: string;
@@ -244,50 +245,6 @@ const TableHeader: React.FC<TableHeaderProps> = ({
     </TR>
   </>
 );
-
-const StickyHeader: React.FC<{ tableRef: React.RefObject<HTMLTableElement> }> = ({ tableRef, children }) => {
-  const scrollState = useState(0);
-
-  useEffect(() => {
-    const listener = () => {
-      scrollState[1](window.scrollY);
-    };
-
-    window.addEventListener('scroll', listener);
-
-    return () => window.removeEventListener('scroll', listener);
-  }, []); // eslint-disable-line
-
-  function shouldStick() {
-    const rect = tableRef.current?.getBoundingClientRect();
-
-    if (rect && rect.y < 112 && rect.y + rect.height > 210) {
-      return true;
-    }
-    return false;
-  }
-
-  function fromTop() {
-    const rect = tableRef.current?.getBoundingClientRect();
-    return rect ? -(rect.y - 112) : 0;
-  }
-
-  const isSticky = shouldStick();
-
-  return (
-    <StickyHeaderTHead
-      className={isSticky ? 'sticky' : ''}
-      style={isSticky ? { transform: `translateY(${fromTop() - 15}px)` } : {}}
-    >
-      {children}
-    </StickyHeaderTHead>
-  );
-};
-
-const StickyHeaderTHead = styled.thead`
-  position: relative;
-  z-index: 12;
-`;
 
 export default ResultGroup;
 
