@@ -50,6 +50,7 @@ const Home: React.FC = () => {
     _tags: StringParam,
     status: withDefault(StringParam, defaultParams.status),
     flow_id: StringParam,
+    user_name: StringParam,
   });
 
   const activeParams = cleanParams(qp);

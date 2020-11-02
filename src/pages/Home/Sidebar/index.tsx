@@ -92,15 +92,9 @@ const HomeSidebar: React.FC<Props> = ({
       </Section>
 
       <Section>
-        <FilterInput onSubmit={(v) => updateListValue('_tags', `user:${v}`)} sectionLabel={t('fields.user')} />
+        <FilterInput onSubmit={(v) => updateListValue('user_name', v)} sectionLabel={t('fields.user')} />
 
-        <TagParameterList
-          paramKey="_tags"
-          mapList={(xs) => xs.filter((x) => x.startsWith('user:')).map((x) => x.substr('user:'.length))}
-          mapValue={(x) => `user:${x}`}
-          updateList={updateListValue}
-          value={params._tags}
-        />
+        <TagParameterList paramKey="user_name" updateList={updateListValue} value={params.user_name} />
       </Section>
 
       <Section>
