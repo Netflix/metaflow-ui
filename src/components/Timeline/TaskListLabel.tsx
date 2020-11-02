@@ -31,12 +31,17 @@ const TaskListLabel: React.FC<Props> = (props) => {
           data-testid="tasklistlabel-link"
         >
           <RowLabelContent>
-            <RowLabelTaskName data-testid="tasklistlabel-text">
-              <RowStepName>{!grouped ? props.item.step_name : ''}</RowStepName>
-              <span>
+            <RowLabelTaskName
+              data-testid="tasklistlabel-text"
+              title={`${props.item.step_name}/${getTaskLabel(props.item)}`}
+            >
+              <RowStepName bigName={!grouped && props.item.step_name.length > 12}>
+                {!grouped ? props.item.step_name : ''}
+              </RowStepName>
+              <RowTaskName>
                 {!grouped ? '/' : ''}
                 {getTaskLabel(props.item)}
-              </span>
+              </RowTaskName>
             </RowLabelTaskName>
             <RowDuration data-testid="tasklistlabel-duration">
               {props.item.status === 'running'
@@ -51,7 +56,13 @@ const TaskListLabel: React.FC<Props> = (props) => {
         <StepLabel onClick={() => props.toggle()} data-testid="tasklistlabel-step-container">
           <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="tasklistlabel-open-icon" />
           <RowLabelContent type="step">
-            <RowStepName data-testid="tasklistlabel-text">{props.item.step_name}</RowStepName>
+            <RowStepName
+              data-testid="tasklistlabel-text"
+              bigName={props.item.step_name.length > 20}
+              title={props.item.step_name}
+            >
+              {props.item.step_name}
+            </RowStepName>
             <RowDuration data-testid="tasklistlabel-duration">
               {props.duration ? formatDuration(props.duration, 1) : null}
             </RowDuration>
@@ -101,8 +112,11 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   }
 `;
 
-const RowStepName = styled.span`
+const RowStepName = styled.span<{ bigName: boolean }>`
+  max-width: 60%;
+  min-width: ${(p) => (p.bigName ? '45%' : 'max-content')};
   overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const RowDuration = styled.span`
@@ -120,6 +134,12 @@ const RowLabelContent = styled.div<{ type?: 'step' }>`
 const RowLabelTaskName = styled.div`
   display: flex;
   overflow: hidden;
+`;
+
+const RowTaskName = styled.div`
+  overflow: hidden;
+
+  text-overflow: ellipsis;
 `;
 
 const StepLabel = styled.div`
