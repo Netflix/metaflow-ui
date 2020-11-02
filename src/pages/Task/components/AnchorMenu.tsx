@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { HEADER_SIZE_PX } from '../../../constants';
 
 //
 // Anchor menu
 //
-
-const HEADER_SIZE_PX = 112;
 
 type AnchorItem = {
   key: string;

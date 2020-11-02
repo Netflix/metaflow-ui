@@ -5,9 +5,6 @@ import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
 import { Run as IRun, Task as ITask, Artifact, Log } from '../../types';
 import useResource from '../../hooks/useResource';
-import { formatDuration } from '../../utils/format';
-import { getISOString } from '../../utils/date';
-import StatusField from '../../components/Status';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
 import { RowCounts, RowDataAction } from '../../components/Timeline/useRowData';
@@ -24,6 +21,7 @@ import SectionLoader from './components/SectionLoader';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import TimelineHeader from '../../components/Timeline/TimelineHeader';
 import { GraphHook } from '../../components/Timeline/useGraph';
+import TaskDetails from './components/TaskDetails';
 
 //
 // Task view
@@ -219,158 +217,132 @@ const Task: React.FC<TaskViewProps> = ({
         )}
 
         {fullscreen === null && status === 'Ok' && task && (
-          <AnchoredView
-            header={
-              status === 'Ok' && tasks && tasks.length > 0 ? (
-                <TabsHeading>
-                  {tasks.sort(sortTaskAttempts).map((item, index) => (
-                    <TabsHeadingItem key={index} onClick={() => selectTask(item)} active={item === task}>
-                      {t('task.attempt')} {index + 1}
-                    </TabsHeadingItem>
-                  ))}
-                </TabsHeading>
-              ) : undefined
-            }
-            sections={[
-              {
-                key: 'taskinfo',
-                order: 1,
-                noTitle: true,
-                label: t('task.task-info'),
-                component: (
-                  <>
-                    <InformationRow spaceless>
-                      <PropertyTable
-                        items={[task]}
-                        columns={[
-                          {
-                            label: t('fields.task-id') + ':',
-                            accessor: (item) => <ForceBreakText>{item.task_id}</ForceBreakText>,
-                          },
-                          { label: t('items.step') + ':', prop: 'step_name' },
-                          {
-                            label: t('fields.status') + ':',
-                            accessor: (_item) => <StatusField status={_item.status} />,
-                          },
-                          {
-                            label: t('fields.started-at') + ':',
-                            accessor: (item) =>
-                              item.ts_epoch ? getISOString(new Date(getAttemptStartTime(tasks, item))) : '',
-                          },
-                          {
-                            label: t('fields.finished-at') + ':',
-                            accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
-                          },
-                          {
-                            label: t('fields.duration') + ':',
-                            accessor: (item) => (tasks ? getDuration(tasks, item) : ''),
-                          },
-                        ]}
-                      />
-                    </InformationRow>
-                    {renderComponentsForSection('taskinfo')}
-                  </>
-                ),
-              },
-              {
-                key: 'stdout',
-                order: 2,
-                label: t('task.std-out'),
-                component: (
-                  <>
-                    <SectionLoader
-                      minHeight={110}
-                      status={statusOut}
-                      error={logStdError}
-                      customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
-                      component={
-                        <LogList
-                          rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
-                          onShowFullscreen={() => setFullscreen('stdout')}
-                        />
-                      }
-                    />
-                    {renderComponentsForSection('stdout')}
-                  </>
-                ),
-              },
-              {
-                key: 'stderr',
-                order: 3,
-                label: t('task.std-err'),
-                component: (
-                  <>
-                    <SectionLoader
-                      minHeight={110}
-                      status={statusErr}
-                      error={logErrError}
-                      customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
-                      component={
-                        <LogList
-                          rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
-                          onShowFullscreen={() => setFullscreen('stderr')}
-                        />
-                      }
-                    />
-
-                    {renderComponentsForSection('stderr')}
-                  </>
-                ),
-              },
-              {
-                key: 'artifacts',
-                order: 4,
-                label: t('task.artifacts'),
-                component: (
-                  <>
-                    <InformationRow spaceless>
+          <>
+            <AnchoredView
+              header={
+                status === 'Ok' && tasks && tasks.length > 0 ? (
+                  <TabsHeading>
+                    {tasks.sort(sortTaskAttempts).map((item, index) => (
+                      <TabsHeadingItem key={index} onClick={() => selectTask(item)} active={item === task}>
+                        {t('task.attempt')} {index + 1}
+                      </TabsHeadingItem>
+                    ))}
+                  </TabsHeading>
+                ) : undefined
+              }
+              sections={[
+                {
+                  key: 'taskinfo',
+                  order: 1,
+                  noTitle: true,
+                  label: t('task.task-info'),
+                  component: (
+                    <>
+                      <TaskDetails task={task} attempts={tasks || []} />
+                      {renderComponentsForSection('taskinfo')}
+                    </>
+                  ),
+                },
+                {
+                  key: 'stdout',
+                  order: 2,
+                  label: t('task.std-out'),
+                  component: (
+                    <>
                       <SectionLoader
-                        minHeight={200}
-                        status={artifactStatus}
-                        error={artifactError}
+                        minHeight={110}
+                        status={statusOut}
+                        error={logStdError}
+                        customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
                         component={
-                          <PropertyTable
-                            items={artifacts || []}
-                            columns={[
-                              { label: t('fields.artifact-name') + ':', prop: 'name' },
-                              {
-                                label: t('fields.location') + ':',
-                                accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
-                              },
-                              { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
-                              { label: t('fields.type') + ':', prop: 'type' },
-                              { label: t('fields.content-type') + ':', prop: 'content_type' },
-                            ]}
+                          <LogList
+                            rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
+                            onShowFullscreen={() => setFullscreen('stdout')}
                           />
                         }
                       />
-                    </InformationRow>
-                    {renderComponentsForSection('artifacts')}
-                  </>
-                ),
-              },
-              ...pluginSectionsCustom.map((sectionKey, index) => {
-                const sections = pluginComponentsForSection(sectionKey).filter((s) => s.component);
-                // Get order and label for each section
-                // Plugin that is registered first is the priority
-                const order = sections.find((s) => s.order)?.order;
-                const label = sections.find((s) => s.label)?.label;
-
-                return {
-                  key: sectionKey,
-                  order: order || 100 + index,
-                  label: label || sectionKey,
-                  component: (
-                    <>
-                      {sections.map(({ component: Component }, index) => {
-                        return Component ? <Component key={index} task={task} artifacts={artifacts} /> : null;
-                      })}
+                      {renderComponentsForSection('stdout')}
                     </>
                   ),
-                };
-              }),
-            ].sort((a, b) => a.order - b.order)}
-          />
+                },
+                {
+                  key: 'stderr',
+                  order: 3,
+                  label: t('task.std-err'),
+                  component: (
+                    <>
+                      <SectionLoader
+                        minHeight={110}
+                        status={statusErr}
+                        error={logErrError}
+                        customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
+                        component={
+                          <LogList
+                            rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
+                            onShowFullscreen={() => setFullscreen('stderr')}
+                          />
+                        }
+                      />
+
+                      {renderComponentsForSection('stderr')}
+                    </>
+                  ),
+                },
+                {
+                  key: 'artifacts',
+                  order: 4,
+                  label: t('task.artifacts'),
+                  component: (
+                    <>
+                      <InformationRow spaceless>
+                        <SectionLoader
+                          minHeight={200}
+                          status={artifactStatus}
+                          error={artifactError}
+                          component={
+                            <PropertyTable
+                              items={artifacts || []}
+                              columns={[
+                                { label: t('fields.artifact-name') + ':', prop: 'name' },
+                                {
+                                  label: t('fields.location') + ':',
+                                  accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
+                                },
+                                { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
+                                { label: t('fields.type') + ':', prop: 'type' },
+                                { label: t('fields.content-type') + ':', prop: 'content_type' },
+                              ]}
+                            />
+                          }
+                        />
+                      </InformationRow>
+                      {renderComponentsForSection('artifacts')}
+                    </>
+                  ),
+                },
+                ...pluginSectionsCustom.map((sectionKey, index) => {
+                  const sections = pluginComponentsForSection(sectionKey).filter((s) => s.component);
+                  // Get order and label for each section
+                  // Plugin that is registered first is the priority
+                  const order = sections.find((s) => s.order)?.order;
+                  const label = sections.find((s) => s.label)?.label;
+
+                  return {
+                    key: sectionKey,
+                    order: order || 100 + index,
+                    label: label || sectionKey,
+                    component: (
+                      <>
+                        {sections.map(({ component: Component }, index) => {
+                          return Component ? <Component key={index} task={task} artifacts={artifacts} /> : null;
+                        })}
+                      </>
+                    ),
+                  };
+                }),
+              ].sort((a, b) => a.order - b.order)}
+            />
+          </>
         )}
       </div>
       {fullscreen && (
@@ -383,38 +355,8 @@ const Task: React.FC<TaskViewProps> = ({
   );
 };
 
-//
-// Figure out the duration of current attempt of current task. There might be many attempts
-// and on those cases we need to calculate duration from previous attempt
-//
-function getDuration(tasks: ITask[], task: ITask) {
-  if (tasks && tasks.length > 1) {
-    const attemptBefore = tasks[tasks.indexOf(task) - 1];
-
-    if (attemptBefore && attemptBefore.duration && task.duration) {
-      return formatDuration(task.duration - attemptBefore.duration);
-    }
-  }
-  return task.duration ? formatDuration(task.duration) : '';
-}
-
-function getAttemptStartTime(allAttempts: ITask[] | null, task: ITask) {
-  const taskTimeStamp = task.started_at || task.ts_epoch;
-
-  if (!allAttempts) return taskTimeStamp;
-
-  const index = allAttempts.indexOf(task);
-  if (index === 0 || taskTimeStamp !== (allAttempts[0].started_at || allAttempts[0].ts_epoch)) {
-    return taskTimeStamp;
-  } else {
-    const previous = allAttempts[index - 1];
-    return previous?.finished_at || taskTimeStamp;
-  }
-}
-
 const TaskContainer = styled.div`
   display: flex;
-  padding: 0px 0 25px 0;
   width: 100%;
   flex-direction: column;
 `;
