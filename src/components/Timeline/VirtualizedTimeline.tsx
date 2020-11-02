@@ -405,38 +405,30 @@ export function makeVisibleRows(
   return visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
     const rowData = rowDataState[current.step_name];
     // If step row is open, add its tasks to the list.
-    if (rowData?.isOpen || !graph.group) {
-      let rowTasks = Object.keys(rowData.data).map((item) => ({
-        type: 'task' as const,
-        data: rowData.data[item],
-      }));
 
-      if (graph.statusFilter) {
-        rowTasks = rowTasks.filter(
-          (item) =>
-            (graph.statusFilter === 'failed' && item.data.length > 1) ||
-            item.data.find((task) => task.status === graph.statusFilter),
+    let rowTasks = Object.keys(rowData.data).map((item) => ({
+      type: 'task' as const,
+      data: rowData.data[item],
+    }));
+
+    if (graph.statusFilter) {
+      rowTasks = rowTasks.filter(
+        (item) =>
+          (graph.statusFilter === 'failed' && item.data.length > 1) ||
+          item.data.find((task) => task.status === graph.statusFilter),
+      );
+    }
+
+    if (shouldApplySearchFilter(searchResults)) {
+      rowTasks = rowTasks.filter((item) => matchIds.indexOf(item.data[0]?.task_id) > -1);
+    }
+
+    return rowTasks.length === 0
+      ? arr
+      : arr.concat(
+          graph.group ? [{ type: 'step' as const, data: current, rowObject: rowData }] : [],
+          rowData.isOpen ? (graph.group ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks) : [],
         );
-      }
-
-      if (shouldApplySearchFilter(searchResults)) {
-        rowTasks = rowTasks.filter((item) => matchIds.indexOf(item.data[0]?.task_id) > -1);
-      }
-
-      return rowTasks.length === 0
-        ? arr
-        : arr.concat(
-            graph.group ? [{ type: 'step' as const, data: current, rowObject: rowData }] : [],
-            graph.group ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks,
-          );
-    }
-
-    // If step row is closed, only add step (if grouping)
-    if (graph.group) {
-      return arr.concat([{ type: 'step', data: current, rowObject: rowData }]);
-    }
-
-    return [];
   }, []);
 }
 
