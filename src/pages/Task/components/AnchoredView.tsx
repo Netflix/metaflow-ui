@@ -18,10 +18,12 @@ type AnchoredViewSection = {
 
 type AnchoredViewProps = {
   header?: JSX.Element;
+  activeSection: string | null | undefined;
+  setSection: (value: string | null) => void;
   sections: AnchoredViewSection[];
 };
 
-const AnchoredView: React.FC<AnchoredViewProps> = ({ sections, header }) => {
+const AnchoredView: React.FC<AnchoredViewProps> = ({ sections, header, activeSection, setSection }) => {
   const [sectionPositions, setSectionPositions] = useState<Record<number, number>>({});
   const [lastSectionHeight, setLastSectionHeight] = useState(0);
 
@@ -68,6 +70,8 @@ const AnchoredView: React.FC<AnchoredViewProps> = ({ sections, header }) => {
       </TaskContent>
 
       <AnchorMenu
+        activeSection={activeSection}
+        setSection={setSection}
         items={sections.map(({ key, label }, index) => ({ key, label, position: sectionPositions[index] }))}
       />
     </AnchoredViewContainer>

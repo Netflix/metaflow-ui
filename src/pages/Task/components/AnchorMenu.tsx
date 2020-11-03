@@ -14,11 +14,14 @@ type AnchorItem = {
 
 type AnchorMenuProps = {
   items: AnchorItem[];
+  setSection: (value: string | null) => void;
+  activeSection: string | null | undefined;
 };
 
-const AnchorMenu: React.FC<AnchorMenuProps> = ({ items }) => {
+const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSection }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const [active, setActive] = useState<string | undefined>(items[0]?.key);
+  const [initialised, setInitialised] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,12 +31,26 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items }) => {
         .reverse()
         .find((item) => item.position && item.position < window.scrollY + HEADER_SIZE_PX + 20);
       setActive((current && current.key) || items[0]?.key);
+      setSection((current && current.key) || null);
     };
 
     window.addEventListener('scroll', listener);
 
     return () => window.removeEventListener('scroll', listener);
-  }, [items]);
+  }, [items, setSection]);
+
+  useEffect(() => {
+    if (activeSection) {
+      const s = items.find((item) => item.key === activeSection);
+
+      if (s && s.position && !initialised) {
+        window.scroll({ top: s.position - HEADER_SIZE_PX + 2 });
+        setInitialised(true);
+      }
+    } else {
+      setInitialised(true);
+    }
+  }, [items, activeSection, initialised]);
 
   const isScrolledOver = ref && ref.current && viewScrollTop + HEADER_SIZE_PX > ref.current.offsetTop;
 
@@ -52,6 +69,8 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items }) => {
             onClick={() => {
               if (position) {
                 window.scroll({ top: position - HEADER_SIZE_PX + 2 });
+                setSection(key);
+                setActive(key);
               }
             }}
           >

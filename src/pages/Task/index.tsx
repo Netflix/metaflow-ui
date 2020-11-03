@@ -22,6 +22,7 @@ import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import TimelineHeader from '../../components/Timeline/TimelineHeader';
 import { GraphHook } from '../../components/Timeline/useGraph';
 import TaskDetails from './components/TaskDetails';
+import { StringParam, useQueryParams } from 'use-query-params';
 
 //
 // Task view
@@ -59,6 +60,15 @@ const Task: React.FC<TaskViewProps> = ({
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const [task, setTask] = useState<ITask | null>(null);
+  const [qp, setQp] = useQueryParams({
+    section: StringParam,
+  });
+
+  if (qp.section) {
+    const section = 'section=' + qp.section;
+    paramsString = paramsString ? `${paramsString}&${section}` : section;
+  }
+
   const attemptId = task ? task.attempt_id : null;
   const isCurrentTaskFinished = task && (task.finished_at || task.status === 'failed');
 
@@ -219,6 +229,8 @@ const Task: React.FC<TaskViewProps> = ({
         {fullscreen === null && status === 'Ok' && task && (
           <>
             <AnchoredView
+              activeSection={qp.section}
+              setSection={(value: string | null) => setQp({ section: value })}
               header={
                 status === 'Ok' && tasks && tasks.length > 0 ? (
                   <TabsHeading>
@@ -358,6 +370,7 @@ const Task: React.FC<TaskViewProps> = ({
 const TaskContainer = styled.div`
   display: flex;
   width: 100%;
+  min-height: 1000px;
   flex-direction: column;
 `;
 
