@@ -68,11 +68,12 @@ function getAttemptStartTime(allAttempts: ITask[] | null, task: ITask) {
 
   if (!allAttempts) return taskTimeStamp;
 
-  const index = allAttempts.indexOf(task);
-  if (index === 0 || taskTimeStamp !== (allAttempts[0].started_at || allAttempts[0].ts_epoch)) {
+  const first = allAttempts.find((t) => t.attempt_id === 0);
+
+  if (task.attempt_id === 0 || (first && first.ts_epoch !== taskTimeStamp)) {
     return taskTimeStamp;
   } else {
-    const previous = allAttempts[index - 1];
+    const previous = allAttempts.find((t) => t.attempt_id === task.attempt_id - 1);
     return previous?.finished_at || taskTimeStamp;
   }
 }
