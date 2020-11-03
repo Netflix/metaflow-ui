@@ -46,8 +46,8 @@ const ResultGroup: React.FC<Props> = ({
   const [isInViewport, targetRef] = useIsInViewport();
 
   const cols = [
-    { label: t('fields.id'), key: 'run_number' },
     { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
+    { label: t('fields.id'), key: 'run_number' },
     { label: t('fields.user'), key: 'user_name', hidden: queryParams._group === 'user_name' },
     { label: t('fields.user-tags'), key: 'tags' },
     { label: t('fields.status'), key: 'status' },
@@ -132,12 +132,12 @@ const TableRows: React.FC<TableRowsProps> = React.memo(
       <>
         {/* STATUS INDICATOR */}
         <StatusColorCell status={r.status} />
+        {/* FLOW ID */}
+        {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
         {/* ID */}
         <TD>
           <IDFieldContainer>{r.run_number}</IDFieldContainer>
         </TD>
-        {/* FLOW ID */}
-        {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
         {/* USER NAME */}
         {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
         {/* USER TAGS */}

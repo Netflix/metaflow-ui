@@ -81,7 +81,6 @@ export default HomeContentArea;
 
 const Content = styled.div`
   padding-left: ${(p) => p.theme.layout.sidebarWidth + 1}rem;
-  padding-top: ${(p) => p.theme.spacer.md}rem;
   max-width: 100%;
   display: flex;
   flex-direction: column;
