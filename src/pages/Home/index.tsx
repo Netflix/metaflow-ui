@@ -71,7 +71,8 @@ const Home: React.FC = () => {
       setFakeParams(null);
       setPage(1);
     }
-    setQp({ [key]: value });
+
+    setQp({ [key]: value || null });
     localStorage.setItem(HOMEFILTERS_KEY, JSON.stringify({ ...qp, [key]: value }));
   };
 
@@ -287,7 +288,9 @@ const Home: React.FC = () => {
 //
 function cleanParams(qp: any): Record<string, string> {
   return Object.keys(qp).reduce((obj, key) => {
-    const value = qp[key];
+    // Unfortunately withDefault of use-query-params does not default in case of empty string so we need to
+    // assing default value for status here by hand
+    const value = key === 'status' && qp[key] === '' ? defaultParams.status : qp[key];
     if (value) {
       return { ...obj, [key]: value };
     }
