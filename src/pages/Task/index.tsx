@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
-import { Run as IRun, Task as ITask, Artifact, Log } from '../../types';
+import { Run as IRun, Task as ITask, Artifact, Log, AsyncStatus } from '../../types';
 import useResource from '../../hooks/useResource';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
@@ -22,6 +22,7 @@ import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import TimelineHeader from '../../components/Timeline/TimelineHeader';
 import { GraphHook } from '../../components/Timeline/useGraph';
 import TaskDetails from './components/TaskDetails';
+import { StringParam, useQueryParams } from 'use-query-params';
 
 //
 // Task view
@@ -59,7 +60,17 @@ const Task: React.FC<TaskViewProps> = ({
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
   const [task, setTask] = useState<ITask | null>(null);
-  const attemptId = task ? task.attempt_id : null;
+  const [qp, setQp] = useQueryParams({
+    section: StringParam,
+    attempt: StringParam,
+  });
+  // If section is in URL, lets add it to params string so we take it to task links
+  if (qp.section) {
+    const section = 'section=' + qp.section;
+    paramsString = paramsString ? `${paramsString}&${section}` : section;
+  }
+
+  const attemptId = qp.attempt || null;
   const isCurrentTaskFinished = task && (task.finished_at || task.status === 'failed');
 
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
@@ -72,19 +83,26 @@ const Task: React.FC<TaskViewProps> = ({
   const { data: artifacts, status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     queryParams: {
-      attempt_id: attemptId !== null ? attemptId.toString() : '',
+      attempt_id: attemptId !== null ? attemptId : '',
     },
     subscribeToEvents: true,
     initialData: [],
     pause: !isCurrentTaskFinished,
   });
 
-  // Task data will be array so we need to set one of them as active task when they arrive
+  // Task data will be array so we need to set one of them as active task when they arrive depending if we
+  // have attempt id parameter or not.
   useEffect(() => {
-    if (status === 'Ok' && task === null && tasks && tasks.length > 0) {
-      setTask(tasks.sort(sortTaskAttempts)[tasks.length - 1]);
+    const attempts = tasks || [];
+    if (shouldUpdateTask(status, task, attempts, attemptId)) {
+      if (typeof attemptId === 'string') {
+        const item = attempts.find((i) => i.attempt_id === parseInt(attemptId));
+        setTask(item || attempts.sort(sortTaskAttempts)[attempts.length - 1]);
+      } else {
+        setTask(attempts.sort(sortTaskAttempts)[attempts.length - 1]);
+      }
     }
-  }, [tasks, status, task]);
+  }, [tasks, status, task, attemptId]);
 
   //
   // Plugins helpers begin
@@ -127,7 +145,7 @@ const Task: React.FC<TaskViewProps> = ({
   const { status: statusOut, error: logStdError } = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
     queryParams: {
-      attempt_id: attemptId !== null ? attemptId.toString() : '',
+      attempt_id: attemptId !== null ? attemptId : '',
     },
     subscribeToEvents: true,
     initialData: [],
@@ -143,7 +161,7 @@ const Task: React.FC<TaskViewProps> = ({
   const { status: statusErr, error: logErrError } = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
     queryParams: {
-      attempt_id: attemptId !== null ? attemptId.toString() : '',
+      attempt_id: attemptId !== null ? attemptId : '',
     },
     subscribeToEvents: true,
     initialData: [],
@@ -165,10 +183,6 @@ const Task: React.FC<TaskViewProps> = ({
     setStdout([]);
     setStderr([]);
   }, [attemptId]);
-
-  const selectTask = (task: ITask) => {
-    setTask(task);
-  };
 
   return (
     <TaskContainer>
@@ -219,11 +233,19 @@ const Task: React.FC<TaskViewProps> = ({
         {fullscreen === null && status === 'Ok' && task && (
           <>
             <AnchoredView
+              activeSection={qp.section}
+              setSection={(value: string | null) => setQp({ section: value })}
               header={
                 status === 'Ok' && tasks && tasks.length > 0 ? (
                   <TabsHeading>
                     {tasks.sort(sortTaskAttempts).map((item, index) => (
-                      <TabsHeadingItem key={index} onClick={() => selectTask(item)} active={item === task}>
+                      <TabsHeadingItem
+                        key={index}
+                        onClick={() =>
+                          setQp({ attempt: typeof item.attempt_id === 'number' ? item.attempt_id.toString() : null })
+                        }
+                        active={item === task}
+                      >
                         {t('task.attempt')} {index + 1}
                       </TabsHeadingItem>
                     ))}
@@ -355,9 +377,19 @@ const Task: React.FC<TaskViewProps> = ({
   );
 };
 
+function shouldUpdateTask(status: AsyncStatus, task: ITask | null, tasks: ITask[], attempt: string | null): boolean {
+  return (
+    status === 'Ok' &&
+    (task === null || (typeof attempt === 'string' && task.attempt_id !== parseInt(attempt))) &&
+    tasks &&
+    tasks.length > 0
+  );
+}
+
 const TaskContainer = styled.div`
   display: flex;
   width: 100%;
+  min-height: 1000px;
   flex-direction: column;
 `;
 
