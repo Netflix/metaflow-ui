@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import styled, { css } from 'styled-components';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useIsInViewport from 'use-is-in-viewport';
 
@@ -10,7 +10,7 @@ import { getPath } from '../../../utils/routing';
 import { formatDuration } from '../../../utils/format';
 
 import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
-import { Text, ForceNoBreakText } from '../../../components/Text';
+import { ForceNoBreakText } from '../../../components/Text';
 import Label, { LabelType } from '../../../components/Label';
 import { Section } from '../../../components/Structure';
 import StatusField from '../../../components/Status';
@@ -49,11 +49,11 @@ const ResultGroup: React.FC<Props> = ({
     { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
     { label: t('fields.id'), key: 'run_number' },
     { label: t('fields.user'), key: 'user_name', hidden: queryParams._group === 'user_name' },
-    { label: t('fields.user-tags'), key: 'tags' },
-    { label: t('fields.status'), key: 'status' },
     { label: t('fields.started-at'), key: 'ts_epoch' },
     { label: t('fields.finished-at'), key: 'finished_at' },
     { label: t('fields.duration'), key: 'duration' },
+    { label: t('fields.status'), key: 'status' },
+    { label: t('fields.user-tags'), key: 'tags' },
   ].filter((item) => !item.hidden);
 
   const tableRef = useRef<HTMLTableElement>(null);
@@ -126,8 +126,7 @@ type TableRowsProps = {
 };
 
 const TableRows: React.FC<TableRowsProps> = React.memo(
-  ({ r, params, historyPush, updateListValue }) => {
-    const { t } = useTranslation();
+  ({ r, params, updateListValue }) => {
     return (
       <>
         {/* STATUS INDICATOR */}
@@ -140,34 +139,20 @@ const TableRows: React.FC<TableRowsProps> = React.memo(
         </TD>
         {/* USER NAME */}
         {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
-        {/* USER TAGS */}
-        <RunTags tags={r.tags || []} updateListValue={updateListValue} />
-        {/* STATUS */}
-        <TD>
-          <ForceNoBreakText>
-            <StatusField status={r.status} />
-          </ForceNoBreakText>
-        </TD>
         {/* STARTED AT */}
         <TD>{getISOString(new Date(r.ts_epoch))}</TD>
         {/* FINISHED AT */}
         <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
         {/* DURATION */}
         <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
-        {/* TIMELINE LINK */}
-        <TD className="timeline-link">
-          <Link
-            to={getPath.run(r.flow_id, r.run_number)}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              historyPush(getPath.run(r.flow_id, r.run_number));
-            }}
-          >
-            <Icon name="timeline" size="lg" padRight />
-            <Text>{t('run.timeline')}</Text>
-          </Link>
+        {/* STATUS */}
+        <TD>
+          <ForceNoBreakText>
+            <StatusField status={r.status} />
+          </ForceNoBreakText>
         </TD>
+        {/* USER TAGS */}
+        <RunTags tags={r.tags || []} updateListValue={updateListValue} />
       </>
     );
   },
@@ -289,9 +274,7 @@ const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
   }
 `;
 
-const IDFieldContainer = styled.div`
-  font-weight: 500;
-`;
+const IDFieldContainer = styled.div``;
 
 type RunTagsProps = {
   tags: string[];
