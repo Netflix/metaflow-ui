@@ -193,15 +193,30 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
             />
           </div>
         )}
-        {rows.length === 0 && status !== 'NotAsked' && status !== 'Loading' && (
-          <ItemRow justify="center" margin="lg">
-            <GenericError message={t('timeline.no-rows')} icon="listNotFound" />
-          </ItemRow>
-        )}
-        {rows.length === 0 && status === 'Loading' && (
-          <ItemRow justify="center" margin="lg">
-            <Spinner md />
-          </ItemRow>
+
+        {rows.length === 0 && (
+          <>
+            {status !== 'NotAsked' && status !== 'Loading' && searchField.results.status !== 'Loading' && (
+              <>
+                {searchField.results.status === 'NotAsked' && (
+                  <ItemRow justify="center" margin="lg">
+                    <GenericError message={t('timeline.no-rows')} icon="listNotFound" />
+                  </ItemRow>
+                )}
+                {searchField.results.status !== 'NotAsked' && (
+                  <ItemRow justify="center" margin="lg">
+                    <GenericError message={t('search.no-results')} icon="searchNotFound" />
+                  </ItemRow>
+                )}
+              </>
+            )}
+
+            {(status === 'Loading' || searchField.results.status === 'Loading') && (
+              <ItemRow justify="center" margin="lg">
+                <Spinner md />
+              </ItemRow>
+            )}
+          </>
         )}
       </VirtualizedTimelineSubContainer>
     </VirtualizedTimelineContainer>

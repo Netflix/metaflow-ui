@@ -143,7 +143,7 @@ const en = {
     },
 
     search: {
-      'no-results': 'No tasks found',
+      'no-results': 'No search results',
     },
 
     connection: {
