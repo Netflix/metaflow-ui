@@ -77,7 +77,7 @@ const RunHeader: React.FC<{
                 {
                   label: t('fields.user') + ':',
                   accessor: (item) => (
-                    <Link to={`/?_tags=user:${encodeURIComponent(item.user_name)}`}>{item.user_name}</Link>
+                    <Link to={`/?user_name=${encodeURIComponent(item.user_name)}`}>{item.user_name}</Link>
                   ),
                 },
                 { label: t('fields.project') + ':', prop: '?' },
@@ -123,7 +123,6 @@ const RunHeader: React.FC<{
                   onClick={() => {
                     history.push('/?_tags=' + encodeURIComponent(mergeTags(run).join(',')));
                   }}
-                  highlighted
                 >
                   {t('run.select-all-tags')} <Icon name="plus" size="xs" />
                 </TagNoWrap>
