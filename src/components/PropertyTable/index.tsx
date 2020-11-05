@@ -30,13 +30,13 @@ function PropertyTable<T>({ items, columns, scheme = 'normal' }: PropertyTablePr
 
       <tbody>
         {items.map((row, index) => (
-          <tr key={index} data-testid="property-table-row">
+          <PropertyTableRow key={index} data-testid="property-table-row">
             {columns.map((col, index) => (
               <PropertyTableRowItemContent key={index} scheme={scheme} data-testid="property-table-cell">
                 {col.accessor ? col.accessor(row) : col.prop ? row[col.prop] : ''}
               </PropertyTableRowItemContent>
             ))}
-          </tr>
+          </PropertyTableRow>
         ))}
       </tbody>
     </PropertyTableContainer>
@@ -54,17 +54,24 @@ const PropertyTableContainer = styled.table`
 const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme }>`
   background: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.dark : p.theme.color.bg.silver)};
   color: ${(p) => (p.scheme === 'dark' ? '#fff' : p.theme.color.text.dark)};
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
   font-size: 0.875rem;
   padding: 0.4rem 1rem;
   font-weight: 400;
   text-align: left;
 `;
 
+const PropertyTableRow = styled.tr`
+  &:not(:last-child) {
+    border-bottom: 2px solid #fff;
+  }
+`;
+
 const PropertyTableRowItemContent = styled.td<{ scheme: PropertyTableScheme }>`
   padding: 0.75rem 1rem;
   font-size: 14px;
-  border-right: 1px solid rgba(0, 0, 0, 0.06);
+  border-right: 2px solid #fff;
   background: ${(p) => (p.scheme === 'bright' ? '#fff' : 'transparent')};
 `;
 
