@@ -23,6 +23,7 @@ import TimelineHeader from '../../components/Timeline/TimelineHeader';
 import { GraphHook } from '../../components/Timeline/useGraph';
 import TaskDetails from './components/TaskDetails';
 import { StringParam, useQueryParams } from 'use-query-params';
+import { ItemRow } from '../../components/Structure';
 
 //
 // Task view
@@ -316,28 +317,36 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.artifacts'),
                   component: (
                     <>
-                      <InformationRow spaceless>
-                        <SectionLoader
-                          minHeight={200}
-                          status={artifactStatus}
-                          error={artifactError}
-                          component={
-                            <PropertyTable
-                              items={artifacts || []}
-                              columns={[
-                                { label: t('fields.artifact-name') + ':', prop: 'name' },
-                                {
-                                  label: t('fields.location') + ':',
-                                  accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
-                                },
-                                { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
-                                { label: t('fields.type') + ':', prop: 'type' },
-                                { label: t('fields.content-type') + ':', prop: 'content_type' },
-                              ]}
-                            />
-                          }
-                        />
-                      </InformationRow>
+                      <SectionLoader
+                        minHeight={200}
+                        status={artifactStatus}
+                        error={artifactError}
+                        component={
+                          <>
+                            <InformationRow spaceless>
+                              <PropertyTable
+                                items={artifacts || []}
+                                scheme="dark"
+                                columns={[
+                                  { label: t('fields.artifact-name') + ':', prop: 'name' },
+                                  {
+                                    label: t('fields.location') + ':',
+                                    accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
+                                  },
+                                  { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
+                                  { label: t('fields.type') + ':', prop: 'type' },
+                                  { label: t('fields.content-type') + ':', prop: 'content_type' },
+                                ]}
+                              />
+                            </InformationRow>
+                            {artifacts && artifacts.length === 0 && (
+                              <ItemRow margin="lg">
+                                <GenericError message={t('task.no-artifacts-found')} />
+                              </ItemRow>
+                            )}
+                          </>
+                        }
+                      />
                       {renderComponentsForSection('artifacts')}
                     </>
                   ),

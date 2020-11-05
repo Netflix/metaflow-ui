@@ -128,6 +128,7 @@ const en = {
       'copy-logs-to-clipboard': 'Copy logs to clipboard',
       'all-logs-copied': 'Full log copied to clipboard',
       'line-copied': 'Line copied to clipboard',
+      'no-artifacts-found': 'No artifacts found',
     },
 
     breadcrumb: {
