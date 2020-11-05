@@ -116,6 +116,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
           counts={counts}
           enableZoomControl
           isAnyGroupOpen={isAnyGroupOpen}
+          hasStepFilter={graph.stepFilter.length > 0}
+          resetSteps={() => setQueryParam({ steps: null })}
         />
         {rows.length > 0 && (
           <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
@@ -180,8 +182,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
             <TimelineFooter
               graph={graph}
               steps={steps}
-              hasStepFilter={graph.stepFilter.length > 0}
-              resetSteps={() => setQueryParam({ steps: null })}
               move={(value) => graphDispatch({ type: 'move', value: value })}
               updateHandle={(which, to) => {
                 if (which === 'left') {

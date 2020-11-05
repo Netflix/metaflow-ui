@@ -24,6 +24,8 @@ export type TimelineHeaderProps = {
   searchField: SearchFieldReturnType;
   counts: RowCounts;
   isAnyGroupOpen: boolean;
+  hasStepFilter?: boolean;
+  resetSteps?: () => void;
 };
 
 const TimelineHeader: React.FC<TimelineHeaderProps> = ({
@@ -37,6 +39,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   counts,
   enableZoomControl = false,
   isAnyGroupOpen,
+  hasStepFilter,
+  resetSteps,
 }) => {
   const { t } = useTranslation();
   const { graph, setQueryParam } = graphHook;
@@ -60,7 +64,14 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               status={searchField.results.status}
             />
           </THeaderLeftTop>
-          <THeaderLeftBottom></THeaderLeftBottom>
+          <THeaderLeftBottom>
+            {hasStepFilter && (
+              <Button withIcon="left" onClick={() => resetSteps && resetSteps()}>
+                <Icon name="timeline" size="md" padRight />
+                <span>{t('timeline.show-all-steps')}</span>
+              </Button>
+            )}
+          </THeaderLeftBottom>
         </THeaderLeft>
         <THeaderRight>
           <THeaderRightTop>
@@ -283,7 +294,16 @@ const THeaderLeftTop = styled.div`
   }
 `;
 
-const THeaderLeftBottom = styled.div``;
+const THeaderLeftBottom = styled.div`
+  padding-top: 0.75rem;
+  padding-right: 0.5rem;
+  button {
+    justify-content: center;
+    font-size: 0.875rem;
+    height: 28px;
+    width: 100%;
+  }
+`;
 
 const THeaderRight = styled.div`
   flex: 1;
