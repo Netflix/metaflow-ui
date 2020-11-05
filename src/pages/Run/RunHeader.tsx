@@ -62,37 +62,41 @@ const RunHeader: React.FC<{
     },
   ];
 
+  const columns = [
+    { label: t('fields.run-id') + ':', prop: 'run_number' as const },
+    { label: t('fields.status') + ':', accessor: (item: Run) => <StatusField status={item.status} /> },
+    {
+      label: t('fields.user') + ':',
+      accessor: (item: Run) => <Link to={`/?user_name=${encodeURIComponent(item.user_name)}`}>{item.user_name}</Link>,
+    },
+    {
+      label: t('fields.project') + ':',
+      accessor: (item: Run) => item.system_tags.find((tag) => tag.startsWith('project:')),
+      hidden: !run || !run.system_tags.find((tag) => tag.startsWith('project:')),
+    },
+    {
+      label: t('fields.language') + ':',
+      accessor: (item: Run) => item.system_tags.find((tag) => tag.startsWith('language:')),
+      hidden: !run || !run.system_tags.find((tag) => tag.startsWith('project:')),
+    },
+    { label: t('fields.started-at') + ':', accessor: (item: Run) => getISOString(new Date(item.ts_epoch)) },
+    {
+      label: t('fields.finished-at') + ':',
+      accessor: (item: Run) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
+    },
+    {
+      label: t('fields.duration') + ':',
+      accessor: (item: Run) => (item.finished_at ? formatDuration(item.finished_at - item.ts_epoch, 0) : ''),
+    },
+  ].filter((col) => !col.hidden);
+
   return (
     <RunHeaderContainer>
       {(!run || !run.run_number) && <InformationRow>{t('run.no-run-data')}</InformationRow>}
       {run && run.run_number && (
         <div>
           <InformationRow spaceless>
-            <PropertyTable
-              scheme="dark"
-              items={[run]}
-              columns={[
-                { label: t('fields.run-id') + ':', prop: 'run_number' as const },
-                { label: t('fields.status') + ':', accessor: (item) => <StatusField status={item.status} /> },
-                {
-                  label: t('fields.user') + ':',
-                  accessor: (item) => (
-                    <Link to={`/?user_name=${encodeURIComponent(item.user_name)}`}>{item.user_name}</Link>
-                  ),
-                },
-                { label: t('fields.project') + ':', prop: '?' },
-                { label: t('fields.language') + ':', prop: '?' },
-                { label: t('fields.started-at') + ':', accessor: (item) => getISOString(new Date(item.ts_epoch)) },
-                {
-                  label: t('fields.finished-at') + ':',
-                  accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
-                },
-                {
-                  label: t('fields.duration') + ':',
-                  accessor: (item) => (item.finished_at ? formatDuration(item.finished_at - item.ts_epoch, 0) : ''),
-                },
-              ]}
-            />
+            <PropertyTable scheme="dark" items={[run]} columns={columns} />
           </InformationRow>
           <InformationRow scrollOverflow={false}>
             <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
