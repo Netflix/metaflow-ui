@@ -31,9 +31,11 @@ const CollapseButton: React.FC<{
 
 const StyledCollapseButton = styled.div`
   position: relative;
-  margin-left: 0.25rem;
+  margin-right: 0.25rem;
   button {
-    height: 30px;
+    height: 36px;
+    width: 36px;
+    justify-content: center;
   }
 `;
 
