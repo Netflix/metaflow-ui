@@ -55,9 +55,9 @@ const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme }>`
   background: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.dark : p.theme.color.bg.silver)};
   color: ${(p) => (p.scheme === 'dark' ? '#fff' : p.theme.color.text.dark)};
   border-right: 1px solid rgba(0, 0, 0, 0.06);
-  font-size: 12px;
+  font-size: 0.875rem;
   padding: 0.4rem 1rem;
-  font-weight: 500;
+  font-weight: 400;
   text-align: left;
 `;
 
