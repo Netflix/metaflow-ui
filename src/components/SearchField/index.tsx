@@ -6,7 +6,7 @@ import { TextInputField } from '../Form';
 
 type SearchFieldProps = {
   initialValue?: string;
-  onUpdate: (str: string) => void;
+  onUpdate: (str: string, forceUpdate?: boolean) => void;
   status: AsyncStatus;
 };
 
@@ -28,6 +28,14 @@ const SearchField: React.FC<SearchFieldProps> = ({ initialValue, onUpdate, statu
       defaultValue={initialValue}
       placeholder={t('task.search-tasks')}
       onChange={(e) => e && setSearchTerm(e.target.value)}
+      onKeyPress={(e) => {
+        if (e.charCode === 13) {
+          const val = (e.target as any).value;
+          if (val) {
+            onUpdate(val, true);
+          }
+        }
+      }}
       loading={status === 'Loading'}
       horizontal
       async

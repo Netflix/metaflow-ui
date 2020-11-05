@@ -7,7 +7,7 @@ export type SearchResultModel = {
   status: 'NotAsked' | 'Loading' | 'Ok' | 'Error';
 };
 
-export type SearchFieldProps = { text: string; setText: (str: string) => void };
+export type SearchFieldProps = { text: string; setText: (str: string, forceUpdate?: boolean) => void };
 
 export type SearchFieldReturnType = {
   results: SearchResultModel;
@@ -30,6 +30,7 @@ export default function useSeachField(flowID: string, runNumber: string): Search
   const [searchResults, setSearchResults] = useState<SearchResultModel>(
     isCached(flowID, runNumber) ? cache.results : { result: [], status: 'NotAsked' },
   );
+  const [enabled, setEnabled] = useState(true);
 
   const updateSearchResults = (newResults: SearchResultModel) => {
     setSearchResults(newResults);
@@ -37,12 +38,22 @@ export default function useSeachField(flowID: string, runNumber: string): Search
     cache.id = flowID + runNumber;
   };
 
-  const updateText = (str: string) => {
+  const updateText = (str: string, forceUpdate?: boolean) => {
     setSearchValue(str);
     setQp({ q: str });
     cache.text = str;
     cache.id = flowID + runNumber;
+
+    if (forceUpdate) {
+      setEnabled(false);
+    }
   };
+
+  useEffect(() => {
+    if (!enabled) {
+      setEnabled(true);
+    }
+  }, [enabled]);
 
   useSearchRequest({
     url: `/flows/${flowID}/runs/${runNumber}/search`,
@@ -54,12 +65,13 @@ export default function useSeachField(flowID: string, runNumber: string): Search
         updateSearchResults({ result: [], status: 'Ok' });
       }
     },
-    onOpen: () => {
+    onConnecting: () => {
       updateSearchResults({ ...searchResults, status: 'Loading' });
     },
     onError: () => {
       updateSearchResults({ result: [], status: 'Error' });
     },
+    enabled: enabled,
   });
 
   useEffect(() => {

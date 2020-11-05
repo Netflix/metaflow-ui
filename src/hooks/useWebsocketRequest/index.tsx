@@ -18,6 +18,7 @@ export interface HookConfig<T> {
   url: string;
   queryParams?: Record<string, string>;
   enabled?: boolean;
+  onConnecting?: () => void;
   onOpen?: OnOpen;
   onUpdate: OnUpdate<T>;
   onClose?: OnClose;
@@ -28,6 +29,7 @@ export default function useWebsocketRequest<T>({
   url,
   queryParams = {},
   enabled = true,
+  onConnecting,
   onOpen,
   onUpdate,
   onClose,
@@ -65,6 +67,8 @@ export default function useWebsocketRequest<T>({
     if (enabled) {
       const q = new URLSearchParams(queryParams).toString();
       const target = `${url}${q ? '?' + q : ''}`;
+
+      onConnecting && onConnecting();
 
       conn = new ReconnectingWebSocket(apiWs(target), [], { maxRetries: 0 });
 
