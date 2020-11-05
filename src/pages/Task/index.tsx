@@ -72,7 +72,8 @@ const Task: React.FC<TaskViewProps> = ({
   }
 
   const attemptId = qp.attempt || null;
-  const isCurrentTaskFinished = task && (task.finished_at || task.status === 'failed');
+
+  const isCurrentTaskFinished = !!(task && task.finished_at);
 
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts`,
@@ -88,7 +89,7 @@ const Task: React.FC<TaskViewProps> = ({
     },
     subscribeToEvents: true,
     initialData: [],
-    pause: !isCurrentTaskFinished,
+    pause: !isCurrentTaskFinished || attemptId === null,
   });
 
   // Task data will be array so we need to set one of them as active task when they arrive depending if we
@@ -104,6 +105,12 @@ const Task: React.FC<TaskViewProps> = ({
       }
     }
   }, [tasks, status, task, attemptId]);
+
+  useEffect(() => {
+    if (task && task.attempt_id !== parseInt(attemptId || '')) {
+      setQp({ attempt: task.attempt_id.toString() });
+    }
+  }, [task]);
 
   //
   // Plugins helpers begin
@@ -152,7 +159,7 @@ const Task: React.FC<TaskViewProps> = ({
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: !isCurrentTaskFinished,
+    pause: !isCurrentTaskFinished || attemptId === null,
     onUpdate: (items) => {
       items && setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -168,7 +175,7 @@ const Task: React.FC<TaskViewProps> = ({
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: !isCurrentTaskFinished,
+    pause: !isCurrentTaskFinished || attemptId === null,
     onUpdate: (items) => {
       items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -387,12 +394,22 @@ const Task: React.FC<TaskViewProps> = ({
 };
 
 function shouldUpdateTask(status: AsyncStatus, task: ITask | null, tasks: ITask[], attempt: string | null): boolean {
-  return (
-    status === 'Ok' &&
+  // We need to have tasks to update view
+  if (status !== 'Ok') return false;
+  // If no attempt selected, do it now
+  if (!attempt && tasks && tasks.length > 0) {
+    return true;
+  }
+  // If attempt was changed
+  if (
     (task === null || (typeof attempt === 'string' && task.attempt_id !== parseInt(attempt))) &&
     tasks &&
     tasks.length > 0
-  );
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 const TaskContainer = styled.div`
