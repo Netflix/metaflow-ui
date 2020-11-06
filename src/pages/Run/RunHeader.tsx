@@ -86,7 +86,7 @@ const RunHeader: React.FC<{
     },
     {
       label: t('fields.duration') + ':',
-      accessor: (item: Run) => (item.finished_at ? formatDuration(item.finished_at - item.ts_epoch, 0) : ''),
+      accessor: (item: Run) => (item.duration ? formatDuration(item.duration, 0) : ''),
     },
   ].filter((col) => !col.hidden);
 
