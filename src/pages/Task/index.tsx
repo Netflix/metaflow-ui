@@ -110,7 +110,7 @@ const Task: React.FC<TaskViewProps> = ({
     if (task && task.attempt_id !== parseInt(attemptId || '')) {
       setQp({ attempt: task.attempt_id.toString() });
     }
-  }, [task]);
+  }, [task]); // eslint-disable-line
 
   //
   // Plugins helpers begin
