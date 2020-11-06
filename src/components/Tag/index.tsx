@@ -17,19 +17,11 @@ const ActiveTagCSS = css`
 `;
 
 const DarkTagCSS = css`
-  background: ${(p) => p.theme.color.bg.dark};
-  color: ${(p) => p.theme.color.text.white};
-  box-shadow: none;
-  font-weight: 400;
-  &:hover {
-    background: ${(p) => darken(0.03, p.theme.color.bg.dark)};
-    color: ${(p) => p.theme.color.text.white};
-  }
+  font-weight: 500;
 `;
 
 const Tag = styled.span<{ highlighted?: boolean; dark?: boolean }>`
   display: inline-flex;
-  background: ${(p) => p.theme.color.bg.white};
   color: ${(p) => p.theme.color.text.mid};
   padding: 0.375rem ${(p) => p.theme.spacer.sm}rem;
   border-radius: 0.25rem;
@@ -38,10 +30,12 @@ const Tag = styled.span<{ highlighted?: boolean; dark?: boolean }>`
   font-weight: 400;
   line-height: 1rem;
   cursor: ${(p) => (p.onClick ? 'pointer' : 'default')};
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
+
+  transition: all 0.15s;
 
   &:hover {
-    background: ${(p) => darken(0.03, p.theme.color.bg.white)};
+    background: ${(p) => p.theme.color.bg.white};
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
   }
 
   ${(p) => p.highlighted && ActiveTagCSS};

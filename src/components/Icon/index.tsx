@@ -28,6 +28,7 @@ import { ReactComponent as Success } from '../../assets/success.svg';
 import { ReactComponent as Info } from '../../assets/info.svg';
 import { ReactComponent as Warning } from '../../assets/warning.svg';
 import { ReactComponent as External } from '../../assets/external.svg';
+import { ReactComponent as Copy } from '../../assets/copy.svg';
 
 export type SupportedIcons = {
   timeline: FunctionComponent;
@@ -57,6 +58,7 @@ export type SupportedIcons = {
   info: FunctionComponent;
   warning: FunctionComponent;
   external: FunctionComponent;
+  copy: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -87,6 +89,7 @@ const icons: SupportedIcons = {
   info: Info,
   warning: Warning,
   external: External,
+  copy: Copy,
 };
 
 export type IconKeys = keyof SupportedIcons;

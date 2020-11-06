@@ -13,10 +13,20 @@ type Props = {
   noTitle?: boolean;
   // Notify absolute position to parent
   updatePosition: (offsetTop: number) => void;
+  // Action buttons for section
+  actionbar?: React.ReactNode;
   last?: boolean;
 };
 
-const TaskSection: React.FC<Props> = ({ label, sectionkey, updatePosition, noTitle, last = false, children }) => {
+const TaskSection: React.FC<Props> = ({
+  label,
+  sectionkey,
+  updatePosition,
+  noTitle,
+  last = false,
+  children,
+  actionbar,
+}) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,6 +41,7 @@ const TaskSection: React.FC<Props> = ({ label, sectionkey, updatePosition, noTit
       {!noTitle && (
         <TaskSectionHeader>
           <h3>{label}</h3>
+          <div>{actionbar && actionbar}</div>
         </TaskSectionHeader>
       )}
       <TaskSectionContent>{children}</TaskSectionContent>
@@ -44,6 +55,9 @@ const TaskSectionContainer = styled.div<{ last: boolean }>`
 const TaskSectionHeader = styled.div`
   padding: 0 1rem;
   border-bottom: ${(p) => p.theme.border.thinLight};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   h3 {
     margin: 0.75rem 0;

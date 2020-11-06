@@ -116,6 +116,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
           counts={counts}
           enableZoomControl
           isAnyGroupOpen={isAnyGroupOpen}
+          hasStepFilter={graph.stepFilter.length > 0}
+          resetSteps={() => setQueryParam({ steps: null })}
         />
         {rows.length > 0 && (
           <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
@@ -180,8 +182,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
             <TimelineFooter
               graph={graph}
               steps={steps}
-              hasStepFilter={graph.stepFilter.length > 0}
-              resetSteps={() => setQueryParam({ steps: null })}
               move={(value) => graphDispatch({ type: 'move', value: value })}
               updateHandle={(which, to) => {
                 if (which === 'left') {
@@ -193,15 +193,30 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
             />
           </div>
         )}
-        {rows.length === 0 && status !== 'NotAsked' && status !== 'Loading' && (
-          <ItemRow justify="center" margin="lg">
-            <GenericError message={t('timeline.no-rows')} icon="listNotFound" />
-          </ItemRow>
-        )}
-        {rows.length === 0 && status === 'Loading' && (
-          <ItemRow justify="center" margin="lg">
-            <Spinner md />
-          </ItemRow>
+
+        {rows.length === 0 && (
+          <>
+            {status !== 'NotAsked' && status !== 'Loading' && searchField.results.status !== 'Loading' && (
+              <>
+                {searchField.results.status === 'NotAsked' && (
+                  <ItemRow justify="center" margin="lg">
+                    <GenericError message={t('timeline.no-rows')} icon="listNotFound" />
+                  </ItemRow>
+                )}
+                {searchField.results.status !== 'NotAsked' && (
+                  <ItemRow justify="center" margin="lg">
+                    <GenericError message={t('search.no-results')} icon="searchNotFound" />
+                  </ItemRow>
+                )}
+              </>
+            )}
+
+            {(status === 'Loading' || searchField.results.status === 'Loading') && (
+              <ItemRow justify="center" margin="lg">
+                <Spinner md />
+              </ItemRow>
+            )}
+          </>
         )}
       </VirtualizedTimelineSubContainer>
     </VirtualizedTimelineContainer>
@@ -427,7 +442,11 @@ export function makeVisibleRows(
       ? arr
       : arr.concat(
           graph.group ? [{ type: 'step' as const, data: current, rowObject: rowData }] : [],
-          rowData.isOpen ? (graph.group ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks) : [],
+          rowData.isOpen || !graph.group
+            ? graph.group
+              ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir))
+              : rowTasks
+            : [],
         );
   }, []);
 }

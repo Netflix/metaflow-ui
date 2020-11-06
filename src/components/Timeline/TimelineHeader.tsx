@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { GraphState, GraphSortBy, GraphHook } from './useGraph';
 import { CheckboxField, DropdownField } from '../Form';
 import { ItemRow } from '../Structure';
@@ -24,6 +24,8 @@ export type TimelineHeaderProps = {
   searchField: SearchFieldReturnType;
   counts: RowCounts;
   isAnyGroupOpen: boolean;
+  hasStepFilter?: boolean;
+  resetSteps?: () => void;
 };
 
 const TimelineHeader: React.FC<TimelineHeaderProps> = ({
@@ -37,9 +39,10 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   counts,
   enableZoomControl = false,
   isAnyGroupOpen,
+  hasStepFilter,
+  resetSteps,
 }) => {
   const { t } = useTranslation();
-  const [customFiltersOpen, setCustomFiltersOpen] = useState(false);
   const { graph, setQueryParam } = graphHook;
   const activeMode = getMode(graph);
 
@@ -47,20 +50,84 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
     <TimelineHeaderContainer>
       <THeader>
         <THeaderLeft>
-          <SearchField
-            initialValue={searchField.fieldProps.text}
-            onUpdate={searchField.fieldProps.setText}
-            status={searchField.results.status}
-          />
-          <CollapseButton
-            disabled={!graph.group}
-            expand={() => expandAll()}
-            collapse={() => collapseAll()}
-            isAnyGroupOpen={isAnyGroupOpen}
-          />
+          <THeaderLeftTop>
+            <CollapseButton
+              disabled={!graph.group}
+              expand={() => expandAll()}
+              collapse={() => collapseAll()}
+              isAnyGroupOpen={isAnyGroupOpen}
+            />
+
+            <SearchField
+              initialValue={searchField.fieldProps.text}
+              onUpdate={searchField.fieldProps.setText}
+              status={searchField.results.status}
+            />
+          </THeaderLeftTop>
+          <THeaderLeftBottom>
+            {hasStepFilter && (
+              <Button withIcon="left" onClick={() => resetSteps && resetSteps()}>
+                <Icon name="timeline" size="md" padRight />
+                <span>{t('timeline.show-all-steps')}</span>
+              </Button>
+            )}
+          </THeaderLeftBottom>
         </THeaderLeft>
         <THeaderRight>
-          <AdvancedFiltersOverlay show={customFiltersOpen}>
+          <THeaderRightTop>
+            <ModeContainer>
+              <ButtonGroup big>
+                <Button active={activeMode === 'overview'} onClick={() => setMode('overview')}>
+                  {t('run.overview')}
+                </Button>
+                <Button active={activeMode === 'monitoring'} onClick={() => setMode('monitoring')}>
+                  {t('run.monitoring')}
+                </Button>
+                <Button active={activeMode === 'error-tracker'} onClick={() => setMode('error-tracker')}>
+                  {t('run.error-tracker')}
+                </Button>
+                <Button active={activeMode === 'custom'} onClick={() => null}>
+                  {t('run.custom')}
+                </Button>
+              </ButtonGroup>
+            </ModeContainer>
+
+            {enableZoomControl && setFullscreen && (
+              <ItemRow noWidth>
+                <Text>{t('timeline.zoom')}:</Text>
+                <ButtonGroup>
+                  <Button
+                    size="sm"
+                    onClick={() => graphHook.dispatch({ type: 'resetZoom' })}
+                    active={!graph.controlled}
+                    data-testid="timeline-header-zoom-fit"
+                  >
+                    {t('timeline.fit-to-screen')}
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => graphHook.dispatch({ type: 'zoomOut' })}
+                    data-testid="timeline-header-zoom-out"
+                  >
+                    <Icon name="minus" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => graphHook.dispatch({ type: 'zoomIn' })}
+                    data-testid="timeline-header-zoom-in"
+                  >
+                    <Icon name="plus" />
+                  </Button>
+                </ButtonGroup>
+                {!isFullscreen && (
+                  <Button onClick={() => setFullscreen()} iconOnly>
+                    <Icon name="maximize" />
+                  </Button>
+                )}
+              </ItemRow>
+            )}
+          </THeaderRightTop>
+          <THeaderRightBottom>
             <CustomFilters
               updateSortBy={(by) => setQueryParam({ order: by }, 'replaceIn')}
               updateSortDir={() => setQueryParam({ direction: graph.sortDir === 'asc' ? 'desc' : 'asc' }, 'replaceIn')}
@@ -68,69 +135,8 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               updateGroupBy={(group) => setQueryParam({ group: group ? 'true' : 'false' }, 'replaceIn')}
               graph={graph}
               counts={counts}
-              onClose={() => setCustomFiltersOpen(false)}
             />
-          </AdvancedFiltersOverlay>
-
-          <ModeContainer>
-            <ButtonGroup>
-              <Button active={activeMode === 'overview'} onClick={() => setMode('overview')}>
-                {t('run.overview')}
-              </Button>
-              <Button active={activeMode === 'monitoring'} onClick={() => setMode('monitoring')}>
-                {t('run.monitoring')}
-              </Button>
-              <Button active={activeMode === 'error-tracker'} onClick={() => setMode('error-tracker')}>
-                {t('run.error-tracker')}
-              </Button>
-              <Button active={activeMode === 'custom'} onClick={() => setCustomFiltersOpen(true)}>
-                {t('run.custom')}
-              </Button>
-            </ButtonGroup>
-            <SettingsDescription>
-              {t('timeline.order-tasks-by')}{' '}
-              <b>
-                {t(`timeline.${graph.sortBy}`)} ({t(`timeline.${graph.sortDir}`)})
-              </b>
-              , {t('timeline.status')}: <b>{graph.statusFilter || t('run.filter-all')}</b>,{' '}
-              {t('timeline.tasks-visibility')}: <b>{graph.group ? t('timeline.grouped') : t('timeline.not-grouped')}</b>
-            </SettingsDescription>
-          </ModeContainer>
-
-          {enableZoomControl && setFullscreen && (
-            <ItemRow noWidth>
-              <Text>{t('timeline.zoom')}:</Text>
-              <ButtonGroup>
-                <Button
-                  size="sm"
-                  onClick={() => graphHook.dispatch({ type: 'resetZoom' })}
-                  active={!graph.controlled}
-                  data-testid="timeline-header-zoom-fit"
-                >
-                  {t('timeline.fit-to-screen')}
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => graphHook.dispatch({ type: 'zoomOut' })}
-                  data-testid="timeline-header-zoom-out"
-                >
-                  <Icon name="minus" />
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => graphHook.dispatch({ type: 'zoomIn' })}
-                  data-testid="timeline-header-zoom-in"
-                >
-                  <Icon name="plus" />
-                </Button>
-              </ButtonGroup>
-              {!isFullscreen && (
-                <Button onClick={() => setFullscreen()} iconOnly>
-                  <Icon name="maximize" />
-                </Button>
-              )}
-            </ItemRow>
-          )}
+          </THeaderRightBottom>
         </THeaderRight>
       </THeader>
     </TimelineHeaderContainer>
@@ -160,7 +166,6 @@ export type CustomFiltersProps = {
   updateGroupBy: (group: boolean) => void;
   graph: GraphState;
   counts: RowCounts;
-  onClose: () => void;
 };
 
 const CustomFilters: React.FC<CustomFiltersProps> = ({
@@ -170,7 +175,6 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
   updateGroupBy,
   graph,
   counts,
-  onClose,
 }) => {
   const { t } = useTranslation();
   const SortButtonDef = (label: string, property: GraphSortBy) => (
@@ -195,25 +199,26 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
         </ButtonGroup>
 
         <TimelineHeaderItem pad="sm">
-          <Text>{t('fields.status')}:</Text>
-          <DropdownField
-            horizontal
-            onChange={(e) => {
-              // setStatus(e?.target.value || 'all');
-              if (e?.target.value === 'all') {
-                updateStatusFilter(null);
-              } else {
-                updateStatusFilter(e?.target.value || null);
-              }
-            }}
-            value={graph.statusFilter || 'all'}
-            options={[
-              ['all', t('run.filter-all') + ` (${counts.all})`],
-              ['completed', t('run.filter-completed') + ` (${counts.completed})`],
-              ['running', t('run.filter-running') + ` (${counts.running})`],
-              ['failed', t('run.filter-failed') + ` (${counts.failed})`],
-            ]}
-          />
+          <StatusContainer>
+            <Text>{t('fields.status')}:</Text>
+            <DropdownField
+              horizontal
+              onChange={(e) => {
+                if (e?.target.value === 'all') {
+                  updateStatusFilter(null);
+                } else {
+                  updateStatusFilter(e?.target.value || null);
+                }
+              }}
+              value={graph.statusFilter || 'all'}
+              options={[
+                ['all', t('run.filter-all') + ` (${counts.all})`],
+                ['completed', t('run.filter-completed') + ` (${counts.completed})`],
+                ['running', t('run.filter-running') + ` (${counts.running})`],
+                ['failed', t('run.filter-failed') + ` (${counts.failed})`],
+              ]}
+            />
+          </StatusContainer>
           <div style={{ marginLeft: '1rem' }}>
             <CheckboxField
               label={t('timeline.group-by-step')}
@@ -224,9 +229,6 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
           </div>
         </TimelineHeaderItem>
       </ItemRow>
-      <div onClick={onClose} style={{ cursor: 'pointer' }}>
-        <Icon size="lg" name="times" />
-      </div>
     </ItemRow>
   );
 };
@@ -273,24 +275,43 @@ const THeader = styled.div`
   }
 `;
 
-const THeaderLeft = styled.div`
+const THeaderLeft = styled.div``;
+
+const THeaderLeftTop = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: ${(p) => `${p.theme.spacer.md}rem ${p.theme.spacer.sm}rem ${p.theme.spacer.md}rem 0`};
+
+  padding: ${(p) => `0 ${p.theme.spacer.sm}rem 0 0`};
   width: 245px;
-  border-right: 1px solid ${(p) => p.theme.color.border.light};
 
   .field-text {
     font-size: 12px;
+    width: 100%;
+    height: 36px;
+
+    input {
+      height: 36px;
+    }
+  }
+`;
+
+const StatusContainer = styled.div`
+  display: flex;
+  min-width: 180px;
+`;
+
+const THeaderLeftBottom = styled.div`
+  padding-top: 0.75rem;
+  padding-right: 0.5rem;
+  button {
+    justify-content: center;
+    font-size: 0.875rem;
+    height: 28px;
     width: 100%;
   }
 `;
 
 const THeaderRight = styled.div`
-  padding-left: ${(p) => p.theme.spacer.md}rem;
-  position: relative;
-  display: flex;
   flex: 1;
   justify-content: space-between;
 `;
@@ -299,30 +320,44 @@ const TimelineHeaderItem = styled(ItemRow)`
   margin: 0 1rem;
 `;
 
-const AdvancedFiltersOverlay = styled.div<{ show: boolean }>`
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: #fff;
+const THeaderRightTop = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+`;
 
-  pointer-events: ${(p) => (p.show ? 'all' : 'none')};
-  opacity: ${(p) => (p.show ? 1 : 0)};
-  transition: 0.15s opacity;
+const THeaderRightBottom = styled.div`
+  height: 38px;
   padding-left: 1rem;
+  background: ${(p) => p.theme.color.bg.light};
+  border: 1px solid #e9e9e9;
+  margin: 0.25rem 0;
 `;
 
 const ModeContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-`;
 
-const SettingsDescription = styled.div`
-  line-height: 22px;
-  font-size: 13px;
-  padding-top: 8px;
+  .button {
+    position: relative;
+  }
+
+  .button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: all 0.15s;
+    width: 0;
+    height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 10px solid #f6f6f6;
+    top: 100%;
+  }
 `;
 
 export default TimelineHeader;

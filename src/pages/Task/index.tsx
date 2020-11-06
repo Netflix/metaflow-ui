@@ -11,7 +11,7 @@ import { RowCounts, RowDataAction } from '../../components/Timeline/useRowData';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import { ForceBreakText } from '../../components/Text';
-import LogList from '../../components/LogList';
+import LogList, { LogActionBar } from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import Spinner from '../../components/Spinner';
@@ -23,6 +23,7 @@ import TimelineHeader from '../../components/Timeline/TimelineHeader';
 import { GraphHook } from '../../components/Timeline/useGraph';
 import TaskDetails from './components/TaskDetails';
 import { StringParam, useQueryParams } from 'use-query-params';
+import { ItemRow } from '../../components/Structure';
 
 //
 // Task view
@@ -71,7 +72,8 @@ const Task: React.FC<TaskViewProps> = ({
   }
 
   const attemptId = qp.attempt || null;
-  const isCurrentTaskFinished = task && (task.finished_at || task.status === 'failed');
+
+  const isCurrentTaskFinished = !!(task && task.finished_at);
 
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts`,
@@ -80,14 +82,19 @@ const Task: React.FC<TaskViewProps> = ({
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
-  const { data: artifacts, status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
+  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
+  const { status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     queryParams: {
       attempt_id: attemptId !== null ? attemptId : '',
     },
     subscribeToEvents: true,
+    fullyDisableCache: true,
     initialData: [],
-    pause: !isCurrentTaskFinished,
+    onUpdate: (data) => {
+      data && setArtifacts(data);
+    },
+    pause: !isCurrentTaskFinished || attemptId === null,
   });
 
   // Task data will be array so we need to set one of them as active task when they arrive depending if we
@@ -103,6 +110,12 @@ const Task: React.FC<TaskViewProps> = ({
       }
     }
   }, [tasks, status, task, attemptId]);
+
+  useEffect(() => {
+    if (task && task.attempt_id !== parseInt(attemptId || '')) {
+      setQp({ attempt: task.attempt_id.toString() });
+    }
+  }, [task]); // eslint-disable-line
 
   //
   // Plugins helpers begin
@@ -151,7 +164,7 @@ const Task: React.FC<TaskViewProps> = ({
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: !isCurrentTaskFinished,
+    pause: !isCurrentTaskFinished || attemptId === null,
     onUpdate: (items) => {
       items && setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -167,7 +180,7 @@ const Task: React.FC<TaskViewProps> = ({
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: !isCurrentTaskFinished,
+    pause: !isCurrentTaskFinished || attemptId === null,
     onUpdate: (items) => {
       items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -176,12 +189,14 @@ const Task: React.FC<TaskViewProps> = ({
   useEffect(() => {
     setStdout([]);
     setStderr([]);
+    setArtifacts([]);
     setTask(null);
   }, [stepName, taskId]);
 
   useEffect(() => {
     setStdout([]);
     setStderr([]);
+    setArtifacts([]);
   }, [attemptId]);
 
   return (
@@ -269,6 +284,7 @@ const Task: React.FC<TaskViewProps> = ({
                   key: 'stdout',
                   order: 2,
                   label: t('task.std-out'),
+                  actionbar: <LogActionBar data={stdout} setFullscreen={() => setFullscreen('stdout')} />,
                   component: (
                     <>
                       <SectionLoader
@@ -291,6 +307,7 @@ const Task: React.FC<TaskViewProps> = ({
                   key: 'stderr',
                   order: 3,
                   label: t('task.std-err'),
+                  actionbar: <LogActionBar data={stderr} setFullscreen={() => setFullscreen('stderr')} />,
                   component: (
                     <>
                       <SectionLoader
@@ -316,28 +333,36 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.artifacts'),
                   component: (
                     <>
-                      <InformationRow spaceless>
-                        <SectionLoader
-                          minHeight={200}
-                          status={artifactStatus}
-                          error={artifactError}
-                          component={
-                            <PropertyTable
-                              items={artifacts || []}
-                              columns={[
-                                { label: t('fields.artifact-name') + ':', prop: 'name' },
-                                {
-                                  label: t('fields.location') + ':',
-                                  accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
-                                },
-                                { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
-                                { label: t('fields.type') + ':', prop: 'type' },
-                                { label: t('fields.content-type') + ':', prop: 'content_type' },
-                              ]}
-                            />
-                          }
-                        />
-                      </InformationRow>
+                      <SectionLoader
+                        minHeight={200}
+                        status={artifactStatus}
+                        error={artifactError}
+                        component={
+                          <>
+                            <InformationRow spaceless>
+                              <PropertyTable
+                                items={artifacts || []}
+                                scheme="dark"
+                                columns={[
+                                  { label: t('fields.artifact-name') + ':', prop: 'name' },
+                                  {
+                                    label: t('fields.location') + ':',
+                                    accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
+                                  },
+                                  { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
+                                  { label: t('fields.type') + ':', prop: 'type' },
+                                  { label: t('fields.content-type') + ':', prop: 'content_type' },
+                                ]}
+                              />
+                            </InformationRow>
+                            {artifacts && artifacts.length === 0 && (
+                              <ItemRow margin="lg">
+                                <GenericError message={t('task.no-artifacts-found')} />
+                              </ItemRow>
+                            )}
+                          </>
+                        }
+                      />
                       {renderComponentsForSection('artifacts')}
                     </>
                   ),
@@ -378,12 +403,22 @@ const Task: React.FC<TaskViewProps> = ({
 };
 
 function shouldUpdateTask(status: AsyncStatus, task: ITask | null, tasks: ITask[], attempt: string | null): boolean {
-  return (
-    status === 'Ok' &&
+  // We need to have tasks to update view
+  if (status !== 'Ok') return false;
+  // If no attempt selected, do it now
+  if (!attempt && tasks && tasks.length > 0) {
+    return true;
+  }
+  // If attempt was changed
+  if (
     (task === null || (typeof attempt === 'string' && task.attempt_id !== parseInt(attempt))) &&
     tasks &&
     tasks.length > 0
-  );
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 const TaskContainer = styled.div`

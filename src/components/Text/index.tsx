@@ -11,7 +11,7 @@ export const Text = styled.span`
 
 export const SmallText = styled.small`
   ${TextCSS};
-  font-size: 0.75rem;
+  font-size: 0.875rem;
 `;
 
 export const Paragraph = styled.p``;

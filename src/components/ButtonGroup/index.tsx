@@ -1,14 +1,22 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-const ButtonGroup = styled.div`
+const ButtonGroup = styled.div<{ big?: boolean }>`
   display: flex;
   align-items: center;
 
   > .button {
     border-radius: 0;
     margin-left: -1px;
-    min-height: 28px;
-    font-size: 0.875rem;
+    min-height: ${(p) => (p.big ? '36px' : '28px')};
+    font-size: ${(p) => (p.big ? '1rem' : '0.875rem')};
+
+    ${(p) =>
+      p.big
+        ? css`
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+          `
+        : ''}
 
     white-space: nowrap;
 

@@ -123,6 +123,7 @@ export const ButtonCSS = css`
   text-decoration: none;
   border-radius: 0.25rem;
   border: ${(p) => p.theme.border.thinLight};
+  min-height: 28px;
   transition: background 0.15s;
 `;
 

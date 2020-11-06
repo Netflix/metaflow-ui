@@ -108,6 +108,7 @@ declare module 'styled-components' {
       mediumLight: string;
       mediumMid: string;
       mediumDark: string;
+      mediumWhite: string;
     };
   }
 }

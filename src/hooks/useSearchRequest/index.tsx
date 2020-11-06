@@ -18,10 +18,12 @@ export type TaskMatch = Match;
 export interface HookConfig {
   url: string;
   searchValue: string;
+  onConnecting?: () => void;
   onOpen?: OnOpen;
   onUpdate: OnUpdate<SearchResult>;
   onClose?: OnClose;
   onError?: OnError;
+  enabled?: boolean;
 }
 
 interface SearchKeyValuePair {
@@ -43,16 +45,19 @@ const parseSearchValue = (searchValue: string): SearchKeyValuePair | null => {
 export default function useSearchRequest({
   url,
   searchValue = '',
+  onConnecting,
   onUpdate,
   onClose,
   onError,
   onOpen,
+  enabled = true,
 }: HookConfig): void {
   const searchKv = parseSearchValue(searchValue);
   useWebsocketRequest<SearchResult>({
     url,
     queryParams: searchKv !== null ? { key: searchKv.key, value: searchKv.value } : {},
-    enabled: searchKv !== null,
+    enabled: searchKv !== null && enabled,
+    onConnecting,
     onUpdate,
     onClose,
     onError,

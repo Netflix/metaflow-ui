@@ -318,6 +318,8 @@ export default function useResource<T, U>({
           newError(defaultError);
         }
       });
+    } else {
+      setStatus('NotAsked');
     }
 
     return () => {
@@ -325,7 +327,7 @@ export default function useResource<T, U>({
         abortCtrl.abort();
       }
     };
-  }, [target]); // eslint-disable-line
+  }, [target, pause]); // eslint-disable-line
 
   return { url, target, data, error, getResult: () => cache.get<T>(target)?.result, cache, status };
 }

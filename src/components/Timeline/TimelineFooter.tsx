@@ -3,29 +3,16 @@ import { GraphState } from './useGraph';
 import styled from 'styled-components';
 
 import { formatDuration } from '../../utils/format';
-import Button from '../Button';
-import Icon from '../Icon';
-import { useTranslation } from 'react-i18next';
 import { StepLineData } from './useRowData';
 
 type TimelineFooterProps = {
   steps: StepLineData[];
   graph: GraphState;
-  hasStepFilter: boolean;
-  resetSteps: () => void;
   move: (change: number) => void;
   updateHandle: (which: 'left' | 'right', to: number) => void;
 };
 
-const TimelineFooter: React.FC<TimelineFooterProps> = ({
-  steps,
-  graph,
-  hasStepFilter,
-  resetSteps,
-  move,
-  updateHandle,
-}) => {
-  const { t } = useTranslation();
+const TimelineFooter: React.FC<TimelineFooterProps> = ({ steps, graph, move, updateHandle }) => {
   const _container = createRef<HTMLDivElement>();
   const [drag, setDrag] = useState({ dragging: false, start: 0 });
   const [handleDrag, setHandleDrag] = useState<{ dragging: boolean; which: 'left' | 'right' }>({
@@ -71,14 +58,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({
 
   return (
     <TimelineFooterContainer>
-      <TimelineFooterLeft>
-        {hasStepFilter && (
-          <Button withIcon="left" onClick={() => resetSteps()}>
-            <Icon name="timeline" size="md" padRight />
-            <span>{t('timeline.show-all-steps')}</span>
-          </Button>
-        )}
-      </TimelineFooterLeft>
+      <TimelineFooterLeft></TimelineFooterLeft>
       <TimelineFooterContent>
         <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
         <MiniTimelineContainer ref={_container}>
@@ -209,14 +189,6 @@ const TimelineFooterLeft = styled.div`
   width: 245px;
   margin: 0.5rem 0;
   padding-right: 0.5rem;
-
-  button {
-    justify-content: center;
-    font-size: 0.875rem;
-    height: 28px;
-    width: 200px;
-    max-width: 100%;
-  }
 `;
 
 const TimelineFooterContent = styled.div`

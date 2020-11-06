@@ -108,7 +108,7 @@ export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean
 
 const ActiveTab = styled.div`
   display: flex;
-  padding-top: ${(p) => p.theme.spacer.md}rem;
+  padding-top: ${(p) => p.theme.spacer.sm}rem;
   flex: 1 1;
 `;
 

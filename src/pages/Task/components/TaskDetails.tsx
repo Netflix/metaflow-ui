@@ -20,6 +20,7 @@ const TaskDetails: React.FC<Props> = ({ task, attempts }) => {
     <InformationRow spaceless>
       <PropertyTable
         items={[task]}
+        scheme="dark"
         columns={[
           {
             label: t('fields.task-id') + ':',
