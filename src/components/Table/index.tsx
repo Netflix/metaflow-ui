@@ -5,10 +5,10 @@ import { parseOrderParam } from '../../utils/url';
 import { darken } from 'polished';
 
 const cell = css`
-  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.md}rem;
+  padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.md}rem;
   font-size: 0.875rem;
   text-align: left;
-  border: 2px solid #fff;
+  border: 1px solid #fff;
 `;
 
 export default styled.table`

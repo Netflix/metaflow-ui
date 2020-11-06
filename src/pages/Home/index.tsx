@@ -19,8 +19,6 @@ const defaultParams = {
   status: 'completed,failed,running',
 };
 
-export const HOMEFILTERS_KEY = 'home-filters';
-
 const Home: React.FC = () => {
   //
   // State
@@ -62,7 +60,6 @@ const Home: React.FC = () => {
   const resetAllFilters = useCallback(() => {
     // Reseting filter still keeps grouping settings as before.
     setQp({ ...defaultParams }, 'replace');
-    localStorage.setItem(HOMEFILTERS_KEY, JSON.stringify({ ...defaultParams }));
   }, [setQp]);
 
   const handleParamChange = (key: string, value: string, keepFakeParams?: boolean) => {
@@ -73,7 +70,6 @@ const Home: React.FC = () => {
     }
 
     setQp({ [key]: value || null });
-    localStorage.setItem(HOMEFILTERS_KEY, JSON.stringify({ ...qp, [key]: value }));
   };
 
   // Update parameter list
@@ -232,25 +228,6 @@ const Home: React.FC = () => {
       setPage(1);
     }
   }, [activeParams.flow_id, activeParams._tags, activeParams.status, activeParams._group]); // eslint-disable-line
-
-  useEffect(() => {
-    // On start up check if we have no params AND if we have some old params on localstorage
-    if (isDefaultParams(cleanParams(qp))) {
-      const filtersFromLS = localStorage.getItem(HOMEFILTERS_KEY);
-      if (filtersFromLS) {
-        const settings = JSON.parse(filtersFromLS);
-        if (settings) {
-          setQp(settings, 'replace');
-        } else {
-          resetAllFilters();
-        }
-      } else {
-        resetAllFilters();
-      }
-    } else {
-      localStorage.setItem(HOMEFILTERS_KEY, JSON.stringify(activeParams));
-    }
-  }, [qp]); // eslint-disable-line
 
   return (
     <div style={{ display: 'flex', flex: 1 }}>
