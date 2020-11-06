@@ -145,8 +145,8 @@ const RunHeader: React.FC<{
               {status === 'Ok' && parameterTableItems && parameterTableColumns && (
                 <>
                   {Object.keys(parameterTableItems[0]).length === 0 && (
-                    <ItemRow margin="lg">
-                      <GenericError icon="info" message={t('run.no-run-parameters')} />
+                    <ItemRow margin="md">
+                      <GenericError noIcon message={t('run.no-run-parameters')} />
                     </ItemRow>
                   )}
 

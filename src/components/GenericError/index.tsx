@@ -8,11 +8,12 @@ import Icon, { IconKeys } from '../Icon';
 type Props = {
   message: string;
   icon?: IconKeys | JSX.Element;
+  noIcon?: boolean;
 };
 
-const GenericError: React.FC<Props> = ({ message, icon }) => (
+const GenericError: React.FC<Props> = ({ message, icon, noIcon }) => (
   <GenericErrorContainer data-testid="generic-error">
-    {icon && typeof icon !== 'string' ? icon : <Icon name={icon || 'noData'} size="lg" />}
+    {!noIcon && (icon && typeof icon !== 'string' ? icon : <Icon name={icon || 'noData'} size="lg" />)}
     <div>{message}</div>
   </GenericErrorContainer>
 );
