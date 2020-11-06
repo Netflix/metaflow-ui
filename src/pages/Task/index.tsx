@@ -82,13 +82,18 @@ const Task: React.FC<TaskViewProps> = ({
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
-  const { data: artifacts, status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
+  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
+  const { status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
     queryParams: {
       attempt_id: attemptId !== null ? attemptId : '',
     },
     subscribeToEvents: true,
+    fullyDisableCache: true,
     initialData: [],
+    onUpdate: (data) => {
+      data && setArtifacts(data);
+    },
     pause: !isCurrentTaskFinished || attemptId === null,
   });
 
@@ -184,12 +189,14 @@ const Task: React.FC<TaskViewProps> = ({
   useEffect(() => {
     setStdout([]);
     setStderr([]);
+    setArtifacts([]);
     setTask(null);
   }, [stepName, taskId]);
 
   useEffect(() => {
     setStdout([]);
     setStderr([]);
+    setArtifacts([]);
   }, [attemptId]);
 
   return (
