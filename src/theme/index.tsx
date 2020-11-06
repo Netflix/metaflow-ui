@@ -51,6 +51,7 @@ const border = {
   mediumLight: `2px solid ${borderColor.light}`,
   mediumMid: `2px solid ${borderColor.mid}`,
   mediumDark: `2px solid ${borderColor.mid}`,
+  mediumWhite: `2px solid ${bgColor.white}`,
 };
 
 const iconColor = {

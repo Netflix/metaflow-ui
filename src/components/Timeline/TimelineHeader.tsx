@@ -204,7 +204,6 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
             <DropdownField
               horizontal
               onChange={(e) => {
-                // setStatus(e?.target.value || 'all');
                 if (e?.target.value === 'all') {
                   updateStatusFilter(null);
                 } else {

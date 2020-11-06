@@ -27,10 +27,10 @@ const SearchField: React.FC<SearchFieldProps> = ({ initialValue, onUpdate, statu
     <TextInputField
       defaultValue={initialValue}
       placeholder={t('task.search-tasks')}
-      onChange={(e) => e && setSearchTerm(e.target.value)}
+      onChange={(e) => e && setSearchTerm(e.currentTarget.value)}
       onKeyPress={(e) => {
         if (e.charCode === 13) {
-          const val = (e.target as any).value;
+          const val = e.currentTarget.value;
           if (val) {
             onUpdate(val, true);
           }

@@ -53,9 +53,9 @@ const PropertyTableContainer = styled.table`
 
 const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme }>`
   background: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.dark : p.theme.color.bg.silver)};
-  color: ${(p) => (p.scheme === 'dark' ? '#fff' : p.theme.color.text.dark)};
-  border-right: 2px solid #fff;
-  border-bottom: 2px solid #fff;
+  color: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.white : p.theme.color.text.dark)};
+  border-right: ${(p) => p.theme.border.mediumWhite};
+  border-bottom: ${(p) => p.theme.border.mediumWhite};
   font-size: 0.875rem;
   padding: 0.4rem 1rem;
   font-weight: 400;
@@ -64,15 +64,15 @@ const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme }>`
 
 const PropertyTableRow = styled.tr`
   &:not(:last-child) {
-    border-bottom: 2px solid #fff;
+    border-bottom: ${(p) => p.theme.border.mediumWhite};
   }
 `;
 
 const PropertyTableRowItemContent = styled.td<{ scheme: PropertyTableScheme }>`
   padding: 0.75rem 1rem;
   font-size: 14px;
-  border-right: 2px solid #fff;
-  background: ${(p) => (p.scheme === 'bright' ? '#fff' : 'transparent')};
+  border-right: ${(p) => p.theme.border.mediumWhite};
+  background: ${(p) => (p.scheme === 'bright' ? p.theme.color.bg.white : 'transparent')};
 `;
 
 export default PropertyTable;
