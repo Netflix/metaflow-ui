@@ -199,25 +199,27 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
         </ButtonGroup>
 
         <TimelineHeaderItem pad="sm">
-          <Text>{t('fields.status')}:</Text>
-          <DropdownField
-            horizontal
-            onChange={(e) => {
-              // setStatus(e?.target.value || 'all');
-              if (e?.target.value === 'all') {
-                updateStatusFilter(null);
-              } else {
-                updateStatusFilter(e?.target.value || null);
-              }
-            }}
-            value={graph.statusFilter || 'all'}
-            options={[
-              ['all', t('run.filter-all') + ` (${counts.all})`],
-              ['completed', t('run.filter-completed') + ` (${counts.completed})`],
-              ['running', t('run.filter-running') + ` (${counts.running})`],
-              ['failed', t('run.filter-failed') + ` (${counts.failed})`],
-            ]}
-          />
+          <StatusContainer>
+            <Text>{t('fields.status')}:</Text>
+            <DropdownField
+              horizontal
+              onChange={(e) => {
+                // setStatus(e?.target.value || 'all');
+                if (e?.target.value === 'all') {
+                  updateStatusFilter(null);
+                } else {
+                  updateStatusFilter(e?.target.value || null);
+                }
+              }}
+              value={graph.statusFilter || 'all'}
+              options={[
+                ['all', t('run.filter-all') + ` (${counts.all})`],
+                ['completed', t('run.filter-completed') + ` (${counts.completed})`],
+                ['running', t('run.filter-running') + ` (${counts.running})`],
+                ['failed', t('run.filter-failed') + ` (${counts.failed})`],
+              ]}
+            />
+          </StatusContainer>
           <div style={{ marginLeft: '1rem' }}>
             <CheckboxField
               label={t('timeline.group-by-step')}
@@ -292,6 +294,11 @@ const THeaderLeftTop = styled.div`
       height: 36px;
     }
   }
+`;
+
+const StatusContainer = styled.div`
+  display: flex;
+  min-width: 180px;
 `;
 
 const THeaderLeftBottom = styled.div`
