@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
-import { Log as ILog } from '../../types';
+import { Log as ILog, Log } from '../../types';
 import { ItemRow } from '../Structure';
 import Button from '../Button';
 import { useTranslation } from 'react-i18next';
-import useComponentSize from '@rehooks/component-size';
 import Icon from '../Icon';
 import copy from 'copy-to-clipboard';
 import { NotificationType, useNotifications } from '../Notifications';
@@ -18,8 +17,7 @@ type LogProps = {
 
 const LIST_MAX_HEIGHT = 400;
 
-const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) => {
-  const { addNotification } = useNotifications();
+const LogList: React.FC<LogProps> = ({ rows, fixedHeight }) => {
   const { t } = useTranslation();
   const [stickBottom, setStickBottom] = useState(true);
   const [cache] = useState(
@@ -29,8 +27,6 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
     }),
   );
   const _list = useRef<List>(null);
-  const _itemRow = useRef<HTMLDivElement>(null);
-  const ItemRowSize = useComponentSize(_itemRow);
 
   useEffect(() => {
     if (stickBottom && _list) {
@@ -70,13 +66,7 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
                   )}
                 </CellMeasurer>
               )}
-              height={
-                fixedHeight
-                  ? fixedHeight - (ItemRowSize.height || 16)
-                  : totalHeight < LIST_MAX_HEIGHT
-                  ? totalHeight
-                  : LIST_MAX_HEIGHT
-              }
+              height={fixedHeight ? fixedHeight - 16 : totalHeight < LIST_MAX_HEIGHT ? totalHeight : LIST_MAX_HEIGHT}
               width={width}
             />
           )}
@@ -86,30 +76,6 @@ const LogList: React.FC<LogProps> = ({ rows, onShowFullscreen, fixedHeight }) =>
           <ScrollToBottomButton onClick={() => setStickBottom(true)}>{t('run.scroll-to-bottom')}</ScrollToBottomButton>
         )}
       </LogListContainer>
-
-      <ItemRow ref={_itemRow} margin="sm">
-        {onShowFullscreen && (rows.length > 1 || totalHeight > LIST_MAX_HEIGHT) && (
-          <>
-            <Button onClick={onShowFullscreen} withIcon>
-              <Icon name="maximize" />
-              <span>{t('run.show-fullscreen')}</span>
-            </Button>
-          </>
-        )}
-        {onShowFullscreen && (
-          <Button
-            onClick={() => {
-              copy(rows.map((item) => item.line).join('\n'));
-              addNotification({
-                type: NotificationType.Info,
-                message: t('task.all-logs-copied'),
-              });
-            }}
-          >
-            <span>{t('task.copy-logs-to-clipboard')}</span>
-          </Button>
-        )}
-      </ItemRow>
     </div>
   );
 };
@@ -127,7 +93,7 @@ const LogListContainer = styled.div`
 const LogLine = styled.div`
   display: flex;
   transition: backgorund 0.15s;
-  padding: 0.25rem 40px 0 1rem;
+  padding: 0.25rem 1rem 0 1rem;
 
   &:hover {
     background: rgba(0, 0, 0, 0.1);
@@ -158,5 +124,40 @@ const ScrollToBottomButton = styled.div`
   background: rgba(0, 0, 0, 0.5);
   color: ${(p) => p.theme.color.text.white};
 `;
+
+type LogActionBarProps = {
+  setFullscreen: () => void;
+  data: Log[];
+};
+
+export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, data }) => {
+  const { addNotification } = useNotifications();
+  const { t } = useTranslation();
+  return (
+    <ItemRow>
+      {data && data.length > 0 && (
+        <Button
+          withIcon
+          onClick={() => {
+            copy(data.map((item) => item.line).join('\n'));
+            addNotification({
+              type: NotificationType.Info,
+              message: t('task.all-logs-copied'),
+            });
+          }}
+        >
+          <Icon name="copy" />
+          <span>{t('task.copy-logs-to-clipboard')}</span>
+        </Button>
+      )}
+
+      {data && data.length > 0 && (
+        <Button onClick={() => setFullscreen()} withIcon>
+          <Icon name="maximize" />
+        </Button>
+      )}
+    </ItemRow>
+  );
+};
 
 export default LogList;

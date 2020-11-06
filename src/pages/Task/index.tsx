@@ -11,7 +11,7 @@ import { RowCounts, RowDataAction } from '../../components/Timeline/useRowData';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import { ForceBreakText } from '../../components/Text';
-import LogList from '../../components/LogList';
+import LogList, { LogActionBar } from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import Spinner from '../../components/Spinner';
@@ -277,6 +277,7 @@ const Task: React.FC<TaskViewProps> = ({
                   key: 'stdout',
                   order: 2,
                   label: t('task.std-out'),
+                  actionbar: <LogActionBar data={stdout} setFullscreen={() => setFullscreen('stdout')} />,
                   component: (
                     <>
                       <SectionLoader
@@ -299,6 +300,7 @@ const Task: React.FC<TaskViewProps> = ({
                   key: 'stderr',
                   order: 3,
                   label: t('task.std-err'),
+                  actionbar: <LogActionBar data={stderr} setFullscreen={() => setFullscreen('stderr')} />,
                   component: (
                     <>
                       <SectionLoader
