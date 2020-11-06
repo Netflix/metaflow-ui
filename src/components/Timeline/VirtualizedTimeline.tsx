@@ -442,7 +442,11 @@ export function makeVisibleRows(
       ? arr
       : arr.concat(
           graph.group ? [{ type: 'step' as const, data: current, rowObject: rowData }] : [],
-          rowData.isOpen ? (graph.group ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir)) : rowTasks) : [],
+          rowData.isOpen || !graph.group
+            ? graph.group
+              ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir))
+              : rowTasks
+            : [],
         );
   }, []);
 }
