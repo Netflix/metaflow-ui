@@ -66,6 +66,8 @@ const en = {
       DAG: 'DAG',
       'dag-not-available': 'DAG is currently not available',
       'dag-only-available-AWS': 'DAG is only available when flow is executed on AWS.',
+      'dag-data-not-available':
+        "DAG structure data doesn't exists. Data is only available when flow is executed on AWS",
       timeline: 'Timeline',
       parameters: 'Parameters',
       'no-run-parameters': 'No run parameters.',
@@ -123,7 +125,7 @@ const en = {
       artifacts: 'Artifacts',
       'search-tasks': 'Search: artifact_name=value',
       'no-logs': 'No logs',
-      'logs-only-available-AWS': 'Logs are only available when flow is executed on AWS.',
+      'logs-only-available-AWS': 'Logs were not found from AWS.',
       attempt: 'Attempt',
       'copy-logs-to-clipboard': 'Copy to clipboard',
       'all-logs-copied': 'Full log copied to clipboard',

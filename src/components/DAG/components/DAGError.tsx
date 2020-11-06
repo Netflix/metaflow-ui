@@ -19,7 +19,11 @@ const DAGError: React.FC<DAGErrorProps> = ({ error, t }) => (
       error={error}
       icon={<Icon name="noDag" customSize={5} />}
       message={DAGErrorMessage(t, error)}
-      customNotFound={DefaultAdditionalErrorInfo(t('run.dag-only-available-AWS'))}
+      customNotFound={
+        error && error.status === 404
+          ? DefaultAdditionalErrorInfo(t('run.dag-data-not-available'))
+          : DefaultAdditionalErrorInfo(t('run.dag-only-available-AWS'))
+      }
     />
   </div>
 );
