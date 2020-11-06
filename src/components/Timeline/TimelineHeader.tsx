@@ -340,6 +340,25 @@ const ModeContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
+
+  .button {
+    position: relative;
+  }
+
+  .button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: all 0.15s;
+    width: 0;
+    height: 0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-bottom: 10px solid #f6f6f6;
+    top: 100%;
+  }
 `;
 
 export default TimelineHeader;
