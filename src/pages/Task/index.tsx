@@ -113,7 +113,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   useEffect(() => {
     if (task && task.attempt_id !== parseInt(attemptId || '')) {
-      setQp({ attempt: task.attempt_id.toString() });
+      setQp({ attempt: task.attempt_id.toString() }, 'replaceIn');
     }
   }, [task]); // eslint-disable-line
 
@@ -249,7 +249,7 @@ const Task: React.FC<TaskViewProps> = ({
           <>
             <AnchoredView
               activeSection={qp.section}
-              setSection={(value: string | null) => setQp({ section: value })}
+              setSection={(value: string | null) => setQp({ section: value }, 'replaceIn')}
               header={
                 status === 'Ok' && tasks && tasks.length > 0 ? (
                   <TabsHeading>
