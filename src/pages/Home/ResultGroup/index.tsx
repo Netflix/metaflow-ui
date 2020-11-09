@@ -274,7 +274,11 @@ const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
   }
 `;
 
-const IDFieldContainer = styled.div``;
+const IDFieldContainer = styled.div`
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+`;
 
 type RunTagsProps = {
   tags: string[];
