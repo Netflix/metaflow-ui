@@ -72,7 +72,7 @@ const ResultGroup: React.FC<Props> = ({
 
   return (
     <StyledResultGroup ref={targetRef}>
-      <Table cellPadding="0" cellSpacing="0" ref={tableRef}>
+      <Table cellPadding="0" cellSpacing="0" ref={tableRef} style={{ position: 'relative', zIndex: 1 }}>
         {isInViewport && rows.length > 5 ? (
           <StickyHeader tableRef={tableRef}>{tableHeader}</StickyHeader>
         ) : (
@@ -98,7 +98,7 @@ const ResultGroup: React.FC<Props> = ({
       </Table>
 
       {targetCount < rows.length && (
-        <div style={{ position: 'relative', zIndex: -1 }}>
+        <div style={{ position: 'relative' }}>
           <Button
             className="load-more"
             onClick={() => handleGroupTitleClick(label)}
