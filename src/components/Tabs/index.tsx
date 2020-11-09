@@ -101,9 +101,18 @@ export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean
   border-top-left-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
   border-top-right-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
   border-bottom: 2px solid ${(p) => (p.active ? p.theme.color.bg.blue : p.theme.color.border.mid)};
-  background: ${(p) => (p.temporary ? p.theme.color.bg.blueLight : 'transparent')};
+  background: ${(p) =>
+    p.temporary && p.active ? p.theme.color.bg.blueLight : p.temporary ? '#f6f6f6' : 'transparent'};
   font-weight: ${(p) => (p.active ? '500' : '400')};
   cursor: pointer;
+  transition: 0.15s all;
+
+  &:hover {
+    background: ${(p) => p.theme.color.bg.blueLight};
+    border-bottom-color: ${(p) => p.theme.color.bg.blue};
+    border-top-left-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+  }
 `;
 
 const ActiveTab = styled.div`
