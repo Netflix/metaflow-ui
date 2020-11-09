@@ -82,6 +82,8 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       setTab(params.viewType);
     } else if (params.stepName && params.taskId) {
       setTab('task');
+    } else if (!params.viewType) {
+      setTab('timeline');
     }
   }, [params.viewType, params.stepName, params.taskId]);
 

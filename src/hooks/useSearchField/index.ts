@@ -40,7 +40,7 @@ export default function useSeachField(flowID: string, runNumber: string): Search
 
   const updateText = (str: string, forceUpdate?: boolean) => {
     setSearchValue(str);
-    setQp({ q: str });
+    setQp({ q: str }, 'replaceIn');
     cache.text = str;
     cache.id = flowID + runNumber;
 
