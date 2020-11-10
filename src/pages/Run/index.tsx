@@ -93,7 +93,15 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   useEffect(() => {
     setPreviousStepName(undefined);
     setPreviousTaskId(undefined);
-  }, [params.runNumber]);
+
+    if (run.status === 'completed') {
+      setMode('overview');
+    } else if (run.status === 'running') {
+      setMode('monitoring');
+    } else if (run.status === 'failed') {
+      setMode('error-tracker');
+    }
+  }, [params.runNumber]); // eslint-disable-line
 
   useEffect(() => {
     params.stepName && params.stepName !== 'not-selected' && setPreviousStepName(params.stepName);
