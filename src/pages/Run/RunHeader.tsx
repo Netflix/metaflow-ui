@@ -20,13 +20,6 @@ import { ResourceStatus } from '../../hooks/useResource';
 import GenericError from '../../components/GenericError';
 import Spinner from '../../components/Spinner';
 
-function mergeTags(run: Run) {
-  const baseTags = run.tags || [];
-  const sysTags = run.system_tags || [];
-
-  return [...baseTags, ...sysTags];
-}
-
 const RunHeader: React.FC<{
   run?: Run | null;
   parameters: RunParam | null;
@@ -98,70 +91,74 @@ const RunHeader: React.FC<{
           <InformationRow spaceless>
             <PropertyTable scheme="dark" items={[run]} columns={columns} />
           </InformationRow>
-          <InformationRow scrollOverflow={false}>
-            <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
-              <SmallText>{t('run.tags')}</SmallText>
-              <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
-                {run.system_tags.map((tag) => (
-                  <TagNoWrap
-                    key={tag}
-                    onClick={() => {
-                      history.push('/?_tags=' + encodeURIComponent(tag));
-                    }}
-                  >
-                    {tag}
-                  </TagNoWrap>
-                ))}
-                {(run.tags || []).map((tag) => (
-                  <TagNoWrap
-                    key={tag}
-                    dark
-                    onClick={() => {
-                      history.push('/?_tags=' + encodeURIComponent(tag));
-                    }}
-                  >
-                    {tag}
-                  </TagNoWrap>
-                ))}
-                <TagNoWrap
-                  onClick={() => {
-                    history.push('/?_tags=' + encodeURIComponent(mergeTags(run).join(',')));
-                  }}
-                >
-                  {t('run.select-all-tags')} <Icon name="plus" size="xs" />
-                </TagNoWrap>
+          {(run.tags || []).length > 0 && (
+            <InformationRow scrollOverflow={false}>
+              <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
+                <SmallText>{t('run.tags')}</SmallText>
+                <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
+                  {(run.tags || []).map((tag) => (
+                    <TagNoWrap
+                      key={tag}
+                      onClick={() => {
+                        history.push('/?_tags=' + encodeURIComponent(tag));
+                      }}
+                    >
+                      {tag}
+                    </TagNoWrap>
+                  ))}
+                </ItemRow>
               </ItemRow>
-            </ItemRow>
-          </InformationRow>
+            </InformationRow>
+          )}
 
           {expanded && (
-            <InformationRow>
-              {status === 'Loading' && (
-                <div style={{ textAlign: 'center', margin: '2rem 0' }}>
-                  <Spinner sm />
-                </div>
-              )}
-
-              {status === 'Ok' && parameterTableItems && parameterTableColumns && (
-                <>
-                  {Object.keys(parameterTableItems[0]).length === 0 && (
-                    <ItemRow margin="md">
-                      <GenericError noIcon message={t('run.no-run-parameters')} />
-                    </ItemRow>
-                  )}
-
-                  {Object.keys(parameterTableItems[0]).length > 0 && (
-                    <PropertyTable scheme="bright" items={parameterTableItems} columns={parameterTableColumns} />
-                  )}
-                </>
-              )}
-
-              {status === 'Error' && error && (
-                <ItemRow margin="lg">
-                  <GenericError message={t('run.run-parameters-error')} />
+            <>
+              <InformationRow scrollOverflow={false}>
+                <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
+                  <SmallText>{t('run.system-tags')}</SmallText>
+                  <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
+                    {run.system_tags.map((tag) => (
+                      <TagNoWrap
+                        key={tag}
+                        onClick={() => {
+                          history.push('/?_tags=' + encodeURIComponent(tag));
+                        }}
+                      >
+                        {tag}
+                      </TagNoWrap>
+                    ))}
+                  </ItemRow>
                 </ItemRow>
-              )}
-            </InformationRow>
+              </InformationRow>
+
+              <InformationRow>
+                {status === 'Loading' && (
+                  <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+                    <Spinner sm />
+                  </div>
+                )}
+
+                {status === 'Ok' && parameterTableItems && parameterTableColumns && (
+                  <>
+                    {Object.keys(parameterTableItems[0]).length === 0 && (
+                      <ItemRow margin="md">
+                        <GenericError noIcon message={t('run.no-run-parameters')} />
+                      </ItemRow>
+                    )}
+
+                    {Object.keys(parameterTableItems[0]).length > 0 && (
+                      <PropertyTable scheme="bright" items={parameterTableItems} columns={parameterTableColumns} />
+                    )}
+                  </>
+                )}
+
+                {status === 'Error' && error && (
+                  <ItemRow margin="lg">
+                    <GenericError message={t('run.run-parameters-error')} />
+                  </ItemRow>
+                )}
+              </InformationRow>
+            </>
           )}
         </div>
       )}
