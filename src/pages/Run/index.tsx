@@ -172,31 +172,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     searchField.results,
   ]);
 
-  function setMode(mode: string) {
-    if (mode === 'overview') {
-      graph.setQueryParam({
-        order: 'startTime',
-        direction: 'asc',
-        status: null,
-        group: 'true',
-      });
-    } else if (mode === 'monitoring') {
-      graph.setQueryParam({
-        order: 'startTime',
-        direction: 'desc',
-        status: null,
-        group: 'false',
-      });
-    } else if (mode === 'error-tracker') {
-      graph.setQueryParam({
-        order: 'startTime',
-        direction: 'asc',
-        status: 'failed',
-        group: 'true',
-      });
-    }
-  }
-
   return (
     <>
       <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
@@ -223,7 +198,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 counts={counts}
                 graph={graph}
                 searchField={searchField}
-                setMode={setMode}
                 paramsString={urlParams}
                 isAnyGroupOpen={isAnyGroupOpen}
               />
@@ -248,7 +222,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 searchField={searchField}
                 graph={graph}
                 counts={counts}
-                setMode={setMode}
                 paramsString={urlParams}
                 isAnyGroupOpen={isAnyGroupOpen}
               />

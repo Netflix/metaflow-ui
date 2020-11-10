@@ -32,7 +32,6 @@ type TimelineProps = {
   counts: RowCounts;
   graph: GraphHook;
   searchField: SearchFieldReturnType;
-  setMode: (str: string) => void;
   paramsString: string;
   isAnyGroupOpen: boolean;
 };
@@ -45,7 +44,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   status,
   counts,
   searchField,
-  setMode,
   paramsString,
   isAnyGroupOpen,
 }) => {
@@ -107,7 +105,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
       <VirtualizedTimelineSubContainer>
         <TimelineHeader
           graph={graphHook}
-          setMode={setMode}
           expandAll={() => rowDataDispatch({ type: 'openAll' })}
           collapseAll={() => rowDataDispatch({ type: 'closeAll' })}
           setFullscreen={() => setFullscreen(true)}

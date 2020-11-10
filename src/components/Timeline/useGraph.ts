@@ -31,10 +31,14 @@ export type GraphState = {
   timelineEnd: number;
   // Is zoom level user controlled?
   controlled: boolean;
-
+  // Local step filters
   stepFilter: string[];
+  // Local status filter
   statusFilter: string | null | undefined;
+  // Enable grouping by step
   group: boolean;
+  // Custom mode enabled:
+  isCustomEnabled: boolean;
 };
 
 export type GraphAction =
@@ -60,7 +64,8 @@ export type GraphAction =
   | { type: 'setControlled'; value: boolean }
   | { type: 'setSteps'; steps: string | null | undefined }
   | { type: 'setStatus'; status: string | null | undefined }
-  | { type: 'setGrouping'; value: boolean };
+  | { type: 'setGrouping'; value: boolean }
+  | { type: 'setCustom'; value: boolean };
 
 export function graphReducer(state: GraphState, action: GraphAction): GraphState {
   switch (action.type) {
@@ -166,6 +171,9 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
     case 'setGrouping':
       return { ...state, group: action.value };
 
+    case 'setCustom':
+      return { ...state, isCustomEnabled: action.value };
+
     case 'reset':
       return { ...state, controlled: false, min: 0, max: 0, timelineStart: 0, timelineEnd: 0 };
   }
@@ -270,7 +278,39 @@ export type GraphHook = {
   dispatch: React.Dispatch<GraphAction>;
   setQueryParam: SetQuery<QueryParameters>;
   params: DecodedValueMap<QueryParameters>;
+  setMode: (mode: GraphMode) => void;
 };
+
+export const OverviewMode = {
+  order: 'startTime',
+  direction: 'asc',
+  status: null,
+  group: 'true',
+};
+
+export const MonitoringMode = {
+  order: 'startTime',
+  direction: 'desc',
+  status: null,
+  group: 'false',
+};
+
+export const ErrorTrackerMode = {
+  order: 'startTime',
+  direction: 'asc',
+  status: 'failed',
+  group: 'true',
+};
+
+type Param = string | undefined | null;
+
+function equalsDefaultMode(order: Param, dir: Param, status: Param, group: Param) {
+  return !![OverviewMode, MonitoringMode, ErrorTrackerMode].find(
+    (mode) => mode.order === order && mode.direction === dir && mode.status === status && mode.group === group,
+  );
+}
+
+type GraphMode = 'overview' | 'monitoring' | 'error-tracker' | 'custom';
 
 export default function useGraph(start: number, end: number): GraphHook {
   const [graph, dispatch] = useReducer(graphReducer, {
@@ -286,6 +326,7 @@ export default function useGraph(start: number, end: number): GraphHook {
     stepFilter: [],
     statusFilter: null,
     group: true,
+    isCustomEnabled: false,
   });
 
   //
@@ -301,14 +342,12 @@ export default function useGraph(start: number, end: number): GraphHook {
   });
 
   useEffect(() => {
+    // Check sort direction param, only update if is valid and changed
     const sortDir = validatedParameter<'asc' | 'desc'>(q.direction, graph.sortDir, ['asc', 'desc'], 'asc');
     if (sortDir) {
-      dispatch({
-        type: 'sortDir',
-        dir: sortDir,
-      });
+      dispatch({ type: 'sortDir', dir: sortDir });
     }
-
+    // Check sort by param, only update if is valid and changed
     const sortBy = validatedParameter<'startTime' | 'endTime' | 'duration'>(
       q.order,
       graph.sortBy,
@@ -320,10 +359,12 @@ export default function useGraph(start: number, end: number): GraphHook {
       dispatch({ type: 'sortBy', by: sortBy });
     }
 
+    // Check status param, only update if is valid and changed
     if (q.status !== graph.statusFilter) {
       dispatch({ type: 'setStatus', status: q.status });
     }
 
+    // Check grouping param, only update if is valid and changed
     const group = validatedParameter<'true' | 'false'>(
       q.group,
       graph.group ? 'true' : 'false',
@@ -333,11 +374,47 @@ export default function useGraph(start: number, end: number): GraphHook {
     if (group) {
       dispatch({ type: 'setGrouping', value: group === 'true' ? true : false });
     }
-  }, [q, graph, dispatch]);
+
+    // Check if we were in custom mode, if so we need to save change to localstorage as well
+    if (graph.isCustomEnabled) {
+      localStorage.setItem('custom-settings', JSON.stringify(q));
+    } else {
+      // If we changed something and we now differ from default settings, we need to set
+      // custom mode on and start saving settingin localstorage
+      if (!equalsDefaultMode(q.order, q.direction, q.status, q.group)) {
+        dispatch({ type: 'setCustom', value: true });
+        localStorage.setItem('custom-settings', JSON.stringify(q));
+      }
+    }
+  }, [q, dispatch]); // eslint-disable-line
 
   useEffect(() => {
     dispatch({ type: 'setSteps', steps: q.steps });
   }, [q.steps]);
 
-  return { graph, dispatch, setQueryParam: sq, params: q };
+  // Update active settings mode for task listing.
+  const setMode = (mode: GraphMode) => {
+    if (mode === 'overview') {
+      sq(OverviewMode);
+      dispatch({ type: 'setCustom', value: false });
+    } else if (mode === 'monitoring') {
+      sq(MonitoringMode);
+      dispatch({ type: 'setCustom', value: false });
+    } else if (mode === 'error-tracker') {
+      sq(ErrorTrackerMode);
+      dispatch({ type: 'setCustom', value: false });
+    } else if (mode === 'custom') {
+      dispatch({ type: 'setCustom', value: true });
+      // Check previous settings from localstorage for custom setting
+      const previousSettings = localStorage.getItem('custom-settings');
+      if (previousSettings) {
+        const parsed = JSON.parse(previousSettings);
+        if (parsed) {
+          sq(parsed);
+        }
+      }
+    }
+  };
+
+  return { graph, dispatch, setQueryParam: sq, params: q, setMode };
 }
