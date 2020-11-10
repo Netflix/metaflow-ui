@@ -51,7 +51,7 @@ const RunHeader: React.FC<{
             {Object.keys(params).map((key) => (
               <tr key={key}>
                 <ParameterKey>{key}</ParameterKey>
-                <ParameterValue>{params[key]}</ParameterValue>
+                <ParameterValue>{readParameterValue(params[key])}</ParameterValue>
               </tr>
             ))}
           </tbody>
@@ -169,6 +169,24 @@ const RunHeader: React.FC<{
     </RunHeaderContainer>
   );
 };
+
+function readParameterValue(str: string) {
+  let val;
+  try {
+    val = JSON.parse(str);
+  } catch (e) {
+    return str;
+  }
+
+  if (!val) {
+    return str;
+  }
+
+  if (typeof val === 'object') {
+    return JSON.stringify(val, null, 2);
+  }
+  return str;
+}
 
 const RunHeaderContainer = styled.div`
   position: relative;
