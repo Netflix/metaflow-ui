@@ -102,7 +102,7 @@ const HomeSidebar: React.FC<Props> = ({
 
         <TagParameterList
           paramKey="_tags"
-          mapList={(xs) => xs.filter((x) => !/^user:|project:/.test(x))}
+          mapList={(xs) => xs.filter((x) => !/^project:/.test(x))}
           updateList={updateListValue}
           value={params._tags}
         />
