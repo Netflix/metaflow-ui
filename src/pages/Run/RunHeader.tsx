@@ -6,7 +6,6 @@ import { Run, RunParam, APIError } from '../../types';
 
 import { ItemRow } from '../../components/Structure';
 import Icon from '../../components/Icon';
-import Button from '../../components/Button';
 import Tag from '../../components/Tag';
 import { SmallText } from '../../components/Text';
 import StatusField from '../../components/Status';
@@ -18,6 +17,7 @@ import GenericError from '../../components/GenericError';
 import Spinner from '../../components/Spinner';
 import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../utils/run';
 import ParameterTable from '../../components/ParameterTable';
+import ShowDetailsButton from '../../components/ShowDetailsButton';
 
 function mergeTags(run: Run) {
   const baseTags = run.tags || [];
@@ -135,24 +135,18 @@ const RunHeader: React.FC<{
         </div>
       )}
 
-      <ShowDetailsRow>
-        <Button onClick={() => setExpanded(!expanded)} textOnly variant="primaryText" size="sm">
-          {expanded ? t('run.hide-run-details') : t('run.show-run-details')}
-          <Icon name="arrowDown" rotate={expanded ? 180 : 0} padLeft />
-        </Button>
-      </ShowDetailsRow>
+      <ShowDetailsButton
+        toggle={() => setExpanded(!expanded)}
+        visible={expanded}
+        showText={t('run.show-run-details')}
+        hideText={t('run.hide-run-details')}
+      />
     </RunHeaderContainer>
   );
 };
 
 const RunHeaderContainer = styled.div`
   position: relative;
-`;
-
-const ShowDetailsRow = styled.div`
-  padding-top: ${(p) => p.theme.spacer.sm}rem;
-  display: flex;
-  justify-content: flex-end;
 `;
 
 const TagNoWrap = styled(Tag)<{ dark?: boolean }>`

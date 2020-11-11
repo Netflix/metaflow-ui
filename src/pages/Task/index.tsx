@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PropertyTable from '../../components/PropertyTable';
 import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
-import { Run as IRun, Task as ITask, Artifact, Log, AsyncStatus } from '../../types';
+import { Run as IRun, Task as ITask, Artifact, Log, AsyncStatus, Metadata } from '../../types';
 import useResource from '../../hooks/useResource';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
@@ -80,6 +80,13 @@ const Task: React.FC<TaskViewProps> = ({
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
+  const metadata = useResource<Metadata[], Metadata>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/metadata`,
+    subscribeToEvents: true,
+    initialData: [],
+    pause: stepName === 'not-selected' || taskId === 'not-selected',
+  });
+
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const { status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
@@ -99,6 +106,7 @@ const Task: React.FC<TaskViewProps> = ({
   // have attempt id parameter or not.
   useEffect(() => {
     const attempts = tasks || [];
+
     if (shouldUpdateTask(status, task, attempts, attemptId)) {
       if (typeof attemptId === 'string') {
         const item = attempts.find((i) => i.attempt_id === parseInt(attemptId));
@@ -272,7 +280,8 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.task-info'),
                   component: (
                     <>
-                      <TaskDetails task={task} attempts={tasks || []} />
+                      <TaskDetails task={task} attempts={tasks || []} metadata={metadata} />
+
                       {renderComponentsForSection('taskinfo')}
                     </>
                   ),

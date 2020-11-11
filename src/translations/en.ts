@@ -131,6 +131,9 @@ const en = {
       'all-logs-copied': 'Full log copied to clipboard',
       'line-copied': 'Line copied to clipboard',
       'no-artifacts-found': 'No artifacts found',
+      metadata: 'Metadata',
+      'failed-to-load-metadata': 'Failed to load metadata',
+      'metadata-not-loaded': 'Metadata not loaded',
     },
 
     breadcrumb: {
@@ -173,6 +176,11 @@ const en = {
 
       'log-error-s3': 'There was a problem loading logs from AWS',
       'log-error': 'There was a problem loading logs.',
+    },
+
+    component: {
+      show: 'Show',
+      hide: 'Hide',
     },
   },
 };
