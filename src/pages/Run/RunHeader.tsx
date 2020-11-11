@@ -17,6 +17,7 @@ import { ResourceStatus } from '../../hooks/useResource';
 import GenericError from '../../components/GenericError';
 import Spinner from '../../components/Spinner';
 import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../utils/run';
+import ParameterTable from '../../components/ParameterTable';
 
 function mergeTags(run: Run) {
   const baseTags = run.tags || [];
@@ -35,30 +36,10 @@ const RunHeader: React.FC<{
   const history = useHistory();
   const [expanded, setExpanded] = useState(false);
 
-  const parameterTableItems = [
-    (parameters ? Object.entries(parameters) : []).reduce((obj, param) => {
-      const [param_name, param_props] = param;
-      return { ...obj, [param_name]: param_props.value };
-    }, {}),
-  ];
-
-  const parameterTableColumns = [
-    {
-      label: t('run.parameters'),
-      accessor: (params: Record<string, string>) => (
-        <table>
-          <tbody>
-            {Object.keys(params).map((key) => (
-              <tr key={key}>
-                <ParameterKey>{key}</ParameterKey>
-                <ParameterValue>{readParameterValue(params[key])}</ParameterValue>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ),
-    },
-  ];
+  const parameterTableItems = (parameters ? Object.entries(parameters) : []).reduce((obj, param) => {
+    const [param_name, param_props] = param;
+    return { ...obj, [param_name]: param_props.value };
+  }, {});
 
   const columns = [
     { label: t('fields.run-id') + ':', prop: 'run_number' as const },
@@ -136,18 +117,12 @@ const RunHeader: React.FC<{
                 </div>
               )}
 
-              {status === 'Ok' && parameterTableItems && parameterTableColumns && (
-                <>
-                  {Object.keys(parameterTableItems[0]).length === 0 && (
-                    <ItemRow margin="md">
-                      <GenericError noIcon message={t('run.no-run-parameters')} />
-                    </ItemRow>
-                  )}
-
-                  {Object.keys(parameterTableItems[0]).length > 0 && (
-                    <PropertyTable scheme="bright" items={parameterTableItems} columns={parameterTableColumns} />
-                  )}
-                </>
+              {status === 'Ok' && parameterTableItems && (
+                <ParameterTable
+                  label={t('run.parameters')}
+                  items={parameterTableItems}
+                  errorLabel={t('run.no-run-parameters')}
+                />
               )}
 
               {status === 'Error' && error && (
@@ -170,24 +145,6 @@ const RunHeader: React.FC<{
   );
 };
 
-function readParameterValue(str: string) {
-  let val;
-  try {
-    val = JSON.parse(str);
-  } catch (e) {
-    return str;
-  }
-
-  if (!val) {
-    return str;
-  }
-
-  if (typeof val === 'object') {
-    return JSON.stringify(val, null, 2);
-  }
-  return str;
-}
-
 const RunHeaderContainer = styled.div`
   position: relative;
 `;
@@ -196,14 +153,6 @@ const ShowDetailsRow = styled.div`
   padding-top: ${(p) => p.theme.spacer.sm}rem;
   display: flex;
   justify-content: flex-end;
-`;
-
-const ParameterKey = styled.td`
-  padding-right: ${(p) => p.theme.spacer.hg}rem;
-  color: ${(p) => p.theme.color.text.mid};
-`;
-const ParameterValue = styled.td`
-  color: ${(p) => p.theme.color.text.dark};
 `;
 
 const TagNoWrap = styled(Tag)<{ dark?: boolean }>`
