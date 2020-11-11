@@ -58,33 +58,45 @@ const Task: React.FC<TaskViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
-  const [task, setTask] = useState<ITask | null>(null);
+  const [selectedTaskId, setTask] = useState<string | null>(null);
+
+  //
+  // Query params
+  //
   const [qp, setQp] = useQueryParams({
     section: StringParam,
     attempt: StringParam,
   });
+
   // If section is in URL, lets add it to params string so we take it to task links
   if (qp.section) {
     const section = 'section=' + qp.section;
     paramsString = paramsString ? `${paramsString}&${section}` : section;
   }
 
-  const attemptId = qp.attempt || null;
-
-  const isCurrentTaskFinished = !!(task && task.finished_at);
-
+  //
+  // Task/attempt data
+  //
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts`,
     subscribeToEvents: true,
     initialData: null,
+    updatePredicate: (a, b) => a.attempt_id === b.attempt_id,
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
+
+  const attemptId = qp.attempt || null;
+  const task = useMemo(() => {
+    return tasks?.find((item) => item.task_id === selectedTaskId) || null;
+  }, [tasks, selectedTaskId]); // eslint-disable-line
+
+  const isCurrentTaskFinished = !!(task && task.finished_at);
 
   const metadata = useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/metadata`,
     subscribeToEvents: true,
     initialData: [],
-    pause: stepName === 'not-selected' || taskId === 'not-selected',
+    pause: !isCurrentTaskFinished || attemptId === null,
   });
 
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
@@ -109,10 +121,14 @@ const Task: React.FC<TaskViewProps> = ({
 
     if (shouldUpdateTask(status, task, attempts, attemptId)) {
       if (typeof attemptId === 'string') {
-        const item = attempts.find((i) => i.attempt_id === parseInt(attemptId));
-        setTask(item || attempts.sort(sortTaskAttempts)[attempts.length - 1]);
+        const item =
+          attempts.find((i) => i.attempt_id === parseInt(attemptId)) ||
+          attempts.sort(sortTaskAttempts)[attempts.length - 1];
+
+        setTask(item ? item.task_id : null);
       } else {
-        setTask(attempts.sort(sortTaskAttempts)[attempts.length - 1]);
+        const item = attempts.sort(sortTaskAttempts)[attempts.length - 1];
+        setTask(item ? item.task_id : null);
       }
     }
   }, [tasks, status, task, attemptId]);
