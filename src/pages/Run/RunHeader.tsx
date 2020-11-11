@@ -85,45 +85,11 @@ const RunHeader: React.FC<{
           <InformationRow spaceless>
             <PropertyTable scheme="dark" items={[run]} columns={columns} />
           </InformationRow>
-          {(run.tags || []).length > 0 && (
-            <InformationRow scrollOverflow={false}>
-              <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
-                <SmallText>{t('run.tags')}</SmallText>
-                <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
-                  {(run.tags || []).map((tag) => (
-                    <TagNoWrap
-                      key={tag}
-                      onClick={() => {
-                        history.push('/?_tags=' + encodeURIComponent(tag));
-                      }}
-                    >
-                      {tag}
-                    </TagNoWrap>
-                  ))}
-                </ItemRow>
-              </ItemRow>
-            </InformationRow>
-          )}
+          {(run.tags || []).length > 0 && <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} />}
 
           {expanded && (
             <>
-              <InformationRow scrollOverflow={false}>
-                <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
-                  <SmallText>{t('run.system-tags')}</SmallText>
-                  <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
-                    {run.system_tags.map((tag) => (
-                      <TagNoWrap
-                        key={tag}
-                        onClick={() => {
-                          history.push('/?_tags=' + encodeURIComponent(tag));
-                        }}
-                      >
-                        {tag}
-                      </TagNoWrap>
-                    ))}
-                  </ItemRow>
-                </ItemRow>
-              </InformationRow>
+              <TagRow label={t('run.system-tags')} tags={run.system_tags || []} push={history.push} />
 
               <InformationRow>
                 {status === 'Loading' && (
@@ -166,6 +132,32 @@ const RunHeader: React.FC<{
     </RunHeaderContainer>
   );
 };
+
+type TagRowProps = {
+  tags: string[];
+  label: string;
+  push: (path: string) => void;
+};
+
+const TagRow: React.FC<TagRowProps> = ({ tags, label, push }) => (
+  <InformationRow scrollOverflow={false}>
+    <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
+      <SmallText>{label}</SmallText>
+      <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
+        {tags.map((tag) => (
+          <TagNoWrap
+            key={tag}
+            onClick={() => {
+              push('/?_tags=' + encodeURIComponent(tag));
+            }}
+          >
+            {tag}
+          </TagNoWrap>
+        ))}
+      </ItemRow>
+    </ItemRow>
+  </InformationRow>
+);
 
 const RunHeaderContainer = styled.div`
   position: relative;
