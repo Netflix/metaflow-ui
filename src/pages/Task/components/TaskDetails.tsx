@@ -73,7 +73,12 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
           {metadata.status === 'Ok' && <ParameterTable items={metadataParams} label={t('task.metadata')} />}
         </InformationRow>
       )}
-      <ShowDetailsButton toggle={() => setExpanded(!expanded)} visible={expanded} />
+      <ShowDetailsButton
+        toggle={() => setExpanded(!expanded)}
+        visible={expanded}
+        showText={t('task.show-task-metadata')}
+        hideText={t('task.hide-task-metadata')}
+      />
     </>
   );
 };

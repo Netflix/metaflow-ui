@@ -134,6 +134,8 @@ const en = {
       metadata: 'Metadata',
       'failed-to-load-metadata': 'Failed to load metadata',
       'metadata-not-loaded': 'Metadata not loaded',
+      'show-task-metadata': 'Show task metadata',
+      'hide-task-metadata': 'Hide task metadata',
     },
 
     breadcrumb: {
