@@ -4,9 +4,6 @@ import { useTranslation } from 'react-i18next';
 
 import { Run, RunParam, APIError } from '../../types';
 
-import { getISOString } from '../../utils/date';
-import { formatDuration } from '../../utils/format';
-
 import { ItemRow } from '../../components/Structure';
 import Icon from '../../components/Icon';
 import Button from '../../components/Button';
@@ -19,6 +16,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { ResourceStatus } from '../../hooks/useResource';
 import GenericError from '../../components/GenericError';
 import Spinner from '../../components/Spinner';
+import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../utils/run';
 
 const RunHeader: React.FC<{
   run?: Run | null;
@@ -60,7 +58,9 @@ const RunHeader: React.FC<{
     { label: t('fields.status') + ':', accessor: (item: Run) => <StatusField status={item.status} /> },
     {
       label: t('fields.user') + ':',
-      accessor: (item: Run) => <Link to={`/?user_name=${encodeURIComponent(item.user_name)}`}>{item.user_name}</Link>,
+      accessor: (item: Run) => (
+        <Link to={`/?user_name=${encodeURIComponent(item.user_name)}`}>{getUsername(item)}</Link>
+      ),
     },
     {
       label: t('fields.project') + ':',
@@ -72,15 +72,9 @@ const RunHeader: React.FC<{
       accessor: (item: Run) => item.system_tags.find((tag) => tag.startsWith('language:')),
       hidden: !run || !run.system_tags.find((tag) => tag.startsWith('project:')),
     },
-    { label: t('fields.started-at') + ':', accessor: (item: Run) => getISOString(new Date(item.ts_epoch)) },
-    {
-      label: t('fields.finished-at') + ':',
-      accessor: (item: Run) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
-    },
-    {
-      label: t('fields.duration') + ':',
-      accessor: (item: Run) => (item.duration ? formatDuration(item.duration, 0) : ''),
-    },
+    { label: t('fields.started-at') + ':', accessor: getRunStartTime },
+    { label: t('fields.finished-at') + ':', accessor: getRunEndTime },
+    { label: t('fields.duration') + ':', accessor: getRunDuration },
   ].filter((col) => !col.hidden);
 
   return (

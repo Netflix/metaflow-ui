@@ -5,9 +5,7 @@ import { useTranslation } from 'react-i18next';
 import useIsInViewport from 'use-is-in-viewport';
 
 import { Run as IRun, RunStatus } from '../../../types';
-import { getISOString } from '../../../utils/date';
 import { getPath } from '../../../utils/routing';
-import { formatDuration } from '../../../utils/format';
 
 import Table, { TR, TD, TH, HeaderColumn as HeaderColumnBase } from '../../../components/Table';
 import { ForceNoBreakText } from '../../../components/Text';
@@ -19,6 +17,7 @@ import Button from '../../../components/Button';
 import Tag from '../../../components/Tag';
 import { PopoverWrapper } from '../../../components/Popover';
 import StickyHeader from './StickyHeader';
+import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../../utils/run';
 
 type Props = {
   label: string;
@@ -138,13 +137,13 @@ const TableRows: React.FC<TableRowsProps> = React.memo(
           <IDFieldContainer>{r.run_number}</IDFieldContainer>
         </TD>
         {/* USER NAME */}
-        {params._group !== 'user_name' && <TD>{r.user_name}</TD>}
+        {params._group !== 'user_name' && <TD>{getUsername(r)}</TD>}
         {/* STARTED AT */}
-        <TD>{getISOString(new Date(r.ts_epoch))}</TD>
+        <TD>{getRunStartTime(r)}</TD>
         {/* FINISHED AT */}
-        <TD>{!!r.finished_at ? getISOString(new Date(r.finished_at)) : false}</TD>
+        <TD>{getRunEndTime(r)}</TD>
         {/* DURATION */}
-        <TD>{r.duration ? formatDuration(r.duration, 0) : ''}</TD>
+        <TD>{getRunDuration(r)}</TD>
         {/* STATUS */}
         <TD>
           <ForceNoBreakText>

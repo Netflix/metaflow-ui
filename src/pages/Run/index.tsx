@@ -91,11 +91,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const [previousTaskId, setPreviousTaskId] = useState<string>();
 
   useEffect(() => {
-    setPreviousStepName(undefined);
-    setPreviousTaskId(undefined);
-  }, [params.runNumber]);
-
-  useEffect(() => {
     params.stepName && params.stepName !== 'not-selected' && setPreviousStepName(params.stepName);
     params.taskId && params.stepName !== 'not-selected' && setPreviousTaskId(params.taskId);
   }, [params.stepName, params.taskId]);
@@ -118,6 +113,21 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const graph = useGraph(run.ts_epoch, run.finished_at || Date.now());
   const urlParams = new URLSearchParams(cleanParametersMap(graph.params)).toString();
+
+  useEffect(() => {
+    setPreviousStepName(undefined);
+    setPreviousTaskId(undefined);
+
+    if (!graph.params.direction && !graph.params.order && !graph.params.status) {
+      if (run.status === 'completed') {
+        graph.setMode('overview');
+      } else if (run.status === 'running') {
+        graph.setMode('monitoring');
+      } else if (run.status === 'failed') {
+        graph.setMode('error-tracker');
+      }
+    }
+  }, [params.runNumber]); // eslint-disable-line
   //
   // Graph measurements and rendering logic
   //
@@ -172,31 +182,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     searchField.results,
   ]);
 
-  function setMode(mode: string) {
-    if (mode === 'overview') {
-      graph.setQueryParam({
-        order: 'startTime',
-        direction: 'asc',
-        status: null,
-        group: 'true',
-      });
-    } else if (mode === 'monitoring') {
-      graph.setQueryParam({
-        order: 'startTime',
-        direction: 'desc',
-        status: null,
-        group: 'false',
-      });
-    } else if (mode === 'error-tracker') {
-      graph.setQueryParam({
-        order: 'startTime',
-        direction: 'asc',
-        status: 'failed',
-        group: 'true',
-      });
-    }
-  }
-
   return (
     <>
       <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
@@ -223,7 +208,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 counts={counts}
                 graph={graph}
                 searchField={searchField}
-                setMode={setMode}
                 paramsString={urlParams}
                 isAnyGroupOpen={isAnyGroupOpen}
               />
@@ -248,7 +232,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 searchField={searchField}
                 graph={graph}
                 counts={counts}
-                setMode={setMode}
                 paramsString={urlParams}
                 isAnyGroupOpen={isAnyGroupOpen}
               />
