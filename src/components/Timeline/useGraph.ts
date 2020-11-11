@@ -304,7 +304,13 @@ export const ErrorTrackerMode = {
 
 type Param = string | undefined | null;
 
-function equalsDefaultMode(order: Param, dir: Param, status: Param, group: Param) {
+function equalsDefaultMode(order: Param, dir: Param, status: Param, group: Param): boolean {
+  // If we don't have any params, we just arrived to the page and we don't want to detect default
+  // mode yet
+  if (!order && !dir && !status) {
+    return false;
+  }
+
   return !![OverviewMode, MonitoringMode, ErrorTrackerMode].find(
     (mode) => mode.order === order && mode.direction === dir && mode.status === status && mode.group === group,
   );

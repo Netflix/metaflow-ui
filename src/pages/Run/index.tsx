@@ -91,19 +91,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const [previousTaskId, setPreviousTaskId] = useState<string>();
 
   useEffect(() => {
-    setPreviousStepName(undefined);
-    setPreviousTaskId(undefined);
-
-    if (run.status === 'completed') {
-      setMode('overview');
-    } else if (run.status === 'running') {
-      setMode('monitoring');
-    } else if (run.status === 'failed') {
-      setMode('error-tracker');
-    }
-  }, [params.runNumber]); // eslint-disable-line
-
-  useEffect(() => {
     params.stepName && params.stepName !== 'not-selected' && setPreviousStepName(params.stepName);
     params.taskId && params.stepName !== 'not-selected' && setPreviousTaskId(params.taskId);
   }, [params.stepName, params.taskId]);
@@ -126,6 +113,21 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const graph = useGraph(run.ts_epoch, run.finished_at || Date.now());
   const urlParams = new URLSearchParams(cleanParametersMap(graph.params)).toString();
+
+  useEffect(() => {
+    setPreviousStepName(undefined);
+    setPreviousTaskId(undefined);
+
+    if (!graph.params.direction && !graph.params.order && !graph.params.status) {
+      if (run.status === 'completed') {
+        graph.setMode('overview');
+      } else if (run.status === 'running') {
+        graph.setMode('monitoring');
+      } else if (run.status === 'failed') {
+        graph.setMode('error-tracker');
+      }
+    }
+  }, [params.runNumber]); // eslint-disable-line
   //
   // Graph measurements and rendering logic
   //
