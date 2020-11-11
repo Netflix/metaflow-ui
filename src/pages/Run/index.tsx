@@ -115,8 +115,8 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const urlParams = new URLSearchParams(cleanParametersMap(graph.params)).toString();
 
   useEffect(() => {
-    setPreviousStepName(undefined);
-    setPreviousTaskId(undefined);
+    setPreviousStepName(params.stepName || undefined);
+    setPreviousTaskId(params.taskId || undefined);
 
     if (!graph.params.direction && !graph.params.order && !graph.params.status) {
       if (run.status === 'completed') {
