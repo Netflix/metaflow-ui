@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Run, RunParam, APIError } from '../../types';
 
 import { ItemRow } from '../../components/Structure';
-import Icon from '../../components/Icon';
 import Tag from '../../components/Tag';
 import { SmallText } from '../../components/Text';
 import StatusField from '../../components/Status';
