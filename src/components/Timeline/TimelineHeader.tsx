@@ -16,7 +16,6 @@ import { RowCounts } from './useRowData';
 export type TimelineHeaderProps = {
   expandAll: () => void;
   collapseAll: () => void;
-  setMode: (str: string) => void;
   setFullscreen?: () => void;
   isFullscreen?: boolean;
   enableZoomControl?: boolean;
@@ -32,7 +31,6 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
   graph: graphHook,
   expandAll,
   collapseAll,
-  setMode,
   isFullscreen,
   setFullscreen,
   searchField,
@@ -77,16 +75,16 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
           <THeaderRightTop>
             <ModeContainer>
               <ButtonGroup big>
-                <Button active={activeMode === 'overview'} onClick={() => setMode('overview')}>
+                <Button active={activeMode === 'overview'} onClick={() => graphHook.setMode('overview')}>
                   {t('run.overview')}
                 </Button>
-                <Button active={activeMode === 'monitoring'} onClick={() => setMode('monitoring')}>
+                <Button active={activeMode === 'monitoring'} onClick={() => graphHook.setMode('monitoring')}>
                   {t('run.monitoring')}
                 </Button>
-                <Button active={activeMode === 'error-tracker'} onClick={() => setMode('error-tracker')}>
+                <Button active={activeMode === 'error-tracker'} onClick={() => graphHook.setMode('error-tracker')}>
                   {t('run.error-tracker')}
                 </Button>
-                <Button active={activeMode === 'custom'} onClick={() => null}>
+                <Button active={activeMode === 'custom'} onClick={() => graphHook.setMode('custom')}>
                   {t('run.custom')}
                 </Button>
               </ButtonGroup>
@@ -144,7 +142,9 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
 };
 
 function getMode(graph: GraphState) {
-  if (graph.group === true && !graph.statusFilter && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
+  if (graph.isCustomEnabled) {
+    return 'custom';
+  } else if (graph.group === true && !graph.statusFilter && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
     return 'overview';
   } else if (graph.group === false && !graph.statusFilter && graph.sortBy === 'startTime' && graph.sortDir === 'desc') {
     return 'monitoring';
