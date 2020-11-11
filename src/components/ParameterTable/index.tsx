@@ -67,10 +67,12 @@ function readParameterValue(str: string) {
 const ParameterKey = styled.td`
   padding-right: ${(p) => p.theme.spacer.hg}rem;
   color: ${(p) => p.theme.color.text.mid};
+  padding-bottom: 0.5rem;
 `;
 const ParameterValue = styled.td`
   color: ${(p) => p.theme.color.text.dark};
   word-break: break-all;
+  padding-bottom: 0.5rem;
 `;
 
 export default ParameterTable;
