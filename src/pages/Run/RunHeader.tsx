@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Run, RunParam, APIError } from '../../types';
 
 import { ItemRow } from '../../components/Structure';
-import Icon from '../../components/Icon';
 import Tag from '../../components/Tag';
 import { SmallText } from '../../components/Text';
 import StatusField from '../../components/Status';
@@ -18,13 +17,6 @@ import Spinner from '../../components/Spinner';
 import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../utils/run';
 import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
-
-function mergeTags(run: Run) {
-  const baseTags = run.tags || [];
-  const sysTags = run.system_tags || [];
-
-  return [...baseTags, ...sysTags];
-}
 
 const RunHeader: React.FC<{
   run?: Run | null;
@@ -73,64 +65,34 @@ const RunHeader: React.FC<{
           <InformationRow spaceless>
             <PropertyTable scheme="dark" items={[run]} columns={columns} />
           </InformationRow>
-          <InformationRow scrollOverflow={false}>
-            <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
-              <SmallText>{t('run.tags')}</SmallText>
-              <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
-                {run.system_tags.map((tag) => (
-                  <TagNoWrap
-                    key={tag}
-                    onClick={() => {
-                      history.push('/?_tags=' + encodeURIComponent(tag));
-                    }}
-                  >
-                    {tag}
-                  </TagNoWrap>
-                ))}
-                {(run.tags || []).map((tag) => (
-                  <TagNoWrap
-                    key={tag}
-                    dark
-                    onClick={() => {
-                      history.push('/?_tags=' + encodeURIComponent(tag));
-                    }}
-                  >
-                    {tag}
-                  </TagNoWrap>
-                ))}
-                <TagNoWrap
-                  onClick={() => {
-                    history.push('/?_tags=' + encodeURIComponent(mergeTags(run).join(',')));
-                  }}
-                >
-                  {t('run.select-all-tags')} <Icon name="plus" size="xs" />
-                </TagNoWrap>
-              </ItemRow>
-            </ItemRow>
-          </InformationRow>
+          {(run.tags || []).length > 0 && <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} />}
 
           {expanded && (
-            <InformationRow>
-              {status === 'Loading' && (
-                <div style={{ textAlign: 'center', margin: '2rem 0' }}>
-                  <Spinner sm />
-                </div>
-              )}
+            <>
+              <TagRow label={t('run.system-tags')} tags={run.system_tags || []} push={history.push} />
 
-              {status === 'Ok' && parameterTableItems && (
-                <ParameterTable
-                  label={t('run.parameters')}
-                  items={parameterTableItems}
-                  errorLabel={t('run.no-run-parameters')}
-                />
-              )}
+              <InformationRow>
+                {status === 'Loading' && (
+                  <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+                    <Spinner sm />
+                  </div>
+                )}
 
-              {status === 'Error' && error && (
-                <ItemRow margin="lg">
-                  <GenericError message={t('run.run-parameters-error')} />
-                </ItemRow>
-              )}
-            </InformationRow>
+                {status === 'Ok' && parameterTableItems && (
+                  <ParameterTable
+                    label={t('run.parameters')}
+                    items={parameterTableItems}
+                    errorLabel={t('run.no-run-parameters')}
+                  />
+                )}
+
+                {status === 'Error' && error && (
+                  <ItemRow margin="lg">
+                    <GenericError message={t('run.run-parameters-error')} />
+                  </ItemRow>
+                )}
+              </InformationRow>
+            </>
           )}
         </div>
       )}
@@ -144,6 +106,32 @@ const RunHeader: React.FC<{
     </RunHeaderContainer>
   );
 };
+
+type TagRowProps = {
+  tags: string[];
+  label: string;
+  push: (path: string) => void;
+};
+
+const TagRow: React.FC<TagRowProps> = ({ tags, label, push }) => (
+  <InformationRow scrollOverflow={false}>
+    <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
+      <SmallText>{label}</SmallText>
+      <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
+        {tags.map((tag) => (
+          <TagNoWrap
+            key={tag}
+            onClick={() => {
+              push('/?_tags=' + encodeURIComponent(tag));
+            }}
+          >
+            {tag}
+          </TagNoWrap>
+        ))}
+      </ItemRow>
+    </ItemRow>
+  </InformationRow>
+);
 
 const RunHeaderContainer = styled.div`
   position: relative;
