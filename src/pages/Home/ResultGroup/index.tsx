@@ -72,11 +72,7 @@ const ResultGroup: React.FC<Props> = ({
   return (
     <StyledResultGroup ref={targetRef}>
       <Table cellPadding="0" cellSpacing="0" ref={tableRef} style={{ position: 'relative', zIndex: 1 }}>
-        {isInViewport && rows.length > 5 ? (
-          <StickyHeader tableRef={tableRef}>{tableHeader}</StickyHeader>
-        ) : (
-          <thead>{tableHeader}</thead>
-        )}
+        {isInViewport ? <StickyHeader tableRef={tableRef}>{tableHeader}</StickyHeader> : <thead>{tableHeader}</thead>}
         <tbody>
           {rows.slice(0, targetCount).map((r, i) => {
             // Run is seen as stale if it doesnt match status filters anymore after its status changed
@@ -213,7 +209,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
   clickable,
 }) => (
   <>
-    <TR>
+    <TR className="result-group-title">
       <th colSpan={cols.length + 2} style={{ textAlign: 'left' }}>
         <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
           {label}
@@ -221,7 +217,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
         {error && <Label type={LabelType.Warning}>{error.message}</Label>}
       </th>
     </TR>
-    <TR>
+    <TR className="result-group-columns">
       <StatusColorHeaderCell />
       {cols.map((col) => (
         <HeaderColumn key={col.key} label={col.label} queryKey={col.key} onSort={onOrderChange} currentOrder={order} />
@@ -242,7 +238,8 @@ export const StyledResultGroup = styled(Section)`
     word-break: break-all;
   }
 
-  thead {
+  thead,
+  th {
     background: ${(p) => p.theme.color.bg.white};
   }
 

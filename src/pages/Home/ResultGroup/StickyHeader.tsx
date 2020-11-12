@@ -22,14 +22,7 @@ const StickyHeader: React.FC<Props> = ({ tableRef, children }) => {
 
   const isSticky = headerShouldStick(rect);
 
-  return (
-    <StickyHeaderTHead
-      className={isSticky ? 'sticky' : ''}
-      style={isSticky ? { transform: `translateY(${headerTopValue(rect)}px)` } : {}}
-    >
-      {children}
-    </StickyHeaderTHead>
-  );
+  return <StickyHeaderTHead className={isSticky ? 'sticky' : ''}>{children}</StickyHeaderTHead>;
 };
 
 function headerShouldStick(rect: DOMRect | undefined) {
@@ -39,21 +32,19 @@ function headerShouldStick(rect: DOMRect | undefined) {
   return false;
 }
 
-function headerTopValue(rect: DOMRect | undefined) {
-  if (rect) {
-    const baseValueFromTop = -(rect.y - HEADER_SIZE_PX);
-    // If table is on top, but rows are no longer visible, header should start "floating" on top of next
-    // table instead of going over it.
-    const floatingValueWhenOnTop = rect.y + rect.height < 160 ? 160 - (rect.y + rect.height) : 0;
-
-    return baseValueFromTop - floatingValueWhenOnTop;
-  }
-  return 0;
-}
-
 const StickyHeaderTHead = styled.thead`
   position: relative;
   z-index: 12;
+  th {
+    position: sticky;
+  }
+
+  .result-group-title th {
+    top: ${HEADER_SIZE_PX}px;
+  }
+
+  .result-group-columns th {
+    top: ${HEADER_SIZE_PX + 56}px;
 `;
 
 export default StickyHeader;
