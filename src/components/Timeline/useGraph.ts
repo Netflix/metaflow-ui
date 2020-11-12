@@ -310,7 +310,6 @@ function equalsDefaultMode(order: Param, dir: Param, status: Param, group: Param
   if (!order && !dir && !status) {
     return false;
   }
-  console.log(order, dir, status, group);
   return !![OverviewMode, MonitoringMode, ErrorTrackerMode].find(
     (mode) =>
       mode.order === order && mode.direction === dir && mode.status === (status || null) && mode.group === group,
@@ -413,7 +412,6 @@ export default function useGraph(start: number, end: number): GraphHook {
     } else if (mode === 'custom') {
       dispatch({ type: 'setCustom', value: true });
       // Check previous settings from localstorage for custom setting
-      console.log('setting to custom perkele');
       const previousSettings = localStorage.getItem('custom-settings');
       if (previousSettings) {
         const parsed = JSON.parse(previousSettings);
