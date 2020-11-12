@@ -111,7 +111,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Listing settings and graph measurements
   //
 
-  const graph = useGraph(run.ts_epoch, run.finished_at || Date.now());
+  const graph = useGraph(run.ts_epoch, run.finished_at || Date.now(), run.status === 'running');
   const urlParams = new URLSearchParams(cleanParametersMap(graph.params)).toString();
 
   useEffect(() => {
