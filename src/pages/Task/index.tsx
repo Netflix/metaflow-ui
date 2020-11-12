@@ -1,16 +1,13 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import PropertyTable from '../../components/PropertyTable';
-import InformationRow from '../../components/InformationRow';
 import { useTranslation } from 'react-i18next';
-import { Run as IRun, Task as ITask, Artifact, Log, AsyncStatus, Metadata } from '../../types';
+import { Run as IRun, Task as ITask, Log, AsyncStatus, Metadata } from '../../types';
 import useResource from '../../hooks/useResource';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
 import { RowCounts, RowDataAction } from '../../components/Timeline/useRowData';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
-import { ForceBreakText } from '../../components/Text';
 import LogList, { LogActionBar } from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
@@ -23,7 +20,6 @@ import TimelineHeader from '../../components/Timeline/TimelineHeader';
 import { GraphHook } from '../../components/Timeline/useGraph';
 import TaskDetails from './components/TaskDetails';
 import { StringParam, useQueryParams } from 'use-query-params';
-import { ItemRow } from '../../components/Structure';
 
 //
 // Task view
@@ -99,21 +95,6 @@ const Task: React.FC<TaskViewProps> = ({
     pause: !isCurrentTaskFinished || attemptId === null,
   });
 
-  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
-  const { status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`,
-    queryParams: {
-      attempt_id: attemptId !== null ? attemptId : '',
-    },
-    subscribeToEvents: true,
-    fullyDisableCache: true,
-    initialData: [],
-    onUpdate: (data) => {
-      data && setArtifacts(data);
-    },
-    pause: !isCurrentTaskFinished || attemptId === null,
-  });
-
   // Task data will be array so we need to set one of them as active task when they arrive depending if we
   // have attempt id parameter or not.
   useEffect(() => {
@@ -155,9 +136,9 @@ const Task: React.FC<TaskViewProps> = ({
   const renderComponentsForSection = useMemo(
     () => (sectionKey: string) =>
       pluginComponentsForSection(sectionKey).map(({ component: Component }, index) => {
-        return Component ? <Component key={index} task={task} artifacts={artifacts} /> : null;
+        return Component ? <Component key={index} task={task} artifacts={null} /> : null;
       }),
-    [task, artifacts, pluginComponentsForSection],
+    [task, pluginComponentsForSection],
   );
   const pluginSectionsCustom = useMemo(
     () =>
@@ -211,14 +192,12 @@ const Task: React.FC<TaskViewProps> = ({
   useEffect(() => {
     setStdout([]);
     setStderr([]);
-    setArtifacts([]);
     setTask(null);
   }, [stepName, taskId]);
 
   useEffect(() => {
     setStdout([]);
     setStderr([]);
-    setArtifacts([]);
   }, [attemptId]);
 
   return (
@@ -349,46 +328,6 @@ const Task: React.FC<TaskViewProps> = ({
                     </>
                   ),
                 },
-                {
-                  key: 'artifacts',
-                  order: 4,
-                  label: t('task.artifacts'),
-                  component: (
-                    <>
-                      <SectionLoader
-                        minHeight={200}
-                        status={artifactStatus}
-                        error={artifactError}
-                        component={
-                          <>
-                            <InformationRow spaceless>
-                              <PropertyTable
-                                items={artifacts || []}
-                                scheme="dark"
-                                columns={[
-                                  { label: t('fields.artifact-name') + ':', prop: 'name' },
-                                  {
-                                    label: t('fields.location') + ':',
-                                    accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
-                                  },
-                                  { label: t('fields.datastore-type') + ':', prop: 'ds_type' },
-                                  { label: t('fields.type') + ':', prop: 'type' },
-                                  { label: t('fields.content-type') + ':', prop: 'content_type' },
-                                ]}
-                              />
-                            </InformationRow>
-                            {artifacts && artifacts.length === 0 && (
-                              <ItemRow margin="lg">
-                                <GenericError message={t('task.no-artifacts-found')} />
-                              </ItemRow>
-                            )}
-                          </>
-                        }
-                      />
-                      {renderComponentsForSection('artifacts')}
-                    </>
-                  ),
-                },
                 ...pluginSectionsCustom.map((sectionKey, index) => {
                   const sections = pluginComponentsForSection(sectionKey).filter((s) => s.component);
                   // Get order and label for each section
@@ -403,7 +342,7 @@ const Task: React.FC<TaskViewProps> = ({
                     component: (
                       <>
                         {sections.map(({ component: Component }, index) => {
-                          return Component ? <Component key={index} task={task} artifacts={artifacts} /> : null;
+                          return Component ? <Component key={index} task={task} artifacts={null} /> : null;
                         })}
                       </>
                     ),
