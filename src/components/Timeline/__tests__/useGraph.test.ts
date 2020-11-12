@@ -19,13 +19,17 @@ const DEFAULT_GRAPH: GraphState = {
   timelineStart: 1000,
   timelineEnd: 3000,
   controlled: false,
+  stepFilter: [],
+  group: true,
+  statusFilter: null,
+  isCustomEnabled: false,
 };
 
 describe('useGraph hook - reducer', () => {
   it('init', () => {
     const newState = graphReducer(DEFAULT_GRAPH, { type: 'init', start: 0, end: 100 });
-    expect(newState.max).toBe(100);
-    expect(newState.timelineEnd).toBe(100);
+    expect(newState.max).toBe(3000);
+    expect(newState.timelineEnd).toBe(3000);
     expect(newState.min).toBe(0);
     expect(newState.timelineStart).toBe(0);
   });

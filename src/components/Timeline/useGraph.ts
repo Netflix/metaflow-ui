@@ -65,15 +65,17 @@ export type GraphAction =
   | { type: 'setSteps'; steps: string | null | undefined }
   | { type: 'setStatus'; status: string | null | undefined }
   | { type: 'setGrouping'; value: boolean }
-  | { type: 'setCustom'; value: boolean };
+  | { type: 'setCustom'; value: boolean }
+  | { type: 'incrementTimelineLength' };
 
 export function graphReducer(state: GraphState, action: GraphAction): GraphState {
   switch (action.type) {
     case 'init': {
+      const end = state.max > action.end ? state.max : action.end;
       if (state.controlled) {
         return {
           ...state,
-          max: action.end,
+          max: end,
           min: action.start,
           timelineStart: action.start > state.timelineStart ? action.start : state.timelineStart,
           timelineEnd: action.end < state.timelineEnd ? action.end : state.timelineEnd,
@@ -81,9 +83,9 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
       } else {
         return {
           ...state,
-          max: action.end,
+          max: end,
           min: action.start,
-          timelineEnd: action.end,
+          timelineEnd: end,
           timelineStart: action.start,
           controlled: false,
         };
@@ -173,6 +175,9 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
 
     case 'setCustom':
       return { ...state, isCustomEnabled: action.value };
+
+    case 'incrementTimelineLength':
+      return { ...state, max: state.max + 1000, timelineEnd: state.controlled ? state.timelineEnd : state.max + 1000 };
 
     case 'reset':
       return { ...state, controlled: false, min: 0, max: 0, timelineStart: 0, timelineEnd: 0 };
@@ -318,7 +323,7 @@ function equalsDefaultMode(order: Param, dir: Param, status: Param, group: Param
 
 type GraphMode = 'overview' | 'monitoring' | 'error-tracker' | 'custom';
 
-export default function useGraph(start: number, end: number): GraphHook {
+export default function useGraph(start: number, end: number, autoIncrement: boolean): GraphHook {
   const [graph, dispatch] = useReducer(graphReducer, {
     alignment: 'fromStartTime',
     sortBy: 'startTime',
@@ -421,6 +426,16 @@ export default function useGraph(start: number, end: number): GraphHook {
       }
     }
   };
+
+  useEffect(() => {
+    const tm = setInterval(() => {
+      if (autoIncrement && graph.sortBy !== 'duration') {
+        dispatch({ type: 'incrementTimelineLength' });
+      }
+    }, 1000);
+
+    return () => clearInterval(tm);
+  }, [graph.sortBy, autoIncrement]);
 
   return { graph, dispatch, setQueryParam: sq, params: q, setMode };
 }
