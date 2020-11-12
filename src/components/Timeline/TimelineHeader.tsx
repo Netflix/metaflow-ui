@@ -5,7 +5,7 @@ import { ItemRow } from '../Structure';
 import { Text } from '../Text';
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Icon, { SortIcon } from '../Icon';
 import { useTranslation } from 'react-i18next';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
@@ -77,15 +77,19 @@ const TimelineHeader: React.FC<TimelineHeaderProps> = ({
               <ButtonGroup big>
                 <Button active={activeMode === 'overview'} onClick={() => graphHook.setMode('overview')}>
                   {t('run.overview')}
+                  {<ActivityPointer active={activeMode === 'overview'} />}
                 </Button>
                 <Button active={activeMode === 'monitoring'} onClick={() => graphHook.setMode('monitoring')}>
                   {t('run.monitoring')}
+                  <ActivityPointer active={activeMode === 'monitoring'} />
                 </Button>
                 <Button active={activeMode === 'error-tracker'} onClick={() => graphHook.setMode('error-tracker')}>
                   {t('run.error-tracker')}
+                  <ActivityPointer active={activeMode === 'error-tracker'} />
                 </Button>
                 <Button active={activeMode === 'custom'} onClick={() => graphHook.setMode('custom')}>
                   {t('run.custom')}
+                  <ActivityPointer active={activeMode === 'custom'} />
                 </Button>
               </ButtonGroup>
             </ModeContainer>
@@ -343,20 +347,31 @@ const ModeContainer = styled.div`
   .button {
     position: relative;
   }
+`;
 
-  .button.active::after {
+const BaseArrowCSS = css`
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: all 0.15s;
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 9px solid #e9e9e9;
+`;
+
+const ActivityPointer = styled.div<{ active: boolean }>`
+  ${(p) => !p.active && 'display: none;'}
+  ${BaseArrowCSS}
+  top: 100%;
+
+  &::after {
     content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    transition: all 0.15s;
-    width: 0;
-    height: 0;
-    border-left: 9px solid transparent;
-    border-right: 9px solid transparent;
-    border-bottom: 10px solid #f6f6f6;
-    top: 100%;
+    ${BaseArrowCSS}
+    border-bottom: 6px solid #f6f6f6;
+    top: 4px;
   }
 `;
 
