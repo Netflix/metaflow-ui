@@ -310,9 +310,9 @@ function equalsDefaultMode(order: Param, dir: Param, status: Param, group: Param
   if (!order && !dir && !status) {
     return false;
   }
-
   return !![OverviewMode, MonitoringMode, ErrorTrackerMode].find(
-    (mode) => mode.order === order && mode.direction === dir && mode.status === status && mode.group === group,
+    (mode) =>
+      mode.order === order && mode.direction === dir && mode.status === (status || null) && mode.group === group,
   );
 }
 
