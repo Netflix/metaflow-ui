@@ -27,6 +27,8 @@ export interface PluginTaskSection {
   key: string;
   label?: string;
   order?: number;
+  // Note that task section doesn't necessarily have all the data that plugin needs. For example artifact data
+  // is no unavailable. TODO: Design system for plugins to request data.
   component?: React.FC<{ task: Task | null; artifacts: Artifact[] | null }>;
 }
 
