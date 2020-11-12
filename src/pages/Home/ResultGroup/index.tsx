@@ -242,22 +242,6 @@ export const StyledResultGroup = styled(Section)`
   th {
     background: ${(p) => p.theme.color.bg.white};
   }
-
-  td.timeline-link {
-    width: 7.4rem;
-  }
-
-  td.timeline-link a {
-    text-decoration: none;
-    color: ${(p) => p.theme.color.text.light};
-    white-space: nowrap;
-    display: flex;
-    align-items: center;
-  }
-
-  tr:hover td.timeline-link a {
-    color: ${(p) => p.theme.color.bg.blue};
-  }
 `;
 
 const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
