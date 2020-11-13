@@ -339,40 +339,6 @@ function taskDuration(a: Row): number {
   return 0;
 }
 
-function findLongestTaskOfRow(step: StepRowData, graph: GraphState): number {
-  return Object.keys(step.data).reduce((longestTaskValue, taskid) => {
-    // There might be multiple tasks in same row since there might be retries. Find longest.
-    const minAndMax: [number | null, number | null] = step.data[taskid].reduce(
-      ([start, end]: [number | null, number | null], task) => {
-        let newStart = null;
-        let newEnd = null;
-
-        if (start === null) {
-          newStart = task.started_at || task.ts_epoch;
-        } else {
-          newStart = start < (task.started_at || task.ts_epoch) ? start : task.started_at || task.ts_epoch;
-        }
-
-        if (end === null) {
-          newEnd = task.finished_at || null;
-        } else {
-          newEnd = !task.finished_at || end > task.finished_at ? end : task.finished_at;
-        }
-
-        return [newStart, newEnd];
-      },
-      [null, null],
-    );
-
-    const durationOfTasksInSameRow = (minAndMax[1] || 0) - (minAndMax[0] || 0);
-    // Compare longest task to current longest
-    if (graph.min + durationOfTasksInSameRow > longestTaskValue) {
-      return graph.min + durationOfTasksInSameRow;
-    }
-    return longestTaskValue;
-  }, 0);
-}
-
 function shouldApplySearchFilter(results: SearchResultModel) {
   return results.status !== 'NotAsked';
 }
