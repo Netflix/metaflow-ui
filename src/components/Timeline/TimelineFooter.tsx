@@ -1,18 +1,20 @@
-import React, { createRef, useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import { GraphState } from './useGraph';
 import styled from 'styled-components';
 
 import { formatDuration } from '../../utils/format';
 import { StepLineData } from './useRowData';
+import { Row } from './VirtualizedTimeline';
 
 type TimelineFooterProps = {
   steps: StepLineData[];
   graph: GraphState;
+  rows: Row[];
   move: (change: number) => void;
   updateHandle: (which: 'left' | 'right', to: number) => void;
 };
 
-const TimelineFooter: React.FC<TimelineFooterProps> = ({ steps, graph, move, updateHandle }) => {
+const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHandle, rows, steps }) => {
   const _container = createRef<HTMLDivElement>();
   const [drag, setDrag] = useState({ dragging: false, start: 0 });
   const [handleDrag, setHandleDrag] = useState<{ dragging: boolean; which: 'left' | 'right' }>({
@@ -56,21 +58,54 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ steps, graph, move, upd
     }
   };
 
+  //
+  // Data processing
+  //
+  const [taskBasedLines, setTaskBasedLines] = useState<{ start: number; end: number; steps: string[] }[]>([]);
+  useEffect(() => {
+    if (graph.group) {
+      return;
+    } else {
+      const perGroup = Math.ceil(rows.length / 13);
+      const grps = [];
+      for (let i = 0; i < 13; i++) {
+        grps.push(rows.slice(perGroup * i, perGroup * i + perGroup));
+      }
+
+      const linegroups = grps.map((grp) => {
+        const start = grp.sort((a, b) => takeSmallest(a) - takeSmallest(b))[0];
+        const end = grp.sort((a, b) => takeBiggest(b) - takeBiggest(a))[0];
+
+        return {
+          start: start ? takeSmallest(start) : 0,
+          end: end ? takeBiggest(end) : 0,
+          steps: grp.map((r) => (r.type === 'task' ? r.data[0].step_name : r.data.step_name)),
+        };
+      });
+
+      setTaskBasedLines(linegroups);
+    }
+  }, [rows, graph.group]);
+
   return (
     <TimelineFooterContainer>
       <TimelineFooterLeft></TimelineFooterLeft>
       <TimelineFooterContent>
         <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
         <MiniTimelineContainer ref={_container}>
-          {steps.map((step) => (
-            <MiniTimelineRow
-              key={step.original?.step_name || step.started_at}
-              graph={graph}
-              started={step.started_at}
-              finished={step.finished_at}
-              isFailed={step.isFailed}
-            />
-          ))}
+          {graph.group
+            ? steps.map((step) => (
+                <MiniTimelineRow
+                  key={step.original?.step_name || step.started_at}
+                  graph={graph}
+                  started={step.started_at}
+                  finished={step.finished_at}
+                  isFailed={step.isFailed}
+                />
+              ))
+            : taskBasedLines.map((step, index) => (
+                <MiniTimelineRow key={index} graph={graph} started={step.start} finished={step.end} isFailed={false} />
+              ))}
         </MiniTimelineContainer>
       </TimelineFooterContent>
 
@@ -100,6 +135,9 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ steps, graph, move, upd
   );
 };
 
+const takeSmallest = (a: Row) => (a.type === 'task' ? a.data[0].started_at || a.data[0].ts_epoch : a.data.ts_epoch);
+const takeBiggest = (a: Row) => (a.type === 'task' ? a.data[a.data.length - 1].finished_at : a.data.finished_at) || 0;
+
 const MiniTimelineRow: React.FC<{
   started: number;
   finished: number;
@@ -107,7 +145,7 @@ const MiniTimelineRow: React.FC<{
   graph: GraphState;
 }> = ({ started, finished, isFailed, graph }) => {
   const width = ((finished - started) / (graph.max - graph.min)) * 100;
-  const left = ((started - graph.min) / (graph.max - graph.min)) * 100;
+  const left = graph.sortBy === 'duration' ? 0 : ((started - graph.min) / (graph.max - graph.min)) * 100;
 
   return (
     <MiniTimelineLine
@@ -125,6 +163,7 @@ const MiniTimelineLine = styled.div<{ isFailed: boolean }>`
   transition: all 0.15s;
   background: ${(p) => (p.isFailed ? p.theme.color.bg.red : p.theme.color.bg.green)};
   height: 2px;
+  min-height: 2px;
   margin-bottom: 1px;
   min-width: 2px;
 `;

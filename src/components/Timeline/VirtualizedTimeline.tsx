@@ -178,6 +178,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
 
             <TimelineFooter
               graph={graph}
+              rows={rows}
               steps={steps}
               move={(value) => graphDispatch({ type: 'move', value: value })}
               updateHandle={(which, to) => {
