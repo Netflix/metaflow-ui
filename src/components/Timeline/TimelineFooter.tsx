@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { formatDuration } from '../../utils/format';
 import { StepLineData } from './useRowData';
 import { Row } from './VirtualizedTimeline';
+import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
 
 type TimelineFooterProps = {
   steps: StepLineData[];
@@ -66,25 +67,32 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
     if (graph.group) {
       return;
     } else {
+      // If we are not grouping, we make lines from task rows.
+      // 13 groups since we cannot fit more.
       const perGroup = Math.ceil(rows.length / 13);
       const grps = [];
+      // Cut all rows to 13 groups
       for (let i = 0; i < 13; i++) {
         grps.push(rows.slice(perGroup * i, perGroup * i + perGroup));
       }
+      // Calculate start and end points for each group
+      const linegroups = grps.map(
+        graph.sortBy !== 'duration'
+          ? startAndEndpointsOfRows
+          : (grp) => {
+              const timings = startAndEndpointsOfRows(grp);
+              const longest = getLongestRowDuration(grp);
 
-      const linegroups = grps.map((grp) => {
-        const start = grp.sort((a, b) => takeSmallest(a) - takeSmallest(b))[0];
-        const end = grp.sort((a, b) => takeBiggest(b) - takeBiggest(a))[0];
-
-        return {
-          start: start ? takeSmallest(start) : 0,
-          end: end ? takeBiggest(end) : 0,
-        };
-      });
+              return {
+                start: timings.start,
+                end: timings.start + longest,
+              };
+            },
+      );
 
       setTaskBasedLines(linegroups.filter((r) => r.start !== 0 && r.end !== 0));
     }
-  }, [rows, graph.group]);
+  }, [rows, graph.group, graph.sortBy]);
 
   return (
     <TimelineFooterContainer>
@@ -134,9 +142,6 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
   );
 };
 
-const takeSmallest = (a: Row) => (a.type === 'task' ? a.data[0].started_at || a.data[0].ts_epoch : a.data.ts_epoch);
-const takeBiggest = (a: Row) => (a.type === 'task' ? a.data[a.data.length - 1].finished_at : a.data.finished_at) || 0;
-
 const MiniTimelineRow: React.FC<{
   started: number;
   finished: number;
@@ -159,7 +164,6 @@ const MiniTimelineRow: React.FC<{
 
 const MiniTimelineLine = styled.div<{ isFailed: boolean }>`
   position: relative;
-  transition: all 0.15s;
   background: ${(p) => (p.isFailed ? p.theme.color.bg.red : p.theme.color.bg.green)};
   height: 2px;
   min-height: 2px;

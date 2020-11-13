@@ -83,9 +83,9 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
       } else {
         return {
           ...state,
-          max: end,
+          max: state.sortBy === 'duration' ? action.end : end,
           min: action.start,
-          timelineEnd: end,
+          timelineEnd: state.sortBy === 'duration' ? action.end : end,
           timelineStart: action.start,
           controlled: false,
         };
