@@ -373,36 +373,6 @@ function findLongestTaskOfRow(step: StepRowData, graph: GraphState): number {
   }, 0);
 }
 
-export function findHighestTimestampForGraph(
-  rowDataState: RowDataModel,
-  graph: GraphState,
-  visibleSteps: Step[],
-): number {
-  const visibleStepNames = visibleSteps.map((item) => item.step_name);
-  return Object.keys(rowDataState).reduce((val, key) => {
-    const step = rowDataState[key];
-    // When we are sorting by start time, we can check just last step finish time
-    if ((graph.sortBy === 'startTime' || graph.sortBy === 'endTime') && step.finished_at && step.finished_at > val) {
-      if (visibleStepNames.indexOf(key) === -1) return val;
-      return step.finished_at;
-    }
-    // When sorting by duration and grouping by step, we want to find longest step
-    if (graph.sortBy === 'duration' && graph.group && step.finished_at) {
-      if (visibleStepNames.indexOf(key) === -1) return val;
-      return graph.min + step.duration > val ? graph.min + step.duration : val;
-    }
-    // When sorting by duration and grouping by none (so just tasks) we want to find longest task
-    if (graph.sortBy === 'duration' && !graph.group && step.finished_at) {
-      const longestTask = findLongestTaskOfRow(step, graph);
-
-      if (longestTask > val) {
-        return longestTask;
-      }
-    }
-    return val;
-  }, graph.min);
-}
-
 function shouldApplySearchFilter(results: SearchResultModel) {
   return results.status !== 'NotAsked';
 }
