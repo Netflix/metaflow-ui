@@ -61,7 +61,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
   //
   // Data processing
   //
-  const [taskBasedLines, setTaskBasedLines] = useState<{ start: number; end: number; steps: string[] }[]>([]);
+  const [taskBasedLines, setTaskBasedLines] = useState<{ start: number; end: number }[]>([]);
   useEffect(() => {
     if (graph.group) {
       return;
@@ -79,11 +79,10 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
         return {
           start: start ? takeSmallest(start) : 0,
           end: end ? takeBiggest(end) : 0,
-          steps: grp.map((r) => (r.type === 'task' ? r.data[0].step_name : r.data.step_name)),
         };
       });
 
-      setTaskBasedLines(linegroups);
+      setTaskBasedLines(linegroups.filter((r) => r.start !== 0 && r.end !== 0));
     }
   }, [rows, graph.group]);
 
