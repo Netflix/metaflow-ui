@@ -157,22 +157,17 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     // If no grouping, sort tasks here.
     const rowsToUpdate = !graph.graph.group ? newRows.sort(sortRows(graph.graph.sortBy, graph.graph.sortDir)) : newRows;
 
-    if (graph.graph.sortBy === 'duration') {
-      const timings = startAndEndpointsOfRows([...rowsToUpdate]);
-      const longestDuration = getLongestRowDuration(rowsToUpdate);
+    // Figure out new timings to timeline view
+    // TODO: Move this to somewhere else
+    const timings = startAndEndpointsOfRows([...rowsToUpdate]);
+    const endTime =
+      graph.graph.sortBy === 'duration' ? timings.start + getLongestRowDuration(rowsToUpdate) : timings.end;
 
+    if (timings.start !== 0 && endTime !== 0) {
       graph.dispatch({
         type: 'init',
         start: timings.start,
-        end: timings.start + longestDuration,
-      });
-    } else {
-      const timings = startAndEndpointsOfRows([...rowsToUpdate]);
-
-      graph.dispatch({
-        type: 'init',
-        start: timings.start,
-        end: timings.end,
+        end: endTime,
       });
     }
 
