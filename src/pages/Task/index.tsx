@@ -82,6 +82,7 @@ const Task: React.FC<TaskViewProps> = ({
   });
 
   const attemptId = qp.attempt || null;
+
   const task = useMemo(() => {
     return tasks?.find((item) => item.task_id === selectedTaskId) || null;
   }, [tasks, selectedTaskId]); // eslint-disable-line
@@ -253,13 +254,13 @@ const Task: React.FC<TaskViewProps> = ({
               header={
                 status === 'Ok' && tasks && tasks.length > 0 ? (
                   <TabsHeading>
-                    {tasks.sort(sortTaskAttempts).map((item, index) => (
+                    {tasks.sort(sortTaskAttempts).map((item: ITask, index) => (
                       <TabsHeadingItem
                         key={index}
                         onClick={() =>
                           setQp({ attempt: typeof item.attempt_id === 'number' ? item.attempt_id.toString() : null })
                         }
-                        active={item === task}
+                        active={item?.attempt_id.toString() === attemptId}
                       >
                         {t('task.attempt')} {index + 1}
                       </TabsHeadingItem>
