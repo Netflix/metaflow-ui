@@ -118,7 +118,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   startTimeOfFirstAttempt,
 }) => {
   const { push } = useHistory();
-  const visibleDuration = graph.timelineEnd - graph.timelineStart;
+  const visibleDuration = graph.timelineEnd - graph.timelineStart + (graph.timelineEnd - graph.timelineStart) * 0.01;
   const boxStartTime = row.type === 'step' ? row.data.ts_epoch : row.data.started_at || row.data.ts_epoch;
 
   // Calculate have much box needs to be pushed from (or to) left
