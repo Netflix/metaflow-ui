@@ -1,18 +1,21 @@
-import React, { createRef, useState } from 'react';
+import React, { createRef, useEffect, useState } from 'react';
 import { GraphState } from './useGraph';
 import styled from 'styled-components';
 
 import { formatDuration } from '../../utils/format';
 import { StepLineData } from './useRowData';
+import { Row } from './VirtualizedTimeline';
+import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
 
 type TimelineFooterProps = {
   steps: StepLineData[];
   graph: GraphState;
+  rows: Row[];
   move: (change: number) => void;
   updateHandle: (which: 'left' | 'right', to: number) => void;
 };
 
-const TimelineFooter: React.FC<TimelineFooterProps> = ({ steps, graph, move, updateHandle }) => {
+const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHandle, rows, steps }) => {
   const _container = createRef<HTMLDivElement>();
   const [drag, setDrag] = useState({ dragging: false, start: 0 });
   const [handleDrag, setHandleDrag] = useState<{ dragging: boolean; which: 'left' | 'right' }>({
@@ -56,21 +59,60 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ steps, graph, move, upd
     }
   };
 
+  //
+  // Data processing
+  //
+  const [taskBasedLines, setTaskBasedLines] = useState<{ start: number; end: number }[]>([]);
+  useEffect(() => {
+    if (graph.group) {
+      return;
+    } else {
+      // If we are not grouping, we make lines from task rows.
+      // 13 groups since we cannot fit more.
+      const perGroup = Math.ceil(rows.length / 13);
+      const grps = [];
+      // Cut all rows to 13 groups
+      for (let i = 0; i < 13; i++) {
+        grps.push(rows.slice(perGroup * i, perGroup * i + perGroup));
+      }
+      // Calculate start and end points for each group
+      const linegroups = grps.map(
+        graph.sortBy !== 'duration'
+          ? startAndEndpointsOfRows
+          : (grp) => {
+              const timings = startAndEndpointsOfRows(grp);
+              const longest = getLongestRowDuration(grp);
+
+              return {
+                start: timings.start,
+                end: timings.start + longest,
+              };
+            },
+      );
+
+      setTaskBasedLines(linegroups.filter((r) => r.start !== 0 && r.end !== 0));
+    }
+  }, [rows, graph.group, graph.sortBy]);
+
   return (
     <TimelineFooterContainer>
       <TimelineFooterLeft></TimelineFooterLeft>
       <TimelineFooterContent>
         <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
         <MiniTimelineContainer ref={_container}>
-          {steps.map((step) => (
-            <MiniTimelineRow
-              key={step.original?.step_name || step.started_at}
-              graph={graph}
-              started={step.started_at}
-              finished={step.finished_at}
-              isFailed={step.isFailed}
-            />
-          ))}
+          {graph.group
+            ? steps.map((step) => (
+                <MiniTimelineRow
+                  key={step.original?.step_name || step.started_at}
+                  graph={graph}
+                  started={step.started_at}
+                  finished={step.finished_at}
+                  isFailed={step.isFailed}
+                />
+              ))
+            : taskBasedLines.map((step, index) => (
+                <MiniTimelineRow key={index} graph={graph} started={step.start} finished={step.end} isFailed={false} />
+              ))}
         </MiniTimelineContainer>
       </TimelineFooterContent>
 
@@ -107,7 +149,7 @@ const MiniTimelineRow: React.FC<{
   graph: GraphState;
 }> = ({ started, finished, isFailed, graph }) => {
   const width = ((finished - started) / (graph.max - graph.min)) * 100;
-  const left = ((started - graph.min) / (graph.max - graph.min)) * 100;
+  const left = graph.sortBy === 'duration' ? 0 : ((started - graph.min) / (graph.max - graph.min)) * 100;
 
   return (
     <MiniTimelineLine
@@ -122,9 +164,9 @@ const MiniTimelineRow: React.FC<{
 
 const MiniTimelineLine = styled.div<{ isFailed: boolean }>`
   position: relative;
-  transition: all 0.15s;
   background: ${(p) => (p.isFailed ? p.theme.color.bg.red : p.theme.color.bg.green)};
   height: 2px;
+  min-height: 2px;
   margin-bottom: 1px;
   min-width: 2px;
 `;
@@ -182,6 +224,7 @@ const TimelineFooterContainer = styled.div`
   width: 100%;
   height: 40px;
   margin-bottom: 25px;
+  border-top: ${(p) => p.theme.border.mediumLight};
 `;
 
 const TimelineFooterLeft = styled.div`

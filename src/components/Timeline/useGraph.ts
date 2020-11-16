@@ -39,6 +39,8 @@ export type GraphState = {
   group: boolean;
   // Custom mode enabled:
   isCustomEnabled: boolean;
+  // Checked when switching order by so we dont keep zoomed state.
+  resetToFullview: boolean;
 };
 
 export type GraphAction =
@@ -72,22 +74,23 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
   switch (action.type) {
     case 'init': {
       const end = state.max > action.end ? state.max : action.end;
-      if (state.controlled) {
+      if (state.controlled && !state.resetToFullview) {
         return {
           ...state,
           max: end,
           min: action.start,
           timelineStart: action.start > state.timelineStart ? action.start : state.timelineStart,
-          timelineEnd: action.end < state.timelineEnd ? action.end : state.timelineEnd,
+          timelineEnd: end < state.timelineEnd ? end : state.timelineEnd,
         };
       } else {
         return {
           ...state,
-          max: end,
+          max: state.sortBy === 'duration' ? action.end : end,
           min: action.start,
-          timelineEnd: end,
+          timelineEnd: state.sortBy === 'duration' ? action.end : end,
           timelineStart: action.start,
           controlled: false,
+          resetToFullview: false,
         };
       }
     }
@@ -119,7 +122,12 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
       return { ...state, alignment: action.alignment };
 
     case 'sortBy':
-      return { ...state, sortBy: action.by, alignment: action.by === 'duration' ? 'fromLeft' : 'fromStartTime' };
+      return {
+        ...state,
+        sortBy: action.by,
+        alignment: action.by === 'duration' ? 'fromLeft' : 'fromStartTime',
+        resetToFullview: true,
+      };
 
     case 'sortDir':
       return { ...state, sortDir: action.dir };
@@ -338,6 +346,7 @@ export default function useGraph(start: number, end: number, autoIncrement: bool
     statusFilter: null,
     group: true,
     isCustomEnabled: false,
+    resetToFullview: false,
   });
 
   //

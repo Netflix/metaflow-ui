@@ -178,6 +178,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
 
             <TimelineFooter
               graph={graph}
+              rows={rows}
               steps={steps}
               move={(value) => graphDispatch({ type: 'move', value: value })}
               updateHandle={(which, to) => {
@@ -336,70 +337,6 @@ function taskDuration(a: Row): number {
     return getRowFinishedTime(a) - getRowStartTime(a);
   }
   return 0;
-}
-
-function findLongestTaskOfRow(step: StepRowData, graph: GraphState): number {
-  return Object.keys(step.data).reduce((longestTaskValue, taskid) => {
-    // There might be multiple tasks in same row since there might be retries. Find longest.
-    const minAndMax: [number | null, number | null] = step.data[taskid].reduce(
-      ([start, end]: [number | null, number | null], task) => {
-        let newStart = null;
-        let newEnd = null;
-
-        if (start === null) {
-          newStart = task.started_at || task.ts_epoch;
-        } else {
-          newStart = start < (task.started_at || task.ts_epoch) ? start : task.started_at || task.ts_epoch;
-        }
-
-        if (end === null) {
-          newEnd = task.finished_at || null;
-        } else {
-          newEnd = !task.finished_at || end > task.finished_at ? end : task.finished_at;
-        }
-
-        return [newStart, newEnd];
-      },
-      [null, null],
-    );
-
-    const durationOfTasksInSameRow = (minAndMax[1] || 0) - (minAndMax[0] || 0);
-    // Compare longest task to current longest
-    if (graph.min + durationOfTasksInSameRow > longestTaskValue) {
-      return graph.min + durationOfTasksInSameRow;
-    }
-    return longestTaskValue;
-  }, 0);
-}
-
-export function findHighestTimestampForGraph(
-  rowDataState: RowDataModel,
-  graph: GraphState,
-  visibleSteps: Step[],
-): number {
-  const visibleStepNames = visibleSteps.map((item) => item.step_name);
-  return Object.keys(rowDataState).reduce((val, key) => {
-    const step = rowDataState[key];
-    // When we are sorting by start time, we can check just last step finish time
-    if ((graph.sortBy === 'startTime' || graph.sortBy === 'endTime') && step.finished_at && step.finished_at > val) {
-      if (visibleStepNames.indexOf(key) === -1) return val;
-      return step.finished_at;
-    }
-    // When sorting by duration and grouping by step, we want to find longest step
-    if (graph.sortBy === 'duration' && graph.group && step.finished_at) {
-      if (visibleStepNames.indexOf(key) === -1) return val;
-      return graph.min + step.duration > val ? graph.min + step.duration : val;
-    }
-    // When sorting by duration and grouping by none (so just tasks) we want to find longest task
-    if (graph.sortBy === 'duration' && !graph.group && step.finished_at) {
-      const longestTask = findLongestTaskOfRow(step, graph);
-
-      if (longestTask > val) {
-        return longestTask;
-      }
-    }
-    return val;
-  }, graph.min);
 }
 
 function shouldApplySearchFilter(results: SearchResultModel) {

@@ -18,6 +18,7 @@ export function createGraphState(partialGraph: Partial<GraphState>): GraphState 
     statusFilter: null,
     group: true,
     isCustomEnabled: false,
+    resetToFullview: false,
     ...partialGraph,
   };
 }

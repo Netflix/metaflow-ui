@@ -13,14 +13,10 @@ import Tabs from '../../components/Tabs';
 import { FixedContent, ItemRow } from '../../components/Structure';
 import RunHeader from './RunHeader';
 import DAG from '../../components/DAG';
-import Timeline, {
-  Row,
-  makeVisibleRows,
-  findHighestTimestampForGraph,
-  sortRows,
-} from '../../components/Timeline/VirtualizedTimeline';
+import Timeline, { Row, makeVisibleRows, sortRows } from '../../components/Timeline/VirtualizedTimeline';
 import useSeachField from '../../hooks/useSearchField';
 import useGraph from '../../components/Timeline/useGraph';
+import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
 
 type RunPageParams = {
   flowId: string;
@@ -158,17 +154,23 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
     // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
     const newRows: Row[] = makeVisibleRows(rows, graph.graph, visibleSteps, searchField.results);
-
-    if (visibleSteps.length > 0) {
-      // Find last point in timeline. We could do this somewhere else.. Like in useRowData reducer
-      const highestTimestamp = findHighestTimestampForGraph(rows, graph.graph, visibleSteps);
-
-      graph.dispatch({ type: 'init', start: visibleSteps[0].ts_epoch, end: highestTimestamp });
-    }
-
+    // If no grouping, sort tasks here.
     const rowsToUpdate = !graph.graph.group ? newRows.sort(sortRows(graph.graph.sortBy, graph.graph.sortDir)) : newRows;
 
-    // If no grouping, sort tasks here.
+    // Figure out new timings to timeline view
+    // TODO: Move this to somewhere else
+    const timings = startAndEndpointsOfRows([...rowsToUpdate]);
+    const endTime =
+      graph.graph.sortBy === 'duration' ? timings.start + getLongestRowDuration(rowsToUpdate) : timings.end;
+
+    if (timings.start !== 0 && endTime !== 0) {
+      graph.dispatch({
+        type: 'init',
+        start: timings.start,
+        end: endTime,
+      });
+    }
+
     setVisibleRows(rowsToUpdate);
     /* eslint-disable */
   }, [
