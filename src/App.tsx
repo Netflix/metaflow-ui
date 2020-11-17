@@ -13,6 +13,8 @@ import './theme/font/roboto.css';
 import theme from './theme';
 
 import { NotificationsProvider, Notifications } from './components/Notifications';
+import ErrorBoundary from './components/GeneralErrorBoundary';
+import { useTranslation } from 'react-i18next';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -25,21 +27,24 @@ function ScrollToTop() {
 }
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <ThemeProvider theme={theme}>
-      <NotificationsProvider>
-        <GlobalStyle />
-        <Router>
-          <ScrollToTop />
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <Notifications />
-            <AppBar />
-            <Page>
-              <Root />
-            </Page>
-          </QueryParamProvider>
-        </Router>
-      </NotificationsProvider>
+      <ErrorBoundary message={t('error.application-error')}>
+        <NotificationsProvider>
+          <GlobalStyle />
+          <Router>
+            <ScrollToTop />
+            <QueryParamProvider ReactRouterRoute={Route}>
+              <Notifications />
+              <AppBar />
+              <Page>
+                <Root />
+              </Page>
+            </QueryParamProvider>
+          </Router>
+        </NotificationsProvider>
+      </ErrorBoundary>
     </ThemeProvider>
   );
 };

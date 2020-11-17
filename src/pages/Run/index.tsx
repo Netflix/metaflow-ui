@@ -17,6 +17,7 @@ import Timeline, { Row, makeVisibleRows, sortRows } from '../../components/Timel
 import useSeachField from '../../hooks/useSearchField';
 import useGraph from '../../components/Timeline/useGraph';
 import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
+import ErrorBoundary from '../../components/GeneralErrorBoundary';
 
 type RunPageParams = {
   flowId: string;
@@ -186,7 +187,9 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   return (
     <>
-      <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
+      <ErrorBoundary message={t('error.run-header-error')}>
+        <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
+      </ErrorBoundary>
       <Tabs
         widen
         activeTab={tab}
@@ -195,24 +198,30 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
             key: 'dag',
             label: t('run.DAG'),
             linkTo: getPath.dag(params.flowId, params.runNumber) + '?' + urlParams,
-            component: <DAG run={run} steps={steps} />,
+            component: (
+              <ErrorBoundary message={t('error.dag-error')}>
+                <DAG run={run} steps={steps} />
+              </ErrorBoundary>
+            ),
           },
           {
             key: 'timeline',
             label: t('run.timeline'),
             linkTo: getPath.timeline(params.flowId, params.runNumber) + '?' + urlParams,
             component: (
-              <Timeline
-                rows={visibleRows}
-                steps={steps}
-                rowDataDispatch={dispatch}
-                status={taskStatus}
-                counts={counts}
-                graph={graph}
-                searchField={searchField}
-                paramsString={urlParams}
-                isAnyGroupOpen={isAnyGroupOpen}
-              />
+              <ErrorBoundary message={t('error.timeline-error')}>
+                <Timeline
+                  rows={visibleRows}
+                  steps={steps}
+                  rowDataDispatch={dispatch}
+                  status={taskStatus}
+                  counts={counts}
+                  graph={graph}
+                  searchField={searchField}
+                  paramsString={urlParams}
+                  isAnyGroupOpen={isAnyGroupOpen}
+                />
+              </ErrorBoundary>
             ),
           },
           {
@@ -225,18 +234,20 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
               getPath.tasks(params.flowId, params.runNumber) + '?' + urlParams,
             temporary: !!(previousStepName && previousTaskId),
             component: (
-              <TaskViewContainer
-                run={run}
-                stepName={previousStepName || 'not-selected'}
-                taskId={previousTaskId || 'not-selected'}
-                rows={visibleRows}
-                rowDataDispatch={dispatch}
-                searchField={searchField}
-                graph={graph}
-                counts={counts}
-                paramsString={urlParams}
-                isAnyGroupOpen={isAnyGroupOpen}
-              />
+              <ErrorBoundary message={t('error.task-error')}>
+                <TaskViewContainer
+                  run={run}
+                  stepName={previousStepName || 'not-selected'}
+                  taskId={previousTaskId || 'not-selected'}
+                  rows={visibleRows}
+                  rowDataDispatch={dispatch}
+                  searchField={searchField}
+                  graph={graph}
+                  counts={counts}
+                  paramsString={urlParams}
+                  isAnyGroupOpen={isAnyGroupOpen}
+                />
+              </ErrorBoundary>
             ),
           },
         ]}

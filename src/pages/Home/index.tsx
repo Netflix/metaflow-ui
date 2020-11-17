@@ -11,6 +11,8 @@ import { useQueryParams, StringParam, withDefault } from 'use-query-params';
 import HomeSidebar from './Sidebar';
 import HomeContentArea from './Content';
 import { EventType } from '../../ws';
+import ErrorBoundary from '../../components/GeneralErrorBoundary';
+import { useTranslation } from 'react-i18next';
 
 const defaultParams = {
   _order: '-ts_epoch',
@@ -20,6 +22,7 @@ const defaultParams = {
 };
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
   //
   // State
   //
@@ -205,7 +208,7 @@ const Home: React.FC = () => {
   };
 
   const handleLoadMore = () => {
-    if ((getResult().pages?.last || 0) <= page && !fakeParams) {
+    if ((getResult()?.pages?.last || 0) <= page && !fakeParams) {
       return;
     }
     setFakeParams(null);
@@ -231,27 +234,31 @@ const Home: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flex: 1 }}>
-      <HomeSidebar
-        handleParamChange={handleParamChange}
-        updateListValue={updateListValue}
-        params={activeParams}
-        defaultFiltersActive={defaultFiltersActive}
-        resetAllFilters={resetAllFilters}
-      />
+      <ErrorBoundary message={t('error.sidebar-error')}>
+        <HomeSidebar
+          handleParamChange={handleParamChange}
+          updateListValue={updateListValue}
+          params={activeParams}
+          defaultFiltersActive={defaultFiltersActive}
+          resetAllFilters={resetAllFilters}
+        />
+      </ErrorBoundary>
 
-      <HomeContentArea
-        error={error}
-        status={status}
-        params={activeParams}
-        runGroups={runGroups}
-        handleOrderChange={handleOrderChange}
-        handleGroupTitleClick={handleGroupTitleClick}
-        updateListValue={updateListValue}
-        loadMore={handleLoadMore}
-        targetCount={
-          isGrouping(activeParams) ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page
-        }
-      />
+      <ErrorBoundary message={t('home-error')}>
+        <HomeContentArea
+          error={error}
+          status={status}
+          params={activeParams}
+          runGroups={runGroups}
+          handleOrderChange={handleOrderChange}
+          handleGroupTitleClick={handleGroupTitleClick}
+          updateListValue={updateListValue}
+          loadMore={handleLoadMore}
+          targetCount={
+            isGrouping(activeParams) ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page
+          }
+        />
+      </ErrorBoundary>
     </div>
   );
 };

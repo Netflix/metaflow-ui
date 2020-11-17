@@ -179,6 +179,21 @@ const en = {
 
       'log-error-s3': 'There was a problem loading logs from AWS',
       'log-error': 'There was a problem loading logs.',
+
+      'application-error':
+        'Application encountered an unexpected error. This should not happen and might be caused by unexpected data.',
+      'sidebar-error':
+        'Sidebar encountered an unexpected error. This should not happen and might be caused by unexpected data or parameters.',
+      'home-error':
+        'Run listing encountered an unexpected error. This should not happen and might be caused by unexpected data.',
+      'run-header-error':
+        'Run info section encountered an unexpected error. This should not happen and might be caused by unexpected data.',
+      'dag-error':
+        'DAG encountered an unexpected error. This should not happen and might be caused by unexpected data.',
+      'timeline-error':
+        'Timeline encountered an unexpected error. This should not happen and might be caused by unexpected data.',
+      'task-error':
+        'Task page encountered an unexpected error. This should not happen and might be caused by unexpected data.',
     },
 
     component: {
