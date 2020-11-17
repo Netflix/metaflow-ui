@@ -14,7 +14,7 @@ const StatusContainer = styled.div`
   text-transform: capitalize;
 `;
 
-const StatusColorIndicator = styled.div<{ status: string }>`
+export const StatusColorIndicator = styled.div<{ status: string }>`
   height: 8px;
   width: 8px;
   border-radius: 2px;

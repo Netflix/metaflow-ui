@@ -12,6 +12,7 @@ import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import SearchField from '../SearchField';
 import CollapseButton from './CollapseButton';
 import { RowCounts } from './useRowData';
+import { StatusColorIndicator } from '../Status';
 
 export type TimelineHeaderProps = {
   expandAll: () => void;
@@ -205,6 +206,7 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
         <TimelineHeaderItem pad="sm">
           <StatusContainer>
             <Text>{t('fields.status')}:</Text>
+            <StatusLights status={graph.statusFilter || 'all'} />
             <DropdownField
               horizontal
               onChange={(e) => {
@@ -261,9 +263,35 @@ const SortButton: React.FC<{
     {current === property ? <HeaderSortIcon dir={direction} /> : null}
   </Button>
 );
+
 const HeaderSortIcon: React.FC<{ dir: 'asc' | 'desc' }> = ({ dir }) => (
   <SortIcon padLeft size="sm" active direction={dir === 'asc' ? 'up' : 'down'} />
 );
+
+const StatusLights: React.FC<{ status: string }> = ({ status }) => (
+  <StatusLightsContainer>
+    {status === 'all' && (
+      <>
+        <StatusBox status="completed" />
+        <StatusBox status="running" />
+        <StatusBox status="failed" />
+      </>
+    )}
+    {status === 'completed' && <StatusBox status="completed" />}
+    {status === 'failed' && <StatusBox status="failed" />}
+    {status === 'running' && <StatusBox status="running" />}
+  </StatusLightsContainer>
+);
+
+const StatusLightsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+`;
+
+const StatusBox = styled(StatusColorIndicator)`
+  margin: 0 1px;
+`;
 
 const TimelineHeaderContainer = styled.div`
   border-bottom: ${(p) => p.theme.border.mediumLight};

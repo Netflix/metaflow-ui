@@ -17,13 +17,15 @@ import Spinner from '../../components/Spinner';
 import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../utils/run';
 import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
+import { RowCounts } from '../../components/Timeline/useRowData';
 
 const RunHeader: React.FC<{
   run?: Run | null;
   parameters: RunParam | null;
+  counts: RowCounts;
   status: ResourceStatus;
   error: APIError | null;
-}> = ({ run, parameters, status, error }) => {
+}> = ({ run, parameters, status, error, counts }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const [expanded, setExpanded] = useState(false);
@@ -36,6 +38,10 @@ const RunHeader: React.FC<{
   const columns = [
     { label: t('fields.run-id') + ':', prop: 'run_number' as const },
     { label: t('fields.status') + ':', accessor: (item: Run) => <StatusField status={item.status} /> },
+    {
+      label: t('fields.tasks') + ':',
+      accessor: () => `${counts.all} ${counts.failed !== 0 ? `(${counts.failed} ${t('status.fail')})` : ''}`,
+    },
     {
       label: t('fields.user') + ':',
       accessor: (item: Run) => (

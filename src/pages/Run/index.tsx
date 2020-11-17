@@ -194,7 +194,13 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   return (
     <>
       <ErrorBoundary message={t('error.run-header-error')}>
-        <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
+        <RunHeader
+          run={run}
+          parameters={runParameters}
+          status={runParametersStatus}
+          error={runParameterError}
+          counts={counts}
+        />
       </ErrorBoundary>
       <Tabs
         widen

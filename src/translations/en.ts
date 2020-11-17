@@ -33,6 +33,7 @@ const en = {
       tag: 'Tag',
       project: 'Project',
       'user-tags': 'User tags',
+      tasks: 'Tasks',
 
       flow_id: 'Flow',
 
@@ -157,6 +158,10 @@ const en = {
     connection: {
       'waiting-for-connection': 'Waiting for connection',
       'data-might-be-stale': 'Reconnected, but data might be stale. Click here to reconnect',
+    },
+
+    status: {
+      fail: 'failed',
     },
 
     error: {
