@@ -140,39 +140,45 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Figure out rows that should be visible if something related to that changes
   // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {
-    // Filter out steps if we have step filters on.
-    const visibleSteps: Step[] = Object.keys(rows)
-      .map((key) => rows[key].step)
-      .filter(
-        (item): item is Step =>
-          // Filter out possible undefined (should not really happen, might though if there is some timing issues with REST and websocket)
-          item !== undefined &&
-          // Check if step filter is active. Show only selected steps
-          (graph.graph.stepFilter.length === 0 || graph.graph.stepFilter.indexOf(item.step_name) > -1) &&
-          // Filter out steps starting with _ since they are not interesting to user
-          !item.step_name.startsWith('_'),
-      );
+    try {
+      // Filter out steps if we have step filters on.
+      const visibleSteps: Step[] = Object.keys(rows)
+        .map((key) => rows[key].step)
+        .filter(
+          (item): item is Step =>
+            // Filter out possible undefined (should not really happen, might though if there is some timing issues with REST and websocket)
+            item !== undefined &&
+            // Check if step filter is active. Show only selected steps
+            (graph.graph.stepFilter.length === 0 || graph.graph.stepFilter.indexOf(item.step_name) > -1) &&
+            // Filter out steps starting with _ since they are not interesting to user
+            !item.step_name.startsWith('_'),
+        );
 
-    // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
-    const newRows: Row[] = makeVisibleRows(rows, graph.graph, visibleSteps, searchField.results);
-    // If no grouping, sort tasks here.
-    const rowsToUpdate = !graph.graph.group ? newRows.sort(sortRows(graph.graph.sortBy, graph.graph.sortDir)) : newRows;
+      // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
+      const newRows: Row[] = makeVisibleRows(rows, graph.graph, visibleSteps, searchField.results);
+      // If no grouping, sort tasks here.
+      const rowsToUpdate = !graph.graph.group
+        ? newRows.sort(sortRows(graph.graph.sortBy, graph.graph.sortDir))
+        : newRows;
 
-    // Figure out new timings to timeline view
-    // TODO: Move this to somewhere else
-    const timings = startAndEndpointsOfRows([...rowsToUpdate]);
-    const endTime =
-      graph.graph.sortBy === 'duration' ? timings.start + getLongestRowDuration(rowsToUpdate) : timings.end;
+      // Figure out new timings to timeline view
+      // TODO: Move this to somewhere else
+      const timings = startAndEndpointsOfRows([...rowsToUpdate]);
+      const endTime =
+        graph.graph.sortBy === 'duration' ? timings.start + getLongestRowDuration(rowsToUpdate) : timings.end;
 
-    if (timings.start !== 0 && endTime !== 0) {
-      graph.dispatch({
-        type: 'init',
-        start: timings.start,
-        end: endTime,
-      });
+      if (timings.start !== 0 && endTime !== 0) {
+        graph.dispatch({
+          type: 'init',
+          start: timings.start,
+          end: endTime,
+        });
+      }
+
+      setVisibleRows(rowsToUpdate);
+    } catch (e) {
+      console.warn('Unexpected error while contructing task rows: ', e);
     }
-
-    setVisibleRows(rowsToUpdate);
     /* eslint-disable */
   }, [
     rows,
