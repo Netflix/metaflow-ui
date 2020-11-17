@@ -12,6 +12,7 @@ import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import SearchField from '../SearchField';
 import CollapseButton from './CollapseButton';
 import { RowCounts } from './useRowData';
+import { StatusColorIndicator } from '../Status';
 
 export type TimelineHeaderProps = {
   expandAll: () => void;
@@ -271,14 +272,14 @@ const StatusLights: React.FC<{ status: string }> = ({ status }) => (
   <StatusLightsContainer>
     {status === 'all' && (
       <>
-        <StatusBox color="green" />
-        <StatusBox color="yellow" />
-        <StatusBox color="red" />
+        <StatusBox status="completed" />
+        <StatusBox status="running" />
+        <StatusBox status="failed" />
       </>
     )}
-    {status === 'completed' && <StatusBox color="green" />}
-    {status === 'failed' && <StatusBox color="red" />}
-    {status === 'running' && <StatusBox color="yellow" />}
+    {status === 'completed' && <StatusBox status="completed" />}
+    {status === 'failed' && <StatusBox status="failed" />}
+    {status === 'running' && <StatusBox status="running" />}
   </StatusLightsContainer>
 );
 
@@ -288,14 +289,8 @@ const StatusLightsContainer = styled.div`
   margin-left: 0.5rem;
 `;
 
-const StatusBox = styled.div<{ color: 'red' | 'green' | 'yellow' }>`
-  height: 8px;
-  width: 8px;
-  border-radius: 3px;
+const StatusBox = styled(StatusColorIndicator)`
   margin: 0 1px;
-
-  background: ${(p) =>
-    p.color === 'red' ? p.theme.color.bg.red : p.color === 'green' ? p.theme.color.bg.green : p.theme.color.bg.yellow};
 `;
 
 const TimelineHeaderContainer = styled.div`
