@@ -186,7 +186,13 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   return (
     <>
-      <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
+      <RunHeader
+        run={run}
+        parameters={runParameters}
+        status={runParametersStatus}
+        error={runParameterError}
+        counts={counts}
+      />
       <Tabs
         widen
         activeTab={tab}
