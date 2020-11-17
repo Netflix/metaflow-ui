@@ -205,6 +205,7 @@ const CustomFilters: React.FC<CustomFiltersProps> = ({
         <TimelineHeaderItem pad="sm">
           <StatusContainer>
             <Text>{t('fields.status')}:</Text>
+            <StatusLights status={graph.statusFilter || 'all'} />
             <DropdownField
               horizontal
               onChange={(e) => {
@@ -261,9 +262,41 @@ const SortButton: React.FC<{
     {current === property ? <HeaderSortIcon dir={direction} /> : null}
   </Button>
 );
+
 const HeaderSortIcon: React.FC<{ dir: 'asc' | 'desc' }> = ({ dir }) => (
   <SortIcon padLeft size="sm" active direction={dir === 'asc' ? 'up' : 'down'} />
 );
+
+const StatusLights: React.FC<{ status: string }> = ({ status }) => (
+  <StatusLightsContainer>
+    {status === 'all' && (
+      <>
+        <StatusBox color="green" />
+        <StatusBox color="yellow" />
+        <StatusBox color="red" />
+      </>
+    )}
+    {status === 'completed' && <StatusBox color="green" />}
+    {status === 'failed' && <StatusBox color="red" />}
+    {status === 'running' && <StatusBox color="yellow" />}
+  </StatusLightsContainer>
+);
+
+const StatusLightsContainer = styled.div`
+  display: flex;
+  align-items: center;
+  margin-left: 0.5rem;
+`;
+
+const StatusBox = styled.div<{ color: 'red' | 'green' | 'yellow' }>`
+  height: 8px;
+  width: 8px;
+  border-radius: 3px;
+  margin: 0 1px;
+
+  background: ${(p) =>
+    p.color === 'red' ? p.theme.color.bg.red : p.color === 'green' ? p.theme.color.bg.green : p.theme.color.bg.yellow};
+`;
 
 const TimelineHeaderContainer = styled.div`
   border-bottom: ${(p) => p.theme.border.mediumLight};
