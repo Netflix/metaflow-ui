@@ -11,6 +11,8 @@ import { useQueryParams, StringParam, withDefault } from 'use-query-params';
 import HomeSidebar from './Sidebar';
 import HomeContentArea from './Content';
 import { EventType } from '../../ws';
+import ErrorBoundary from '../../components/GeneralErrorBoundary';
+import { useTranslation } from 'react-i18next';
 
 const defaultParams = {
   _order: '-ts_epoch',
@@ -20,6 +22,7 @@ const defaultParams = {
 };
 
 const Home: React.FC = () => {
+  const { t } = useTranslation();
   //
   // State
   //
@@ -100,30 +103,34 @@ const Home: React.FC = () => {
     // is most cases we want to replace existing data EXCEPT when we are loading next page.
     //
     onUpdate: (items) => {
-      const newItems = items
-        ? fromPairs<IRun[]>(
-            pluck(activeParams._group, items).map((val) => [
-              val as string,
-              items.filter((r) => r[activeParams._group] === val),
-            ]),
-          )
-        : {};
+      try {
+        const newItems = items
+          ? fromPairs<IRun[]>(
+              pluck(activeParams._group, items).map((val) => [
+                val as string,
+                items.filter((r) => r[activeParams._group] === val),
+              ]),
+            )
+          : {};
 
-      // If we changed just page (of grouped items), we need to merge old and new result.
-      // Also don't merge when using fakeParams since it means we are reordering, in that case everything needs to change.
-      if (page > 1 && !fakeParams) {
-        const merged = Object.keys(newItems).reduce((obj, key) => {
-          const runs = newItems[key];
+        // If we changed just page (of grouped items), we need to merge old and new result.
+        // Also don't merge when using fakeParams since it means we are reordering, in that case everything needs to change.
+        if (page > 1 && !fakeParams) {
+          const merged = Object.keys(newItems).reduce((obj, key) => {
+            const runs = newItems[key];
 
-          if (obj[key]) {
-            return { ...obj, [key]: obj[key].concat(runs) };
-          }
-          return { ...obj, [key]: runs };
-        }, runGroups);
+            if (obj[key]) {
+              return { ...obj, [key]: obj[key].concat(runs) };
+            }
+            return { ...obj, [key]: runs };
+          }, runGroups);
 
-        setRunGroups(merged);
-      } else {
-        setRunGroups(newItems);
+          setRunGroups(merged);
+        } else {
+          setRunGroups(newItems);
+        }
+      } catch (e) {
+        console.warn('Unexpected error on runs fetch: ', e);
       }
     },
     //
@@ -131,33 +138,37 @@ const Home: React.FC = () => {
     // For now if we are not grouping, groupKey is 'undefined'
     //
     onWSUpdate: (item, eventType) => {
-      const groupKey = item[activeParams._group] || 'undefined';
-      if (typeof groupKey === 'string') {
-        if (eventType === EventType.INSERT) {
-          setRunGroups((rg) => {
-            if (rg[groupKey]) {
-              return { ...rg, [groupKey]: sortRuns([...rg[groupKey], item], activeParams._order) };
-            }
-            return { ...rg, [groupKey]: [item] };
-          });
-        } else if (eventType === EventType.UPDATE) {
-          setRunGroups((rg) => {
-            if (rg[groupKey]) {
-              const index = rg[groupKey].findIndex((r) => r.run_number === item.run_number);
-              return {
-                ...rg,
-                [groupKey]:
-                  index > -1
-                    ? sortRuns(
-                        rg[groupKey].map((r) => (r.run_number === item.run_number ? item : r)),
-                        activeParams._order,
-                      )
-                    : sortRuns([...rg[groupKey], item], activeParams._order),
-              };
-            }
-            return { ...rg, [groupKey]: [item] };
-          });
+      try {
+        const groupKey = item[activeParams._group] || 'undefined';
+        if (typeof groupKey === 'string') {
+          if (eventType === EventType.INSERT) {
+            setRunGroups((rg) => {
+              if (rg[groupKey]) {
+                return { ...rg, [groupKey]: sortRuns([...rg[groupKey], item], activeParams._order) };
+              }
+              return { ...rg, [groupKey]: [item] };
+            });
+          } else if (eventType === EventType.UPDATE) {
+            setRunGroups((rg) => {
+              if (rg[groupKey]) {
+                const index = rg[groupKey].findIndex((r) => r.run_number === item.run_number);
+                return {
+                  ...rg,
+                  [groupKey]:
+                    index > -1
+                      ? sortRuns(
+                          rg[groupKey].map((r) => (r.run_number === item.run_number ? item : r)),
+                          activeParams._order,
+                        )
+                      : sortRuns([...rg[groupKey], item], activeParams._order),
+                };
+              }
+              return { ...rg, [groupKey]: [item] };
+            });
+          }
         }
+      } catch (e) {
+        console.warn('Unexpected error on websocket updates: ', e);
       }
     },
     socketParamFilter: (params) => {
@@ -205,7 +216,7 @@ const Home: React.FC = () => {
   };
 
   const handleLoadMore = () => {
-    if ((getResult().pages?.last || 0) <= page && !fakeParams) {
+    if ((getResult()?.pages?.last || 0) <= page && !fakeParams) {
       return;
     }
     setFakeParams(null);
@@ -231,27 +242,31 @@ const Home: React.FC = () => {
 
   return (
     <div style={{ display: 'flex', flex: 1 }}>
-      <HomeSidebar
-        handleParamChange={handleParamChange}
-        updateListValue={updateListValue}
-        params={activeParams}
-        defaultFiltersActive={defaultFiltersActive}
-        resetAllFilters={resetAllFilters}
-      />
+      <ErrorBoundary message={t('error.sidebar-error')}>
+        <HomeSidebar
+          handleParamChange={handleParamChange}
+          updateListValue={updateListValue}
+          params={activeParams}
+          defaultFiltersActive={defaultFiltersActive}
+          resetAllFilters={resetAllFilters}
+        />
+      </ErrorBoundary>
 
-      <HomeContentArea
-        error={error}
-        status={status}
-        params={activeParams}
-        runGroups={runGroups}
-        handleOrderChange={handleOrderChange}
-        handleGroupTitleClick={handleGroupTitleClick}
-        updateListValue={updateListValue}
-        loadMore={handleLoadMore}
-        targetCount={
-          isGrouping(activeParams) ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page
-        }
-      />
+      <ErrorBoundary message={t('home-error')}>
+        <HomeContentArea
+          error={error}
+          status={status}
+          params={activeParams}
+          runGroups={runGroups}
+          handleOrderChange={handleOrderChange}
+          handleGroupTitleClick={handleGroupTitleClick}
+          updateListValue={updateListValue}
+          loadMore={handleLoadMore}
+          targetCount={
+            isGrouping(activeParams) ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page
+          }
+        />
+      </ErrorBoundary>
     </div>
   );
 };

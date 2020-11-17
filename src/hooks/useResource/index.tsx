@@ -62,7 +62,7 @@ export interface Resource<T> {
   url: string;
   data: T | null;
   error: APIError | null;
-  getResult: () => DataModel<T>;
+  getResult: () => DataModel<T> | undefined;
   cache: CacheInterface;
   target: string;
   status: ResourceStatus;

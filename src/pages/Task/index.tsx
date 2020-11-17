@@ -127,31 +127,46 @@ const Task: React.FC<TaskViewProps> = ({
   const sectionPlugins = useMemo(() => Plugins.all().filter((plugin) => plugin['task-view']?.sections), []);
 
   const pluginComponentsForSection = useMemo(
-    () => (sectionKey: string) =>
-      sectionPlugins.reduce((components: PluginTaskSection[], plugin: Plugin) => {
-        const sectionMatches = (plugin['task-view']?.sections || []).filter((section) => section.key === sectionKey);
-        return [...components, ...sectionMatches];
-      }, []),
+    () => (sectionKey: string) => {
+      try {
+        return sectionPlugins.reduce((components: PluginTaskSection[], plugin: Plugin) => {
+          const sectionMatches = (plugin['task-view']?.sections || []).filter((section) => section.key === sectionKey);
+          return [...components, ...sectionMatches];
+        }, []);
+      } catch (e) {
+        console.warn('There war unexpected error on plugins: ', e);
+        return [];
+      }
+    },
     [sectionPlugins],
   );
   const renderComponentsForSection = useMemo(
-    () => (sectionKey: string) =>
-      pluginComponentsForSection(sectionKey).map(({ component: Component }, index) => {
-        return Component ? <Component key={index} task={task} artifacts={null} /> : null;
-      }),
+    () => (sectionKey: string) => {
+      try {
+        return pluginComponentsForSection(sectionKey).map(({ component: Component }, index) => {
+          return Component ? <Component key={index} task={task} artifacts={null} /> : null;
+        });
+      } catch (e) {
+        console.warn('There war unexpected error on plugins: ', e);
+        return [];
+      }
+    },
     [task, pluginComponentsForSection],
   );
-  const pluginSectionsCustom = useMemo(
-    () =>
-      sectionPlugins
+  const pluginSectionsCustom = useMemo(() => {
+    try {
+      return sectionPlugins
         .reduce((sections: string[], plugin: Plugin) => {
           const sectionKeys = (plugin['task-view']?.sections || []).map((section) => section.key);
           return [...sections, ...sectionKeys];
         }, []) // Find section keys from plugins
         .filter((v, i, a) => a.indexOf(v) === i) // Remove duplicates
-        .filter((key) => !['taskinfo', 'stdout', 'stderr', 'artifacts'].includes(key)), // Ignore built-in sections
-    [sectionPlugins],
-  );
+        .filter((key) => !['taskinfo', 'stdout', 'stderr', 'artifacts'].includes(key)); // Ignore built-in sections
+    } catch (e) {
+      console.warn('There war unexpected error on plugins: ', e);
+      return [];
+    }
+  }, [sectionPlugins]);
 
   //
   // Plugins helpers end

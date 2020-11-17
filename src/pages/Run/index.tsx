@@ -17,6 +17,7 @@ import Timeline, { Row, makeVisibleRows, sortRows } from '../../components/Timel
 import useSeachField from '../../hooks/useSearchField';
 import useGraph from '../../components/Timeline/useGraph';
 import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
+import ErrorBoundary from '../../components/GeneralErrorBoundary';
 
 type RunPageParams = {
   flowId: string;
@@ -139,39 +140,45 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Figure out rows that should be visible if something related to that changes
   // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {
-    // Filter out steps if we have step filters on.
-    const visibleSteps: Step[] = Object.keys(rows)
-      .map((key) => rows[key].step)
-      .filter(
-        (item): item is Step =>
-          // Filter out possible undefined (should not really happen, might though if there is some timing issues with REST and websocket)
-          item !== undefined &&
-          // Check if step filter is active. Show only selected steps
-          (graph.graph.stepFilter.length === 0 || graph.graph.stepFilter.indexOf(item.step_name) > -1) &&
-          // Filter out steps starting with _ since they are not interesting to user
-          !item.step_name.startsWith('_'),
-      );
+    try {
+      // Filter out steps if we have step filters on.
+      const visibleSteps: Step[] = Object.keys(rows)
+        .map((key) => rows[key].step)
+        .filter(
+          (item): item is Step =>
+            // Filter out possible undefined (should not really happen, might though if there is some timing issues with REST and websocket)
+            item !== undefined &&
+            // Check if step filter is active. Show only selected steps
+            (graph.graph.stepFilter.length === 0 || graph.graph.stepFilter.indexOf(item.step_name) > -1) &&
+            // Filter out steps starting with _ since they are not interesting to user
+            !item.step_name.startsWith('_'),
+        );
 
-    // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
-    const newRows: Row[] = makeVisibleRows(rows, graph.graph, visibleSteps, searchField.results);
-    // If no grouping, sort tasks here.
-    const rowsToUpdate = !graph.graph.group ? newRows.sort(sortRows(graph.graph.sortBy, graph.graph.sortDir)) : newRows;
+      // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
+      const newRows: Row[] = makeVisibleRows(rows, graph.graph, visibleSteps, searchField.results);
+      // If no grouping, sort tasks here.
+      const rowsToUpdate = !graph.graph.group
+        ? newRows.sort(sortRows(graph.graph.sortBy, graph.graph.sortDir))
+        : newRows;
 
-    // Figure out new timings to timeline view
-    // TODO: Move this to somewhere else
-    const timings = startAndEndpointsOfRows([...rowsToUpdate]);
-    const endTime =
-      graph.graph.sortBy === 'duration' ? timings.start + getLongestRowDuration(rowsToUpdate) : timings.end;
+      // Figure out new timings to timeline view
+      // TODO: Move this to somewhere else
+      const timings = startAndEndpointsOfRows([...rowsToUpdate]);
+      const endTime =
+        graph.graph.sortBy === 'duration' ? timings.start + getLongestRowDuration(rowsToUpdate) : timings.end;
 
-    if (timings.start !== 0 && endTime !== 0) {
-      graph.dispatch({
-        type: 'init',
-        start: timings.start,
-        end: endTime,
-      });
+      if (timings.start !== 0 && endTime !== 0) {
+        graph.dispatch({
+          type: 'init',
+          start: timings.start,
+          end: endTime,
+        });
+      }
+
+      setVisibleRows(rowsToUpdate);
+    } catch (e) {
+      console.warn('Unexpected error while contructing task rows: ', e);
     }
-
-    setVisibleRows(rowsToUpdate);
     /* eslint-disable */
   }, [
     rows,
@@ -186,13 +193,15 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   return (
     <>
-      <RunHeader
-        run={run}
-        parameters={runParameters}
-        status={runParametersStatus}
-        error={runParameterError}
-        counts={counts}
-      />
+      <ErrorBoundary message={t('error.run-header-error')}>
+        <RunHeader
+          run={run}
+          parameters={runParameters}
+          status={runParametersStatus}
+          error={runParameterError}
+          counts={counts}
+        />
+      </ErrorBoundary>
       <Tabs
         widen
         activeTab={tab}
@@ -201,24 +210,30 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
             key: 'dag',
             label: t('run.DAG'),
             linkTo: getPath.dag(params.flowId, params.runNumber) + '?' + urlParams,
-            component: <DAG run={run} steps={steps} />,
+            component: (
+              <ErrorBoundary message={t('error.dag-error')}>
+                <DAG run={run} steps={steps} />
+              </ErrorBoundary>
+            ),
           },
           {
             key: 'timeline',
             label: t('run.timeline'),
             linkTo: getPath.timeline(params.flowId, params.runNumber) + '?' + urlParams,
             component: (
-              <Timeline
-                rows={visibleRows}
-                steps={steps}
-                rowDataDispatch={dispatch}
-                status={taskStatus}
-                counts={counts}
-                graph={graph}
-                searchField={searchField}
-                paramsString={urlParams}
-                isAnyGroupOpen={isAnyGroupOpen}
-              />
+              <ErrorBoundary message={t('error.timeline-error')}>
+                <Timeline
+                  rows={visibleRows}
+                  steps={steps}
+                  rowDataDispatch={dispatch}
+                  status={taskStatus}
+                  counts={counts}
+                  graph={graph}
+                  searchField={searchField}
+                  paramsString={urlParams}
+                  isAnyGroupOpen={isAnyGroupOpen}
+                />
+              </ErrorBoundary>
             ),
           },
           {
@@ -231,18 +246,20 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
               getPath.tasks(params.flowId, params.runNumber) + '?' + urlParams,
             temporary: !!(previousStepName && previousTaskId),
             component: (
-              <TaskViewContainer
-                run={run}
-                stepName={previousStepName || 'not-selected'}
-                taskId={previousTaskId || 'not-selected'}
-                rows={visibleRows}
-                rowDataDispatch={dispatch}
-                searchField={searchField}
-                graph={graph}
-                counts={counts}
-                paramsString={urlParams}
-                isAnyGroupOpen={isAnyGroupOpen}
-              />
+              <ErrorBoundary message={t('error.task-error')}>
+                <TaskViewContainer
+                  run={run}
+                  stepName={previousStepName || 'not-selected'}
+                  taskId={previousTaskId || 'not-selected'}
+                  rows={visibleRows}
+                  rowDataDispatch={dispatch}
+                  searchField={searchField}
+                  graph={graph}
+                  counts={counts}
+                  paramsString={urlParams}
+                  isAnyGroupOpen={isAnyGroupOpen}
+                />
+              </ErrorBoundary>
             ),
           },
         ]}
