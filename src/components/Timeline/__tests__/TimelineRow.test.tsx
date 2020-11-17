@@ -50,6 +50,7 @@ describe('TimelineRow component', () => {
           finished_at: 1000,
           duration: 1000,
           step: createStep({}),
+          isFailed: false,
           data: {},
         },
       },
@@ -82,9 +83,10 @@ describe('TimelineRow component', () => {
         <BoxGraphicElement {...props} />
       </TestWrapper>,
     );
-
-    expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(10%)');
-    expect(getByTestId('boxgraphic').style.width).toBe('35%');
+    // Values of container and boxgraphic should be weird since we are extending timeline over selected value
+    // by 1% of selected visible timeline
+    expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(9.900990099009901%)');
+    expect(getByTestId('boxgraphic').style.width).toBe('34.65346534653465%');
     expect(getByTestId('boxgraphic-label').textContent).toBe('0.3s');
 
     // Change graph zoom values to start from 0.3s and end to 0.5s. Element will be
@@ -95,8 +97,8 @@ describe('TimelineRow component', () => {
       </TestWrapper>,
     );
 
-    expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(-100%)');
-    expect(getByTestId('boxgraphic').style.width).toBe('175%');
+    expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(-99.00990099009901%)');
+    expect(getByTestId('boxgraphic').style.width).toBe('173.26732673267327%');
     expect(getByTestId('boxgraphic-label').textContent).toBe('0.3s');
 
     // Same as default graph but alignment is from left so every element should start from left
@@ -107,22 +109,16 @@ describe('TimelineRow component', () => {
     );
 
     expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(0%)');
-    expect(getByTestId('boxgraphic').style.width).toBe('35%');
+    expect(getByTestId('boxgraphic').style.width).toBe('34.65346534653465%');
     expect(getByTestId('boxgraphic-label').textContent).toBe('0.3s');
 
     // Try with unfinished item. No label since bar takes so wide space
     rerender(
       <TestWrapper>
-        <BoxGraphicElement
-          {...props}
-          graph={createGraphState({})}
-          finishedAt={undefined}
-          duration={null}
-          labelDuration={undefined}
-        />
+        <BoxGraphicElement {...props} graph={createGraphState({})} duration={null} labelDuration={undefined} />
       </TestWrapper>,
     );
-    expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(10%)');
-    expect(getByTestId('boxgraphic').style.width).toBe('90%');
+    expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(9.900990099009901%)');
+    expect(getByTestId('boxgraphic').style.width).toBe('90.0990099009901%');
   });
 });
