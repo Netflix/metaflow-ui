@@ -86,7 +86,6 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   cursor: pointer;
   font-size: ${(p) => (p.type === 'task' ? '12px' : '14px')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
-  font-family: monospace;
   line-height: 27px;
 
   a {
