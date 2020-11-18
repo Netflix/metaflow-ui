@@ -60,6 +60,10 @@ const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme }>`
   padding: 0.4rem 1rem;
   font-weight: 400;
   text-align: left;
+
+  &:last-child {
+    border-right: none;
+  }
 `;
 
 const PropertyTableRow = styled.tr`
@@ -73,6 +77,9 @@ const PropertyTableRowItemContent = styled.td<{ scheme: PropertyTableScheme }>`
   font-size: 14px;
   border-right: ${(p) => p.theme.border.mediumWhite};
   background: ${(p) => (p.scheme === 'bright' ? p.theme.color.bg.white : 'transparent')};
+  &:last-child {
+    border-right: none;
+  }
 `;
 
 export default PropertyTable;
