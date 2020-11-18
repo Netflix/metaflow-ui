@@ -252,19 +252,23 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   &.active {
     span.checkbox.checked {
       color: ${(p) => p.theme.color.text.white};
-      border-color: transparent;
       font-weight: 500;
-      background: ${(p) => p.theme.color.bg.blue};
+      border-color: ${(p) => p.theme.color.bg.blue};
+      color: ${(p) => p.theme.color.bg.blue};
+      background: ${(p) => p.theme.color.bg.white};
     }
 
     &.status-running span.checkbox.checked {
-      background-color: ${(p) => p.theme.color.bg.yellow};
+      border-color: ${(p) => p.theme.color.bg.yellow};
+      color: ${(p) => p.theme.color.bg.yellow};
     }
     &.status-failed span.checkbox.checked {
-      background: ${(p) => p.theme.color.bg.red};
+      border-color: ${(p) => p.theme.color.bg.red};
+      color: ${(p) => p.theme.color.bg.red};
     }
     &.status-completed span.checkbox.checked {
-      background: ${(p) => p.theme.color.bg.green};
+      border-color: ${(p) => p.theme.color.bg.green};
+      color: ${(p) => p.theme.color.bg.green};
     }
 
     label {
