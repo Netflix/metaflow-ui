@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
@@ -18,6 +18,7 @@ import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../
 import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { RowCounts } from '../../components/Timeline/useRowData';
+import { TimezoneContext } from '../../components/TimezoneProvider';
 
 const RunHeader: React.FC<{
   run?: Run | null;
@@ -28,6 +29,7 @@ const RunHeader: React.FC<{
 }> = ({ run, parameters, status, error, counts }) => {
   const { t } = useTranslation();
   const history = useHistory();
+  const { timezone, updateTimezone } = useContext(TimezoneContext);
   const [expanded, setExpanded] = useState(false);
 
   const parameterTableItems = (parameters ? Object.entries(parameters) : []).reduce((obj, param) => {
@@ -58,13 +60,15 @@ const RunHeader: React.FC<{
       accessor: (item: Run) => item.system_tags.find((tag) => tag.startsWith('language:')),
       hidden: !run || !run.system_tags.find((tag) => tag.startsWith('project:')),
     },
-    { label: t('fields.started-at') + ':', accessor: getRunStartTime },
-    { label: t('fields.finished-at') + ':', accessor: getRunEndTime },
+    { label: t('fields.started-at') + ':', accessor: (r: Run) => getRunStartTime(r, timezone) },
+    { label: t('fields.finished-at') + ':', accessor: (r: Run) => getRunEndTime(r, timezone) },
     { label: t('fields.duration') + ':', accessor: getRunDuration },
   ].filter((col) => !col.hidden);
 
   return (
     <RunHeaderContainer>
+      <button onClick={() => updateTimezone(timezone + 1)}>updt+</button>
+      <button onClick={() => updateTimezone(timezone - 1)}>updt-</button>
       {(!run || !run.run_number) && <InformationRow>{t('run.no-run-data')}</InformationRow>}
       {run && run.run_number && (
         <div>
