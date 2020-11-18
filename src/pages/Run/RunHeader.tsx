@@ -29,7 +29,7 @@ const RunHeader: React.FC<{
 }> = ({ run, parameters, status, error, counts }) => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { timezone, updateTimezone } = useContext(TimezoneContext);
+  const { timezone } = useContext(TimezoneContext);
   const [expanded, setExpanded] = useState(false);
 
   const parameterTableItems = (parameters ? Object.entries(parameters) : []).reduce((obj, param) => {
@@ -67,8 +67,6 @@ const RunHeader: React.FC<{
 
   return (
     <RunHeaderContainer>
-      <button onClick={() => updateTimezone(timezone + 1)}>updt+</button>
-      <button onClick={() => updateTimezone(timezone - 1)}>updt-</button>
       {(!run || !run.run_number) && <InformationRow>{t('run.no-run-data')}</InformationRow>}
       {run && run.run_number && (
         <div>

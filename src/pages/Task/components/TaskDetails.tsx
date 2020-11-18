@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InformationRow from '../../../components/InformationRow';
 import ParameterTable from '../../../components/ParameterTable';
@@ -13,6 +13,7 @@ import { Resource } from '../../../hooks/useResource';
 import GenericError from '../../../components/GenericError';
 import Spinner from '../../../components/Spinner';
 import { ItemRow } from '../../../components/Structure';
+import { TimezoneContext } from '../../../components/TimezoneProvider';
 
 type Props = {
   task: ITask;
@@ -23,6 +24,7 @@ type Props = {
 const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
+  const { timezone } = useContext(TimezoneContext);
 
   const metadataParams: Record<string, string> = useMemo(() => {
     return (metadata.data || []).reduce((obj, val) => {
@@ -48,11 +50,12 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
             },
             {
               label: t('fields.started-at') + ':',
-              accessor: (item) => (item.ts_epoch ? getISOString(new Date(getAttemptStartTime(attempts, item))) : ''),
+              accessor: (item) =>
+                item.ts_epoch ? getISOString(new Date(getAttemptStartTime(attempts, item)), timezone) : '',
             },
             {
               label: t('fields.finished-at') + ':',
-              accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at)) : ''),
+              accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at), timezone) : ''),
             },
             {
               label: t('fields.duration') + ':',
