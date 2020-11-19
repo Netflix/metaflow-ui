@@ -6,7 +6,7 @@ import { Run } from '../../../types';
 import { DAGStructureTree, DAGTreeNode, StepTree } from '../DAGUtils';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../../utils/routing';
-import { StepLineData } from '../../Timeline/useRowData';
+import { StepLineData } from '../../Timeline/taskdataUtils';
 //
 // DAG Content section for when we have dag data
 //

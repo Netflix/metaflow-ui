@@ -10,7 +10,7 @@ import Spinner from '../Spinner';
 import DAGContent from './components/DAGContent';
 import DAGError from './components/DAGError';
 import DAGControlBar from './components/DAGControlBar';
-import { StepLineData } from '../Timeline/useRowData';
+import { StepLineData } from '../Timeline/taskdataUtils';
 
 //
 // DAG

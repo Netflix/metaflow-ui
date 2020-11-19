@@ -3,7 +3,7 @@ import { GraphState } from './useGraph';
 import styled from 'styled-components';
 
 import { formatDuration } from '../../utils/format';
-import { StepLineData } from './useRowData';
+import { StepLineData } from './taskdataUtils';
 import { Row } from './VirtualizedTimeline';
 import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
 

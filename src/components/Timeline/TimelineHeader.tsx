@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import SearchField from '../SearchField';
 import CollapseButton from './CollapseButton';
-import { RowCounts } from './useRowData';
+import { RowCounts } from './taskdataUtils';
 import { StatusColorIndicator } from '../Status';
 
 export type TimelineHeaderProps = {
