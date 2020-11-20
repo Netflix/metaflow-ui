@@ -27,6 +27,9 @@ jobs:
 
       - run: yarn --frozen-lockfile
       - run: yarn build
+        env:
+          REACT_APP_RELEASE_VERSION: $RELEASE_VERSION
+          REACT_APP_COMMIT_HASH: $GITHUB_SHA
 
       - run: echo ${{ env.RELEASE_VERSION}}
       - run: echo $RELEASE_VERSION
