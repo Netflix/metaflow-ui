@@ -20,6 +20,7 @@ import TimelineHeader from '../../components/Timeline/TimelineHeader';
 import { GraphHook } from '../../components/Timeline/useGraph';
 import TaskDetails from './components/TaskDetails';
 import { StringParam, useQueryParams } from 'use-query-params';
+import { logWarning } from '../../utils/errorlogger';
 
 //
 // Task view
@@ -134,7 +135,7 @@ const Task: React.FC<TaskViewProps> = ({
           return [...components, ...sectionMatches];
         }, []);
       } catch (e) {
-        console.warn('There war unexpected error on plugins: ', e);
+        logWarning('There war unexpected error on plugins: ', e);
         return [];
       }
     },
@@ -147,7 +148,7 @@ const Task: React.FC<TaskViewProps> = ({
           return Component ? <Component key={index} task={task} artifacts={null} /> : null;
         });
       } catch (e) {
-        console.warn('There war unexpected error on plugins: ', e);
+        logWarning('There war unexpected error on plugins: ', e);
         return [];
       }
     },
@@ -163,7 +164,7 @@ const Task: React.FC<TaskViewProps> = ({
         .filter((v, i, a) => a.indexOf(v) === i) // Remove duplicates
         .filter((key) => !['taskinfo', 'stdout', 'stderr', 'artifacts'].includes(key)); // Ignore built-in sections
     } catch (e) {
-      console.warn('There war unexpected error on plugins: ', e);
+      logWarning('There war unexpected error on plugins: ', e);
       return [];
     }
   }, [sectionPlugins]);
