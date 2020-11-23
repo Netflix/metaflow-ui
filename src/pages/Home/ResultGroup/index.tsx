@@ -14,8 +14,6 @@ import { Section } from '../../../components/Structure';
 import StatusField from '../../../components/Status';
 import Icon from '../../../components/Icon';
 import Button from '../../../components/Button';
-import Tag from '../../../components/Tag';
-import { PopoverWrapper } from '../../../components/Popover';
 import StickyHeader from './StickyHeader';
 import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../../utils/run';
 
@@ -267,32 +265,37 @@ type RunTagsProps = {
 
 const RunTags: React.FC<RunTagsProps> = ({ tags, updateListValue }) => {
   const [open, setOpen] = useState(false);
-  if (!tags || tags.length === 0) return <TD />;
+
   return (
     <TagsCell
+      width="20%"
+      onMouseLeave={() => setOpen(false)}
       onClick={(e) => {
         e.stopPropagation();
-        setOpen(!open);
+        // setOpen(!open);
       }}
+      onMouseOver={() => setOpen(true)}
     >
-      {tags.join(', ')}
-      {open && (
-        <TagPopOverContainer>
-          <TagsPopover show>
-            {tags.map((tag) => (
-              <Tag
-                key={tag}
-                highlighted
-                onClick={() => {
-                  updateListValue('_tags', tag);
-                }}
-              >
-                {tag}
-              </Tag>
-            ))}
-          </TagsPopover>
-          <ClickOverlay />
-        </TagPopOverContainer>
+      <TagContainer>
+        {tags.slice(0, 3).map((tag, index) => (
+          <span key={tag} onClick={() => updateListValue('_tags', tag)}>
+            {tag}
+            {index !== tags.length - 1 && ', '}
+          </span>
+        ))}
+
+        {tags.length > 3 && !open && <span>...</span>}
+      </TagContainer>
+
+      {tags.length > 3 && (
+        <AllTagsContainer open={open}>
+          {(open ? tags : tags.slice(0, 3)).map((tag, index) => (
+            <span key={tag} onClick={() => updateListValue('_tags', tag)}>
+              {tag}
+              {index !== tags.length - 1 && ', '}
+            </span>
+          ))}
+        </AllTagsContainer>
       )}
     </TagsCell>
   );
@@ -300,29 +303,29 @@ const RunTags: React.FC<RunTagsProps> = ({ tags, updateListValue }) => {
 
 const TagsCell = styled(TD)`
   color: ${(p) => p.theme.color.text.blue};
-`;
-
-const TagPopOverContainer = styled.div`
   position: relative;
-`;
+  line-height: 1.25rem;
 
-const TagsPopover = styled(PopoverWrapper)`
-  top: 100%;
-  width: 200px;
-  display: flex;
-  flex-wrap: wrap;
-
-  ${Tag} {
-    margin-bottom: 0.25rem;
-    margin-right: 0.25rem;
+  span:hover {
+    text-decoration: underline;
   }
 `;
 
-const ClickOverlay = styled.div`
-  position: fixed;
-  left: 0;
+const TagContainer = styled.div`
+  position: relative;
+`;
+
+const AllTagsContainer = styled.div<{ open: boolean }>`
+  position: absolute;
   top: 0;
-  height: 100%;
+  background: #e4f0ff;
+  z-index: 1;
   width: 100%;
-  z-index: 10;
+  left: 0;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  transition: 0.15s all;
+  overflow: hidden;
+
+  opacity: ${(p) => (p.open ? '1' : '0')};
 `;
