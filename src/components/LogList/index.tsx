@@ -159,7 +159,7 @@ export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, name,
             downloadString(data.map((log) => log.line).join('\n'), 'text/plain', `logs-${name}.txt`);
           }}
         >
-          <Icon name="arrowDown" />
+          <Icon name="download" />
         </Button>
       )}
 
