@@ -1,11 +1,11 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiHttp } from '../../constants';
 import styled from 'styled-components';
 import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
 import Button from '../Button';
-import { TimezoneContext } from '../TimezoneProvider';
+import TimezoneSelector from './TimezoneSelector';
 
 type HelpMenuLink = {
   href: string;
@@ -21,7 +21,6 @@ const HelpMenu: React.FC = () => {
   const [links, setLinks] = useState<HelpMenuLink[]>(DEFAULT_LINKS);
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
-  const { timezone, updateTimezone } = useContext(TimezoneContext);
 
   useEffect(() => {
     fetch(apiHttp('/links'), {
@@ -66,25 +65,7 @@ const HelpMenu: React.FC = () => {
           </HelpMenuLink>
         ))}
 
-        <div>
-          <div>Current zone {`GMT${timezone > 0 ? '+' : ''}${timezone}`}</div>
-          <div>
-            <button
-              onClick={() => {
-                updateTimezone(timezone <= -12 ? 12 : timezone - 1);
-              }}
-            >
-              -
-            </button>
-            <button
-              onClick={() => {
-                updateTimezone(timezone >= 12 ? -12 : timezone + 1);
-              }}
-            >
-              +
-            </button>
-          </div>
-        </div>
+        <TimezoneSelector />
       </PopoverContainer>
       {open && <HelpMenuClickOverlay onClick={() => setOpen(false)} data-testid="helpmenu-click-overlay" />}
     </HelpMenuContainer>
