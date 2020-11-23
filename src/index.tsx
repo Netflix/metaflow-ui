@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import App from './App';
 import './i18n';
 import * as serviceWorker from './serviceWorker';
+import './VERSION';
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
