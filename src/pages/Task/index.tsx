@@ -5,7 +5,8 @@ import { Run as IRun, Task as ITask, Log, AsyncStatus, Metadata } from '../../ty
 import useResource from '../../hooks/useResource';
 
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
-import { RowCounts, RowDataAction } from '../../components/Timeline/useRowData';
+import { RowDataAction } from '../../components/Timeline/useRowData';
+import { RowCounts } from '../../components/Timeline/taskdataUtils';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import LogList, { LogActionBar } from '../../components/LogList';
