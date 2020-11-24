@@ -126,7 +126,7 @@ type TableRowsProps = {
   params: Record<string, string>;
   historyPush: (url: string) => void;
   updateListValue: (key: string, value: string) => void;
-  timezone: number;
+  timezone: string;
 };
 
 const TableRows: React.FC<TableRowsProps> = React.memo(({ r, params, updateListValue, timezone }) => {

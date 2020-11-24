@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiHttp } from '../../constants';
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
 import Button from '../Button';
 import TimezoneSelector from './TimezoneSelector';
+import { TimezoneContext } from '../TimezoneProvider';
 
 type HelpMenuLink = {
   href: string;
@@ -21,6 +22,7 @@ const HelpMenu: React.FC = () => {
   const [links, setLinks] = useState<HelpMenuLink[]>(DEFAULT_LINKS);
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+  const { timezone } = useContext(TimezoneContext);
 
   useEffect(() => {
     fetch(apiHttp('/links'), {
@@ -53,6 +55,9 @@ const HelpMenu: React.FC = () => {
         <span>{t('help.quick-links')}</span>
         <Icon name="external" size="xs" />
       </ToggleButton>
+
+      {timezone !== '+00:00' && <TimezoneHelperText>Timezone {timezone}</TimezoneHelperText>}
+
       <PopoverContainer show={open} data-testid="helpmenu-popup">
         <HelpMenuTitle>
           <span>{t('help.quick-links')}</span>
@@ -99,7 +104,7 @@ const PopoverContainer = styled(PopoverWrapper)`
 
 const HelpMenuTitle = styled.div`
   justify-content: space-between;
-  padding: 0.25rem 0.5rem 0.75rem 1.5rem;
+  padding: 0.25rem 0.5rem 0.75rem 1rem;
   display: flex;
   margin: 0 -0.5rem 0.25rem;
   width: 256px;
@@ -116,7 +121,7 @@ const HelpMenuTitle = styled.div`
 
 const HelpMenuLink = styled.a`
   display: flex;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
   color: ${(p) => p.theme.color.text.mid};
   text-decoration: none;
   &:hover {
@@ -130,6 +135,14 @@ const HelpMenuClickOverlay = styled.div`
   width: 100%;
   left: 0;
   top: 0;
+`;
+
+const TimezoneHelperText = styled.div`
+  white-space: nowrap;
+  text-align: right;
+  padding: 8px 0;
+  position: absolute;
+  color: #8e8e8e;
 `;
 
 export default HelpMenu;

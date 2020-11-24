@@ -18,7 +18,7 @@ export function getUsername(run: Run): string {
  * Safely get start time of run
  * @param run - Run object
  */
-export function getRunStartTime(run: Run, timezone?: number): string {
+export function getRunStartTime(run: Run, timezone?: string): string {
   return getISOString(new Date(run.ts_epoch), timezone);
 }
 
@@ -26,7 +26,7 @@ export function getRunStartTime(run: Run, timezone?: number): string {
  * Safely get end time of run
  * @param run - Run object
  */
-export function getRunEndTime(run: Run, timezone?: number): string | null {
+export function getRunEndTime(run: Run, timezone?: string): string | null {
   return !!run.finished_at ? getISOString(new Date(run.finished_at), timezone) : null;
 }
 
