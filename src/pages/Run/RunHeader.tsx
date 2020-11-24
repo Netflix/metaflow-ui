@@ -17,8 +17,8 @@ import Spinner from '../../components/Spinner';
 import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../utils/run';
 import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
-import { RowCounts } from '../../components/Timeline/useRowData';
 import { TimezoneContext } from '../../components/TimezoneProvider';
+import { RowCounts } from '../../components/Timeline/taskdataUtils';
 
 const RunHeader: React.FC<{
   run?: Run | null;

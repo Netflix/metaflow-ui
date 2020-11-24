@@ -18,6 +18,7 @@ import useSeachField from '../../hooks/useSearchField';
 import useGraph from '../../components/Timeline/useGraph';
 import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
+import { logWarning } from '../../utils/errorlogger';
 
 type RunPageParams = {
   flowId: string;
@@ -177,7 +178,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
       setVisibleRows(rowsToUpdate);
     } catch (e) {
-      console.warn('Unexpected error while contructing task rows: ', e);
+      logWarning('Unexpected error while contructing task rows: ', e);
     }
     /* eslint-disable */
   }, [

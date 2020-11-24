@@ -23,6 +23,7 @@ const DEFAULT_GRAPH: GraphState = {
   group: true,
   statusFilter: null,
   isCustomEnabled: false,
+  resetToFullview: false,
 };
 
 describe('useGraph hook - reducer', () => {

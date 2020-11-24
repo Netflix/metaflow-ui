@@ -13,6 +13,7 @@ import HomeContentArea from './Content';
 import { EventType } from '../../ws';
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { useTranslation } from 'react-i18next';
+import { logWarning } from '../../utils/errorlogger';
 
 const defaultParams = {
   _order: '-ts_epoch',
@@ -130,7 +131,7 @@ const Home: React.FC = () => {
           setRunGroups(newItems);
         }
       } catch (e) {
-        console.warn('Unexpected error on runs fetch: ', e);
+        logWarning('Unexpected error on runs fetch: ', e);
       }
     },
     //
@@ -168,7 +169,7 @@ const Home: React.FC = () => {
           }
         }
       } catch (e) {
-        console.warn('Unexpected error on websocket updates: ', e);
+        logWarning('Unexpected error on websocket updates: ', e);
       }
     },
     socketParamFilter: (params) => {
