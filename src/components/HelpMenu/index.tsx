@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiHttp } from '../../constants';
 import styled from 'styled-components';
@@ -6,7 +6,6 @@ import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
 import Button from '../Button';
 import TimezoneSelector from './TimezoneSelector';
-import { TimezoneContext } from '../TimezoneProvider';
 
 type HelpMenuLink = {
   href: string;
@@ -22,7 +21,6 @@ const HelpMenu: React.FC = () => {
   const [links, setLinks] = useState<HelpMenuLink[]>(DEFAULT_LINKS);
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
-  const { timezone } = useContext(TimezoneContext);
 
   useEffect(() => {
     fetch(apiHttp('/links'), {
@@ -55,8 +53,6 @@ const HelpMenu: React.FC = () => {
         <span>{t('help.quick-links')}</span>
         <Icon name="external" size="xs" />
       </ToggleButton>
-
-      {timezone !== '+00:00' && <TimezoneHelperText>Timezone {timezone}</TimezoneHelperText>}
 
       <PopoverContainer show={open} data-testid="helpmenu-popup">
         <HelpMenuTitle>
@@ -135,14 +131,6 @@ const HelpMenuClickOverlay = styled.div`
   width: 100%;
   left: 0;
   top: 0;
-`;
-
-const TimezoneHelperText = styled.div`
-  white-space: nowrap;
-  text-align: right;
-  padding: 8px 0;
-  position: absolute;
-  color: #8e8e8e;
 `;
 
 export default HelpMenu;

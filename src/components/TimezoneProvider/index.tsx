@@ -46,11 +46,9 @@ export const TimezoneContext = React.createContext<TimezoneContextProps>({
 });
 
 export const TimezoneProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const ls = localStorage.getItem('timezone');
-  const [timezone, setTimezone] = useState(ls && TIMEZONES.map((tz) => tz.offset).indexOf(ls) > -1 ? ls : '+00:00');
+  const [timezone, setTimezone] = useState('+00:00');
 
   const updateTimezone = (zone: string) => {
-    localStorage.setItem('timezone', zone);
     setTimezone(zone);
   };
 
