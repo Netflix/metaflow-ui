@@ -4,7 +4,7 @@ import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
 import useRowData from '../../components/Timeline/useRowData';
 import { getPath } from '../../utils/routing';
-import { Run as IRun, RunParam, Step } from '../../types';
+import { Run as IRun, RunParam } from '../../types';
 
 import TaskViewContainer from '../Task';
 import Spinner from '../../components/Spinner';
@@ -143,17 +143,13 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   useEffect(() => {
     try {
       // Filter out steps if we have step filters on.
-      const visibleSteps: Step[] = Object.keys(rows)
-        .map((key) => rows[key].step)
-        .filter(
-          (item): item is Step =>
-            // Filter out possible undefined (should not really happen, might though if there is some timing issues with REST and websocket)
-            item !== undefined &&
-            // Check if step filter is active. Show only selected steps
-            (graph.graph.stepFilter.length === 0 || graph.graph.stepFilter.indexOf(item.step_name) > -1) &&
-            // Filter out steps starting with _ since they are not interesting to user
-            !item.step_name.startsWith('_'),
-        );
+      const visibleSteps: string[] = Object.keys(rows).filter(
+        (step_name) =>
+          // Check if step filter is active. Show only selected steps
+          (graph.graph.stepFilter.length === 0 || graph.graph.stepFilter.indexOf(step_name) > -1) &&
+          // Filter out steps starting with _ since they are not interesting to user
+          !step_name.startsWith('_'),
+      );
 
       // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
       const newRows: Row[] = makeVisibleRows(rows, graph.graph, visibleSteps, searchField.results);
