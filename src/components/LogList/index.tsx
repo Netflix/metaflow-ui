@@ -127,10 +127,11 @@ const ScrollToBottomButton = styled.div`
 
 type LogActionBarProps = {
   setFullscreen: () => void;
+  name: string;
   data: Log[];
 };
 
-export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, data }) => {
+export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, name, data }) => {
   const { addNotification } = useNotifications();
   const { t } = useTranslation();
   return (
@@ -152,6 +153,17 @@ export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, data 
       )}
 
       {data && data.length > 0 && (
+        <Button
+          iconOnly
+          onClick={() => {
+            downloadString(data.map((log) => log.line).join('\n'), 'text/plain', `logs-${name}.txt`);
+          }}
+        >
+          <Icon name="download" />
+        </Button>
+      )}
+
+      {data && data.length > 0 && (
         <Button onClick={() => setFullscreen()} withIcon>
           <Icon name="maximize" />
         </Button>
@@ -159,5 +171,21 @@ export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, data 
     </ItemRow>
   );
 };
+
+function downloadString(text: string, fileType: string, fileName: string) {
+  const blob = new Blob([text], { type: fileType });
+
+  const a = document.createElement('a');
+  a.download = fileName;
+  a.href = URL.createObjectURL(blob);
+  a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () {
+    URL.revokeObjectURL(a.href);
+  }, 1500);
+}
 
 export default LogList;

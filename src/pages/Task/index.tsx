@@ -303,7 +303,13 @@ const Task: React.FC<TaskViewProps> = ({
                   key: 'stdout',
                   order: 2,
                   label: t('task.std-out'),
-                  actionbar: <LogActionBar data={stdout} setFullscreen={() => setFullscreen('stdout')} />,
+                  actionbar: (
+                    <LogActionBar
+                      data={stdout}
+                      name={`stdout-${task.ts_epoch}-${task.task_id}-attempt${task.attempt_id}`}
+                      setFullscreen={() => setFullscreen('stdout')}
+                    />
+                  ),
                   component: (
                     <>
                       <SectionLoader
@@ -326,7 +332,13 @@ const Task: React.FC<TaskViewProps> = ({
                   key: 'stderr',
                   order: 3,
                   label: t('task.std-err'),
-                  actionbar: <LogActionBar data={stderr} setFullscreen={() => setFullscreen('stderr')} />,
+                  actionbar: (
+                    <LogActionBar
+                      data={stderr}
+                      name={`stderr-${task.ts_epoch}-${task.task_id}-attempt${task.attempt_id}`}
+                      setFullscreen={() => setFullscreen('stderr')}
+                    />
+                  ),
                   component: (
                     <>
                       <SectionLoader
