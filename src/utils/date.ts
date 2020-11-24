@@ -1,7 +1,8 @@
-export const getISOString = (date: Date): string => {
-  return date
-    .toISOString()
-    .split('T')
-    .map((dp) => dp.split('.').slice(0, 1).join(''))
-    .join(' ');
+import spacetime from 'spacetime';
+
+export const getISOString = (date: Date, timezone?: string): string => {
+  if (timezone) {
+    return spacetime(date, 'GMT+0').goto(`GMT${timezone}`).unixFmt('MM-dd-yyyy HH:mm');
+  }
+  return spacetime(date, 'GMT+0').unixFmt('MM-dd-yyyy HH:mm');
 };

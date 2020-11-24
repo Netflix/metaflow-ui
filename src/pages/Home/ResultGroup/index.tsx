@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import styled, { css } from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +16,7 @@ import Icon from '../../../components/Icon';
 import Button from '../../../components/Button';
 import StickyHeader from './StickyHeader';
 import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../../utils/run';
+import { TimezoneContext } from '../../../components/TimezoneProvider';
 
 type Props = {
   label: string;
@@ -41,6 +42,7 @@ const ResultGroup: React.FC<Props> = ({
   const { t } = useTranslation();
   const history = useHistory();
   const [isInViewport, targetRef] = useIsInViewport();
+  const { timezone } = useContext(TimezoneContext);
 
   const cols = [
     { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
@@ -83,7 +85,13 @@ const ResultGroup: React.FC<Props> = ({
                 stale={isStale}
                 onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}
               >
-                <TableRows r={r} params={queryParams} historyPush={history.push} updateListValue={updateListValue} />
+                <TableRows
+                  r={r}
+                  params={queryParams}
+                  historyPush={history.push}
+                  updateListValue={updateListValue}
+                  timezone={timezone}
+                />
               </TR>
             );
           })}
@@ -116,43 +124,39 @@ type TableRowsProps = {
   params: Record<string, string>;
   historyPush: (url: string) => void;
   updateListValue: (key: string, value: string) => void;
+  timezone: string;
 };
 
-const TableRows: React.FC<TableRowsProps> = React.memo(
-  ({ r, params, updateListValue }) => {
-    return (
-      <>
-        {/* STATUS INDICATOR */}
-        <StatusColorCell status={r.status} />
-        {/* FLOW ID */}
-        {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
-        {/* ID */}
-        <TD>
-          <IDFieldContainer>{r.run_number}</IDFieldContainer>
-        </TD>
-        {/* USER NAME */}
-        {params._group !== 'user_name' && <TD>{getUsername(r)}</TD>}
-        {/* STARTED AT */}
-        <TD>{getRunStartTime(r)}</TD>
-        {/* FINISHED AT */}
-        <TD>{getRunEndTime(r)}</TD>
-        {/* DURATION */}
-        <TD>{getRunDuration(r)}</TD>
-        {/* STATUS */}
-        <TD>
-          <ForceNoBreakText>
-            <StatusField status={r.status} />
-          </ForceNoBreakText>
-        </TD>
-        {/* USER TAGS */}
-        <RunTags tags={r.tags || []} updateListValue={updateListValue} />
-      </>
-    );
-  },
-  (prev, next) => {
-    return prev.r == next.r; // eslint-disable-line
-  },
-);
+const TableRows: React.FC<TableRowsProps> = React.memo(({ r, params, updateListValue, timezone }) => {
+  return (
+    <>
+      {/* STATUS INDICATOR */}
+      <StatusColorCell status={r.status} />
+      {/* FLOW ID */}
+      {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
+      {/* ID */}
+      <TD>
+        <IDFieldContainer>{r.run_number}</IDFieldContainer>
+      </TD>
+      {/* USER NAME */}
+      {params._group !== 'user_name' && <TD>{getUsername(r)}</TD>}
+      {/* STARTED AT */}
+      <TD>{getRunStartTime(r, timezone)}</TD>
+      {/* FINISHED AT */}
+      <TD>{getRunEndTime(r, timezone)}</TD>
+      {/* DURATION */}
+      <TD>{getRunDuration(r)}</TD>
+      {/* STATUS */}
+      <TD>
+        <ForceNoBreakText>
+          <StatusField status={r.status} />
+        </ForceNoBreakText>
+      </TD>
+      {/* USER TAGS */}
+      <RunTags tags={r.tags || []} updateListValue={updateListValue} />
+    </>
+  );
+});
 
 const statusColors: RunStatus = {
   completed: 'green',

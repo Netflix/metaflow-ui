@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
 import Button from '../Button';
+import TimezoneSelector from './TimezoneSelector';
 
 type HelpMenuLink = {
   href: string;
@@ -52,6 +53,7 @@ const HelpMenu: React.FC = () => {
         <span>{t('help.quick-links')}</span>
         <Icon name="external" size="xs" />
       </ToggleButton>
+
       <PopoverContainer show={open} data-testid="helpmenu-popup">
         <HelpMenuTitle>
           <span>{t('help.quick-links')}</span>
@@ -63,6 +65,8 @@ const HelpMenu: React.FC = () => {
             {link.label}
           </HelpMenuLink>
         ))}
+
+        <TimezoneSelector />
       </PopoverContainer>
       {open && <HelpMenuClickOverlay onClick={() => setOpen(false)} data-testid="helpmenu-click-overlay" />}
     </HelpMenuContainer>
@@ -96,7 +100,7 @@ const PopoverContainer = styled(PopoverWrapper)`
 
 const HelpMenuTitle = styled.div`
   justify-content: space-between;
-  padding: 0.25rem 0.5rem 0.75rem 1.5rem;
+  padding: 0.25rem 0.5rem 0.75rem 1rem;
   display: flex;
   margin: 0 -0.5rem 0.25rem;
   width: 256px;
@@ -113,7 +117,7 @@ const HelpMenuTitle = styled.div`
 
 const HelpMenuLink = styled.a`
   display: flex;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.5rem;
   color: ${(p) => p.theme.color.text.mid};
   text-decoration: none;
   &:hover {

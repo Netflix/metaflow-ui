@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
@@ -17,6 +17,7 @@ import Spinner from '../../components/Spinner';
 import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../utils/run';
 import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
+import { TimezoneContext } from '../../components/TimezoneProvider';
 import { RowCounts } from '../../components/Timeline/taskdataUtils';
 
 const RunHeader: React.FC<{
@@ -28,6 +29,7 @@ const RunHeader: React.FC<{
 }> = ({ run, parameters, status, error, counts }) => {
   const { t } = useTranslation();
   const history = useHistory();
+  const { timezone } = useContext(TimezoneContext);
   const [expanded, setExpanded] = useState(false);
 
   const parameterTableItems = (parameters ? Object.entries(parameters) : []).reduce((obj, param) => {
@@ -58,8 +60,8 @@ const RunHeader: React.FC<{
       accessor: (item: Run) => item.system_tags.find((tag) => tag.startsWith('language:')),
       hidden: !run || !run.system_tags.find((tag) => tag.startsWith('project:')),
     },
-    { label: t('fields.started-at') + ':', accessor: getRunStartTime },
-    { label: t('fields.finished-at') + ':', accessor: getRunEndTime },
+    { label: t('fields.started-at') + ':', accessor: (r: Run) => getRunStartTime(r, timezone) },
+    { label: t('fields.finished-at') + ':', accessor: (r: Run) => getRunEndTime(r, timezone) },
     { label: t('fields.duration') + ':', accessor: getRunDuration },
   ].filter((col) => !col.hidden);
 
