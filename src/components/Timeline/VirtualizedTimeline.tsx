@@ -347,15 +347,17 @@ function shouldApplySearchFilter(results: SearchResultModel) {
 export function makeVisibleRows(
   rowDataState: RowDataModel,
   graph: GraphState,
-  visibleSteps: Step[],
+  visibleSteps: string[],
   searchResults: SearchResultModel,
 ): Row[] {
   const matchIds = searchResults.result.map((item) => item.task_id);
 
-  return visibleSteps.reduce((arr: Row[], current: Step): Row[] => {
-    const rowData = rowDataState[current.step_name];
-    // If step row is open, add its tasks to the list.
+  return visibleSteps.reduce((arr: Row[], currentStepName: string): Row[] => {
+    const rowData = rowDataState[currentStepName];
 
+    if (!rowData) return arr;
+
+    // If step row is open, add its tasks to the list.
     let rowTasks = Object.keys(rowData.data).map((item) => ({
       type: 'task' as const,
       data: rowData.data[item],
@@ -376,7 +378,7 @@ export function makeVisibleRows(
     return rowTasks.length === 0
       ? arr
       : arr.concat(
-          graph.group ? [{ type: 'step' as const, data: current, rowObject: rowData }] : [],
+          graph.group && rowData.step ? [{ type: 'step' as const, data: rowData.step, rowObject: rowData }] : [],
           rowData.isOpen || !graph.group
             ? graph.group
               ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir))
