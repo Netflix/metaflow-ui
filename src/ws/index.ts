@@ -71,7 +71,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
   let pingInterval = 0;
   // Send ping for backend, expect to get answer in less than 5s or close connection
   function ping() {
-    conn.send('__ping__');
+    conn.send('ping');
     pingTimer = setTimeout(() => {
       conn.reconnect();
     }, 2000);
