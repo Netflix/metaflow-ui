@@ -40,25 +40,25 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
           scheme="dark"
           columns={[
             {
-              label: t('fields.task-id') + ':',
+              label: t('fields.task-id'),
               accessor: (item) => <ForceBreakText>{item.task_id}</ForceBreakText>,
             },
-            { label: t('items.step') + ':', prop: 'step_name' },
+            { label: t('items.step'), prop: 'step_name' },
             {
-              label: t('fields.status') + ':',
+              label: t('fields.status'),
               accessor: (_item) => <StatusField status={_item.status} />,
             },
             {
-              label: t('fields.started-at') + ':',
+              label: t('fields.started-at'),
               accessor: (item) =>
                 item.ts_epoch ? getISOString(new Date(getAttemptStartTime(attempts, item)), timezone) : '',
             },
             {
-              label: t('fields.finished-at') + ':',
+              label: t('fields.finished-at'),
               accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at), timezone) : ''),
             },
             {
-              label: t('fields.duration') + ':',
+              label: t('fields.duration'),
               accessor: (item) => getDuration(attempts, item),
             },
           ]}
