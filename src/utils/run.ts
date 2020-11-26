@@ -35,5 +35,9 @@ export function getRunEndTime(run: Run, timezone?: string): string | null {
  * @param run - Run object
  */
 export function getRunDuration(run: Run): string | null {
-  return run.duration ? formatDuration(run.duration, 0) : null;
+  return run.duration
+    ? formatDuration(run.duration, 0)
+    : run.finished_at
+    ? formatDuration(run.finished_at - run.ts_epoch, 0)
+    : null;
 }
