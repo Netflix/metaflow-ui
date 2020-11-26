@@ -243,6 +243,7 @@ export const StyledResultGroup = styled(Section)`
   thead,
   th {
     background: ${(p) => p.theme.color.bg.white};
+    z-index: 10;
   }
 `;
 
