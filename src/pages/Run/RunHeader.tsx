@@ -38,31 +38,31 @@ const RunHeader: React.FC<{
   }, {});
 
   const columns = [
-    { label: t('fields.run-id') + ':', prop: 'run_number' as const },
-    { label: t('fields.status') + ':', accessor: (item: Run) => <StatusField status={item.status} /> },
+    { label: t('fields.run-id'), prop: 'run_number' as const },
+    { label: t('fields.status'), accessor: (item: Run) => <StatusField status={item.status} /> },
     {
-      label: t('fields.tasks') + ':',
+      label: t('fields.tasks'),
       accessor: () => `${counts.all} ${counts.failed !== 0 ? `(${counts.failed} ${t('status.fail')})` : ''}`,
     },
     {
-      label: t('fields.user') + ':',
+      label: t('fields.user'),
       accessor: (item: Run) => (
         <Link to={`/?user_name=${encodeURIComponent(item.user_name)}`}>{getUsername(item)}</Link>
       ),
     },
     {
-      label: t('fields.project') + ':',
+      label: t('fields.project'),
       accessor: (item: Run) => item.system_tags.find((tag) => tag.startsWith('project:')),
       hidden: !run || !run.system_tags.find((tag) => tag.startsWith('project:')),
     },
     {
-      label: t('fields.language') + ':',
+      label: t('fields.language'),
       accessor: (item: Run) => item.system_tags.find((tag) => tag.startsWith('language:')),
       hidden: !run || !run.system_tags.find((tag) => tag.startsWith('project:')),
     },
-    { label: t('fields.started-at') + ':', accessor: (r: Run) => getRunStartTime(r, timezone) },
-    { label: t('fields.finished-at') + ':', accessor: (r: Run) => getRunEndTime(r, timezone) },
-    { label: t('fields.duration') + ':', accessor: getRunDuration },
+    { label: t('fields.started-at'), accessor: (r: Run) => getRunStartTime(r, timezone) },
+    { label: t('fields.finished-at'), accessor: (r: Run) => getRunEndTime(r, timezone) },
+    { label: t('fields.duration'), accessor: getRunDuration },
   ].filter((col) => !col.hidden);
 
   return (
@@ -81,9 +81,9 @@ const RunHeader: React.FC<{
 
               <InformationRow>
                 {status === 'Loading' && (
-                  <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+                  <ItemRow margin="lg" justify="center">
                     <Spinner sm />
-                  </div>
+                  </ItemRow>
                 )}
 
                 {status === 'Ok' && parameterTableItems && (
@@ -124,7 +124,9 @@ type TagRowProps = {
 const TagRow: React.FC<TagRowProps> = ({ tags, label, push }) => (
   <InformationRow scrollOverflow={false}>
     <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
-      <SmallText>{label}</SmallText>
+      <div style={{ width: '120px' }}>
+        <SmallText>{label}</SmallText>
+      </div>
       <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
         {tags.map((tag) => (
           <TagNoWrap

@@ -74,7 +74,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   });
 
   // Store active tab. Is defined by URL
-  const [tab, setTab] = useState('timeline');
+  const [tab, setTab] = useState(hasViewTypeParam(params.viewType) ? params.viewType : 'timeline');
   useEffect(() => {
     if (params.viewType && ['dag', 'timeline', 'task'].indexOf(params.viewType) > -1) {
       setTab(params.viewType);
@@ -272,6 +272,10 @@ function cleanParametersMap(params: any) {
     }
     return obj;
   }, {});
+}
+
+function hasViewTypeParam(viewType?: string): viewType is string {
+  return !!(viewType && ['dag', 'timeline', 'task'].indexOf(viewType) > -1);
 }
 
 export default RunContainer;
