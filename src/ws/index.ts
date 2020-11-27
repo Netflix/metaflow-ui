@@ -90,7 +90,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     // Reset `connectedSinceUnixTime` so that next disconnect timestamp can be recorder
     connectedSinceUnixTime = null;
     // Setup ping sending interval
-    pingInterval = setInterval(ping, 8000);
+    pingInterval = setInterval(ping, 5000);
   });
   conn.addEventListener('close', (_e: CloseEvent) => {
     if (!connectedSinceUnixTime) {
