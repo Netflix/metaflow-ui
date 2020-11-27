@@ -65,6 +65,21 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     startClosed: false, // start websocket in CLOSED state, call `.reconnect()` to connect
     debug: false, // enables debug output
   });
+
+  // Connection health check functions
+  let pingTimer = 0;
+  let pingInterval = 0;
+  // Send ping for backend, expect to get answer in less than 5s or close connection
+  function ping() {
+    conn.send('__ping__');
+    pingTimer = setTimeout(() => {
+      conn.reconnect();
+    }, 2000);
+  }
+  function pong() {
+    clearTimeout(pingTimer);
+  }
+
   conn.addEventListener('open', (_e: WSEvent) => {
     // Always re-subscribe to events when connection is established
     // This operation is safe since backend makes sure there's no duplicate identifiers
@@ -74,6 +89,8 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
 
     // Reset `connectedSinceUnixTime` so that next disconnect timestamp can be recorder
     connectedSinceUnixTime = null;
+    // Setup ping sending interval
+    pingInterval = setInterval(ping, 5000);
   });
   conn.addEventListener('close', (_e: CloseEvent) => {
     if (!connectedSinceUnixTime) {
@@ -85,9 +102,17 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     if (_e.code !== 1000) {
       console.log('Websocket closed with error');
     }
+    // Clear connection ping pongs
+    clearInterval(pingInterval);
+    clearTimeout(pingTimer);
   });
   conn.addEventListener('message', (e: MessageEvent) => {
     if (e.data) {
+      // Check if we are getting answer for our ping.
+      if (e.data === '__pong__') {
+        pong();
+        return;
+      }
       try {
         const event = JSON.parse(e.data) as Event<unknown>;
         emit(event);
