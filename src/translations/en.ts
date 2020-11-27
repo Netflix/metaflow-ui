@@ -132,6 +132,8 @@ const en = {
       'copy-logs-to-clipboard': 'Copy to clipboard',
       'all-logs-copied': 'Full log copied to clipboard',
       'line-copied': 'Line copied to clipboard',
+      'download-logs': 'Download logs as txt file',
+      'show-fullscreen': 'Show logs in fullscreen',
       'no-artifacts-found': 'No artifacts found',
       metadata: 'Metadata',
       'failed-to-load-metadata': 'Failed to load metadata',

@@ -138,7 +138,8 @@ export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, name,
     <ItemRow>
       {data && data.length > 0 && (
         <Button
-          withIcon
+          title={t('task.copy-logs-to-clipboard')}
+          iconOnly
           onClick={() => {
             copy(data.map((item) => item.line).join('\n'));
             addNotification({
@@ -148,12 +149,12 @@ export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, name,
           }}
         >
           <Icon name="copy" />
-          <span>{t('task.copy-logs-to-clipboard')}</span>
         </Button>
       )}
 
       {data && data.length > 0 && (
         <Button
+          title={t('task.download-logs')}
           iconOnly
           onClick={() => {
             downloadString(data.map((log) => log.line).join('\n'), 'text/plain', `logs-${name}.txt`);
@@ -164,7 +165,7 @@ export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, name,
       )}
 
       {data && data.length > 0 && (
-        <Button onClick={() => setFullscreen()} withIcon>
+        <Button title={t('task.show-fullscreen')} onClick={() => setFullscreen()} withIcon>
           <Icon name="maximize" />
         </Button>
       )}
