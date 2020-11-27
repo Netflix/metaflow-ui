@@ -15,32 +15,24 @@ const ConnectionStatus: React.FC = () => {
   const { t } = useTranslation();
 
   const [status, setStatus] = useState<RealtimeStatus>('Connected');
-  const [connectedSinceUnixTime, setConnectedSinceUnixTime] = useState<number | null>(null);
   const [lastPong, setLastPong] = useState<null | number>(null);
 
   useEffect(() => {
     const onOpen = () => {
       const now = nowUnixTime();
 
-      if (
-        (connectedSinceUnixTime && now - connectedSinceUnixTime > WS_QUEUE_TTL_SECONDS) ||
-        (lastPong && now - lastPong > WS_QUEUE_TTL_SECONDS)
-      ) {
+      if (lastPong && now - lastPong > WS_QUEUE_TTL_SECONDS) {
         // Mark connection state as `Stale` if disconnection period exceeds queue TTL
         // This means we can't deliver missing data to the client reliably and user should refresh the browser
         // `setConnectedSinceUnixTime` will be preserved so that stale status is persisted
         setStatus('Stale');
-      } else {
+      } else if (status !== 'Stale') {
         // Disconnection period was lass than queue TTL, set status to `Connected` and clear `setConnectedSinceUnixTime`
         setStatus('Connected');
-        setConnectedSinceUnixTime(null);
       }
     };
 
     const onClose = () => {
-      if (!connectedSinceUnixTime) {
-        setConnectedSinceUnixTime(nowUnixTime());
-      }
       setStatus('Disconnected');
     };
 
@@ -58,7 +50,7 @@ const ConnectionStatus: React.FC = () => {
       ResourceEvents.addEventListener('message', onMessage);
       ResourceEvents.removeEventListener('close', onClose);
     };
-  }, [status, connectedSinceUnixTime, lastPong]);
+  }, [status, lastPong]);
 
   return (
     <Wrapper
