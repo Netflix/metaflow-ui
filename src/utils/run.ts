@@ -2,6 +2,10 @@ import { Run } from '../types';
 import { getISOString } from './date';
 import { formatDuration } from './format';
 
+export function useRunId(run: Run): string {
+  return run.run_id || (run.run_number || 0).toString();
+}
+
 /**
  * Safely get username of run
  * @param run - Run object

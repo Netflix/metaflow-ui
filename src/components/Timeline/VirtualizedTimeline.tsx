@@ -372,7 +372,7 @@ export function makeVisibleRows(
     }
 
     if (shouldApplySearchFilter(searchResults)) {
-      rowTasks = rowTasks.filter((item) => matchIds.indexOf(item.data[0]?.task_id) > -1);
+      rowTasks = rowTasks.filter((item) => matchIds.indexOf(item.data[0]?.task_id?.toString()) > -1);
     }
 
     return rowTasks.length === 0
