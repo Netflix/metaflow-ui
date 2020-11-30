@@ -2,7 +2,7 @@ import { Run } from '../types';
 import { getISOString } from './date';
 import { formatDuration } from './format';
 
-export function useRunId(run: Run): string {
+export function getRunId(run: Run): string {
   return run.run_id || (run.run_number || 0).toString();
 }
 
