@@ -15,7 +15,7 @@ import StatusField from '../../../components/Status';
 import Icon from '../../../components/Icon';
 import Button from '../../../components/Button';
 import StickyHeader from './StickyHeader';
-import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../../utils/run';
+import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getUsername } from '../../../utils/run';
 import { TimezoneContext } from '../../../components/TimezoneProvider';
 
 type Props = {
@@ -136,7 +136,7 @@ const TableRows: React.FC<TableRowsProps> = React.memo(({ r, params, updateListV
       {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
       {/* ID */}
       <TD>
-        <IDFieldContainer>{r.run_number}</IDFieldContainer>
+        <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
       </TD>
       {/* USER NAME */}
       {params._group !== 'user_name' && <TD>{getUsername(r)}</TD>}

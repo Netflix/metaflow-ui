@@ -103,7 +103,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
           {graph.group
             ? steps.map((step) => (
                 <MiniTimelineRow
-                  key={step.original?.step_name || step.started_at}
+                  key={(step.original?.step_name || '') + step.started_at + step.finished_at}
                   graph={graph}
                   started={step.started_at}
                   finished={step.finished_at}

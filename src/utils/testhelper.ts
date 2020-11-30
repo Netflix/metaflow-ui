@@ -26,9 +26,9 @@ export function createGraphState(partialGraph: Partial<GraphState>): GraphState 
 export function createTask(partialTask: Partial<Task>): Task {
   return {
     flow_id: 'BasicFlow',
-    run_number: '1',
+    run_number: 1,
     step_name: 'askel',
-    task_id: '1',
+    task_id: 1,
     status: 'completed',
     user_name: 'SanteriCM',
     ts_epoch: 1595574762901,
@@ -44,7 +44,7 @@ export function createTask(partialTask: Partial<Task>): Task {
 export function createStep(partialStep: Partial<Step>): Step {
   return {
     flow_id: 'BasicFlow',
-    run_number: '1',
+    run_number: 1,
     step_name: 'askel',
     user_name: 'SanteriCM',
     ts_epoch: 1595574762958,
@@ -57,7 +57,7 @@ export function createStep(partialStep: Partial<Step>): Step {
 export function createRun(partialRun: Partial<Run>): Run {
   return {
     flow_id: 'BasicFlow',
-    run_number: '1',
+    run_number: 1,
     user_name: 'SanteriCM',
     ts_epoch: 1595574762958,
     tags: ['testingtag'],

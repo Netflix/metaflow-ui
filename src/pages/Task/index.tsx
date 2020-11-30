@@ -56,7 +56,7 @@ const Task: React.FC<TaskViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
-  const [selectedTaskId, setTask] = useState<string | null>(null);
+  const [selectedTaskId, setTask] = useState<number | null>(null);
 
   //
   // Query params

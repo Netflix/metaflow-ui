@@ -14,7 +14,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { ResourceStatus } from '../../hooks/useResource';
 import GenericError from '../../components/GenericError';
 import Spinner from '../../components/Spinner';
-import { getRunDuration, getRunEndTime, getRunStartTime, getUsername } from '../../utils/run';
+import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getUsername } from '../../utils/run';
 import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
@@ -38,7 +38,7 @@ const RunHeader: React.FC<{
   }, {});
 
   const columns = [
-    { label: t('fields.run-id'), prop: 'run_number' as const },
+    { label: t('fields.run-id'), accessor: (item: Run) => getRunId(item) },
     { label: t('fields.status'), accessor: (item: Run) => <StatusField status={item.status} /> },
     {
       label: t('fields.tasks'),
