@@ -257,7 +257,7 @@ const NoRowsContainer: React.FC<{ counts: RowCounts; searchStatus: AsyncStatus }
     <ItemRow justify="center" margin="lg">
       <div>
         <GenericError {...errorProps} />
-        {counts.all > 0 && <div>{`${counts.all} ${t('timeline.hidden-by-settings')}`}</div>}
+        {counts.all > 0 && <ItemRow margin="md">{`${counts.all} ${t('timeline.hidden-by-settings')}`}</ItemRow>}
       </div>
     </ItemRow>
   );
