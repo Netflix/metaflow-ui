@@ -41,3 +41,13 @@ export function getRunDuration(run: Run): string | null {
     ? formatDuration(run.finished_at - run.ts_epoch, 0)
     : null;
 }
+
+/**
+ * Safely get system tag with given prefix
+ * @param run     - Run object
+ * @param tagType - Prefix of tag we are trying to get
+ */
+export function getRunSystemTag(run: Run, tagType: string): string | null {
+  const tag = (run.system_tags || []).find((tag) => tag.startsWith(`${tagType}:`));
+  return tag ? tag.split(`${tagType}:`)[1] : null;
+}
