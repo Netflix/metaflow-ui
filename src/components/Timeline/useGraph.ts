@@ -329,7 +329,7 @@ function equalsDefaultMode(order: Param, dir: Param, status: Param, group: Param
   );
 }
 
-type GraphMode = 'overview' | 'monitoring' | 'error-tracker' | 'custom';
+export type GraphMode = 'overview' | 'monitoring' | 'error-tracker' | 'custom';
 
 export default function useGraph(start: number, end: number, autoIncrement: boolean): GraphHook {
   const [graph, dispatch] = useReducer(graphReducer, {

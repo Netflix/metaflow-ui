@@ -1,10 +1,10 @@
 import React from 'react';
-import TimelineHeader from '../TimelineHeader';
+import TaskListingHeader from '../TaskListingHeader';
 import { render, fireEvent } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
-import useGraph from '../useGraph';
+import useGraph from '../../Timeline/useGraph';
 import useSeachField from '../../../hooks/useSearchField';
-import CollapseButton from '../CollapseButton';
+import CollapseButton from '../components/CollapseButton';
 
 const headerFunctionProps = {
   expandAll: () => null,
@@ -22,14 +22,14 @@ const headerFunctionProps = {
   },
 };
 
-describe('TimelineHeader component', () => {
-  test('<TimelineHeader> - should render', () => {
+describe('TaskListingHeader component', () => {
+  test('<TaskListingHeader> - should render', () => {
     const Component = () => {
-      const graph = useGraph(0, 100);
+      const graph = useGraph(0, 100, false);
       const searchField = useSeachField('a', 'b');
       return (
         <TestWrapper>
-          <TimelineHeader graph={graph} searchField={searchField} {...headerFunctionProps} />
+          <TaskListingHeader graph={graph} searchField={searchField} {...headerFunctionProps} />
         </TestWrapper>
       );
     };

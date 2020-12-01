@@ -8,7 +8,6 @@ import { GraphHook, GraphState, GraphSortBy } from './useGraph';
 import { StepRowData, RowDataAction, RowDataModel } from './useRowData';
 import { RowCounts, StepLineData } from './taskdataUtils';
 import { useTranslation } from 'react-i18next';
-import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
 import FullPageContainer from '../FullPageContainer';
 import { SearchFieldReturnType, SearchResultModel } from '../../hooks/useSearchField';
@@ -16,6 +15,7 @@ import GenericError from '../GenericError';
 import { ItemRow } from '../Structure';
 import { TFunction } from 'i18next';
 import Spinner from '../Spinner';
+import TaskListingHeader from '../TaskListingHeader';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task[] };
@@ -104,7 +104,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
-        <TimelineHeader
+        <TaskListingHeader
           graph={graphHook}
           expandAll={() => rowDataDispatch({ type: 'openAll' })}
           collapseAll={() => rowDataDispatch({ type: 'closeAll' })}
