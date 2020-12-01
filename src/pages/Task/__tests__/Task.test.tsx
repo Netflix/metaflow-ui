@@ -26,7 +26,7 @@ describe('Task page', () => {
     const server = new WS('ws://localhost/api/ws', { jsonProtocol: true });
 
     const Component = () => {
-      const graph = useGraph(0, 1000);
+      const graph = useGraph(0, 1000, false);
       const searchField = useSeachField('asd', '0');
       return (
         <TestWrapper>
@@ -40,7 +40,6 @@ describe('Task page', () => {
             searchField={searchField}
             paramsString=""
             isAnyGroupOpen={true}
-            setMode={() => null}
             counts={{ all: 0, completed: 0, failed: 0, running: 0 }}
           />
         </TestWrapper>
