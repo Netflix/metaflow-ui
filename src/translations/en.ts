@@ -93,6 +93,7 @@ const en = {
     timeline: {
       'no-run-data': 'No run data. You can wait if this run is created and see live updates.',
       'no-rows': 'No tasks found',
+      'hidden-by-settings': 'rows are hidden by selected settings',
       'expand-all': 'Expand all',
       'collapse-all': 'Collapse all',
       relative: 'Relative',
