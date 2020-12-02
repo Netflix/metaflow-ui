@@ -16,12 +16,19 @@ import { NotificationsProvider, Notifications } from './components/Notifications
 import ErrorBoundary from './components/GeneralErrorBoundary';
 import { useTranslation } from 'react-i18next';
 import { TimezoneProvider } from './components/TimezoneProvider';
+import { getRouteMatch } from './utils/routing';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    const match = getRouteMatch(pathname);
+    // Don't use up feature when on task page, there is some scroll handling
+    if (match && match.params.taskId) {
+      return;
+    } else {
+      window.scrollTo(0, 0);
+    }
   }, [pathname]);
 
   return null;
