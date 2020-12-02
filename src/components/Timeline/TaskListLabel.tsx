@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 import { Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { getPath } from '../../utils/routing';
+import { getTaskId } from '../../utils/task';
 import Icon from '../Icon';
 
 type BaseProps = {
@@ -74,7 +75,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
 };
 
 function getTaskLabel(item: Task): string {
-  return item.foreach_label ? item.foreach_label : item.task_id;
+  return item.foreach_label ? item.foreach_label : getTaskId(item);
 }
 
 export default TaskListLabel;

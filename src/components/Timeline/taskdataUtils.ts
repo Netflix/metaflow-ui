@@ -107,7 +107,7 @@ export function isFailedStep(stepTaskData: Record<string, Task[]>, newTasks: Tas
   const ids = newTasks.map((t) => t.task_id);
 
   for (const [key, tasks] of Object.entries(stepTaskData)) {
-    if (ids.indexOf(key) > -1) {
+    if (ids.indexOf(parseInt(key)) > -1) {
       const hasFailed = tasks[tasks.length - 1].status === 'failed';
       if (hasFailed) {
         return true;

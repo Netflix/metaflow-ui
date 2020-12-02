@@ -75,7 +75,7 @@ const TaskList: React.FC<Props> = ({ rows, rowDataDispatch, activeTaskId, result
                       ? () => (item.data ? rowDataDispatch({ type: 'toggle', id: item.data.step_name }) : null)
                       : undefined
                   }
-                  active={item.type === 'task' && item.data[0].task_id === activeTaskId}
+                  active={item.type === 'task' && item.data[0]?.task_id?.toString() === activeTaskId}
                   isOpen={item.type === 'step' && item.rowObject.isOpen}
                 />
               );

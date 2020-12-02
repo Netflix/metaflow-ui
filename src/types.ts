@@ -21,22 +21,26 @@ export type RunStatus = {
 
 export interface Run extends MetaDataBaseObject {
   [index: string]: keyof MetaDataBaseObject | keyof RunStatus | string | number | string[] | undefined;
-  run_number: string;
+  run_number: number;
   status: keyof RunStatus;
   finished_at?: number;
+  run_id?: string;
   duration?: number;
 }
 
 export interface Step extends MetaDataBaseObject {
-  run_number: string;
+  run_number: number;
+  run_id?: string;
   step_name: string;
   finished_at?: number;
 }
 
 export interface Task extends MetaDataBaseObject {
-  run_number: string;
+  run_number: number;
+  run_id?: string;
   step_name: string;
-  task_id: string;
+  task_id: number;
+  task_name?: string;
   attempt_id: number;
   started_at?: number;
   foreach_label?: string;

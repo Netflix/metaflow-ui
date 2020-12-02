@@ -112,9 +112,9 @@ describe('taskdataUtils tests', () => {
   //
 
   it('isFailedStep', () => {
-    const FAILED_TASK = createTask({ task_id: '2', status: 'failed' });
+    const FAILED_TASK = createTask({ task_id: 2, status: 'failed' });
     const DATA = {
-      '1': [createTask({ task_id: '1' })],
+      '1': [createTask({ task_id: 1 })],
       '2': [FAILED_TASK],
     };
 
@@ -133,14 +133,14 @@ describe('taskdataUtils tests', () => {
 
   it('makeTasksForStep - add to existing', () => {
     expect(
-      makeTasksForStep({ 1: [createTask({ finished_at: 100 })] }, createTask({ task_id: '1', attempt_id: 2 })).length,
+      makeTasksForStep({ 1: [createTask({ finished_at: 100 })] }, createTask({ task_id: 1, attempt_id: 2 })).length,
     ).toBe(2);
   });
 
   it('makeTasksForStep - replace in existing', () => {
     const result = makeTasksForStep(
       { 1: [createTask({})] },
-      createTask({ task_id: '1', finished_at: 100, user_name: 'TestTester' }),
+      createTask({ task_id: 1, finished_at: 100, user_name: 'TestTester' }),
     );
     expect(result.length).toBe(1);
     expect(result[0].user_name).toBe('TestTester');
