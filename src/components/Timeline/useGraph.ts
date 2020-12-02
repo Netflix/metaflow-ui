@@ -415,13 +415,13 @@ export default function useGraph(start: number, end: number, autoIncrement: bool
   // Update active settings mode for task listing.
   const setMode = (mode: GraphMode) => {
     if (mode === 'overview') {
-      sq(OverviewMode);
+      sq(OverviewMode, 'replace');
       dispatch({ type: 'setCustom', value: false });
     } else if (mode === 'monitoring') {
-      sq(MonitoringMode);
+      sq(MonitoringMode, 'replace');
       dispatch({ type: 'setCustom', value: false });
     } else if (mode === 'error-tracker') {
-      sq(ErrorTrackerMode);
+      sq(ErrorTrackerMode, 'replace');
       dispatch({ type: 'setCustom', value: false });
     } else if (mode === 'custom') {
       dispatch({ type: 'setCustom', value: true });
@@ -430,7 +430,7 @@ export default function useGraph(start: number, end: number, autoIncrement: bool
       if (previousSettings) {
         const parsed = JSON.parse(previousSettings);
         if (parsed) {
-          sq(parsed);
+          sq(parsed, 'replace');
         }
       }
     }
