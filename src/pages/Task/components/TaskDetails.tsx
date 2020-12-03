@@ -59,28 +59,39 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
             },
             {
               label: t('fields.duration'),
-              accessor: (item) => getDuration(attempts, item),
+              accessor: (item) => getAttemptDuration(attempts, item),
             },
           ]}
         />
       </InformationRow>
+
       {expanded && (
-        <InformationRow>
-          {metadata.status === 'NotAsked' && <ItemRow justify="center">{t('task.metadata-not-loaded')}</ItemRow>}
+        <InformationRow data-testid="task-metadata">
+          {metadata.status === 'NotAsked' && (
+            <ItemRow justify="center" data-testid="task-metadata-notasked">
+              {t('task.metadata-not-loaded')}
+            </ItemRow>
+          )}
           {metadata.status === 'Loading' && (
-            <ItemRow justify="center">
+            <ItemRow justify="center" data-testid="task-metadata-loading">
               <Spinner />
             </ItemRow>
           )}
-          {metadata.status === 'Error' && <GenericError message={t('task.failed-to-load-metadata')} />}
-          {metadata.status === 'Ok' && <ParameterTable items={metadataParams} label={t('task.metadata')} />}
+          {metadata.status === 'Error' && (
+            <GenericError message={t('task.failed-to-load-metadata')} data-testid="task-metadata-error" />
+          )}
+          {metadata.status === 'Ok' && (
+            <ParameterTable items={metadataParams} label={t('task.metadata')} data-testid="task-metadata-ok" />
+          )}
         </InformationRow>
       )}
+
       <ShowDetailsButton
         toggle={() => setExpanded(!expanded)}
         visible={expanded}
         showText={t('task.show-task-metadata')}
         hideText={t('task.hide-task-metadata')}
+        data-testid="task-expand-button"
       />
     </>
   );
@@ -88,10 +99,12 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
 
 //
 // Figure out the duration of current attempt of current task. There might be many attempts
-// and on those cases we need to calculate duration from previous attempt
+// and on those cases we need to calculate duration from previous attempt IF attempt doesn't
+// have started at value which indicates that actual duration value of attempt is correct.
 //
-function getDuration(tasks: ITask[], task: ITask) {
-  if (tasks && tasks.length > 1) {
+export function getAttemptDuration(tasks: ITask[], task: ITask): string {
+  // If task has started at, it must have proper duration as well. Else calculate
+  if (!task.started_at && tasks && tasks.length > 1) {
     const attemptBefore = tasks[tasks.indexOf(task) - 1];
 
     if (attemptBefore && attemptBefore.duration && task.duration) {
@@ -101,7 +114,7 @@ function getDuration(tasks: ITask[], task: ITask) {
   return task.duration ? formatDuration(task.duration) : '';
 }
 
-function getAttemptStartTime(allAttempts: ITask[] | null, task: ITask) {
+export function getAttemptStartTime(allAttempts: ITask[] | null, task: ITask): number {
   const taskTimeStamp = task.started_at || task.ts_epoch;
 
   if (!allAttempts) return taskTimeStamp;

@@ -10,9 +10,10 @@ type ParameterTableProps = {
   label: string;
   errorLabel?: string;
   errorComponent?: React.ReactNode;
+  'data-testid'?: string;
 };
 
-const ParameterTable: React.FC<ParameterTableProps> = ({ items, label, errorLabel, errorComponent }) => {
+const ParameterTable: React.FC<ParameterTableProps> = ({ items, label, errorLabel, errorComponent, ...rest }) => {
   const { t } = useTranslation();
 
   const cols = [
@@ -41,7 +42,7 @@ const ParameterTable: React.FC<ParameterTableProps> = ({ items, label, errorLabe
         </ItemRow>
       )}
 
-      {Object.keys(items).length > 0 && <PropertyTable scheme="bright" items={[items]} columns={cols} />}
+      {Object.keys(items).length > 0 && <PropertyTable scheme="bright" items={[items]} columns={cols} {...rest} />}
     </>
   );
 };

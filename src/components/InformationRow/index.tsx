@@ -1,13 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const InformationRow: React.FC<{ spaceless?: boolean; scrollOverflow?: boolean }> = ({
-  spaceless = false,
-  scrollOverflow = true,
-  children,
-}) => {
+const InformationRow: React.FC<{
+  spaceless?: boolean;
+  scrollOverflow?: boolean;
+  'data-testid'?: string;
+}> = ({ spaceless = false, scrollOverflow = true, children, ...rest }) => {
   return (
-    <StyledRow spaceless={spaceless} scrollOverflow={scrollOverflow}>
+    <StyledRow spaceless={spaceless} scrollOverflow={scrollOverflow} {...rest}>
       {children}
     </StyledRow>
   );

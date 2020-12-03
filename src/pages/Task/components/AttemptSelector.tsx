@@ -27,6 +27,7 @@ const AttemptSelector: React.FC<Props> = ({ tasks, currentAttempt, onSelect }) =
           key={index}
           onClick={() => onSelect(typeof item.attempt_id === 'number' ? item.attempt_id.toString() : null)}
           active={item.attempt_id === currentAttempt}
+          data-testid={`attempt-tab-${index}`}
         >
           {t('task.attempt')} {index + 1}
         </TabsHeadingItem>

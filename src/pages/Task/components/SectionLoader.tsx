@@ -17,13 +17,13 @@ type Props = {
 const SectionLoader: React.FC<Props> = ({ status, error, component, customNotFound, minHeight }) => {
   if (status === 'Loading') {
     return (
-      <div style={{ textAlign: 'center', minHeight: minHeight || 'unset' }}>
+      <div style={{ textAlign: 'center', minHeight: minHeight || 'unset' }} data-testid="section-loader-loading">
         <Spinner />
       </div>
     );
   } else if (status === 'Error') {
     return (
-      <div style={{ minHeight: minHeight || 'unset' }}>
+      <div style={{ minHeight: minHeight || 'unset' }} data-testid="section-loader-error">
         <APIErrorRenderer error={error} customNotFound={customNotFound} />
       </div>
     );

@@ -1,5 +1,6 @@
 import { GraphState } from '../components/Timeline/useGraph';
-import { Task, Step, Run } from '../types';
+import { createCache, Resource } from '../hooks/useResource';
+import { Task, Step, Run, Metadata } from '../types';
 
 //
 // LOT OF TESTS DEPEND ON THESE VALUES AS DEFAULTS SO DONT CHANGE THESE!!!
@@ -64,5 +65,35 @@ export function createRun(partialRun: Partial<Run>): Run {
     status: 'completed',
     system_tags: ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-24', 'metaflow_version:2.0.5'],
     ...partialRun,
+  };
+}
+
+export function createResource<T>(data: T, props: Partial<Resource<T>>): Resource<T> {
+  return {
+    url: '/example-route',
+    data,
+    error: null,
+    getResult: () => undefined,
+    cache: createCache(),
+    target: '',
+    status: 'Ok',
+    ...props,
+  };
+}
+
+export function createMetadata(data: Partial<Metadata>): Metadata {
+  return {
+    id: 0,
+    run_number: 'string',
+    step_name: 'string',
+    task_id: 'string',
+    field_name: 'string',
+    value: 'string',
+    type: 'string',
+    flow_id: 'string',
+    user_name: 'string',
+    ts_epoch: 0,
+    system_tags: [],
+    ...data,
   };
 }
