@@ -3,6 +3,9 @@
  * @param time Time in milliseconds
  */
 export function formatDuration(time: number, precision?: number): string {
+  if (time < 0) {
+    return precision === 0 ? '0s' : '0.0s';
+  }
   const secs = time / 1000;
   const hours = Math.floor(secs / 3600);
   const minutes = Math.floor((secs - hours * 3600) / 60);
