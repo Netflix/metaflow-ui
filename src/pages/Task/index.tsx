@@ -1,6 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { StringParam, useQueryParams } from 'use-query-params';
 import { Run as IRun, Task as ITask, Log, AsyncStatus, Metadata } from '../../types';
 import useResource from '../../hooks/useResource';
 
@@ -17,10 +18,9 @@ import GenericError, { DefaultAdditionalErrorInfo } from '../../components/Gener
 import { TabsHeading, TabsHeadingItem } from '../../components/Tabs';
 import SectionLoader from './components/SectionLoader';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
-import TimelineHeader from '../../components/Timeline/TimelineHeader';
 import { GraphHook } from '../../components/Timeline/useGraph';
 import TaskDetails from './components/TaskDetails';
-import { StringParam, useQueryParams } from 'use-query-params';
+import TaskListingHeader from '../../components/TaskListingHeader';
 import { logWarning } from '../../utils/errorlogger';
 
 //
@@ -220,7 +220,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   return (
     <TaskContainer>
-      <TimelineHeader
+      <TaskListingHeader
         graph={graph}
         expandAll={() => rowDataDispatch({ type: 'openAll' })}
         collapseAll={() => rowDataDispatch({ type: 'closeAll' })}

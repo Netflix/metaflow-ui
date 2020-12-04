@@ -1,3 +1,5 @@
+import { match, matchPath } from 'react-router-dom';
+
 export const SHORT_PATHS = {
   runSubview: `/:flowId/:runNumber/view/:viewType`,
   task: `/:flowId/:runNumber/:stepName/:taskId`,
@@ -21,3 +23,21 @@ export const getPath = {
   run: (flowId: PathValue, runNumber: PathValue): string => `/${flowId}/${runNumber}`,
   home: (): string => '/',
 };
+
+export type KnownURLParams = {
+  flowId?: string;
+  runNumber?: string;
+  stepName?: string;
+  taskId?: string;
+};
+
+/**
+ * Returns parameters from given path (if matching to our defined routes)
+ * @param pathname location.pathname
+ */
+export function getRouteMatch(pathname: string): match<KnownURLParams> | null {
+  return matchPath<KnownURLParams>(
+    pathname,
+    Object.keys(SHORT_PATHS).map((key) => SHORT_PATHS[key as keyof PathDefinition]),
+  );
+}

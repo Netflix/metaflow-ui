@@ -8,7 +8,6 @@ import { GraphHook, GraphState, GraphSortBy } from './useGraph';
 import { StepRowData, RowDataAction, RowDataModel } from './useRowData';
 import { RowCounts, StepLineData } from './taskdataUtils';
 import { useTranslation } from 'react-i18next';
-import TimelineHeader from './TimelineHeader';
 import TimelineFooter from './TimelineFooter';
 import FullPageContainer from '../FullPageContainer';
 import { SearchFieldReturnType, SearchResultModel } from '../../hooks/useSearchField';
@@ -16,6 +15,7 @@ import GenericError from '../GenericError';
 import { ItemRow } from '../Structure';
 import { TFunction } from 'i18next';
 import Spinner from '../Spinner';
+import TaskListingHeader from '../TaskListingHeader';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task[] };
@@ -104,7 +104,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
-        <TimelineHeader
+        <TaskListingHeader
           graph={graphHook}
           expandAll={() => rowDataDispatch({ type: 'openAll' })}
           collapseAll={() => rowDataDispatch({ type: 'closeAll' })}
@@ -196,18 +196,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
         {rows.length === 0 && (
           <>
             {status !== 'NotAsked' && status !== 'Loading' && searchField.results.status !== 'Loading' && (
-              <>
-                {searchField.results.status === 'NotAsked' && (
-                  <ItemRow justify="center" margin="lg">
-                    <GenericError message={t('timeline.no-rows')} icon="listNotFound" />
-                  </ItemRow>
-                )}
-                {searchField.results.status !== 'NotAsked' && (
-                  <ItemRow justify="center" margin="lg">
-                    <GenericError message={t('search.no-results')} icon="searchNotFound" />
-                  </ItemRow>
-                )}
-              </>
+              <NoRowsContainer searchStatus={searchField.results.status} counts={counts} />
             )}
 
             {(status === 'Loading' || searchField.results.status === 'Loading') && (
@@ -255,6 +244,24 @@ function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped
     );
   };
 }
+
+const NoRowsContainer: React.FC<{ counts: RowCounts; searchStatus: AsyncStatus }> = ({ counts, searchStatus }) => {
+  const { t } = useTranslation();
+
+  const errorProps =
+    searchStatus === 'NotAsked'
+      ? { message: t('timeline.no-rows'), icon: 'listNotFound' as const }
+      : { message: t('search.no-results'), icon: 'searchNotFound' as const };
+
+  return (
+    <ItemRow justify="center" margin="lg">
+      <div>
+        <GenericError {...errorProps} />
+        {counts.all > 0 && <ItemRow margin="md">{`${counts.all} ${t('timeline.hidden-by-settings')}`}</ItemRow>}
+      </div>
+    </ItemRow>
+  );
+};
 
 const StickyHeader: React.FC<{
   stickyStep: string;

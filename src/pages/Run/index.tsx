@@ -76,7 +76,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(hasViewTypeParam(params.viewType) ? params.viewType : 'timeline');
   useEffect(() => {
-    if (params.viewType && ['dag', 'timeline', 'task'].indexOf(params.viewType) > -1) {
+    if (hasViewTypeParam(params.viewType)) {
       setTab(params.viewType);
     } else if (params.stepName && params.taskId) {
       setTab('task');
@@ -115,7 +115,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   useEffect(() => {
     setPreviousStepName(params.stepName || undefined);
     setPreviousTaskId(params.taskId || undefined);
-
+    // If there is no previous settings, lets default to some of modes.
     if (!graph.params.direction && !graph.params.order && !graph.params.status) {
       if (run.status === 'completed') {
         graph.setMode('overview');
@@ -236,11 +236,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
           {
             key: 'task',
             label: previousTaskId ? `${t('items.task')}: ${previousTaskId}` : `${t('items.task')}`,
-            linkTo:
-              (previousStepName &&
-                previousTaskId &&
-                getPath.task(params.flowId, params.runNumber, previousStepName, previousTaskId) + '?' + urlParams) ||
-              getPath.tasks(params.flowId, params.runNumber) + '?' + urlParams,
+            linkTo: getTaskPageLink(params.flowId, params.runNumber, previousStepName, previousTaskId, urlParams),
             temporary: !!(previousStepName && previousTaskId),
             component: (
               <ErrorBoundary message={t('error.task-error')}>
@@ -276,6 +272,19 @@ function cleanParametersMap(params: any) {
 
 function hasViewTypeParam(viewType?: string): viewType is string {
   return !!(viewType && ['dag', 'timeline', 'task'].indexOf(viewType) > -1);
+}
+
+function getTaskPageLink(
+  flowId: string,
+  runNumber: string,
+  previousStepName: string | undefined,
+  previousTaskId: string | undefined,
+  urlParams: string,
+): string {
+  if (previousStepName && previousTaskId) {
+    return getPath.task(flowId, runNumber, previousStepName, previousTaskId) + '?' + urlParams;
+  }
+  return getPath.tasks(flowId, runNumber) + '?' + urlParams;
 }
 
 export default RunContainer;

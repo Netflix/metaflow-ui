@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import Button from '../Button';
-import Icon from '../Icon';
+import Button from '../../Button';
+import Icon from '../../Icon';
 
 const CollapseButton: React.FC<{
   disabled?: boolean;

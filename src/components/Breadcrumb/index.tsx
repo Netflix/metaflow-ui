@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useLocation, matchPath, match, useHistory } from 'react-router-dom';
+import { useLocation, match, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
-import { PathDefinition, getPath, SHORT_PATHS } from '../../utils/routing';
+import { getPath, getRouteMatch, KnownURLParams } from '../../utils/routing';
 
 import Button, { ButtonLink, ButtonCSS } from '../Button';
 import { TextInputField } from '../Form';
@@ -11,71 +11,16 @@ import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
 import { ItemRow } from '../Structure';
 
-type KnownParams = {
-  flowId?: string;
-  runNumber?: string;
-  stepName?: string;
-  taskId?: string;
-};
-
-type BreadcrumbButtons = { label: string; path: string };
-
-/**
- * Find need for various buttons in breadcrumb. This is now very attached to fixed urls we have now
- * so we might need to make this more generic later.
- * @param routeMatch
- * @param location
- */
-export function findAdditionalButtons(routeMatch: match<KnownParams> | null, location: string): BreadcrumbButtons[] {
-  if (routeMatch === null) return [];
-  const queryParams = new URLSearchParams(location);
-  const buttons = [];
-  const params = routeMatch.params;
-
-  const flowValue = queryParams.get('flow_id') || params.flowId;
-  if (flowValue && flowValue.split(',').length === 1) {
-    buttons.push({
-      label: `${flowValue}`,
-      path: getPath.home() + '?flow_id=' + flowValue,
-    });
-  }
-
-  if (params.flowId && params.runNumber) {
-    buttons.push({
-      label: `${params.runNumber}`,
-      path: getPath.timeline(params.flowId, params.runNumber),
-    });
-  }
-
-  // Special case since step name might be found from route params or query params.
-  const stepValue = queryParams.get('steps') || params.stepName;
-  if (params.flowId && params.runNumber && stepValue) {
-    buttons.push({
-      label: stepValue,
-      path: getPath.step(params.flowId, params.runNumber, stepValue || 'undefined'),
-    });
-  }
-
-  if (params.flowId && params.runNumber && params.stepName && params.taskId) {
-    buttons.push({
-      label: params.taskId,
-      path: getPath.task(params.flowId, params.runNumber, params.stepName, params.taskId),
-    });
-  }
-
-  return buttons;
-}
+//
+// Component
+//
 
 const Breadcrumb: React.FC = () => {
   const location = useLocation();
   const { t } = useTranslation();
   const history = useHistory();
 
-  const routeMatch = matchPath<KnownParams>(
-    location.pathname,
-    Object.keys(SHORT_PATHS).map((key) => SHORT_PATHS[key as keyof PathDefinition]),
-  );
-
+  const routeMatch = getRouteMatch(location.pathname);
   const buttonList = findAdditionalButtons(routeMatch, location.search);
   const currentBreadcrumbPath = buttonList.map((item) => item.label).join('/');
 
@@ -114,7 +59,7 @@ const Breadcrumb: React.FC = () => {
 
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
-      if (event.keyCode === 27) {
+      if (event.key === 'Escape') {
         closeUp();
       }
     };
@@ -246,6 +191,62 @@ const BreadcrumbKeyValueList: React.FC<{ items: { key: string; value: string }[]
     ))}
   </div>
 );
+
+//
+// Utils
+//
+
+type BreadcrumbButtons = { label: string; path: string };
+
+/**
+ * Find need for various buttons in breadcrumb. This is now very attached to fixed urls we have now
+ * so we might need to make this more generic later.
+ * @param routeMatch
+ * @param location
+ */
+export function findAdditionalButtons(routeMatch: match<KnownURLParams> | null, location: string): BreadcrumbButtons[] {
+  if (routeMatch === null) return [];
+  const queryParams = new URLSearchParams(location);
+  const buttons = [];
+  const params = routeMatch.params;
+
+  const flowValue = queryParams.get('flow_id') || params.flowId;
+  if (flowValue && flowValue.split(',').length === 1) {
+    buttons.push({
+      label: `${flowValue}`,
+      path: getPath.home() + '?flow_id=' + flowValue,
+    });
+  }
+
+  if (params.flowId && params.runNumber) {
+    buttons.push({
+      label: `${params.runNumber}`,
+      path: getPath.timeline(params.flowId, params.runNumber),
+    });
+  }
+
+  // Special case since step name might be found from route params or query params.
+  const stepValue = queryParams.get('steps') || params.stepName;
+  if (params.flowId && params.runNumber && stepValue) {
+    buttons.push({
+      label: stepValue,
+      path: getPath.step(params.flowId, params.runNumber, stepValue || 'undefined'),
+    });
+  }
+
+  if (params.flowId && params.runNumber && params.stepName && params.taskId) {
+    buttons.push({
+      label: params.taskId,
+      path: getPath.task(params.flowId, params.runNumber, params.stepName, params.taskId),
+    });
+  }
+
+  return buttons;
+}
+
+//
+// Styles
+//
 
 const BreadcrumbGroup = styled.div`
   ${ButtonCSS}

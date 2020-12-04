@@ -5,8 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Run, RunParam, APIError } from '../../types';
 
 import { ItemRow } from '../../components/Structure';
-import Tag from '../../components/Tag';
-import { SmallText } from '../../components/Text';
 import StatusField from '../../components/Status';
 import InformationRow from '../../components/InformationRow';
 import PropertyTable from '../../components/PropertyTable';
@@ -14,19 +12,37 @@ import { Link, useHistory } from 'react-router-dom';
 import { ResourceStatus } from '../../hooks/useResource';
 import GenericError from '../../components/GenericError';
 import Spinner from '../../components/Spinner';
-import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getUsername } from '../../utils/run';
+import {
+  getRunDuration,
+  getRunEndTime,
+  getRunId,
+  getRunStartTime,
+  getRunSystemTag,
+  getUsername,
+} from '../../utils/run';
 import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import { RowCounts } from '../../components/Timeline/taskdataUtils';
+import TagRow from './components/TagRow';
 
-const RunHeader: React.FC<{
-  run?: Run | null;
+//
+// Typedef
+//
+
+type Props = {
+  run: Run;
   parameters: RunParam | null;
   counts: RowCounts;
   status: ResourceStatus;
   error: APIError | null;
-}> = ({ run, parameters, status, error, counts }) => {
+};
+
+//
+// Component
+//
+
+const RunHeader: React.FC<Props> = ({ run, parameters, status, error, counts }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { timezone } = useContext(TimezoneContext);
@@ -52,13 +68,13 @@ const RunHeader: React.FC<{
     },
     {
       label: t('fields.project'),
-      accessor: (item: Run) => item.system_tags.find((tag) => tag.startsWith('project:')),
-      hidden: !run || !run.system_tags.find((tag) => tag.startsWith('project:')),
+      accessor: (item: Run) => getRunSystemTag(item, 'project'),
+      hidden: !getRunSystemTag(run, 'project'),
     },
     {
       label: t('fields.language'),
-      accessor: (item: Run) => item.system_tags.find((tag) => tag.startsWith('language:')),
-      hidden: !run || !run.system_tags.find((tag) => tag.startsWith('project:')),
+      accessor: (item: Run) => getRunSystemTag(item, 'language'),
+      hidden: !getRunSystemTag(run, 'language'),
     },
     { label: t('fields.started-at'), accessor: (r: Run) => getRunStartTime(r, timezone) },
     { label: t('fields.finished-at'), accessor: (r: Run) => getRunEndTime(r, timezone) },
@@ -67,43 +83,40 @@ const RunHeader: React.FC<{
 
   return (
     <RunHeaderContainer>
-      {(!run || !run.run_number) && <InformationRow>{t('run.no-run-data')}</InformationRow>}
-      {run && run.run_number && (
-        <div>
-          <InformationRow spaceless>
-            <PropertyTable scheme="dark" items={[run]} columns={columns} />
-          </InformationRow>
-          {(run.tags || []).length > 0 && <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} />}
+      <div>
+        <InformationRow spaceless>
+          <PropertyTable scheme="dark" items={[run]} columns={columns} />
+        </InformationRow>
+        {(run.tags || []).length > 0 && <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} />}
 
-          {expanded && (
-            <>
-              <TagRow label={t('run.system-tags')} tags={run.system_tags || []} push={history.push} />
+        {expanded && (
+          <>
+            <TagRow label={t('run.system-tags')} tags={run.system_tags || []} push={history.push} />
 
-              <InformationRow>
-                {status === 'Loading' && (
-                  <ItemRow margin="lg" justify="center">
-                    <Spinner sm />
-                  </ItemRow>
-                )}
+            <InformationRow>
+              {status === 'Loading' && (
+                <ItemRow margin="lg" justify="center">
+                  <Spinner sm />
+                </ItemRow>
+              )}
 
-                {status === 'Ok' && parameterTableItems && (
-                  <ParameterTable
-                    label={t('run.parameters')}
-                    items={parameterTableItems}
-                    errorLabel={t('run.no-run-parameters')}
-                  />
-                )}
+              {status === 'Ok' && parameterTableItems && (
+                <ParameterTable
+                  label={t('run.parameters')}
+                  items={parameterTableItems}
+                  errorLabel={t('run.no-run-parameters')}
+                />
+              )}
 
-                {status === 'Error' && error && (
-                  <ItemRow margin="lg">
-                    <GenericError message={t('run.run-parameters-error')} />
-                  </ItemRow>
-                )}
-              </InformationRow>
-            </>
-          )}
-        </div>
-      )}
+              {status === 'Error' && error && (
+                <ItemRow margin="lg">
+                  <GenericError message={t('run.run-parameters-error')} />
+                </ItemRow>
+              )}
+            </InformationRow>
+          </>
+        )}
+      </div>
 
       <ShowDetailsButton
         toggle={() => setExpanded(!expanded)}
@@ -115,44 +128,12 @@ const RunHeader: React.FC<{
   );
 };
 
-type TagRowProps = {
-  tags: string[];
-  label: string;
-  push: (path: string) => void;
-};
-
-const TagRow: React.FC<TagRowProps> = ({ tags, label, push }) => (
-  <InformationRow scrollOverflow={false}>
-    <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
-      <div style={{ width: '120px' }}>
-        <SmallText>{label}</SmallText>
-      </div>
-      <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
-        {tags.map((tag) => (
-          <TagNoWrap
-            key={tag}
-            onClick={() => {
-              push('/?_tags=' + encodeURIComponent(tag));
-            }}
-          >
-            {tag}
-          </TagNoWrap>
-        ))}
-      </ItemRow>
-    </ItemRow>
-  </InformationRow>
-);
+//
+// Style
+//
 
 const RunHeaderContainer = styled.div`
   position: relative;
-`;
-
-const TagNoWrap = styled(Tag)<{ dark?: boolean }>`
-  white-space: nowrap;
-
-  .icon {
-    margin-left: ${(p) => p.theme.spacer.xs}rem;
-  }
 `;
 
 export default RunHeader;
