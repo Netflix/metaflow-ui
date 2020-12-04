@@ -13,7 +13,7 @@ const run: Run = {
   ts_epoch: 123,
   tags: [],
   system_tags: [],
-  run_number: '123',
+  run_number: 123,
   status: 'completed',
 };
 

@@ -9,10 +9,11 @@ type Props = {
   message: string;
   icon?: IconKeys | JSX.Element;
   noIcon?: boolean;
+  'data-testid'?: string;
 };
 
-const GenericError: React.FC<Props> = ({ message, icon, noIcon }) => (
-  <GenericErrorContainer data-testid="generic-error">
+const GenericError: React.FC<Props> = ({ message, icon, noIcon, ...rest }) => (
+  <GenericErrorContainer data-testid="generic-error" {...rest}>
     {!noIcon && (icon && typeof icon !== 'string' ? icon : <Icon name={icon || 'noData'} size="lg" />)}
     <div>{message}</div>
   </GenericErrorContainer>

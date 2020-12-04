@@ -13,11 +13,12 @@ type PropertyTableProps<T> = {
   columns: PropertyTableColumns<T>[];
   items: T[];
   scheme?: PropertyTableScheme;
+  'data-testid'?: string;
 };
 
-function PropertyTable<T>({ items, columns, scheme = 'normal' }: PropertyTableProps<T>): JSX.Element {
+function PropertyTable<T>({ items, columns, scheme = 'normal', ...rest }: PropertyTableProps<T>): JSX.Element {
   return (
-    <PropertyTableContainer>
+    <PropertyTableContainer {...rest}>
       <thead>
         <tr>
           {columns.map((col, index) => (

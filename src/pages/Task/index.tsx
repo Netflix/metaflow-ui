@@ -2,29 +2,29 @@ import React, { useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { StringParam, useQueryParams } from 'use-query-params';
-import { Run as IRun, Task as ITask, Log, AsyncStatus, Metadata } from '../../types';
+import { Run as IRun, Task as ITask, Log, Metadata } from '../../types';
 import useResource from '../../hooks/useResource';
-
+import { SearchFieldReturnType } from '../../hooks/useSearchField';
+import { logWarning } from '../../utils/errorlogger';
 import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
-import { RowDataAction } from '../../components/Timeline/useRowData';
-import { RowCounts } from '../../components/Timeline/taskdataUtils';
-import TaskList from './components/TaskList';
-import AnchoredView from './components/AnchoredView';
+
+import Spinner from '../../components/Spinner';
+import { GraphHook } from '../../components/Timeline/useGraph';
 import LogList, { LogActionBar } from '../../components/LogList';
 import FullPageContainer from '../../components/FullPageContainer';
-import { SearchFieldReturnType } from '../../hooks/useSearchField';
-import Spinner from '../../components/Spinner';
-import GenericError, { DefaultAdditionalErrorInfo } from '../../components/GenericError';
-import { TabsHeading, TabsHeadingItem } from '../../components/Tabs';
-import SectionLoader from './components/SectionLoader';
-import { Row } from '../../components/Timeline/VirtualizedTimeline';
-import { GraphHook } from '../../components/Timeline/useGraph';
-import TaskDetails from './components/TaskDetails';
 import TaskListingHeader from '../../components/TaskListingHeader';
-import { logWarning } from '../../utils/errorlogger';
+import { Row } from '../../components/Timeline/VirtualizedTimeline';
+import { RowCounts } from '../../components/Timeline/taskdataUtils';
+import { RowDataAction } from '../../components/Timeline/useRowData';
+import GenericError, { DefaultAdditionalErrorInfo } from '../../components/GenericError';
+import TaskList from './components/TaskList';
+import AnchoredView from './components/AnchoredView';
+import SectionLoader from './components/SectionLoader';
+import TaskDetails from './components/TaskDetails';
+import AttemptSelector from './components/AttemptSelector';
 
 //
-// Task view
+// Typedef
 //
 
 type TaskViewProps = {
@@ -40,7 +40,9 @@ type TaskViewProps = {
   isAnyGroupOpen: boolean;
 };
 
-const sortTaskAttempts = (a: ITask, b: ITask) => a.attempt_id - b.attempt_id;
+//
+// Component
+//
 
 const Task: React.FC<TaskViewProps> = ({
   run,
@@ -56,7 +58,6 @@ const Task: React.FC<TaskViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
-  const [selectedTaskId, setTask] = useState<number | null>(null);
 
   //
   // Query params
@@ -83,45 +84,9 @@ const Task: React.FC<TaskViewProps> = ({
     pause: stepName === 'not-selected' || taskId === 'not-selected',
   });
 
-  const attemptId = qp.attempt || null;
-
-  const task = useMemo(() => {
-    return tasks?.find((item) => item.task_id === selectedTaskId) || null;
-  }, [tasks, selectedTaskId]); // eslint-disable-line
-
+  const attemptId = qp.attempt ? parseInt(qp.attempt) : tasks ? tasks.length - 1 : 0;
+  const task = tasks?.find((item) => item.attempt_id === attemptId) || null;
   const isCurrentTaskFinished = !!(task && task.finished_at);
-
-  const metadata = useResource<Metadata[], Metadata>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/metadata`,
-    subscribeToEvents: true,
-    initialData: [],
-    pause: !isCurrentTaskFinished || attemptId === null,
-  });
-
-  // Task data will be array so we need to set one of them as active task when they arrive depending if we
-  // have attempt id parameter or not.
-  useEffect(() => {
-    const attempts = tasks || [];
-
-    if (shouldUpdateTask(status, task, attempts, attemptId)) {
-      if (typeof attemptId === 'string') {
-        const item =
-          attempts.find((i) => i.attempt_id === parseInt(attemptId)) ||
-          attempts.sort(sortTaskAttempts)[attempts.length - 1];
-
-        setTask(item ? item.task_id : null);
-      } else {
-        const item = attempts.sort(sortTaskAttempts)[attempts.length - 1];
-        setTask(item ? item.task_id : null);
-      }
-    }
-  }, [tasks, status, task, attemptId]);
-
-  useEffect(() => {
-    if (task && task.attempt_id !== parseInt(attemptId || '')) {
-      setQp({ attempt: task.attempt_id.toString() }, 'replaceIn');
-    }
-  }, [task]); // eslint-disable-line
 
   //
   // Plugins helpers begin
@@ -172,36 +137,44 @@ const Task: React.FC<TaskViewProps> = ({
 
   //
   // Plugins helpers end
-  // Logs start
+  //
+  // Related data start
   //
 
+  const metadata = useResource<Metadata[], Metadata>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/metadata`,
+    subscribeToEvents: true,
+    initialData: [],
+    pause: !isCurrentTaskFinished,
+  });
+
   const [stdout, setStdout] = useState<Log[]>([]);
-  const { status: statusOut, error: logStdError } = useResource<Log[], Log>({
+  const stdoutRes = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
     queryParams: {
-      attempt_id: attemptId !== null ? attemptId : '',
+      attempt_id: attemptId.toString(),
     },
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: !isCurrentTaskFinished || attemptId === null,
+    pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
       items && setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
   });
 
   const [stderr, setStderr] = useState<Log[]>([]);
-  const { status: statusErr, error: logErrError } = useResource<Log[], Log>({
+  const stderrRes = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
     queryParams: {
-      attempt_id: attemptId !== null ? attemptId : '',
+      attempt_id: attemptId.toString(),
     },
     subscribeToEvents: true,
     initialData: [],
     fullyDisableCache: true,
     useBatching: true,
-    pause: !isCurrentTaskFinished || attemptId === null,
+    pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
       items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
     },
@@ -210,7 +183,6 @@ const Task: React.FC<TaskViewProps> = ({
   useEffect(() => {
     setStdout([]);
     setStderr([]);
-    setTask(null);
   }, [stepName, taskId]);
 
   useEffect(() => {
@@ -245,13 +217,13 @@ const Task: React.FC<TaskViewProps> = ({
           </TaskLoaderContainer>
         )}
 
-        {error && status !== 'Loading' && status !== 'Ok' && (
+        {error && status === 'Error' && (
           <Space>
             <GenericError icon="listItemNotFound" message={t('error.load-error')} />
           </Space>
         )}
 
-        {status === 'Ok' && tasks && tasks.length === 0 && (
+        {status === 'Ok' && tasks?.length === 0 && (
           <Space>
             <GenericError icon="listItemNotFound" message={t('error.not-found')} />
           </Space>
@@ -269,23 +241,12 @@ const Task: React.FC<TaskViewProps> = ({
               activeSection={qp.section}
               setSection={(value: string | null) => setQp({ section: value }, 'replaceIn')}
               header={
-                status === 'Ok' && tasks && tasks.length > 0 ? (
-                  <TabsHeading>
-                    {tasks.sort(sortTaskAttempts).map((item: ITask, index) => (
-                      <TabsHeadingItem
-                        key={index}
-                        onClick={() =>
-                          setQp({ attempt: typeof item.attempt_id === 'number' ? item.attempt_id.toString() : null })
-                        }
-                        active={item?.attempt_id.toString() === attemptId}
-                      >
-                        {t('task.attempt')} {index + 1}
-                      </TabsHeadingItem>
-                    ))}
-                  </TabsHeading>
-                ) : undefined
+                <AttemptSelector tasks={tasks} currentAttempt={attemptId} onSelect={(att) => setQp({ attempt: att })} />
               }
               sections={[
+                //
+                // Task info
+                //
                 {
                   key: 'taskinfo',
                   order: 1,
@@ -299,6 +260,9 @@ const Task: React.FC<TaskViewProps> = ({
                     </>
                   ),
                 },
+                //
+                // Stdout logs
+                //
                 {
                   key: 'stdout',
                   order: 2,
@@ -314,8 +278,8 @@ const Task: React.FC<TaskViewProps> = ({
                     <>
                       <SectionLoader
                         minHeight={110}
-                        status={statusOut}
-                        error={logStdError}
+                        status={stdoutRes.status}
+                        error={stdoutRes.error}
                         customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
                         component={
                           <LogList
@@ -328,6 +292,9 @@ const Task: React.FC<TaskViewProps> = ({
                     </>
                   ),
                 },
+                //
+                // Strerr logs
+                //
                 {
                   key: 'stderr',
                   order: 3,
@@ -343,8 +310,8 @@ const Task: React.FC<TaskViewProps> = ({
                     <>
                       <SectionLoader
                         minHeight={110}
-                        status={statusErr}
-                        error={logErrError}
+                        status={stderrRes.status}
+                        error={stderrRes.error}
                         customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
                         component={
                           <LogList
@@ -358,6 +325,9 @@ const Task: React.FC<TaskViewProps> = ({
                     </>
                   ),
                 },
+                //
+                // Other custom components
+                //
                 ...pluginSectionsCustom.map((sectionKey, index) => {
                   const sections = pluginComponentsForSection(sectionKey).filter((s) => s.component);
                   // Get order and label for each section
@@ -393,24 +363,9 @@ const Task: React.FC<TaskViewProps> = ({
   );
 };
 
-function shouldUpdateTask(status: AsyncStatus, task: ITask | null, tasks: ITask[], attempt: string | null): boolean {
-  // We need to have tasks to update view
-  if (status !== 'Ok') return false;
-  // If no attempt selected, do it now
-  if (!attempt && tasks && tasks.length > 0) {
-    return true;
-  }
-  // If attempt was changed
-  if (
-    (task === null || (typeof attempt === 'string' && task.attempt_id !== parseInt(attempt))) &&
-    tasks &&
-    tasks.length > 0
-  ) {
-    return true;
-  }
-
-  return false;
-}
+//
+// Style
+//
 
 const TaskContainer = styled.div`
   display: flex;

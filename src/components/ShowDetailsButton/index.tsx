@@ -9,13 +9,14 @@ type Props = {
   visible: boolean;
   showText?: string;
   hideText?: string;
+  'data-testid'?: string;
 };
 
-const ShowDetailsButton: React.FC<Props> = ({ toggle, visible, showText, hideText }) => {
+const ShowDetailsButton: React.FC<Props> = ({ toggle, visible, showText, hideText, ...rest }) => {
   const { t } = useTranslation();
 
   return (
-    <ShowDetailsRow>
+    <ShowDetailsRow {...rest}>
       <Button onClick={() => toggle()} textOnly variant="primaryText" size="sm">
         {visible ? hideText || t('component.hide') : showText || t('component.show')}
         <Icon name="arrowDown" rotate={visible ? 180 : 0} padLeft />
