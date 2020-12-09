@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { APIError } from '../../types';
+import { getVersionInfo } from '../../VERSION';
 import Icon, { IconKeys } from '../Icon';
 
 type Props = {
@@ -74,6 +75,7 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
 
 export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ error, t }) => {
   const [open, setOpen] = useState(false);
+  const version = getVersionInfo();
 
   if (!open) {
     return (
@@ -98,12 +100,27 @@ export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ e
       {error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
 
       {error.traceback && <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>}
+
+      <DetailsVersionInfo>
+        <DetailsVersionSection>
+          <DetailsVersionSectionLabel>Application version: </DetailsVersionSectionLabel>
+          <div>
+            {version.release_version} - {version.commit} - {version.env}
+          </div>
+        </DetailsVersionSection>
+        <DetailsVersionSection>
+          <DetailsVersionSectionLabel>Service version: </DetailsVersionSectionLabel>
+          <div>{version.service_version}</div>
+        </DetailsVersionSection>
+      </DetailsVersionInfo>
     </DetailContainer>
   );
 };
 
 const DetailContainer = styled.div`
   padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
 `;
 
 const DetailsOpenLink = styled.div`
@@ -138,8 +155,28 @@ const DetailsLog = styled.div`
   white-space: pre;
   border-radius: 3px;
   padding: 1rem;
-  overflow: hidden;
   font-family: monospace;
+  max-height: 400px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  word-break: break-all;
+  max-width: 100%;
+  white-space: break-spaces;
+`;
+
+const DetailsVersionInfo = styled.div`
+  font-size: 13px;
+  margin: 1rem 0;
+  display: flext;
+`;
+
+const DetailsVersionSection = styled.div`
+  display: flex;
+  margin-right: 2rem;
+`;
+
+const DetailsVersionSectionLabel = styled.div`
+  margin-right: 0.25rem;
 `;
 
 export const DefaultAdditionalErrorInfo = (str: string): JSX.Element => (

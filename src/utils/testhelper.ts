@@ -100,7 +100,7 @@ export function createMetadata(data: Partial<Metadata>): Metadata {
 
 export function createAPIError(err: Partial<APIError>): APIError {
   return {
-    id: '0',
+    id: 'err0r-id-12345',
     traceback: 'badcode.js line 12\nevenworsecode.js line 524\nworstcode.js line 123917',
     status: 500,
     title: 'Very bad code',

@@ -4,7 +4,7 @@ declare global {
   }
 }
 
-type VersionInfo = {
+export type VersionInfo = {
   commit: string;
   release_version: string;
   service_version: string;
