@@ -8,7 +8,7 @@ import { Run as IRun, RunParam } from '../../types';
 
 import TaskViewContainer from '../Task';
 import Spinner from '../../components/Spinner';
-import GenericError from '../../components/GenericError';
+import GenericError, { APIErrorRenderer } from '../../components/GenericError';
 import Tabs from '../../components/Tabs';
 import { FixedContent, ItemRow } from '../../components/Structure';
 import RunHeader from './RunHeader';
@@ -97,7 +97,10 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Step & Task data
   //
 
-  const { rows, steps, dispatch, counts, taskStatus, isAnyGroupOpen } = useRowData(params.flowId, params.runNumber);
+  const { rows, steps, dispatch, counts, taskStatus, isAnyGroupOpen, taskError, stepError } = useRowData(
+    params.flowId,
+    params.runNumber,
+  );
 
   //
   // Search API
@@ -219,17 +222,21 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
             linkTo: getPath.timeline(params.flowId, params.runNumber) + '?' + urlParams,
             component: (
               <ErrorBoundary message={t('error.timeline-error')}>
-                <Timeline
-                  rows={visibleRows}
-                  steps={steps}
-                  rowDataDispatch={dispatch}
-                  status={taskStatus}
-                  counts={counts}
-                  graph={graph}
-                  searchField={searchField}
-                  paramsString={urlParams}
-                  isAnyGroupOpen={isAnyGroupOpen}
-                />
+                {(taskError || stepError) && visibleRows.length === 0 ? (
+                  <APIErrorRenderer error={taskError || stepError} />
+                ) : (
+                  <Timeline
+                    rows={visibleRows}
+                    steps={steps}
+                    rowDataDispatch={dispatch}
+                    status={taskStatus}
+                    counts={counts}
+                    graph={graph}
+                    searchField={searchField}
+                    paramsString={urlParams}
+                    isAnyGroupOpen={isAnyGroupOpen}
+                  />
+                )}
               </ErrorBoundary>
             ),
           },
@@ -240,18 +247,22 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
             temporary: !!(previousStepName && previousTaskId),
             component: (
               <ErrorBoundary message={t('error.task-error')}>
-                <TaskViewContainer
-                  run={run}
-                  stepName={previousStepName || 'not-selected'}
-                  taskId={previousTaskId || 'not-selected'}
-                  rows={visibleRows}
-                  rowDataDispatch={dispatch}
-                  searchField={searchField}
-                  graph={graph}
-                  counts={counts}
-                  paramsString={urlParams}
-                  isAnyGroupOpen={isAnyGroupOpen}
-                />
+                {taskError || stepError ? (
+                  <APIErrorRenderer error={taskError || stepError} />
+                ) : (
+                  <TaskViewContainer
+                    run={run}
+                    stepName={previousStepName || 'not-selected'}
+                    taskId={previousTaskId || 'not-selected'}
+                    rows={visibleRows}
+                    rowDataDispatch={dispatch}
+                    searchField={searchField}
+                    graph={graph}
+                    counts={counts}
+                    paramsString={urlParams}
+                    isAnyGroupOpen={isAnyGroupOpen}
+                  />
+                )}
               </ErrorBoundary>
             ),
           },

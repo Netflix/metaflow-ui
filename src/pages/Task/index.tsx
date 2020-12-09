@@ -17,7 +17,7 @@ import TaskListingHeader from '../../components/TaskListingHeader';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import { RowCounts } from '../../components/Timeline/taskdataUtils';
 import { RowDataAction } from '../../components/Timeline/useRowData';
-import GenericError, { DefaultAdditionalErrorInfo } from '../../components/GenericError';
+import GenericError, { APIErrorRenderer, DefaultAdditionalErrorInfo } from '../../components/GenericError';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import SectionLoader from './components/SectionLoader';
@@ -218,9 +218,9 @@ const Task: React.FC<TaskViewProps> = ({
           </TaskLoaderContainer>
         )}
 
-        {error && status === 'Error' && (
+        {status === 'Error' && (
           <Space>
-            <GenericError icon="listItemNotFound" message={t('error.load-error')} />
+            <APIErrorRenderer error={error} icon="listItemNotFound" message={t('error.load-error')} />
           </Space>
         )}
 

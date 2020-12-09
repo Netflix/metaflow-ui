@@ -1,7 +1,6 @@
 import { TFunction } from 'i18next';
 import React from 'react';
 import { APIError } from '../../../types';
-import { createAPIError } from '../../../utils/testhelper';
 import { APIErrorRenderer, DefaultAdditionalErrorInfo, knownErrorIds } from '../../GenericError';
 import Icon from '../../Icon';
 
@@ -17,7 +16,7 @@ type DAGErrorProps = {
 const DAGError: React.FC<DAGErrorProps> = ({ error, t }) => (
   <div style={{ padding: '3rem 0' }} data-testid="dag-container-Error">
     <APIErrorRenderer
-      error={createAPIError({})}
+      error={error}
       icon={<Icon name="noDag" customSize={5} />}
       message={DAGErrorMessage(t, error)}
       customNotFound={

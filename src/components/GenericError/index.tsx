@@ -50,7 +50,7 @@ export const knownErrorIds = [
 type APIErrorRendererProps = {
   error: APIError | null;
   message?: string;
-  icon?: IconKeys | JSX.Element;
+  icon?: IconKeys | JSX.Element | false;
   customNotFound?: React.ReactNode;
 };
 
@@ -64,9 +64,11 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
 
   msg = message || msg;
 
+  const iconProps = icon === false ? { noIcon: true } : { icon: icon };
+
   return (
     <div>
-      <GenericError message={msg} icon={icon} />
+      <GenericError message={msg} {...iconProps} />
       {error && error.status !== 404 && <APIErrorDetails error={error} t={t} />}
       {error && error.status === 404 && customNotFound && <div>{customNotFound}</div>}
     </div>
