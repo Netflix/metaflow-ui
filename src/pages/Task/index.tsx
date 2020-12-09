@@ -10,7 +10,8 @@ import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
 
 import Spinner from '../../components/Spinner';
 import { GraphHook } from '../../components/Timeline/useGraph';
-import LogList, { LogActionBar } from '../../components/LogList';
+import LogList from '../../components/LogList';
+import LogActionBar from '../../components/LogList/LogActionBar';
 import FullPageContainer from '../../components/FullPageContainer';
 import TaskListingHeader from '../../components/TaskListingHeader';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
@@ -281,12 +282,7 @@ const Task: React.FC<TaskViewProps> = ({
                         status={stdoutRes.status}
                         error={stdoutRes.error}
                         customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
-                        component={
-                          <LogList
-                            rows={stdout.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stdout}
-                            onShowFullscreen={() => setFullscreen('stdout')}
-                          />
-                        }
+                        component={<LogList rows={stdout} onShowFullscreen={() => setFullscreen('stdout')} />}
                       />
                       {renderComponentsForSection('stdout')}
                     </>
@@ -313,12 +309,7 @@ const Task: React.FC<TaskViewProps> = ({
                         status={stderrRes.status}
                         error={stderrRes.error}
                         customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
-                        component={
-                          <LogList
-                            rows={stderr.length === 0 ? [{ row: 0, line: t('task.no-logs') }] : stderr}
-                            onShowFullscreen={() => setFullscreen('stderr')}
-                          />
-                        }
+                        component={<LogList rows={stderr} onShowFullscreen={() => setFullscreen('stderr')} />}
                       />
 
                       {renderComponentsForSection('stderr')}

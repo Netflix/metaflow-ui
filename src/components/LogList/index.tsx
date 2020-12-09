@@ -1,19 +1,22 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
-import { Log as ILog, Log } from '../../types';
-import { ItemRow } from '../Structure';
-import Button from '../Button';
+import { Log as ILog } from '../../types';
 import { useTranslation } from 'react-i18next';
-import Icon from '../Icon';
-import copy from 'copy-to-clipboard';
-import { NotificationType, useNotifications } from '../Notifications';
+
+//
+// Typedef
+//
 
 type LogProps = {
   rows: ILog[];
   onShowFullscreen?: () => void;
   fixedHeight?: number;
 };
+
+//
+// Component
+//
 
 const LIST_MAX_HEIGHT = 400;
 
@@ -40,45 +43,54 @@ const LogList: React.FC<LogProps> = ({ rows, fixedHeight }) => {
 
   return (
     <div style={{ flex: '1 1 0' }}>
-      <LogListContainer>
-        <AutoSizer disableHeight>
-          {({ width }) => (
-            <List
-              ref={_list}
-              overscanRowCount={5}
-              rowCount={rows.length}
-              rowHeight={cache.rowHeight}
-              deferredMeasurementCache={cache}
-              onScroll={(args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
-                if (args.scrollTop + args.clientHeight >= args.scrollHeight) {
-                  setStickBottom(true);
-                } else if (stickBottom) {
-                  setStickBottom(false);
-                }
-              }}
-              rowRenderer={({ index, style, key, parent }) => (
-                <CellMeasurer cache={cache} columnIndex={0} key={key} rowIndex={index} parent={parent}>
-                  {() => (
-                    <LogLine style={style}>
-                      <LogLineNumber className="logline-number">{rows[index].row}</LogLineNumber>
-                      <LogLineText>{rows[index].line}</LogLineText>
-                    </LogLine>
-                  )}
-                </CellMeasurer>
-              )}
-              height={fixedHeight ? fixedHeight - 16 : totalHeight < LIST_MAX_HEIGHT ? totalHeight : LIST_MAX_HEIGHT}
-              width={width}
-            />
-          )}
-        </AutoSizer>
+      {rows.length === 0 && <div>{t('task.no-logs')}</div>}
+      {rows.length > 0 && (
+        <LogListContainer>
+          <AutoSizer disableHeight>
+            {({ width }) => (
+              <List
+                ref={_list}
+                overscanRowCount={5}
+                rowCount={rows.length}
+                rowHeight={cache.rowHeight}
+                deferredMeasurementCache={cache}
+                onScroll={(args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
+                  if (args.scrollTop + args.clientHeight >= args.scrollHeight) {
+                    setStickBottom(true);
+                  } else if (stickBottom) {
+                    setStickBottom(false);
+                  }
+                }}
+                rowRenderer={({ index, style, key, parent }) => (
+                  <CellMeasurer cache={cache} columnIndex={0} key={key} rowIndex={index} parent={parent}>
+                    {() => (
+                      <LogLine style={style}>
+                        <LogLineNumber className="logline-number">{rows[index].row}</LogLineNumber>
+                        <LogLineText>{rows[index].line}</LogLineText>
+                      </LogLine>
+                    )}
+                  </CellMeasurer>
+                )}
+                height={fixedHeight ? fixedHeight - 16 : totalHeight < LIST_MAX_HEIGHT ? totalHeight : LIST_MAX_HEIGHT}
+                width={width}
+              />
+            )}
+          </AutoSizer>
 
-        {!stickBottom && (
-          <ScrollToBottomButton onClick={() => setStickBottom(true)}>{t('run.scroll-to-bottom')}</ScrollToBottomButton>
-        )}
-      </LogListContainer>
+          {!stickBottom && (
+            <ScrollToBottomButton onClick={() => setStickBottom(true)}>
+              {t('run.scroll-to-bottom')}
+            </ScrollToBottomButton>
+          )}
+        </LogListContainer>
+      )}
     </div>
   );
 };
+
+//
+// Style
+//
 
 const LogListContainer = styled.div`
   background: ${(p) => p.theme.color.bg.light};
@@ -124,69 +136,5 @@ const ScrollToBottomButton = styled.div`
   background: rgba(0, 0, 0, 0.5);
   color: ${(p) => p.theme.color.text.white};
 `;
-
-type LogActionBarProps = {
-  setFullscreen: () => void;
-  name: string;
-  data: Log[];
-};
-
-export const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, name, data }) => {
-  const { addNotification } = useNotifications();
-  const { t } = useTranslation();
-  return (
-    <ItemRow>
-      {data && data.length > 0 && (
-        <Button
-          title={t('task.copy-logs-to-clipboard')}
-          iconOnly
-          onClick={() => {
-            copy(data.map((item) => item.line).join('\n'));
-            addNotification({
-              type: NotificationType.Info,
-              message: t('task.all-logs-copied'),
-            });
-          }}
-        >
-          <Icon name="copy" />
-        </Button>
-      )}
-
-      {data && data.length > 0 && (
-        <Button
-          title={t('task.download-logs')}
-          iconOnly
-          onClick={() => {
-            downloadString(data.map((log) => log.line).join('\n'), 'text/plain', `logs-${name}.txt`);
-          }}
-        >
-          <Icon name="download" />
-        </Button>
-      )}
-
-      {data && data.length > 0 && (
-        <Button title={t('task.show-fullscreen')} onClick={() => setFullscreen()} withIcon>
-          <Icon name="maximize" />
-        </Button>
-      )}
-    </ItemRow>
-  );
-};
-
-function downloadString(text: string, fileType: string, fileName: string) {
-  const blob = new Blob([text], { type: fileType });
-
-  const a = document.createElement('a');
-  a.download = fileName;
-  a.href = URL.createObjectURL(blob);
-  a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(function () {
-    URL.revokeObjectURL(a.href);
-  }, 1500);
-}
 
 export default LogList;
