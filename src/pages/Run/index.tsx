@@ -8,9 +8,9 @@ import { Run as IRun, RunParam } from '../../types';
 
 import TaskViewContainer from '../Task';
 import Spinner from '../../components/Spinner';
-import GenericError, { APIErrorRenderer } from '../../components/GenericError';
+import { APIErrorRenderer } from '../../components/GenericError';
 import Tabs from '../../components/Tabs';
-import { FixedContent, ItemRow } from '../../components/Structure';
+import { FixedContent } from '../../components/Structure';
 import RunHeader from './RunHeader';
 import DAG from '../../components/DAG';
 import Timeline, { Row, makeVisibleRows, sortRows } from '../../components/Timeline/VirtualizedTimeline';
@@ -19,6 +19,10 @@ import useGraph from '../../components/Timeline/useGraph';
 import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { logWarning } from '../../utils/errorlogger';
+
+//
+// Run page container, Check if we have run data before even trying anything else
+//
 
 type RunPageParams = {
   flowId: string;
@@ -46,16 +50,16 @@ const RunContainer: React.FC = () => {
         </div>
       )}
 
-      {status === 'Error' && error && (
-        <ItemRow margin="lg">
-          <GenericError message={t('timeline.no-run-data')} />
-        </ItemRow>
-      )}
+      {status === 'Error' && <APIErrorRenderer error={error} message={t('timeline.no-run-data')} />}
 
       {status === 'Ok' && run && run.run_number && <RunPage run={run} params={params} />}
     </FixedContent>
   );
 };
+
+//
+// Run page
+//
 
 type RunPageProps = {
   run: IRun;
