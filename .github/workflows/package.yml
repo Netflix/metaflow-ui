@@ -3,7 +3,7 @@ name: Package
 on:
   push:
     tags:
-      - "*" # Package on all tag pushes
+      - '*' # Package on all tag pushes
 
 jobs:
   package:
@@ -26,10 +26,11 @@ jobs:
         run: echo "RELEASE_VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
 
       - run: yarn --frozen-lockfile
-      - run: yarn build
+      - name: Build application
+        run: yarn build
         env:
-          REACT_APP_RELEASE_VERSION: $RELEASE_VERSION
-          REACT_APP_COMMIT_HASH: $GITHUB_SHA
+          REACT_APP_RELEASE_VERSION: ${{ env.RELEASE_VERSION }}
+          REACT_APP_COMMIT_HASH: ${{ github.sha }}
 
       - uses: actions/upload-artifact@v2
         with:
