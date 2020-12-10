@@ -198,10 +198,9 @@ const Home: React.FC = () => {
         ? activeParams._tags
             .split(',')
             .filter((str) => !str.startsWith('user:'))
-            .concat([`user:${title}`])
             .join(',')
-        : `user:${title}`;
-      setQp({ _tags: newtags });
+        : '';
+      setQp({ _tags: newtags, user_name: title });
     }
   };
 
@@ -300,36 +299,14 @@ export function makeActiveRequestParameters(params: Record<string, string>): Rec
   // 1) When grouping is flow_id and only 1 flow_id filter is active, we want to show all runs of this group
   // 2) When grouping is user_name and only 1 user_name filter is active, we want to show all runs of this group
   if (params._group) {
-    if (params._group === 'flow_id' && params.flow_id && params.flow_id.split(',').length === 1) {
+    if (params._group === 'flow_id' && hasOne(params.flow_id)) {
       return omit(['_group'], params);
-    } else if (params._group === 'user_name' && params._tags) {
-      // Parse user tags from tags string and check if there is only 1
-      const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
-      if (userTags.length === 1) {
-        return omit(['_group'], params);
-      }
+    } else if (params._group === 'user_name' && hasOne(params.user_name)) {
+      return omit(['_group'], params);
     }
   }
 
-  // Separate user tags from other so because they need to be handles with OR operator
-  if (params._tags) {
-    const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
-    if (userTags.length > 0) {
-      // Remove tags from normal tags
-      params._tags = params._tags
-        .split(',')
-        .filter((str) => !str.startsWith('user:'))
-        .join(',');
-
-      if (params._tags === '') {
-        delete params._tags;
-      }
-
-      params['_tags:any'] = userTags.join(',');
-    }
-  }
-
-  if (params._order && params._order.split(',').length === 1 && params._order.indexOf('ts_epoch') === -1) {
+  if (hasOne(params._order) && params._order.indexOf('ts_epoch') === -1) {
     params._order = `${params._order},ts_epoch`;
   }
 
@@ -362,20 +339,20 @@ export function isDefaultParams(params: Record<string, string>): boolean {
 //
 export function isGrouping(params: Record<string, string>): boolean {
   if (params._group) {
-    if (params._group === 'flow_id' && params.flow_id && params.flow_id.split(',').length === 1) {
+    if (params._group === 'flow_id' && hasOne(params.flow_id)) {
       return false;
-    } else if (params._group === 'user_name' && params._tags) {
-      // Parse user tags from tags string and check if there is only 1
-      const userTags = params._tags.split(',').filter((str) => str.startsWith('user:'));
-      if (userTags.length === 1) {
-        return false;
-      }
+    } else if (params._group === 'user_name' && hasOne(params.user_name)) {
+      return false;
     }
   } else {
     return false;
   }
 
   return true;
+}
+
+function hasOne(str: string) {
+  return !!(str && str.split(',').length === 1);
 }
 
 // Split possible query param to string array.
