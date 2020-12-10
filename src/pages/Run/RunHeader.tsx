@@ -10,7 +10,7 @@ import InformationRow from '../../components/InformationRow';
 import PropertyTable from '../../components/PropertyTable';
 import { Link, useHistory } from 'react-router-dom';
 import { ResourceStatus } from '../../hooks/useResource';
-import GenericError from '../../components/GenericError';
+import { APIErrorRenderer } from '../../components/GenericError';
 import Spinner from '../../components/Spinner';
 import {
   getRunDuration,
@@ -25,6 +25,7 @@ import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import { RowCounts } from '../../components/Timeline/taskdataUtils';
 import TagRow from './components/TagRow';
+import { createAPIError } from '../../utils/testhelper';
 
 //
 // Typedef
@@ -109,9 +110,9 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error, counts }) 
               )}
 
               {status === 'Error' && error && (
-                <ItemRow margin="lg">
-                  <GenericError message={t('run.run-parameters-error')} />
-                </ItemRow>
+                <div style={{ margin: '1rem 0' }}>
+                  <APIErrorRenderer error={createAPIError({})} message={t('run.run-parameters-error')} icon={false} />
+                </div>
               )}
             </InformationRow>
           </>

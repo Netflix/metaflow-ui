@@ -85,7 +85,12 @@ const TaskList: React.FC<Props> = ({ rows, rowDataDispatch, activeTaskId, result
           />
         )}
 
-        {rows.length === 0 && <div style={{ padding: '1rem 0' }}>{t('search.no-results')}</div>}
+        {rows.length === 0 && results.status === 'Ok' && (
+          <div style={{ padding: '1rem 0' }}>{t('search.no-results')}</div>
+        )}
+        {rows.length === 0 && results.status === 'NotAsked' && (
+          <div style={{ padding: '1rem 0' }}>{t('search.no-tasks')}</div>
+        )}
         {results.status === 'Error' && <div>{t('search.error')}</div>}
       </div>
     </TaskListContainer>

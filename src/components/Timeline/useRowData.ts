@@ -1,9 +1,5 @@
-//
-// Row data handling
-//
-
-import { Task, Step, AsyncStatus } from '../../types';
 import { useEffect, useReducer, useState } from 'react';
+import { Task, Step, AsyncStatus, APIError } from '../../types';
 import useResource from '../../hooks/useResource';
 import {
   countTaskRowsByStatus,
@@ -185,13 +181,15 @@ export type UseRowDataHook = {
   counts: RowCounts;
   steps: StepLineData[];
   isAnyGroupOpen: boolean;
+  taskError: APIError | null;
+  stepError: APIError | null;
 };
 
 export default function useRowData(flowId: string, runNumber: string): UseRowDataHook {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
 
   // Fetch & subscribe to steps
-  useResource<Step[], Step>({
+  const { error: stepError } = useResource<Step[], Step>({
     url: encodeURI(`/flows/${flowId}/runs/${runNumber}/steps`),
     subscribeToEvents: true,
     initialData: [],
@@ -206,7 +204,7 @@ export default function useRowData(flowId: string, runNumber: string): UseRowDat
   });
 
   // Fetch & subscribe to tasks
-  const { status: taskStatus } = useResource<Task[], Task>({
+  const { status: taskStatus, error: taskError } = useResource<Task[], Task>({
     url: encodeURI(`/flows/${flowId}/runs/${runNumber}/tasks`),
     subscribeToEvents: true,
     initialData: [],
@@ -236,5 +234,5 @@ export default function useRowData(flowId: string, runNumber: string): UseRowDat
     setAnyOpen(!!Object.keys(rows).find((key) => rows[key].isOpen));
   }, [rows]);
 
-  return { rows, dispatch, taskStatus, counts, steps, isAnyGroupOpen: anyOpen };
+  return { rows, dispatch, taskStatus, counts, steps, isAnyGroupOpen: anyOpen, taskError, stepError };
 }

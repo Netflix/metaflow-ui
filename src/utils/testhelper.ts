@@ -1,6 +1,6 @@
 import { GraphState } from '../components/Timeline/useGraph';
 import { createCache, Resource } from '../hooks/useResource';
-import { Task, Step, Run, Metadata } from '../types';
+import { Task, Step, Run, Metadata, APIError } from '../types';
 
 //
 // LOT OF TESTS DEPEND ON THESE VALUES AS DEFAULTS SO DONT CHANGE THESE!!!
@@ -95,5 +95,17 @@ export function createMetadata(data: Partial<Metadata>): Metadata {
     ts_epoch: 0,
     system_tags: [],
     ...data,
+  };
+}
+
+export function createAPIError(err: Partial<APIError>): APIError {
+  return {
+    id: 'err0r-id-12345',
+    traceback: 'badcode.js line 12\nevenworsecode.js line 524\nworstcode.js line 123917',
+    status: 500,
+    title: 'Very bad code',
+    type: 'Error',
+    detail: 'undefined is not a function',
+    ...err,
   };
 }

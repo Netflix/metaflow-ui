@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { APIError, AsyncStatus, Run as IRun } from '../../../types';
 
 import ResultGroup from '../ResultGroup';
-import GenericError from '../../../components/GenericError';
+import GenericError, { APIErrorRenderer } from '../../../components/GenericError';
 import { ItemRow } from '../../../components/Structure';
 import AutoLoadTrigger from './AutoLoadTrigger';
 
@@ -60,11 +60,7 @@ const HomeContentArea: React.FC<Props> = ({
         </ItemRow>
       )}
 
-      {status === 'Error' && error && (
-        <ItemRow margin="md">
-          <GenericError message={t('error.load-error')} />
-        </ItemRow>
-      )}
+      {status === 'Error' && <APIErrorRenderer error={error} message={t('error.load-error')} />}
 
       <AutoLoadTrigger
         status={status}

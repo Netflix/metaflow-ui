@@ -17,6 +17,8 @@ import ErrorBoundary from './components/GeneralErrorBoundary';
 import { useTranslation } from 'react-i18next';
 import { TimezoneProvider } from './components/TimezoneProvider';
 import { getRouteMatch } from './utils/routing';
+import { apiHttp } from './constants';
+import { setServiceVersion } from './VERSION';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -36,6 +38,17 @@ function ScrollToTop() {
 
 const App: React.FC = () => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    fetch(apiHttp('/version'))
+      .then((response) => (response.status === 200 ? response.text() : Promise.resolve('')))
+      .then((value) => {
+        if (value) {
+          setServiceVersion(value);
+        }
+      });
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <ErrorBoundary message={t('error.application-error')}>
