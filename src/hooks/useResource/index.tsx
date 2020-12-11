@@ -4,6 +4,7 @@ import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
 import useInterval from '../useInterval';
 import { APIError } from '../../types';
+import { setLogItem } from '../../utils/debugdb';
 
 export interface HookConfig<T, U> {
   // URL for fetch request
@@ -240,18 +241,21 @@ export default function useResource<T, U>({
     uuid,
   });
 
-  function newError(err: APIError) {
+  function newError(targetUrl: string, err: APIError) {
+    setLogItem(`ERROR ${targetUrl} ${JSON.stringify(err)}`);
     setStatus('Error');
     setError(err);
   }
 
   function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, isSilent?: boolean) {
+    setLogItem(`GET SENT ${targetUrl}`);
     fetch(targetUrl, { signal })
       .then((response) => {
         if (response.status === 200) {
           response
             .json()
             .then((result: DataModel<T>) => {
+              setLogItem(`GET ${response.status} ${targetUrl} ${JSON.stringify(result)}`);
               const cacheItem = {
                 result,
                 data: result.data,
@@ -279,26 +283,26 @@ export default function useResource<T, U>({
               }
             })
             .catch(() => {
-              newError(defaultError);
+              newError(targetUrl, defaultError);
             });
         } else {
           response
             .json()
             .then((result) => {
               if (typeof result === 'object' && result.id) {
-                newError(result);
+                newError(targetUrl, result);
               } else if (response.status === 404) {
-                newError(notFoundError);
+                newError(targetUrl, notFoundError);
               } else {
-                newError(defaultError);
+                newError(targetUrl, defaultError);
               }
             })
             .catch(() => {
-              newError(defaultError);
+              newError(targetUrl, defaultError);
             });
         }
       })
-      .catch((_e) => newError(defaultError));
+      .catch((_e) => newError(targetUrl, defaultError));
   }
 
   useEffect(() => {
@@ -315,7 +319,7 @@ export default function useResource<T, U>({
         if (isSuccess) {
           setStatus('Ok');
         } else {
-          newError(defaultError);
+          newError(target, defaultError);
         }
       });
     } else {

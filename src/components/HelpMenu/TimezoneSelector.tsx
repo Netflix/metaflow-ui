@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import styled from 'styled-components';
+import { HelpMenuRow } from '.';
 import { SelectField } from '../Form';
 import { TimezoneContext, TIMEZONES } from '../TimezoneProvider';
 import Toggle from '../Toggle';
@@ -10,7 +10,7 @@ const TimezoneSelector: React.FC = () => {
 
   return (
     <div>
-      <TimezoneRow>
+      <HelpMenuRow>
         <div>Use timezone</div>
         <Toggle
           value={expanded}
@@ -21,10 +21,10 @@ const TimezoneSelector: React.FC = () => {
             setExpanded(!expanded);
           }}
         />
-      </TimezoneRow>
+      </HelpMenuRow>
 
       {expanded && (
-        <TimezoneRow>
+        <HelpMenuRow>
           <SelectField
             horizontal
             noMinWidth
@@ -36,24 +36,10 @@ const TimezoneSelector: React.FC = () => {
               }
             }}
           />
-        </TimezoneRow>
+        </HelpMenuRow>
       )}
     </div>
   );
 };
-
-const TimezoneRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.25rem 0.5rem;
-  width: 100%;
-
-  .field {
-    width: 100%;
-    border: 1px solid #e9e9e9;
-    border-radius: 3px;
-  }
-`;
 
 export default TimezoneSelector;
