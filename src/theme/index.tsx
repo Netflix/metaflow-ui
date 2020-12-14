@@ -28,6 +28,7 @@ const textColor = {
 const bgColor = {
   white: '#fff',
   dark: '#767676',
+  black: '#333',
   light: '#f6f6f6',
   blue: brandColor.blue,
   blueLight: '#e4f0ff',
@@ -64,7 +65,8 @@ const iconColor = {
 const buttonColor = {
   default: {
     text: textColor.mid,
-    bg: bgColor.light,
+    bg: 'transparent',
+    border: border.thinLight,
     activeText: textColor.dark,
     activeBg: bgColor.silver,
   },

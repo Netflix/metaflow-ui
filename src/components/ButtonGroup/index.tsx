@@ -13,8 +13,8 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
     ${(p) =>
       p.big
         ? css`
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
+            padding-left: 3.25rem;
+            padding-right: 3.25rem;
           `
         : ''}
 
@@ -22,6 +22,10 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
 
     &:not(.active):not(:hover) {
       background: #fff;
+    }
+
+    &.active {
+      background: ${(p) => p.theme.color.button.default.activeBg};
     }
 
     &:first-of-type {

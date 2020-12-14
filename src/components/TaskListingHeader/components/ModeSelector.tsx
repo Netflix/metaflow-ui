@@ -68,6 +68,8 @@ const ModeContainer = styled.div`
 
   .button {
     position: relative;
+    border-color: #a3a3a3;
+    color: #333;
   }
 `;
 

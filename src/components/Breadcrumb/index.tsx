@@ -93,7 +93,7 @@ const Breadcrumb: React.FC = () => {
 
       {/* On home page, when not editing breadcrumb */}
       {buttonList.length === 0 && !edit && (
-        <TextInputField
+        <BreadcrumbEmptyInput
           horizontal
           placeholder={t('breadcrumb.goto')}
           onClick={openModal}
@@ -258,6 +258,8 @@ const BreadcrumbGroup = styled.div`
   border-color: ${(p) => p.theme.color.text.blue};
 `;
 
+const BreadcrumbEmptyInput = styled(TextInputField)``;
+
 const CrumbComponent = styled.div`
   white-space: nowrap;
 
@@ -327,9 +329,16 @@ const StyledBreadcrumb = styled(ItemRow)`
   }
 
   input[type='text'] {
-    line-height: 1.5rem;
+    line-height: 1.875rem;
     font-size: 0.875rem;
     width: 35rem;
+    border: ${(p) => p.theme.border.thinPrimary};
+    background: #fff;
+    padding-left: 0.5rem;
+
+    &:hover {
+      border: ${(p) => p.theme.border.thinPrimary};
+    }
   }
 `;
 

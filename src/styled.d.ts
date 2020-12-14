@@ -40,6 +40,7 @@ declare module 'styled-components' {
         white: string;
         light: string;
         dark: string;
+        black: string;
         blue: string;
         blueLight: string;
         silver: string;

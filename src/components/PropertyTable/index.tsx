@@ -53,7 +53,7 @@ const PropertyTableContainer = styled.table`
 `;
 
 const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme }>`
-  background: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.dark : p.theme.color.bg.silver)};
+  background: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.black : p.theme.color.bg.silver)};
   color: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.white : p.theme.color.text.dark)};
   border-right: ${(p) => p.theme.border.mediumWhite};
   border-bottom: ${(p) => p.theme.border.mediumWhite};

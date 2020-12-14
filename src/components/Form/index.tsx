@@ -220,13 +220,12 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   }
 
   input[type='text'] {
-    background: ${(p) => p.theme.color.bg.light};
     border: ${(p) => p.theme.border.thinLight};
 
     &:focus,
     &:not(:disabled):hover {
       background: ${(p) => p.theme.color.bg.white};
-      border-color: ${(p) => p.theme.color.border.dark};
+      // border-color: ${(p) => p.theme.color.border.dark};
     }
   }
 

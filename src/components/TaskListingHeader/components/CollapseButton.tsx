@@ -21,7 +21,6 @@ const CollapseButton: React.FC<{
           }
         }}
         data-testid="timeline-collapse-button"
-        textOnly
       >
         <Icon name={isAnyGroupOpen ? 'collapse' : 'expand'} rotate={isAnyGroupOpen ? 180 : 0} />
       </Button>
