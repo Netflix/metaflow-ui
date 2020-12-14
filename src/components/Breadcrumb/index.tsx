@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import { getPath, getRouteMatch, KnownURLParams } from '../../utils/routing';
 
-import Button, { ButtonLink, ButtonCSS } from '../Button';
+import Button, { ButtonLink, ButtonCSS, BigButton } from '../Button';
 import { TextInputField } from '../Form';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
@@ -82,7 +82,12 @@ const Breadcrumb: React.FC = () => {
 
   return (
     <StyledBreadcrumb pad="md">
-      <ButtonLink to={location.pathname === '/' ? '/' + location.search : '/'} tabIndex={0} data-testid={'home-button'}>
+      <ButtonLink
+        to={location.pathname === '/' ? '/' + location.search : '/'}
+        tabIndex={0}
+        data-testid={'home-button'}
+        variant="primaryText"
+      >
         {t('home.home')}
       </ButtonLink>
 
@@ -250,22 +255,28 @@ export function findAdditionalButtons(routeMatch: match<KnownURLParams> | null, 
 
 const BreadcrumbGroup = styled.div`
   ${ButtonCSS}
-  background-color: ${(p) => p.theme.color.bg.light};
+  border-color: ${(p) => p.theme.color.text.blue};
 `;
 
 const CrumbComponent = styled.div`
   white-space: nowrap;
+
+  &:first-child {
+    padding-left: 0.25rem;
+  }
 `;
 
-const ButtonCrumb = styled(Button)`
+const ButtonCrumb = styled(BigButton)`
   display: inline-block;
 
   padding-left: ${(p) => p.theme.spacer.sm}rem;
   padding-right: ${(p) => p.theme.spacer.sm}rem;
+  color: ${(p) => p.theme.color.text.dark};
 
   overflow-x: hidden;
   max-width: 300px;
   text-overflow: ellipsis;
+  background: transparent;
 
   &.active {
     background: transparent;
@@ -289,14 +300,18 @@ const BreadcrumbDivider = styled.div`
 `;
 
 const EditButton = styled(Button)`
-  background: ${(p) => p.theme.color.bg.white};
+  background: transparent;
+  height: 38px;
 
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+  margin-left: 0.25rem;
 
-  border-left: ${(p) => p.theme.border.thinLight};
+  border-left: ${(p) => p.theme.border.thinPrimary};
+
   &:hover {
-    border-left: ${(p) => p.theme.border.thinLight};
+    border-left: ${(p) => p.theme.border.thinPrimary};
+    background: transparent;
   }
 
   .icon {
@@ -308,7 +323,6 @@ const StyledBreadcrumb = styled(ItemRow)`
   font-size: 0.875rem;
 
   .button {
-    line-height: 1.5rem;
     font-size: 0.875rem;
   }
 

@@ -46,6 +46,7 @@ const borderColor = {
 
 const border = {
   thinLight: `1px solid ${borderColor.light}`,
+  thinPrimary: `1px solid ${textColor.blue}`,
   thinMid: `1px solid ${borderColor.mid}`,
   thinDark: `1px solid ${borderColor.dark}`,
   mediumLight: `2px solid ${borderColor.light}`,
@@ -76,7 +77,8 @@ const buttonColor = {
   primaryText: {
     text: textColor.blue,
     bg: 'transparent',
-    activeText: textColor.dark,
+    border: `1px solid ${textColor.blue}`,
+    activeText: textColor.blue,
     activeBg: bgColor.silver,
   },
 };
