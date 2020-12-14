@@ -24,7 +24,6 @@ export function startLogging(): void {
 }
 
 export function endLogging(): void {
-  console.log('deleting');
   if (db) {
     db.close();
   }
@@ -45,7 +44,6 @@ export function setLogItem(str: string): void {
 export async function getLogs(): Promise<void> {
   if (db) {
     const all = await db.getAll('logs');
-    console.log(all);
     downloadString(all.join('\n'), 'text/plain', `logs-${new Date().toISOString()}}.txt`);
   }
 }
