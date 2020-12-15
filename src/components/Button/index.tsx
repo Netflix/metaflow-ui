@@ -124,7 +124,7 @@ export const ButtonCSS = css`
   cursor: pointer;
   text-decoration: none;
   border-radius: 0.25rem;
-  border: ${(p) => p.theme.border.thinLight};
+  border: ${(p) => p.theme.border.thinNormal};
   min-height: 28px;
   transition: background 0.15s;
 `;

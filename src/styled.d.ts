@@ -59,6 +59,7 @@ declare module 'styled-components' {
       };
       border: {
         light: string;
+        normal: string;
         mid: string;
         dark: string;
       };
@@ -105,6 +106,7 @@ declare module 'styled-components' {
 
     border: {
       thinLight: string;
+      thinNormal: string;
       thinPrimary: string;
       thinMid: string;
       thinDark: string;

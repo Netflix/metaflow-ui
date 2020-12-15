@@ -21,22 +21,20 @@ const ModeSelector: React.FC<Props> = ({ activeMode, select }) => {
   const { t } = useTranslation();
 
   return (
-    <ModeContainer>
-      <ButtonGroup big>
-        <ModeButton active={activeMode === 'overview'} onClick={() => select('overview')} label={t('run.overview')} />
-        <ModeButton
-          active={activeMode === 'monitoring'}
-          onClick={() => select('monitoring')}
-          label={t('run.monitoring')}
-        />
-        <ModeButton
-          active={activeMode === 'error-tracker'}
-          onClick={() => select('error-tracker')}
-          label={t('run.error-tracker')}
-        />
-        <ModeButton active={activeMode === 'custom'} onClick={() => select('custom')} label={t('run.custom')} />
-      </ButtonGroup>
-    </ModeContainer>
+    <ModeButtonGroup big>
+      <ModeButton active={activeMode === 'overview'} onClick={() => select('overview')} label={t('run.overview')} />
+      <ModeButton
+        active={activeMode === 'monitoring'}
+        onClick={() => select('monitoring')}
+        label={t('run.monitoring')}
+      />
+      <ModeButton
+        active={activeMode === 'error-tracker'}
+        onClick={() => select('error-tracker')}
+        label={t('run.error-tracker')}
+      />
+      <ModeButton active={activeMode === 'custom'} onClick={() => select('custom')} label={t('run.custom')} />
+    </ModeButtonGroup>
   );
 };
 
@@ -61,15 +59,18 @@ const ModeButton: React.FC<ModeButtonProps> = ({ active, onClick, label }) => (
 // Style
 //
 
-const ModeContainer = styled.div`
+const ModeButtonGroup = styled(ButtonGroup)`
   display: flex;
-  flex-direction: column;
   justify-content: center;
+  width: 100%;
+  max-width: 700px;
+  margin-right: 1rem;
 
   .button {
     position: relative;
-    border-color: #a3a3a3;
     color: #333;
+    flex: 1;
+    justify-content: center;
   }
 `;
 

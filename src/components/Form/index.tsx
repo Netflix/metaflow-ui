@@ -220,7 +220,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   }
 
   input[type='text'] {
-    border: ${(p) => p.theme.border.thinLight};
+    border: ${(p) => p.theme.border.thinNormal};
 
     &:focus,
     &:not(:disabled):hover {
@@ -237,7 +237,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     border-radius: 0.125rem;
     text-align: center;
     background: ${(p) => p.theme.color.bg.light};
-    border: ${(p) => p.theme.border.thinLight};
+    border: ${(p) => p.theme.border.thinNormal};
   }
 
   &.field-checkbox {
@@ -251,7 +251,6 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   &.active {
     span.checkbox.checked {
       color: ${(p) => p.theme.color.text.white};
-      font-weight: 500;
       border-color: ${(p) => p.theme.color.bg.blue};
       color: ${(p) => p.theme.color.bg.blue};
       background: ${(p) => p.theme.color.bg.white};
@@ -268,10 +267,6 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     &.status-completed span.checkbox.checked {
       border-color: ${(p) => p.theme.color.bg.green};
       color: ${(p) => p.theme.color.bg.green};
-    }
-
-    label {
-      font-weight: 500;
     }
   }
 

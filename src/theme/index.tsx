@@ -41,12 +41,14 @@ const bgColor = {
 
 const borderColor = {
   light: rgba(0, 0, 0, 0.125),
+  normal: '#d0d0d0',
   mid: rgba(0, 0, 0, 0.2),
   dark: rgba(0, 0, 0, 0.35),
 };
 
 const border = {
   thinLight: `1px solid ${borderColor.light}`,
+  thinNormal: `1px solid ${borderColor.normal}`,
   thinPrimary: `1px solid ${textColor.blue}`,
   thinMid: `1px solid ${borderColor.mid}`,
   thinDark: `1px solid ${borderColor.dark}`,
@@ -66,7 +68,7 @@ const buttonColor = {
   default: {
     text: textColor.mid,
     bg: 'transparent',
-    border: border.thinLight,
+    border: border.thinNormal,
     activeText: textColor.dark,
     activeBg: bgColor.silver,
   },

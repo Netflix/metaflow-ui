@@ -87,7 +87,7 @@ const HelpMenuTitle = styled.div`
   display: flex;
   margin: 0 -0.5rem 0.25rem;
   width: 256px;
-  border-bottom: ${(p) => p.theme.border.thinLight};
+  border-bottom: ${(p) => p.theme.border.thinNormal};
 
   span {
     font-weight: 500;
