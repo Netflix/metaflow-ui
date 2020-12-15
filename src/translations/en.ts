@@ -99,7 +99,7 @@ const en = {
       relative: 'Relative',
       absolute: 'Absolute',
       'group-by-step': 'Group by step',
-      'order-by': 'Order by',
+      'order-by': 'Order tasks by',
       'started-at': 'Started at',
       startTime: 'Started at',
       'finished-at': 'Finished at',

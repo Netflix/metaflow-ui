@@ -63,7 +63,7 @@ const ModeButtonGroup = styled(ButtonGroup)`
   display: flex;
   justify-content: center;
   width: 100%;
-  max-width: 700px;
+  max-width: 750px;
   margin-right: 1rem;
 
   .button {
