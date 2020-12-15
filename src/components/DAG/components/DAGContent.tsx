@@ -194,7 +194,7 @@ const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; is
     top: 0;
     width: 1px;
     height: 100%;
-    background: ${(p) => p.theme.color.border.mid};
+    background: #d0d0d0;
     left: 50%;
   }
 `;
