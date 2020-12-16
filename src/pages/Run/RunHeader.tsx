@@ -24,7 +24,6 @@ import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import TagRow from './components/TagRow';
-import { createAPIError } from '../../utils/testhelper';
 
 //
 // Typedef
