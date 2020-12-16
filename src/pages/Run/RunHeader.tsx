@@ -105,7 +105,7 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
 
               {status === 'Error' && error && (
                 <div style={{ margin: '1rem 0' }}>
-                  <APIErrorRenderer error={createAPIError({})} message={t('run.run-parameters-error')} icon={false} />
+                  <APIErrorRenderer error={error} message={t('run.run-parameters-error')} icon={false} />
                 </div>
               )}
             </InformationRow>
