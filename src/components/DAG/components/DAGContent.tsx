@@ -170,7 +170,7 @@ export function stateOfStep(item: StepTree, [stepIds, failedIds]: [string[], str
 
 const DAGRenderingContainer = styled.div<{ showFullscreen: boolean }>`
   margin: ${(p) => (p.showFullscreen ? '0' : '0 -45px')};
-  overflow-x: ${(p) => (p.showFullscreen ? 'visible' : 'scroll')};
+  overflow-x: ${(p) => (p.showFullscreen ? 'visible' : 'auto')};
   font-family: monospace;
   font-size: 14px;
 `;
