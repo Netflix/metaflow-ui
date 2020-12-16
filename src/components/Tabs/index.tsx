@@ -105,11 +105,11 @@ export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean
     p.temporary && p.active ? p.theme.color.bg.blueLight : p.temporary ? '#f6f6f6' : 'transparent'};
   font-weight: ${(p) => (p.active ? '500' : '400')};
   cursor: pointer;
-  transition: 0.15s all;
+  transition: 0.15s border;
 
   &:hover {
-    background: ${(p) => p.theme.color.bg.blueLight};
     border-bottom-color: ${(p) => p.theme.color.bg.blue};
+    font-weight: 500;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
   }

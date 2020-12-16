@@ -198,13 +198,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   return (
     <>
       <ErrorBoundary message={t('error.run-header-error')}>
-        <RunHeader
-          run={run}
-          parameters={runParameters}
-          status={runParametersStatus}
-          error={runParameterError}
-          counts={counts}
-        />
+        <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
       </ErrorBoundary>
       <Tabs
         widen
@@ -248,7 +242,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
             key: 'task',
             label: previousTaskId ? `${t('items.task')}: ${previousTaskId}` : `${t('items.task')}`,
             linkTo: getTaskPageLink(params.flowId, params.runNumber, previousStepName, previousTaskId, urlParams),
-            temporary: !!(previousStepName && previousTaskId),
             component: (
               <ErrorBoundary message={t('error.task-error')}>
                 {taskError || stepError ? (

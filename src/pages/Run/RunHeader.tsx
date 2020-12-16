@@ -23,7 +23,6 @@ import {
 import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
-import { RowCounts } from '../../components/Timeline/taskdataUtils';
 import TagRow from './components/TagRow';
 import { createAPIError } from '../../utils/testhelper';
 
@@ -34,7 +33,6 @@ import { createAPIError } from '../../utils/testhelper';
 type Props = {
   run: Run;
   parameters: RunParam | null;
-  counts: RowCounts;
   status: ResourceStatus;
   error: APIError | null;
 };
@@ -43,7 +41,7 @@ type Props = {
 // Component
 //
 
-const RunHeader: React.FC<Props> = ({ run, parameters, status, error, counts }) => {
+const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { timezone } = useContext(TimezoneContext);
@@ -57,10 +55,6 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error, counts }) 
   const columns = [
     { label: t('fields.run-id'), accessor: (item: Run) => getRunId(item) },
     { label: t('fields.status'), accessor: (item: Run) => <StatusField status={item.status} /> },
-    {
-      label: t('fields.tasks'),
-      accessor: () => `${counts.all} ${counts.failed !== 0 ? `(${counts.failed} ${t('status.fail')})` : ''}`,
-    },
     {
       label: t('fields.user'),
       accessor: (item: Run) => (

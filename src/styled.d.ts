@@ -8,6 +8,7 @@ declare module 'styled-components' {
     text: string;
     activeText: string;
     activeBg: string;
+    border?: string;
   };
 
   export interface DefaultTheme {
@@ -39,6 +40,7 @@ declare module 'styled-components' {
         white: string;
         light: string;
         dark: string;
+        black: string;
         blue: string;
         blueLight: string;
         silver: string;
@@ -57,6 +59,7 @@ declare module 'styled-components' {
       };
       border: {
         light: string;
+        normal: string;
         mid: string;
         dark: string;
       };
@@ -103,6 +106,8 @@ declare module 'styled-components' {
 
     border: {
       thinLight: string;
+      thinNormal: string;
+      thinPrimary: string;
       thinMid: string;
       thinDark: string;
       mediumLight: string;

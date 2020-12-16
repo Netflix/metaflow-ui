@@ -332,7 +332,7 @@ const AllTagsContainer = styled.div<{ open: boolean }>`
   width: 100%;
   left: 0;
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  border-bottom: ${(p) => p.theme.border.thinNormal};
   transition: 0.15s all;
   overflow: hidden;
 

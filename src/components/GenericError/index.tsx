@@ -153,7 +153,7 @@ const DetailsLog = styled.div`
   line-height: 1.2rem;
   background: ${(p) => p.theme.color.bg.light};
   color: ${(p) => p.theme.color.text.light};
-  border: ${(p) => p.theme.border.thinLight};
+  border: ${(p) => p.theme.border.thinNormal};
   white-space: pre;
   border-radius: 3px;
   padding: 1rem;

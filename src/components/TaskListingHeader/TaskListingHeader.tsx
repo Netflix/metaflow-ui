@@ -219,7 +219,7 @@ const THeaderRightTop = styled.div`
 `;
 
 const THeaderRightBottom = styled.div`
-  height: 38px;
+  height: 34px;
   padding-left: 1rem;
   background: ${(p) => p.theme.color.bg.light};
   border: 1px solid #e9e9e9;

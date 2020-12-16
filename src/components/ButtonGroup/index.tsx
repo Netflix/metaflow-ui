@@ -1,4 +1,4 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 const ButtonGroup = styled.div<{ big?: boolean }>`
   display: flex;
@@ -9,19 +9,16 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
     margin-left: -1px;
     min-height: ${(p) => (p.big ? '36px' : '28px')};
     font-size: ${(p) => (p.big ? '1rem' : '0.875rem')};
-
-    ${(p) =>
-      p.big
-        ? css`
-            padding-left: 0.5rem;
-            padding-right: 0.5rem;
-          `
-        : ''}
+    border-color: #d0d0d0;
 
     white-space: nowrap;
 
     &:not(.active):not(:hover) {
       background: #fff;
+    }
+
+    &.active {
+      background: ${(p) => p.theme.color.button.default.activeBg};
     }
 
     &:first-of-type {

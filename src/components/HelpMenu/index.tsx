@@ -4,7 +4,7 @@ import { apiHttp } from '../../constants';
 import styled from 'styled-components';
 import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
-import Button from '../Button';
+import { BigButton } from '../Button';
 import TimezoneSelector from './TimezoneSelector';
 
 type HelpMenuLink = {
@@ -43,16 +43,9 @@ const HelpMenu: React.FC = () => {
   }, []);
   return (
     <HelpMenuContainer>
-      <ToggleButton
-        onClick={() => setOpen(!open)}
-        withIcon
-        size="sm"
-        variant="primaryText"
-        data-testid="helpmenu-toggle"
-      >
+      <BigButton onClick={() => setOpen(!open)} size="sm" variant="primaryText" data-testid="helpmenu-toggle">
         <span>{t('help.quick-links')}</span>
-        <Icon name="external" size="xs" />
-      </ToggleButton>
+      </BigButton>
 
       <PopoverContainer show={open} data-testid="helpmenu-popup">
         <HelpMenuTitle>
@@ -82,16 +75,6 @@ const HelpMenuContainer = styled.div`
   }
 `;
 
-const ToggleButton = styled(Button)`
-  line-height: 1.5rem;
-  font-size: 0.875rem;
-  white-space: nowrap;
-  border-color: ${(p) => p.theme.color.bg.blue};
-  &:hover {
-    background: ${(p) => p.theme.color.bg.blueLight};
-  }
-`;
-
 const PopoverContainer = styled(PopoverWrapper)`
   top: 110%;
   right: 0;
@@ -104,7 +87,7 @@ const HelpMenuTitle = styled.div`
   display: flex;
   margin: 0 -0.5rem 0.25rem;
   width: 256px;
-  border-bottom: ${(p) => p.theme.border.thinLight};
+  border-bottom: ${(p) => p.theme.border.thinNormal};
 
   span {
     font-weight: 500;
