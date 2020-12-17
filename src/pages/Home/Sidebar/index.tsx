@@ -94,7 +94,11 @@ const HomeSidebar: React.FC<Props> = ({
       <Section>
         <FilterInput onSubmit={(v) => updateListValue('real_user', v)} sectionLabel={t('fields.user')} />
 
-        <TagParameterList paramKey="real_user" updateList={updateListValue} value={params.real_user} />
+        <TagParameterList
+          paramKey="real_user"
+          updateList={updateListValue}
+          value={params.real_user ? params.real_user.replace('null', 'None') : ''}
+        />
       </Section>
 
       <Section>

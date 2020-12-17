@@ -80,10 +80,12 @@ const Home: React.FC = () => {
   const updateListValue = (key: string, val: string) => {
     const vals = new Set(paramList(activeParams[key]));
 
-    if (!vals.has(val)) {
-      vals.add(val);
+    const value = val === 'None' ? 'null' : val;
+
+    if (!vals.has(value)) {
+      vals.add(value);
     } else {
-      vals.delete(val);
+      vals.delete(value);
     }
 
     handleParamChange(key, [...vals.values()].join(','));
@@ -193,6 +195,8 @@ const Home: React.FC = () => {
       setQp({ flow_id: title });
     } else if (activeParams._group === 'real_user') {
       setPage(1);
+
+      const param = title === 'None' ? 'null' : title;
       // Remove other user tags
       const newtags = activeParams._tags
         ? activeParams._tags
@@ -200,7 +204,7 @@ const Home: React.FC = () => {
             .filter((str) => !str.startsWith('user:'))
             .join(',')
         : '';
-      setQp({ _tags: newtags, real_user: title });
+      setQp({ _tags: newtags, real_user: param });
     }
   };
 

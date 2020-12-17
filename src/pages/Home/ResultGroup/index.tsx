@@ -64,7 +64,7 @@ const ResultGroup: React.FC<Props> = ({
       cols={cols}
       onOrderChange={onOrderChange}
       order={queryParams['_order']}
-      label={label}
+      label={label === 'null' ? 'None' : label}
       clickable={!!queryParams._group}
     />
   );

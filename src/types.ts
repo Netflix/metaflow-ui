@@ -20,10 +20,10 @@ export type RunStatus = {
 };
 
 export interface Run extends MetaDataBaseObject {
-  [index: string]: keyof MetaDataBaseObject | keyof RunStatus | string | number | string[] | undefined;
+  [index: string]: keyof MetaDataBaseObject | keyof RunStatus | string | number | string[] | undefined | null;
   run_number: number;
   status: keyof RunStatus;
-  real_user: string;
+  real_user: string | null;
   finished_at?: number;
   run_id?: string;
   duration?: number;
