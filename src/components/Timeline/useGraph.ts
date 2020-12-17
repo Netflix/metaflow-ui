@@ -397,13 +397,15 @@ export default function useGraph(start: number, end: number, autoIncrement: bool
 
     // Check if we were in custom mode, if so we need to save change to localstorage as well
     if (graph.isCustomEnabled) {
-      localStorage.setItem('custom-settings', JSON.stringify(q));
+      const { steps, ...rest } = q;
+      localStorage.setItem('custom-settings', JSON.stringify(rest));
     } else {
       // If we changed something and we now differ from default settings, we need to set
       // custom mode on and start saving settingin localstorage
       if (!equalsDefaultMode(q.order, q.direction, q.status, q.group)) {
+        const { steps, ...rest } = q;
         dispatch({ type: 'setCustom', value: true });
-        localStorage.setItem('custom-settings', JSON.stringify(q));
+        localStorage.setItem('custom-settings', JSON.stringify(rest));
       }
     }
   }, [q, dispatch]); // eslint-disable-line
@@ -415,13 +417,13 @@ export default function useGraph(start: number, end: number, autoIncrement: bool
   // Update active settings mode for task listing.
   const setMode = (mode: GraphMode) => {
     if (mode === 'overview') {
-      sq(OverviewMode, 'replace');
+      sq({ ...q, ...OverviewMode }, 'replace');
       dispatch({ type: 'setCustom', value: false });
     } else if (mode === 'monitoring') {
-      sq(MonitoringMode, 'replace');
+      sq({ ...q, ...MonitoringMode }, 'replace');
       dispatch({ type: 'setCustom', value: false });
     } else if (mode === 'error-tracker') {
-      sq(ErrorTrackerMode, 'replace');
+      sq({ ...q, ...ErrorTrackerMode }, 'replace');
       dispatch({ type: 'setCustom', value: false });
     } else if (mode === 'custom') {
       dispatch({ type: 'setCustom', value: true });
@@ -430,7 +432,8 @@ export default function useGraph(start: number, end: number, autoIncrement: bool
       if (previousSettings) {
         const parsed = JSON.parse(previousSettings);
         if (parsed) {
-          sq(parsed, 'replace');
+          const steps = q.steps ? { steps: q.steps } : {};
+          sq({ ...parsed, ...steps }, 'replace');
         }
       }
     }
