@@ -47,7 +47,7 @@ const ResultGroup: React.FC<Props> = ({
   const cols = [
     { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
     { label: t('fields.id'), key: 'run_number' },
-    { label: t('fields.user'), key: 'user_name', hidden: queryParams._group === 'user_name' },
+    { label: t('fields.user'), key: 'real_user', hidden: queryParams._group === 'real_user' },
     { label: t('fields.started-at'), key: 'ts_epoch' },
     { label: t('fields.finished-at'), key: 'finished_at' },
     { label: t('fields.duration'), key: 'duration' },
@@ -64,7 +64,7 @@ const ResultGroup: React.FC<Props> = ({
       cols={cols}
       onOrderChange={onOrderChange}
       order={queryParams['_order']}
-      label={label}
+      label={label === 'null' ? 'None' : label}
       clickable={!!queryParams._group}
     />
   );
@@ -139,7 +139,7 @@ const TableRows: React.FC<TableRowsProps> = React.memo(({ r, params, updateListV
         <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
       </TD>
       {/* USER NAME */}
-      {params._group !== 'user_name' && <TD>{getUsername(r)}</TD>}
+      {params._group !== 'real_user' && <TD>{getUsername(r)}</TD>}
       {/* STARTED AT */}
       <TimeCell>{getRunStartTime(r, timezone)}</TimeCell>
       {/* FINISHED AT */}
