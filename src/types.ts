@@ -23,6 +23,7 @@ export interface Run extends MetaDataBaseObject {
   [index: string]: keyof MetaDataBaseObject | keyof RunStatus | string | number | string[] | undefined;
   run_number: number;
   status: keyof RunStatus;
+  real_user: string;
   finished_at?: number;
   run_id?: string;
   duration?: number;

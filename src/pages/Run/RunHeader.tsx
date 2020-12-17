@@ -57,7 +57,7 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
     {
       label: t('fields.user'),
       accessor: (item: Run) => (
-        <Link to={`/?user_name=${encodeURIComponent(item.user_name)}`}>{getUsername(item)}</Link>
+        <Link to={`/?real_user=${encodeURIComponent(item.real_user)}`}>{getUsername(item)}</Link>
       ),
     },
     {

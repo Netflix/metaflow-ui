@@ -45,7 +45,7 @@ const HomeSidebar: React.FC<Props> = ({
             options={[
               ['', t('fields.group.none')],
               ['flow_id', t('fields.group.flow')],
-              ['user_name', t('fields.group.user')],
+              ['real_user', t('fields.group.user')],
             ]}
           />
         </SectionHeader>
@@ -92,9 +92,9 @@ const HomeSidebar: React.FC<Props> = ({
       </Section>
 
       <Section>
-        <FilterInput onSubmit={(v) => updateListValue('user_name', v)} sectionLabel={t('fields.user')} />
+        <FilterInput onSubmit={(v) => updateListValue('real_user', v)} sectionLabel={t('fields.user')} />
 
-        <TagParameterList paramKey="user_name" updateList={updateListValue} value={params.user_name} />
+        <TagParameterList paramKey="real_user" updateList={updateListValue} value={params.real_user} />
       </Section>
 
       <Section>

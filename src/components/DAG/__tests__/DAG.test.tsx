@@ -6,8 +6,9 @@ import { Run } from '../../../types';
 
 const run: Run = {
   flow_id: 'SplitForeachFlow',
-  run_number: '26',
+  run_number: 26,
   user_name: 'SanteriCM',
+  real_user: 'SanteriCM',
   status: 'completed',
   ts_epoch: 1597034293177,
   finished_at: 1597034329717,
@@ -29,7 +30,7 @@ describe('DAG component', () => {
   test('<DAG /> - health check', async () => {
     const { findAllByTestId } = render(
       <TestWrapper>
-        <DAG run={run} />
+        <DAG run={run} steps={[]} />
       </TestWrapper>,
     );
     // Expect to see error here since we don't mock websocket
