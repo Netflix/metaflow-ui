@@ -28,6 +28,7 @@ const textColor = {
 const bgColor = {
   white: '#fff',
   dark: '#767676',
+  black: '#333',
   light: '#f6f6f6',
   blue: brandColor.blue,
   blueLight: '#e4f0ff',
@@ -40,12 +41,15 @@ const bgColor = {
 
 const borderColor = {
   light: rgba(0, 0, 0, 0.125),
+  normal: '#d0d0d0',
   mid: rgba(0, 0, 0, 0.2),
   dark: rgba(0, 0, 0, 0.35),
 };
 
 const border = {
   thinLight: `1px solid ${borderColor.light}`,
+  thinNormal: `1px solid ${borderColor.normal}`,
+  thinPrimary: `1px solid ${textColor.blue}`,
   thinMid: `1px solid ${borderColor.mid}`,
   thinDark: `1px solid ${borderColor.dark}`,
   mediumLight: `2px solid ${borderColor.light}`,
@@ -63,7 +67,8 @@ const iconColor = {
 const buttonColor = {
   default: {
     text: textColor.mid,
-    bg: bgColor.light,
+    bg: 'transparent',
+    border: border.thinNormal,
     activeText: textColor.dark,
     activeBg: bgColor.silver,
   },
@@ -76,7 +81,8 @@ const buttonColor = {
   primaryText: {
     text: textColor.blue,
     bg: 'transparent',
-    activeText: textColor.dark,
+    border: `1px solid ${textColor.blue}`,
+    activeText: textColor.blue,
     activeBg: bgColor.silver,
   },
 };

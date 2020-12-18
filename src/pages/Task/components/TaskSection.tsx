@@ -54,7 +54,7 @@ const TaskSectionContainer = styled.div<{ last: boolean }>`
 `;
 const TaskSectionHeader = styled.div`
   padding: 0 1rem;
-  border-bottom: ${(p) => p.theme.border.thinLight};
+  border-bottom: ${(p) => p.theme.border.thinNormal};
   display: flex;
   justify-content: space-between;
   align-items: center;

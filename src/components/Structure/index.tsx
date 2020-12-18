@@ -27,7 +27,7 @@ export const SectionHeader = styled.header`
   padding: ${(p) => p.theme.spacer.sm}rem;
   ${(p) => p.theme.spacer.sm}rem;
   margin: 0 -${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
-  border-bottom: ${(p) => p.theme.border.thinLight};
+  border-bottom: ${(p) => p.theme.border.thinNormal};
   color: ${(p) => p.theme.color.text.light};
 `;
 

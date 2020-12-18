@@ -60,6 +60,7 @@ export function createRun(partialRun: Partial<Run>): Run {
     flow_id: 'BasicFlow',
     run_number: 1,
     user_name: 'SanteriCM',
+    real_user: 'SanteriCM',
     ts_epoch: 1595574762958,
     tags: ['testingtag'],
     status: 'completed',

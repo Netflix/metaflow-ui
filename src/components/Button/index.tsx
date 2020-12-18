@@ -50,7 +50,7 @@ const Button: React.FC<ButtonProps> = ({
 
 export const ButtonLink: React.FC<Omit<ButtonProps, 'onClick'> & { to: string }> = ({ to, ...rest }) => {
   const history = useHistory();
-  return <Button {...rest} onClick={() => history.push(to)} />;
+  return <BigButton {...rest} onClick={() => history.push(to)} />;
 };
 
 const DisabledButtonCSS = css`
@@ -100,6 +100,8 @@ const getButtonColors = (variant: ButtonColors) => css`
   background: ${variant.bg};
   color: ${variant.text};
 
+  ${variant.border && `border: ${variant.border};`}
+
   &:hover {
     background: ${darken(0.05, variant.bg === 'transparent' ? '#fff' : variant.bg)};
   }
@@ -122,7 +124,7 @@ export const ButtonCSS = css`
   cursor: pointer;
   text-decoration: none;
   border-radius: 0.25rem;
-  border: ${(p) => p.theme.border.thinLight};
+  border: ${(p) => p.theme.border.thinNormal};
   min-height: 28px;
   transition: background 0.15s;
 `;
@@ -137,6 +139,18 @@ const StyledButton = styled.button<StyledButtonProps>`
   ${(p) => (p.withIcon === true || p.withIcon === 'left') && IconOnLeftCSS};
   ${(p) => p.withIcon === 'right' && IconOnRightCSS};
   font-size: ${(p) => buttonFontSizes[p.size]}rem;
+`;
+
+export const BigButton = styled(Button)`
+  line-height: 1.875rem;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  border-color: ${(p) => p.theme.color.bg.blue};
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+  &:hover {
+    background: transparent;
+  }
 `;
 
 export default Button;

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Icon from '../Icon';
 import { SectionHeader } from '../Structure';
 
@@ -39,7 +39,7 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
         />
         <SubmitIconHolder
           focus={hasFocus}
-          onClick={() => {
+          onMouseDown={() => {
             if (inputEl?.current?.value) {
               onSubmit(inputEl.current.value);
               setVal('');
@@ -47,7 +47,7 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
             }
           }}
         >
-          <Icon name="enter" size="xs" />
+          <Icon name={hasFocus ? 'enter' : 'plus'} size="xs" />
         </SubmitIconHolder>
       </FitlerInputContainer>
     </FilterInputWrapper>
@@ -87,9 +87,24 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
   right: 0;
   top: 0;
   line-height: 26px;
-  opacity: ${(p) => (p.focus ? 1 : 0)};
-  transition: opacity 0.15s;
   cursor: pointer;
+  z-index: 10;
+
+  &:hover {
+    ${(p) =>
+      p.focus
+        ? css`
+            svg path {
+              stroke: ${p.theme.color.text.blue};
+            }
+          `
+        : css`
+            svg {
+              color: ${p.theme.color.text.blue};
+            }
+          `}} 
+
+  }
 `;
 
 export default FilterInput;
