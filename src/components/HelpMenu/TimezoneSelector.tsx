@@ -1,57 +1,77 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
+import { useTranslation } from 'react-i18next';
+import spacetime from 'spacetime';
 import styled from 'styled-components';
 import { SelectField } from '../Form';
 import { TimezoneContext, TIMEZONES } from '../TimezoneProvider';
-import Toggle from '../Toggle';
+
+const userTimezone = TIMEZONES.find((tz) => tz.offset === getCurrentTimeZoneOffset());
+const ZONES: [string, string][] = TIMEZONES.map((tz) => [tz.offset, tz.label]);
 
 const TimezoneSelector: React.FC = () => {
   const { timezone, updateTimezone } = useContext(TimezoneContext);
-  const [expanded, setExpanded] = useState(timezone !== '+00:00' ? true : false);
+  const { t } = useTranslation();
 
   return (
     <div>
       <TimezoneRow>
-        <div>Use timezone</div>
-        <Toggle
-          value={expanded}
-          onClick={() => {
-            if (expanded) {
-              updateTimezone('+00:00');
+        <div>{t('help.timezone')}</div>
+        <SelectField
+          horizontal
+          noMinWidth
+          options={[]}
+          value={(timezone || 0).toString()}
+          onChange={(e) => {
+            if (e && e.currentTarget) {
+              updateTimezone(e.currentTarget.value);
             }
-            setExpanded(!expanded);
           }}
-        />
+        >
+          {userTimezone && (
+            <optgroup label={t('help.local-time')}>
+              <option value={userTimezone.offset}>{userTimezone.label}</option>
+            </optgroup>
+          )}
+          <optgroup label={t('help.timezones')}>
+            {ZONES.map((o, index) => (
+              <option key={o[0] + index} value={o[0]}>
+                {o[1]}
+              </option>
+            ))}
+          </optgroup>
+        </SelectField>
       </TimezoneRow>
-
-      {expanded && (
-        <TimezoneRow>
-          <SelectField
-            horizontal
-            noMinWidth
-            options={TIMEZONES.map((tz) => [tz.offset, tz.label])}
-            value={(timezone || 0).toString()}
-            onChange={(e) => {
-              if (e && e.currentTarget) {
-                updateTimezone(e.currentTarget.value);
-              }
-            }}
-          />
-        </TimezoneRow>
-      )}
     </div>
   );
 };
+
+//
+// Utils
+//
+
+function getCurrentTimeZoneOffset() {
+  const currentTimezone = spacetime().timezone().current.offset;
+  if (currentTimezone > -10 && currentTimezone < 10) {
+    return `${currentTimezone < 0 ? '-' : '+'}0${Math.abs(currentTimezone)}:00`;
+  }
+  return `${currentTimezone < 0 ? '' : '+'}${currentTimezone}:00`;
+}
+
+//
+// Style
+//
 
 const TimezoneRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.25rem 0.5rem;
+  padding: 0rem 0.5rem;
   width: 100%;
+  color: #666;
 
   .field {
     width: 100%;
-    border: 1px solid #e9e9e9;
+    border: none;
     border-radius: 3px;
   }
 `;
