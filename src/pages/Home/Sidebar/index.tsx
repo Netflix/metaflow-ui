@@ -6,7 +6,6 @@ import { paramList, isDefaultParams } from '../index';
 import { CheckboxField, DropdownField } from '../../../components/Form';
 import { Section, SectionHeader } from '../../../components/Structure';
 import Button from '../../../components/Button';
-import Icon from '../../../components/Icon';
 import { Text } from '../../../components/Text';
 import { RemovableTag } from '../../../components/Tag';
 import FilterInput from '../../../components/FilterInput';
@@ -113,12 +112,11 @@ const HomeSidebar: React.FC<Props> = ({
       </Section>
 
       {!defaultFiltersActive && (
-        <Section>
+        <div>
           <ButtonResetAll size="sm" onClick={() => resetAllFilters()} disabled={isDefaultParams(params)}>
-            <Icon name="times" padRight />
             <Text>{t('filters.reset-all')}</Text>
           </ButtonResetAll>
-        </Section>
+        </div>
       )}
     </Sidebar>
   );
@@ -126,6 +124,7 @@ const HomeSidebar: React.FC<Props> = ({
 
 const ButtonResetAll = styled(Button)`
   width: 100%;
+  color: #333;
   span {
     display: inline-block;
     width: 100%;
