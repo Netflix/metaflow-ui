@@ -13,7 +13,7 @@ type HelpMenuLink = {
 };
 
 const DEFAULT_LINKS = [
-  { href: 'https://docs.metaflow.org/', label: 'Metaflow documentation' },
+  { href: 'https://docs.metaflow.org/', label: 'Documentation' },
   { href: 'https://github.com/Netflix/metaflow', label: 'Github' },
 ];
 
@@ -76,7 +76,7 @@ const HelpMenuContainer = styled.div`
 `;
 
 const PopoverContainer = styled(PopoverWrapper)`
-  top: 110%;
+  top: 0;
   right: 0;
   left: auto;
 `;
