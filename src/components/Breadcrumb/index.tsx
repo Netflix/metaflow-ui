@@ -345,7 +345,7 @@ const GoToHolder = styled.div`
   position: relative;
   font-size: 0.875rem;
   height: 2rem;
-  margin-top: -2px;
+  margin-top: -9px;
   z-index: 2;
 `;
 
@@ -365,12 +365,6 @@ const GotoClose = styled.div`
 
 const BreadcrumbInfo = styled.div`
   padding: ${(p) => p.theme.spacer.sm}rem;
-`;
-
-const BreadcrumbHelpLabel = styled.div`
-  font-size: 0.75rem;
-  color: ${(p) => p.theme.color.text.lightest};
-  padding: 10px 0;
 `;
 
 const BreadcrumbWarning = styled.div`
