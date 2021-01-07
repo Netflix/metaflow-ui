@@ -147,7 +147,6 @@ const en = {
       'no-match': "Text doesn't match known patterns.",
       goto: 'Go to...',
       whereto: 'Where to?',
-      example: 'Example',
       'example-flow': 'Flow Name',
       'example-run': 'Flow Name / Run ID',
       'example-step': 'Flow Name / Run ID / Step Name',
