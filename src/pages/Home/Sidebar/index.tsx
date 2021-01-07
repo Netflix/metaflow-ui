@@ -143,6 +143,7 @@ const Sidebar = styled.div`
   width: ${(p) => p.theme.layout.sidebarWidth}rem;
   top: ${(p) => p.theme.layout.appbarHeight}rem;
   font-size: 0.875rem;
+  padding-top: 6px;
 `;
 
 const GroupSectionHeader = styled(SectionHeader)`
