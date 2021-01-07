@@ -103,7 +103,7 @@ const getButtonColors = (variant: ButtonColors) => css`
   ${variant.border && `border: ${variant.border};`}
 
   &:hover {
-    background: ${darken(0.05, variant.bg === 'transparent' ? '#fff' : variant.bg)};
+    background: ${(p) => (variant.bg === 'transparent' ? p.theme.color.bg.light : darken(0.05, variant.bg))};
   }
 
   &:active {

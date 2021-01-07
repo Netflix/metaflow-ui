@@ -36,7 +36,7 @@ const HomeSidebar: React.FC<Props> = ({
   return (
     <Sidebar className="sidebar">
       <Section>
-        <SectionHeader>
+        <GroupSectionHeader noPadding>
           <DropdownField
             horizontal
             noMinWidth
@@ -48,7 +48,7 @@ const HomeSidebar: React.FC<Props> = ({
               ['real_user', t('fields.group.user')],
             ]}
           />
-        </SectionHeader>
+        </GroupSectionHeader>
       </Section>
 
       <Section>
@@ -143,6 +143,13 @@ const Sidebar = styled.div`
   width: ${(p) => p.theme.layout.sidebarWidth}rem;
   top: ${(p) => p.theme.layout.appbarHeight}rem;
   font-size: 0.875rem;
+`;
+
+const GroupSectionHeader = styled(SectionHeader)`
+  button {
+    padding: 0.3125rem 0.3125rem 0.3125rem 0.5rem;
+    border-radius 0px;
+  }
 `;
 
 export default HomeSidebar;
