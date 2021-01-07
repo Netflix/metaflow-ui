@@ -150,7 +150,7 @@ const Breadcrumb: React.FC = () => {
         <>
           <GoToHolder data-testid="breadcrumb-goto-container">
             <GoToContainer>
-              <ItemRow pad="md">
+              <ItemRow>
                 <TextInputField
                   placeholder={t('breadcrumb.goto')}
                   value={str}
