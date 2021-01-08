@@ -19,6 +19,9 @@ const en = {
 
     help: {
       'quick-links': 'Quick links',
+      timezone: 'Timezone',
+      'local-time': 'Local time',
+      timezones: 'Timezones',
     },
 
     fields: {
