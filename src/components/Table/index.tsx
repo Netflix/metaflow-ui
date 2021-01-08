@@ -97,14 +97,28 @@ interface HeaderColumnProps {
   queryKey: string;
   currentOrder: string;
   onSort: (ord: string) => void;
+  maxWidth?: string;
 }
 
-export const HeaderColumn: React.FC<HeaderColumnProps> = ({ label, queryKey, currentOrder, onSort, ...rest }) => {
+export const HeaderColumn: React.FC<HeaderColumnProps> = ({
+  label,
+  queryKey,
+  currentOrder,
+  onSort,
+  maxWidth,
+  ...rest
+}) => {
   const [direction, orderParam] = currentOrder ? parseOrderParam(currentOrder) : ['down' as const, ''];
   const active: boolean = queryKey === orderParam;
 
   return (
-    <TH active={active} onClick={() => onSort(queryKey)} {...rest} clickable>
+    <TH
+      active={active}
+      onClick={() => onSort(queryKey)}
+      {...rest}
+      clickable
+      style={maxWidth ? { maxWidth: maxWidth + 'px', width: maxWidth + 'px' } : {}}
+    >
       <HeaderColumnWrapper>
         {label}
         <SortIcon active={active} direction={direction} padLeft />
