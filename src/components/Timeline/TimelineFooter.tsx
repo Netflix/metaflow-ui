@@ -1,6 +1,6 @@
 import React, { createRef, useEffect, useState } from 'react';
 import { GraphState } from './useGraph';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 import { formatDuration } from '../../utils/format';
 import { StepLineData } from './taskdataUtils';
@@ -190,11 +190,14 @@ const MiniTimelineActive: React.FC<{
     >
       <MiniTimelineZoomHandle
         which="left"
+        isZoomed={width < 20}
         label={graph.timelineStart <= graph.min ? '0.0s' : formatDuration(graph.timelineStart - graph.min)}
         onDragStart={() => startHandleMove('left')}
       />
       <MiniTimelineZoomHandle
         which="right"
+        isZoomed={width < 20}
+        stackText={width + left > 90}
         label={formatDuration(graph.timelineEnd - graph.min)}
         onDragStart={() => startHandleMove('right')}
       />
@@ -202,19 +205,25 @@ const MiniTimelineActive: React.FC<{
   );
 };
 
-const MiniTimelineZoomHandle: React.FC<{ which: 'left' | 'right'; label: string; onDragStart: () => void }> = ({
-  label,
-  onDragStart,
-  which,
-}) => (
+type HandleProps = {
+  which: 'left' | 'right';
+  label: string;
+  onDragStart: () => void;
+  isZoomed: boolean;
+  stackText?: boolean;
+};
+
+const MiniTimelineZoomHandle: React.FC<HandleProps> = ({ label, onDragStart, which, isZoomed, stackText }) => (
   <MiniTimelineHandle
     style={which === 'right' ? { right: '-5px' } : { left: '-5px' }}
     onMouseDown={() => onDragStart()}
   >
-    <div />
-    <div />
-    <div />
-    <MiniTimelineLabel>{label}</MiniTimelineLabel>
+    <MiniTimelineIconLine />
+    <MiniTimelineIconLine />
+    <MiniTimelineIconLine />
+    <MiniTimelineLabel which={which} isZoomed={isZoomed} stackText={stackText}>
+      {label}
+    </MiniTimelineLabel>
   </MiniTimelineHandle>
 );
 
@@ -280,20 +289,32 @@ const MiniTimelineHandle = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-
-  > div {
-    height: 1px;
-    width: 4px;
-    background: ${(p) => p.theme.color.bg.white};
-    margin-bottom: 2px;
-  }
 `;
 
-const MiniTimelineLabel = styled.div`
+const MiniTimelineIconLine = styled.div`
+  height: 1px;
+  width: 4px;
+  background: ${(p) => p.theme.color.bg.white};
+  margin-bottom: 2px;
+`;
+
+const LeftLabelPositioning = css<{ isZoomed: boolean }>`
+  ${(p) => (p.isZoomed ? 'right: 100%;' : 'left: 0%')}
+`;
+
+const RightLabelPositioning = css<{ isZoomed: boolean }>`
+  ${(p) => (p.isZoomed ? 'left: 0%' : 'right: 100%;')}
+`;
+
+const MiniTimelineLabel = styled.div<{ which: 'left' | 'right'; isZoomed: boolean; stackText?: boolean }>`
   position: absolute;
-  bottom: -20px;
-  left: -50%;
+  top: 50px;
+
+  right: ${(p) => (p.which === 'right' ? '100%' : 'none')};
   font-size: 14px;
+  white-space: ${(p) => (p.stackText && p.isZoomed ? 'none' : 'pre')};
+
+  ${(p) => (p.which === 'left' ? LeftLabelPositioning : RightLabelPositioning)}
 `;
 
 export default TimelineFooter;
