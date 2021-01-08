@@ -80,7 +80,7 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
               ]}
             />
           </StatusContainer>
-          <div style={{ marginLeft: '1rem' }}>
+          <div>
             <CheckboxField
               label={t('timeline.group-by-step')}
               checked={graph.group}
