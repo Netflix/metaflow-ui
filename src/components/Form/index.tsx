@@ -59,7 +59,7 @@ export const SelectField: React.FC<
     noMinWidth?: boolean;
     maxWidth?: boolean;
   } & CommonFieldProps<HTMLSelectElement>
-> = ({ label, options, horizontal, noMinWidth, ...rest }) => {
+> = ({ label, options, horizontal, noMinWidth, children, ...rest }) => {
   const [id] = useState(uuid());
   const testid = rest['data-testid'];
 
@@ -67,11 +67,12 @@ export const SelectField: React.FC<
     <Field horizontal={horizontal} type="select" data-testid={testid} noMinWidth={noMinWidth}>
       {label && <label htmlFor={id}>{label}</label>}
       <select id={id} {...rest}>
-        {options.map((o) => (
-          <option key={o[0]} value={o[0]}>
-            {o[1]}
-          </option>
-        ))}
+        {children ||
+          options.map((o, index) => (
+            <option key={o[0] + index} value={o[0]}>
+              {o[1]}
+            </option>
+          ))}
       </select>
     </Field>
   );
