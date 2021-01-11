@@ -6,7 +6,6 @@ import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
 import { BigButton } from '../Button';
 import TimezoneSelector from './TimezoneSelector';
-import DebugSelector from './DebugSelector';
 
 type HelpMenuLink = {
   href: string;
@@ -61,8 +60,6 @@ const HelpMenu: React.FC = () => {
         ))}
 
         <TimezoneSelector />
-
-        <DebugSelector />
       </PopoverContainer>
       {open && <HelpMenuClickOverlay onClick={() => setOpen(false)} data-testid="helpmenu-click-overlay" />}
     </HelpMenuContainer>
