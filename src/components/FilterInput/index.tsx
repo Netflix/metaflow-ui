@@ -57,6 +57,7 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
 const FilterInputWrapper = styled(SectionHeader)<{ active: boolean }>`
   padding-bottom: 0.375rem;
   transition: border 0.15s;
+  color: #333;
 
   ${(p) => (p.active ? `border-bottom-color: ${p.theme.color.text.blue};` : '')}
 
@@ -65,9 +66,15 @@ const FilterInputWrapper = styled(SectionHeader)<{ active: boolean }>`
     border: none;
     cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
     background-color: transparent;
+
     &:focus {
       outline: none;
       border: none;
+    }
+
+    &::placeholder {
+      color: #333;
+      opacity: 1;
     }
   }
   cursor: ${(p) => (p.active ? 'auto' : 'pointer')};

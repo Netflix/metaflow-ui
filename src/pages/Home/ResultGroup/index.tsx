@@ -48,10 +48,10 @@ const ResultGroup: React.FC<Props> = ({
     { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
     { label: t('fields.id'), key: 'run_number' },
     { label: t('fields.user'), key: 'real_user', hidden: queryParams._group === 'real_user' },
-    { label: t('fields.started-at'), key: 'ts_epoch' },
-    { label: t('fields.finished-at'), key: 'finished_at' },
-    { label: t('fields.duration'), key: 'duration' },
-    { label: t('fields.status'), key: 'status' },
+    { label: t('fields.started-at'), key: 'ts_epoch', maxWidth: '180' },
+    { label: t('fields.finished-at'), key: 'finished_at', maxWidth: '180' },
+    { label: t('fields.duration'), key: 'duration', maxWidth: '160' },
+    { label: t('fields.status'), key: 'status', maxWidth: '140' },
     { label: t('fields.user-tags'), key: 'tags' },
   ].filter((item) => !item.hidden);
 
@@ -191,6 +191,7 @@ type HeaderColumnProps = {
   queryKey: string;
   onSort: (p: string) => void;
   currentOrder: string;
+  maxWidth?: string;
 };
 
 const HeaderColumn = (props: HeaderColumnProps) => <HeaderColumnBase {...props} />;
@@ -198,7 +199,7 @@ const HeaderColumn = (props: HeaderColumnProps) => <HeaderColumnBase {...props} 
 type TableHeaderProps = {
   handleClick: (str: string) => void;
   error: Error | null;
-  cols: { label: string; key: string; hidden?: boolean }[];
+  cols: { label: string; key: string; hidden?: boolean; maxWidth?: string }[];
   onOrderChange: (p: string) => void;
   order: string;
   label: string;
@@ -226,7 +227,14 @@ const TableHeader: React.FC<TableHeaderProps> = ({
     <TR className="result-group-columns">
       <StatusColorHeaderCell />
       {cols.map((col) => (
-        <HeaderColumn key={col.key} label={col.label} queryKey={col.key} onSort={onOrderChange} currentOrder={order} />
+        <HeaderColumn
+          key={col.key}
+          label={col.label}
+          queryKey={col.key}
+          maxWidth={col.maxWidth}
+          onSort={onOrderChange}
+          currentOrder={order}
+        />
       ))}
 
       <th></th>

@@ -20,15 +20,14 @@ export const Section = styled.section`
   margin-bottom: ${(p) => p.theme.spacer.md}rem;
 `;
 
-export const SectionHeader = styled.header`
+export const SectionHeader = styled.header<{ noPadding?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${(p) => p.theme.spacer.sm}rem;
-  ${(p) => p.theme.spacer.sm}rem;
+  padding: ${(p) => (p.noPadding ? 0 : p.theme.spacer.sm)}rem;
   margin: 0 -${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
   border-bottom: ${(p) => p.theme.border.thinNormal};
-  color: ${(p) => p.theme.color.text.light};
+  color: ${(p) => p.theme.color.text.dark};
 `;
 
 type FlexAlignments = {

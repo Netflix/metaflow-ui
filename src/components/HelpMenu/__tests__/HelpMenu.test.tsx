@@ -20,7 +20,7 @@ describe('HelpMenu component', () => {
 
     // These tests are bit iffy. These links might change
     expect(getAllByTestId('helpmenu-link')[0]).toHaveAttribute('href', 'https://docs.metaflow.org/');
-    expect(getAllByTestId('helpmenu-link')[0].textContent).toBe('Metaflow documentation');
+    expect(getAllByTestId('helpmenu-link')[0].textContent).toBe('Documentation');
 
     // Close by clicking overlay
     fireEvent.click(getByTestId('helpmenu-click-overlay'));
