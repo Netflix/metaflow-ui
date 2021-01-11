@@ -11,7 +11,7 @@ const Logger: React.FC = () => {
 
   const stopLogging = () => {
     endLogging();
-    sq({ debug: undefined }, 'replace');
+    sq({ debug: undefined }, 'replaceIn');
     localStorage.setItem('debug-mode', 'false');
     setLogging(false);
   };
