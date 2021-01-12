@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useState } from 'react';
 import { Task, Step, AsyncStatus, APIError } from '../../types';
-import useResource from '../../hooks/useResource';
+import useResource, { DataModel } from '../../hooks/useResource';
 import {
   countTaskRowsByStatus,
   isFailedStep,
@@ -212,10 +212,26 @@ export default function useRowData(flowId: string, runNumber: string): UseRowDat
     queryParams: {
       _order: '+ts_epoch',
       _limit: '200',
+      postprocess: 'false',
+    },
+    socketParamFilter: ({ postprocess, ...rest }) => {
+      return rest;
     },
     fetchAllData: true,
     onUpdate: (items) => {
       dispatch({ type: 'fillTasks', data: items });
+    },
+    postRequest: (target) => {
+      const urlWithPostProcessing = target.replace(/(postprocess=).*?(&|$)/, '$1true$2');
+
+      fetch(urlWithPostProcessing)
+        .then((response) => response.json())
+        .then((data: DataModel<Task[]>) => {
+          dispatch({ type: 'fillTasks', data: data.data });
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     },
     fullyDisableCache: true,
     useBatching: true,

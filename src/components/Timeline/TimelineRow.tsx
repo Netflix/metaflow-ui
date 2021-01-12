@@ -245,6 +245,8 @@ function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst:
         return theme.color.bg.yellow;
       case 'failed':
         return !isFirst ? lighten(isHovered ? 0.2 : 0.3, theme.color.bg.red) : theme.color.bg.red;
+      case 'unknown':
+        return !isFirst ? lighten(isHovered ? 0.2 : 0.3, theme.color.bg.dark) : theme.color.bg.dark;
       default:
         return theme.color.bg.red;
     }

@@ -78,7 +78,7 @@ const Task: React.FC<TaskViewProps> = ({
   // Task/attempt data
   //
   const { data: tasks, status, error } = useResource<ITask[], ITask>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts?postprocess=true`,
     subscribeToEvents: true,
     initialData: null,
     updatePredicate: (a, b) => a.attempt_id === b.attempt_id,

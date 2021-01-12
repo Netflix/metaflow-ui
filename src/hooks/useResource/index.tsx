@@ -27,6 +27,7 @@ export interface HookConfig<T, U> {
   // ?
   privateCache?: boolean;
   // ?
+  postRequest?: (target: string) => void;
   pause?: boolean;
   fullyDisableCache?: boolean;
   useBatching?: boolean;
@@ -158,6 +159,7 @@ export default function useResource<T, U>({
   pause = false,
   fullyDisableCache = false,
   useBatching = false,
+  postRequest,
   uuid,
 }: HookConfig<T, U>): Resource<T> {
   const cache = useRef(privateCache ? createCache() : singletonCache).current;
@@ -191,7 +193,7 @@ export default function useResource<T, U>({
 
   useWebsocket<U>({
     url: url,
-    queryParams: socketParamFilter ? socketParamFilter(queryParams) : queryParams,
+    queryParams: socketParamFilter ? socketParamFilter(queryParams || {}) : queryParams,
     enabled: subscribeToEvents && !pause,
     onUpdate: (event: Event<any>) => {
       if (pause) return;
@@ -268,6 +270,9 @@ export default function useResource<T, U>({
 
               if (onUpdate) {
                 onUpdate(cacheItem.data as T);
+                if (postRequest) {
+                  postRequest(targetUrl);
+                }
               }
 
               // If we want all data and we are have next page available we fetch it.
