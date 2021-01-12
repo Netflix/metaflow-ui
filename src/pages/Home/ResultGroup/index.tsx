@@ -319,7 +319,7 @@ const RunTags: React.FC<RunTagsProps> = ({ tags, updateListValue }) => {
 };
 
 const TagsCell = styled(TD)`
-  color: ${(p) => p.theme.color.text.blue};
+  color: ${(p) => p.theme.color.text.dark};
   position: relative;
   line-height: 1.25rem;
 

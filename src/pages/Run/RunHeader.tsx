@@ -57,7 +57,7 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
     {
       label: t('fields.user'),
       accessor: (item: Run) => (
-        <Link to={`/?real_user=${encodeURIComponent(item.real_user || 'null')}`}>{getUsername(item)}</Link>
+        <StyledLink to={`/?real_user=${encodeURIComponent(item.real_user || 'null')}`}>{getUsername(item)}</StyledLink>
       ),
     },
     {
@@ -128,6 +128,15 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
 
 const RunHeaderContainer = styled.div`
   position: relative;
+`;
+
+const StyledLink = styled(Link)`
+  color: ${(p) => p.theme.color.text.dark};
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export default RunHeader;
