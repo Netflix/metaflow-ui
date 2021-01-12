@@ -73,6 +73,7 @@ const TimezoneRow = styled.div`
     width: 100%;
     border: none;
     border-radius: 3px;
+    margin-left: 0.5rem;
   }
 `;
 

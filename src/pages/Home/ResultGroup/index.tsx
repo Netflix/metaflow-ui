@@ -48,10 +48,10 @@ const ResultGroup: React.FC<Props> = ({
     { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
     { label: t('fields.id'), key: 'run_number' },
     { label: t('fields.user'), key: 'real_user', hidden: queryParams._group === 'real_user' },
-    { label: t('fields.started-at'), key: 'ts_epoch', maxWidth: '180' },
-    { label: t('fields.finished-at'), key: 'finished_at', maxWidth: '180' },
-    { label: t('fields.duration'), key: 'duration', maxWidth: '160' },
-    { label: t('fields.status'), key: 'status', maxWidth: '140' },
+    { label: t('fields.started-at'), key: 'ts_epoch', maxWidth: '170' },
+    { label: t('fields.finished-at'), key: 'finished_at', maxWidth: '170' },
+    { label: t('fields.duration'), key: 'duration', maxWidth: '100' },
+    { label: t('fields.status'), key: 'status', maxWidth: '120' },
     { label: t('fields.user-tags'), key: 'tags' },
   ].filter((item) => !item.hidden);
 
@@ -285,7 +285,6 @@ const RunTags: React.FC<RunTagsProps> = ({ tags, updateListValue }) => {
 
   return (
     <TagsCell
-      width="20%"
       onMouseLeave={() => setOpen(false)}
       onClick={(e) => {
         e.stopPropagation();
@@ -319,7 +318,7 @@ const RunTags: React.FC<RunTagsProps> = ({ tags, updateListValue }) => {
 };
 
 const TagsCell = styled(TD)`
-  color: ${(p) => p.theme.color.text.blue};
+  color: ${(p) => p.theme.color.text.dark};
   position: relative;
   line-height: 1.25rem;
 

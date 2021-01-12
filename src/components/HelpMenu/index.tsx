@@ -53,13 +53,13 @@ const HelpMenu: React.FC = () => {
           <Icon name="times" size="sm" onClick={() => setOpen(false)} data-testid="helpmenu-close" />
         </HelpMenuTitle>
 
+        <TimezoneSelector />
+
         {links.map((link) => (
           <HelpMenuLink key={link.href + link.label} href={link.href} target="_blank" data-testid="helpmenu-link">
             {link.label}
           </HelpMenuLink>
         ))}
-
-        <TimezoneSelector />
       </PopoverContainer>
       {open && <HelpMenuClickOverlay onClick={() => setOpen(false)} data-testid="helpmenu-click-overlay" />}
     </HelpMenuContainer>
@@ -86,7 +86,7 @@ const HelpMenuTitle = styled.div`
   padding: 0.25rem 0.5rem 0.75rem 1rem;
   display: flex;
   margin: 0 -0.5rem 0.25rem;
-  width: 256px;
+  width: 320px;
   border-bottom: ${(p) => p.theme.border.thinNormal};
 
   span {
