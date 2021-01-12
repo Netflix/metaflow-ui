@@ -116,4 +116,18 @@ const HelpMenuClickOverlay = styled.div`
   top: 0;
 `;
 
+export const HelpMenuRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.25rem 0.5rem;
+  width: 100%;
+
+  .field {
+    width: 100%;
+    border: 1px solid #e9e9e9;
+    border-radius: 3px;
+  }
+`;
+
 export default HelpMenu;

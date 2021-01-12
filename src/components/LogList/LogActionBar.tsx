@@ -67,7 +67,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, name, data }
 // Utils
 //
 
-function downloadString(text: string, fileType: string, fileName: string) {
+export function downloadString(text: string, fileType: string, fileName: string): void {
   const blob = new Blob([text], { type: fileType });
 
   const a = document.createElement('a');

@@ -19,6 +19,7 @@ import { TimezoneProvider } from './components/TimezoneProvider';
 import { getRouteMatch } from './utils/routing';
 import { apiHttp } from './constants';
 import { setServiceVersion } from './VERSION';
+import Logger from './components/Logger';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -63,6 +64,7 @@ const App: React.FC = () => {
                 <Page>
                   <Root />
                 </Page>
+                <Logger />
               </QueryParamProvider>
             </Router>
           </TimezoneProvider>

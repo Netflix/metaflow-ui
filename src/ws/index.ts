@@ -1,6 +1,7 @@
 import ReconnectingWebSocket, { Event as WSEvent, CloseEvent, ErrorEvent } from 'reconnecting-websocket';
 import { WebSocketEventListenerMap } from 'reconnecting-websocket/events';
 import { apiWs } from '../constants';
+import { setLogItem } from '../utils/debugdb';
 
 enum SubscribeType {
   SUBSCRIBE = 'SUBSCRIBE',
@@ -72,15 +73,18 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
   // Send ping for backend, expect to get answer in less than 5s or close connection
   function ping() {
     conn.send('__ping__');
+    setLogItem('Websocket ping sent');
     pingTimer = setTimeout(() => {
       conn.reconnect();
     }, 2000);
   }
   function pong() {
+    setLogItem('Websocket pong received, connection ok!');
     clearTimeout(pingTimer);
   }
 
   conn.addEventListener('open', (_e: WSEvent) => {
+    setLogItem('Websocket connection opened');
     // Always re-subscribe to events when connection is established
     // This operation is safe since backend makes sure there's no duplicate identifiers
     subscriptions.forEach((subscription) => {
@@ -93,6 +97,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     pingInterval = setInterval(ping, 5000);
   });
   conn.addEventListener('close', (_e: CloseEvent) => {
+    setLogItem('Websocket connection closed');
     if (!connectedSinceUnixTime) {
       // This timestamp will be used to define gap between realtime data
       // Once connection is re-established the missing data will be returned to client
@@ -100,6 +105,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     }
 
     if (_e.code !== 1000) {
+      setLogItem('Websocket connection closed with error');
       console.log('Websocket closed with error');
     }
     // Clear connection ping pongs
@@ -107,6 +113,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     clearTimeout(pingTimer);
   });
   conn.addEventListener('message', (e: MessageEvent) => {
+    setLogItem(`Websocket message: ${e.data}`);
     if (e.data) {
       // Check if we are getting answer for our ping.
       if (e.data === '__pong__') {
