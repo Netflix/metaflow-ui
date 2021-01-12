@@ -226,6 +226,7 @@ const THeaderRightBottom = styled.div`
   background: ${(p) => p.theme.color.bg.light};
   border: 1px solid #e9e9e9;
   margin: 0 0 0.25rem;
+  border-radius: 0.25rem;
 `;
 
 export default TaskListingHeader;
