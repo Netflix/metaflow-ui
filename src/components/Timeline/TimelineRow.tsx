@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { css, DefaultTheme } from 'styled-components';
+import styled, { css, DefaultTheme, keyframes } from 'styled-components';
 import { Row } from './VirtualizedTimeline';
 import { GraphState } from './useGraph';
 import { useHistory } from 'react-router-dom';
@@ -283,6 +283,16 @@ function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst:
   }
 }
 
+const UnkownAnimation = (theme: DefaultTheme) => keyframes`
+  0%, 100% { background: ${lighten(0.4, theme.color.bg.dark)} }
+  50% { background: ${theme.color.bg.dark} }
+`;
+
+const UnkownMoveAnimation = keyframes`
+  0%, 100% { transform: translateX(-100%) }
+  50% { transform: translateX(200%) }
+`;
+
 const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttempt: boolean }>`
   position: absolute;
   background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isLastAttempt)};
@@ -291,6 +301,29 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
   top: 50%;
   transform: translateY(-50%);
   transition: background 0.15s;
+  overflow: hidden;
+
+  ${(p) =>
+    p.state === 'unknown' &&
+    css`
+      animation: 5s ${UnkownAnimation(p.theme)} infinite;
+      &::after {
+        content: '';
+        position: absolute;
+        width: 50%;
+        height: 200%;
+        background: rgb(255, 255, 255, 0.8);
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0) 0%,
+          rgba(255, 255, 255, 0.5) 50%,
+          rgba(255, 255, 255, 0) 100%
+        );
+        top: -50%;
+        left: 0;
+        animation: 5s ${UnkownMoveAnimation} infinite ease-in-out;
+      }
+    `}
 
   &:hover {
     background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isLastAttempt, true)};
