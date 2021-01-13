@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
-import useRowData from '../../components/Timeline/useRowData';
+import useRowData, { RowDataModel } from '../../components/Timeline/useRowData';
 import { getPath } from '../../utils/routing';
 import { Run as IRun, RunParam } from '../../types';
 
@@ -241,7 +241,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
           {
             key: 'task',
             label: previousTaskId ? `${t('items.task')}: ${previousTaskId}` : `${t('items.task')}`,
-            linkTo: getTaskPageLink(params.flowId, params.runNumber, previousStepName, previousTaskId, urlParams),
+            linkTo: getTaskPageLink(params.flowId, params.runNumber, previousStepName, previousTaskId, urlParams, rows),
             component: (
               <ErrorBoundary message={t('error.task-error')}>
                 {taskError || stepError ? (
@@ -288,10 +288,18 @@ function getTaskPageLink(
   previousStepName: string | undefined,
   previousTaskId: string | undefined,
   urlParams: string,
+  rows: RowDataModel,
 ): string {
   if (previousStepName && previousTaskId) {
     return getPath.task(flowId, runNumber, previousStepName, previousTaskId) + '?' + urlParams;
+  } else {
+    const startStep = rows['start'];
+    if (startStep && Object.keys(startStep.data).length > 0) {
+      const taskId = Object.keys(startStep.data)[0];
+      return getPath.task(flowId, runNumber, 'start', taskId);
+    }
   }
+
   return getPath.tasks(flowId, runNumber) + '?' + urlParams;
 }
 
