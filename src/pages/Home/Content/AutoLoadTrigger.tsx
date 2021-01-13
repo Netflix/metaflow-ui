@@ -17,7 +17,7 @@ type AutoLoadProps = {
 
 const AutoLoadTrigger: React.FC<AutoLoadProps> = ({ updateVisibility, status, resultAmount }) => {
   const [isInViewport, targetRef] = useIsInViewport({
-    modBottom: '100px',
+    modBottom: '400px',
   });
   // Track active status so we don't ever spam requests
   const [isUpdatable, setIsUpdatable] = useState(false);
