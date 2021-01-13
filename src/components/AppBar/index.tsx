@@ -16,9 +16,9 @@ const AppBar: React.FC = () => {
         <ConnectionStatus />
       </ConnectionStatusWrapper>
       <ItemRow pad="lg">
-        <Link to={location.pathname === '/' ? '/' + location.search : '/'}>
+        <LogoLink to={location.pathname === '/' ? '/' + location.search : '/'}>
           <Logo src={logo} />
-        </Link>
+        </LogoLink>
         <Breadcrumb />
         <HelpMenu />
       </ItemRow>
@@ -46,6 +46,10 @@ const Wrapper = styled.header`
 
 const Logo = styled.img`
   height: ${(p) => p.theme.layout.appbarLogoHeight}rem;
+`;
+
+const LogoLink = styled(Link)`
+  margin-right: 1.7rem;
 `;
 
 const ConnectionStatusWrapper = styled.div`
