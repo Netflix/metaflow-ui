@@ -11,7 +11,7 @@ const ZONES: [string, string][] = TIMEZONES.map((tz) => [tz.offset, tz.label]);
 const TimezoneSelector: React.FC = () => {
   const { timezone, updateTimezone } = useContext(TimezoneContext);
   const { t } = useTranslation();
-  console.log(timezone);
+
   return (
     <div>
       <TimezoneRow>
