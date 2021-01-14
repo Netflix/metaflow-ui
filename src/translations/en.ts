@@ -87,9 +87,9 @@ const en = {
       'filter-completed': 'Completed',
       'filter-running': 'Running',
       'filter-failed': 'Failed',
-      overview: 'Overview',
-      monitoring: 'Monitoring',
-      'error-tracker': 'Error tracker',
+      overview: 'Workflow',
+      monitoring: 'New tasks',
+      'error-tracker': 'Failed tasks',
       custom: 'Custom',
     },
 
