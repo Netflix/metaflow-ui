@@ -66,12 +66,16 @@ const Home: React.FC = () => {
     setQp({ ...defaultParams }, 'replace');
   }, [setQp]);
 
+  const [showLoader, setShowLoader] = useState(false);
+
   const handleParamChange = (key: string, value: string, keepFakeParams?: boolean) => {
     // We want to reset page when changing filters, but not when reordering
     if (!keepFakeParams) {
       setFakeParams(null);
       setPage(1);
     }
+
+    setShowLoader(true);
 
     setQp({ [key]: value || null });
   };
@@ -183,6 +187,9 @@ const Home: React.FC = () => {
       }
       return params;
     },
+    postRequest() {
+      setShowLoader(false);
+    },
   });
 
   //
@@ -193,6 +200,7 @@ const Home: React.FC = () => {
     if (activeParams._group === 'flow_id') {
       setPage(1);
       setQp({ flow_id: title });
+      setShowLoader(true);
     } else if (activeParams._group === 'real_user') {
       setPage(1);
 
@@ -205,6 +213,7 @@ const Home: React.FC = () => {
             .join(',')
         : '';
       setQp({ _tags: newtags, real_user: param });
+      setShowLoader(true);
     }
   };
 
@@ -260,6 +269,7 @@ const Home: React.FC = () => {
         <HomeContentArea
           error={error}
           status={status}
+          showLoader={showLoader}
           params={activeParams}
           runGroups={runGroups}
           handleOrderChange={handleOrderChange}
