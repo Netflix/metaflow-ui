@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import GenericError from '../GenericError';
-import PropertyTable from '../PropertyTable';
 import { ItemRow } from '../Structure';
 
 type ParameterTableProps = {
@@ -13,26 +12,8 @@ type ParameterTableProps = {
   'data-testid'?: string;
 };
 
-const ParameterTable: React.FC<ParameterTableProps> = ({ items, label, errorLabel, errorComponent, ...rest }) => {
+const ParameterTable: React.FC<ParameterTableProps> = ({ items, label, errorLabel, errorComponent }) => {
   const { t } = useTranslation();
-
-  const cols = [
-    {
-      label: label,
-      accessor: (params: Record<string, string>) => (
-        <table>
-          <tbody>
-            {Object.keys(params).map((key) => (
-              <tr key={key}>
-                <ParameterKey>{key}</ParameterKey>
-                <ParameterValue>{readParameterValue(params[key])}</ParameterValue>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ),
-    },
-  ];
 
   return (
     <>
@@ -42,7 +23,21 @@ const ParameterTable: React.FC<ParameterTableProps> = ({ items, label, errorLabe
         </ItemRow>
       )}
 
-      {Object.keys(items).length > 0 && <PropertyTable scheme="bright" items={[items]} columns={cols} {...rest} />}
+      <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
+        <div style={{ width: '120px', fontSize: '0.875rem' }}>Parameters</div>
+        <div>
+          <table>
+            <tbody>
+              {Object.keys(items).map((key) => (
+                <tr key={key}>
+                  <ParameterKey>{key}</ParameterKey>
+                  <ParameterValue>{readParameterValue(items[key])}</ParameterValue>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </ItemRow>
     </>
   );
 };
@@ -69,11 +64,13 @@ const ParameterKey = styled.td`
   padding-right: ${(p) => p.theme.spacer.hg}rem;
   color: ${(p) => p.theme.color.text.mid};
   padding-bottom: 0.5rem;
+  font-size: 0.875rem;
 `;
 const ParameterValue = styled.td`
   color: ${(p) => p.theme.color.text.dark};
   word-break: break-all;
   padding-bottom: 0.5rem;
+  font-size: 0.875rem;
 `;
 
 export default ParameterTable;
