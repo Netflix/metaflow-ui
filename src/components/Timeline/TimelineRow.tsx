@@ -198,6 +198,30 @@ function getLengthLabelPosition(fromLeft: number, width: number): LabelPosition 
   return 'none';
 }
 
+const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
+  position: absolute;
+  left: ${({ position }) => (position === 'right' ? '100%' : 'auto')};
+  right: ${({ position }) => (position === 'left' ? '100%' : 'auto')};
+  padding: 0 10px;
+  top: 1px;
+  line-height: 26px;
+  font-size: 12px;
+  white-space: nowrap;
+
+  &::after {
+    content: '';
+    transition: background 0.15s;
+    position: absolute;
+    width: 100%;
+    height: 6px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: -1;
+    background: rgba(255, 255, 255, 0.8);
+  }
+`;
+
 const StyledRow = styled.div`
   display: flex;
   width: 100%;
@@ -207,6 +231,12 @@ const StyledRow = styled.div`
 
   &:hover {
     background: ${(p) => p.theme.color.bg.blueLight};
+
+    ${BoxGraphicValue} {
+      &::after {
+        background: ${(p) => p.theme.color.bg.blueLight};
+      }
+    }
   }
 `;
 
@@ -248,7 +278,7 @@ function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst:
       case 'unknown':
         return !isFirst ? lighten(isHovered ? 0.2 : 0.3, theme.color.bg.dark) : theme.color.bg.dark;
       default:
-        return theme.color.bg.red;
+        return lighten(0.5, theme.color.bg.dark);
     }
   }
 }
@@ -283,18 +313,6 @@ const BoxGraphicMarkerStart = styled.div`
 const BoxGraphicMarkerEnd = styled.div`
   ${BoxGraphicMarker};
   right: 0;
-`;
-
-const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
-  position: absolute;
-  left: ${({ position }) => (position === 'right' ? '100%' : 'auto')};
-  right: ${({ position }) => (position === 'left' ? '100%' : 'auto')};
-  background: rgba(255, 255, 255, 0.8);
-  padding: 0 10px;
-  top: 1px;
-  line-height: 26px;
-  font-size: 12px;
-  white-space: nowrap;
 `;
 
 export default TimelineRow;

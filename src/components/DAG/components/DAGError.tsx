@@ -1,7 +1,7 @@
 import { TFunction } from 'i18next';
 import React from 'react';
 import { APIError } from '../../../types';
-import { APIErrorRenderer, DefaultAdditionalErrorInfo, knownErrorIds } from '../../GenericError';
+import { APIErrorRenderer, knownErrorIds } from '../../GenericError';
 import Icon from '../../Icon';
 
 //
@@ -13,18 +13,9 @@ type DAGErrorProps = {
   t: TFunction;
 };
 
-const DAGError: React.FC<DAGErrorProps> = ({ error, t }) => (
+const DAGError: React.FC<DAGErrorProps> = ({ error }) => (
   <div style={{ padding: '3rem 0' }} data-testid="dag-container-Error">
-    <APIErrorRenderer
-      error={error}
-      icon={<Icon name="noDag" customSize={5} />}
-      message={DAGErrorMessage(t, error)}
-      customNotFound={
-        error && error.status === 404
-          ? DefaultAdditionalErrorInfo(t('run.dag-data-not-available'))
-          : DefaultAdditionalErrorInfo(t('run.dag-only-available-AWS'))
-      }
-    />
+    <APIErrorRenderer error={error} icon={<Icon name="noDag" customSize={5} />} />
   </div>
 );
 

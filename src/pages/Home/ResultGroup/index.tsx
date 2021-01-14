@@ -30,90 +30,87 @@ type Props = {
   targetCount: number;
 };
 
-const ResultGroup: React.FC<Props> = ({
-  label,
-  initialData: rows,
-  queryParams,
-  onOrderChange,
-  handleGroupTitleClick,
-  updateListValue,
-  targetCount,
-}) => {
-  const { t } = useTranslation();
-  const history = useHistory();
-  const [isInViewport, targetRef] = useIsInViewport();
-  const { timezone } = useContext(TimezoneContext);
+const ResultGroup: React.FC<Props> = React.memo(
+  ({ label, initialData: rows, queryParams, onOrderChange, handleGroupTitleClick, updateListValue, targetCount }) => {
+    const { t } = useTranslation();
+    const history = useHistory();
+    const [isInViewport, targetRef] = useIsInViewport();
+    const { timezone } = useContext(TimezoneContext);
 
-  const cols = [
-    { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
-    { label: t('fields.id'), key: 'run_number' },
-    { label: t('fields.user'), key: 'real_user', hidden: queryParams._group === 'real_user' },
-    { label: t('fields.started-at'), key: 'ts_epoch', maxWidth: '170' },
-    { label: t('fields.finished-at'), key: 'finished_at', maxWidth: '170' },
-    { label: t('fields.duration'), key: 'duration', maxWidth: '100' },
-    { label: t('fields.status'), key: 'status', maxWidth: '120' },
-    { label: t('fields.user-tags'), key: 'tags' },
-  ].filter((item) => !item.hidden);
+    const cols = [
+      { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
+      { label: t('fields.id'), key: 'run_number' },
+      { label: t('fields.user'), key: 'real_user', hidden: queryParams._group === 'real_user' },
+      { label: t('fields.started-at'), key: 'ts_epoch', maxWidth: '170' },
+      { label: t('fields.finished-at'), key: 'finished_at', maxWidth: '170' },
+      { label: t('fields.duration'), key: 'duration', maxWidth: '100' },
+      { label: t('fields.status'), key: 'status', maxWidth: '120' },
+      { label: t('fields.user-tags'), key: 'tags' },
+    ].filter((item) => !item.hidden);
 
-  const tableRef = useRef<HTMLTableElement>(null);
+    const tableRef = useRef<HTMLTableElement>(null);
 
-  const tableHeader = (
-    <TableHeader
-      handleClick={handleGroupTitleClick}
-      error={null}
-      cols={cols}
-      onOrderChange={onOrderChange}
-      order={queryParams['_order']}
-      label={label === 'null' ? 'None' : label}
-      clickable={!!queryParams._group}
-    />
-  );
+    const tableHeader = (
+      <TableHeader
+        handleClick={handleGroupTitleClick}
+        error={null}
+        cols={cols}
+        onOrderChange={onOrderChange}
+        order={queryParams['_order']}
+        label={label === 'null' ? 'None' : label}
+        clickable={!!queryParams._group}
+      />
+    );
 
-  return (
-    <StyledResultGroup ref={targetRef}>
-      <Table cellPadding="0" cellSpacing="0" ref={tableRef} style={{ position: 'relative', zIndex: 1 }}>
-        {isInViewport ? <StickyHeader tableRef={tableRef}>{tableHeader}</StickyHeader> : <thead>{tableHeader}</thead>}
-        <tbody>
-          {rows.slice(0, targetCount).map((r, i) => {
-            // Run is seen as stale if it doesnt match status filters anymore after its status changed
-            const isStale = !!(queryParams.status && queryParams.status.indexOf(r.status) === -1);
+    return (
+      <StyledResultGroup ref={targetRef}>
+        <Table cellPadding="0" cellSpacing="0" ref={tableRef} style={{ position: 'relative', zIndex: 1 }}>
+          {isInViewport ? <StickyHeader tableRef={tableRef}>{tableHeader}</StickyHeader> : <thead>{tableHeader}</thead>}
+          <tbody>
+            {rows.slice(0, targetCount).map((r, i) => {
+              // Run is seen as stale if it doesnt match status filters anymore after its status changed
+              const isStale = !!(queryParams.status && queryParams.status.indexOf(r.status) === -1);
 
-            return (
-              <TR
-                key={`r-${i}`}
-                clickable
-                stale={isStale}
-                onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}
-              >
-                <TableRows
-                  r={r}
-                  params={queryParams}
-                  historyPush={history.push}
-                  updateListValue={updateListValue}
-                  timezone={timezone}
-                />
-              </TR>
-            );
-          })}
-        </tbody>
-      </Table>
+              return (
+                <TR
+                  key={`r-${i}`}
+                  clickable
+                  stale={isStale}
+                  onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}
+                >
+                  <TableRows
+                    r={r}
+                    params={queryParams}
+                    historyPush={history.push}
+                    updateListValue={updateListValue}
+                    timezone={timezone}
+                  />
+                </TR>
+              );
+            })}
+          </tbody>
+        </Table>
 
-      {targetCount < rows.length && (
-        <div style={{ position: 'relative' }}>
-          <Button
-            className="load-more"
-            onClick={() => handleGroupTitleClick(label)}
-            size="sm"
-            variant="primaryText"
-            textOnly
-          >
-            {t('home.show-all-runs')} <Icon name="arrowDown" rotate={-90} padLeft />
-          </Button>
-        </div>
-      )}
-    </StyledResultGroup>
-  );
-};
+        {targetCount < rows.length && (
+          <div style={{ position: 'relative' }}>
+            <Button
+              className="load-more"
+              onClick={() => handleGroupTitleClick(label)}
+              size="sm"
+              variant="primaryText"
+              textOnly
+            >
+              {t('home.show-all-runs')} <Icon name="arrowDown" rotate={-90} padLeft />
+            </Button>
+          </div>
+        )}
+      </StyledResultGroup>
+    );
+  },
+  (prevProps, newProps) => {
+    return prevProps.queryParams._group !== newProps.queryParams._group;
+  },
+);
 
 //
 // Table row

@@ -6,6 +6,7 @@ import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
 import { BigButton } from '../Button';
 import TimezoneSelector from './TimezoneSelector';
+import VERSION_INFO from '../../VERSION';
 
 type HelpMenuLink = {
   href: string;
@@ -60,6 +61,14 @@ const HelpMenu: React.FC = () => {
             {link.label}
           </HelpMenuLink>
         ))}
+        {VERSION_INFO.release_version && (
+          <VersionContainer>
+            <HelpMenuRow>
+              Application version: {VERSION_INFO.release_version} - {VERSION_INFO.commit}
+            </HelpMenuRow>
+            {VERSION_INFO.service_version && <HelpMenuRow>Service version: {VERSION_INFO.service_version}</HelpMenuRow>}
+          </VersionContainer>
+        )}
       </PopoverContainer>
       {open && <HelpMenuClickOverlay onClick={() => setOpen(false)} data-testid="helpmenu-click-overlay" />}
     </HelpMenuContainer>
@@ -127,6 +136,17 @@ export const HelpMenuRow = styled.div`
     width: 100%;
     border: 1px solid #e9e9e9;
     border-radius: 3px;
+  }
+`;
+
+const VersionContainer = styled.div`
+  margin: 0 -0.5rem 0.25rem;
+  padding: 0.25rem 0.5rem 0;
+  color: ${(p) => p.theme.color.text.mid};
+  border-top: ${(p) => p.theme.border.thinNormal};
+
+  > *:last-child {
+    padding-bottom: 0;
   }
 `;
 

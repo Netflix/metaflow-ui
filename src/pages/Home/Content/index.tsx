@@ -7,10 +7,12 @@ import ResultGroup from '../ResultGroup';
 import GenericError, { APIErrorRenderer } from '../../../components/GenericError';
 import { ItemRow } from '../../../components/Structure';
 import AutoLoadTrigger from './AutoLoadTrigger';
+import Spinner from '../../../components/Spinner';
 
 type Props = {
   error: APIError | null;
   status: AsyncStatus;
+  showLoader: boolean;
   runGroups: Record<string, IRun[]>;
   params: Record<string, string>;
   handleOrderChange: (orderProps: string) => void;
@@ -23,6 +25,7 @@ type Props = {
 const HomeContentArea: React.FC<Props> = ({
   error,
   status,
+  showLoader,
   runGroups,
   handleOrderChange,
   handleGroupTitleClick,
@@ -60,10 +63,14 @@ const HomeContentArea: React.FC<Props> = ({
         </ItemRow>
       )}
 
-      {status === 'Error' && <APIErrorRenderer error={error} message={t('error.load-error')} />}
+      <BigLoader visible={showLoader && resultAmount > 0}>
+        <Spinner md />
+      </BigLoader>
+
+      {status === 'Error' && resultAmount === 0 && <APIErrorRenderer error={error} message={t('error.load-error')} />}
 
       <AutoLoadTrigger
-        status={status}
+        status={showLoader ? 'Ok' : status}
         updateVisibility={() => {
           loadMore();
         }}
@@ -76,9 +83,26 @@ const HomeContentArea: React.FC<Props> = ({
 export default HomeContentArea;
 
 const Content = styled.div`
-  padding-left: ${(p) => p.theme.layout.sidebarWidth + 1}rem;
+  position: relative;
+  margin-left: ${(p) => p.theme.layout.sidebarWidth + 1}rem;
   max-width: 100%;
   display: flex;
   flex-direction: column;
   flex: 1;
+`;
+
+const BigLoader = styled.div<{ visible: boolean }>`
+  position: absolute;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.5);
+  top: 0;
+  left: 0;
+  z-index: 999;
+  opacity: ${(p) => (p.visible ? '1' : '0')};
+  transition: 0.5s opacity;
 `;
