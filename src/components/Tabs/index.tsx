@@ -96,7 +96,7 @@ export const TabsHeading = styled.div<{ widen?: boolean }>`
 
 export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean }>`
   margin-right: ${(p) => p.theme.spacer.md}rem;
-  margin-bottom: -2px;
+  margin-bottom: -1px;
   padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.md}rem;
   border-top-left-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
   border-top-right-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
