@@ -177,7 +177,7 @@ const en = {
       'no-results': 'No results found',
       'no-runs': 'No runs found',
       'no-tasks': 'No tasks found',
-      'not-found': 'Resource not found',
+      'not-found': 'Not available',
 
       'failed-to-load-dag': 'Failed to load DAG.',
       's3-access-denied': 'Access denied. There was a problem with AWS credentials.',

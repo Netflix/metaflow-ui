@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import { APIErrorRenderer } from '../../../components/GenericError';
 import Spinner from '../../../components/Spinner';
 import { APIError, AsyncStatus } from '../../../types';
@@ -17,18 +18,31 @@ type Props = {
 const SectionLoader: React.FC<Props> = ({ status, error, component, customNotFound, minHeight }) => {
   if (status === 'Loading') {
     return (
-      <div style={{ textAlign: 'center', minHeight: minHeight || 'unset' }} data-testid="section-loader-loading">
+      <SectionLoaderDefaultContainer
+        style={{ textAlign: 'center', minHeight: minHeight || 'unset' }}
+        data-testid="section-loader-loading"
+      >
         <Spinner />
-      </div>
+      </SectionLoaderDefaultContainer>
     );
   } else if (status === 'Error') {
     return (
-      <div style={{ minHeight: minHeight || 'unset' }} data-testid="section-loader-error">
+      <SectionLoaderDefaultContainer style={{ minHeight: minHeight || 'unset' }} data-testid="section-loader-error">
         <APIErrorRenderer error={error} customNotFound={customNotFound} />
-      </div>
+      </SectionLoaderDefaultContainer>
     );
   }
   return component;
 };
+
+//
+// Style
+//
+
+const SectionLoaderDefaultContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 export default SectionLoader;
