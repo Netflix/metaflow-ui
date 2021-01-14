@@ -63,16 +63,14 @@ const HomeContentArea: React.FC<Props> = ({
         </ItemRow>
       )}
 
-      {showLoader && resultAmount > 0 && (
-        <BigLoader>
-          <Spinner />
-        </BigLoader>
-      )}
+      <BigLoader visible={showLoader && resultAmount > 0}>
+        <Spinner md />
+      </BigLoader>
 
       {status === 'Error' && resultAmount === 0 && <APIErrorRenderer error={error} message={t('error.load-error')} />}
 
       <AutoLoadTrigger
-        status={status}
+        status={showLoader ? 'Ok' : status}
         updateVisibility={() => {
           loadMore();
         }}
@@ -93,8 +91,9 @@ const Content = styled.div`
   flex: 1;
 `;
 
-const BigLoader = styled.div`
+const BigLoader = styled.div<{ visible: boolean }>`
   position: absolute;
+  pointer-events: none;
   display: flex;
   justify-content: center;
   padding: 2rem;
@@ -104,4 +103,6 @@ const BigLoader = styled.div`
   top: 0;
   left: 0;
   z-index: 999;
+  opacity: ${(p) => (p.visible ? '1' : '0')};
+  transition: 0.5s opacity;
 `;
