@@ -231,10 +231,7 @@ const Home: React.FC = () => {
 
   const handleLoadMore = () => {
     if (fakeParams) return;
-    if ((getResult()?.pages?.last || 9999) <= page) {
-      return;
-    }
-    console.log(page);
+    if ((getResult()?.pages?.last || 9999) <= page) return;
     setPage(page + 1);
   };
 
