@@ -189,6 +189,7 @@ const Home: React.FC = () => {
     },
     postRequest() {
       setShowLoader(false);
+      setFakeParams(null);
     },
   });
 
@@ -229,10 +230,11 @@ const Home: React.FC = () => {
   };
 
   const handleLoadMore = () => {
-    if ((getResult()?.pages?.last || 0) <= page && !fakeParams) {
+    if (fakeParams) return;
+    if ((getResult()?.pages?.last || 9999) <= page) {
       return;
     }
-    setFakeParams(null);
+    console.log(page);
     setPage(page + 1);
   };
 
