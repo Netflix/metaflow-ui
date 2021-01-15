@@ -17,7 +17,7 @@ import TaskListingHeader from '../../components/TaskListingHeader';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import { RowCounts } from '../../components/Timeline/taskdataUtils';
 import { RowDataAction } from '../../components/Timeline/useRowData';
-import GenericError, { APIErrorRenderer, DefaultAdditionalErrorInfo } from '../../components/GenericError';
+import GenericError, { APIErrorRenderer } from '../../components/GenericError';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';
 import SectionLoader from './components/SectionLoader';
@@ -281,7 +281,6 @@ const Task: React.FC<TaskViewProps> = ({
                         minHeight={110}
                         status={stdoutRes.status}
                         error={stdoutRes.error}
-                        customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
                         component={<LogList rows={stdout} onShowFullscreen={() => setFullscreen('stdout')} />}
                       />
                       {renderComponentsForSection('stdout')}
@@ -308,7 +307,6 @@ const Task: React.FC<TaskViewProps> = ({
                         minHeight={110}
                         status={stderrRes.status}
                         error={stderrRes.error}
-                        customNotFound={DefaultAdditionalErrorInfo(t('task.logs-only-available-AWS'))}
                         component={<LogList rows={stderr} onShowFullscreen={() => setFullscreen('stderr')} />}
                       />
 

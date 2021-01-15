@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import InformationRow from '../../../components/InformationRow';
 import { ItemRow } from '../../../components/Structure';
-import Tag from '../../../components/Tag';
+// import Tag from '../../../components/Tag';
 import { SmallText } from '../../../components/Text';
 
 //
@@ -22,19 +22,20 @@ type TagRowProps = {
 const TagRow: React.FC<TagRowProps> = ({ tags, label, push }) => (
   <InformationRow scrollOverflow={false}>
     <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
-      <TagRowTitlte>
+      <TagRowTitle>
         <SmallText>{label}</SmallText>
-      </TagRowTitlte>
-      <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
-        {tags.map((tag) => (
-          <TagNoWrap
+      </TagRowTitle>
+      <ItemRow pad="xs" style={{ flexWrap: 'wrap', width: 'auto' }}>
+        {tags.map((tag, index) => (
+          <RunTag
             key={tag}
             onClick={() => {
               push('/?_tags=' + encodeURIComponent(tag));
             }}
           >
             {tag}
-          </TagNoWrap>
+            {index !== tags.length - 1 && ', '}
+          </RunTag>
         ))}
       </ItemRow>
     </ItemRow>
@@ -45,16 +46,17 @@ const TagRow: React.FC<TagRowProps> = ({ tags, label, push }) => (
 // Style
 //
 
-const TagNoWrap = styled(Tag)`
-  white-space: nowrap;
-
-  .icon {
-    margin-left: ${(p) => p.theme.spacer.xs}rem;
-  }
+const TagRowTitle = styled.div`
+  width: 120px;
 `;
 
-const TagRowTitlte = styled.div`
-  width: 120px;
+const RunTag = styled.span`
+  cursor: pointer;
+  font-size: 0.875rem;
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export default TagRow;

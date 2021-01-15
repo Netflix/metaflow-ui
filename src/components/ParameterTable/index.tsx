@@ -1,48 +1,40 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import GenericError from '../GenericError';
-import PropertyTable from '../PropertyTable';
 import { ItemRow } from '../Structure';
 
 type ParameterTableProps = {
   items: Record<string, string>;
-  label: string;
+  noLabel?: boolean;
   errorLabel?: string;
   errorComponent?: React.ReactNode;
   'data-testid'?: string;
 };
 
-const ParameterTable: React.FC<ParameterTableProps> = ({ items, label, errorLabel, errorComponent, ...rest }) => {
+const ParameterTable: React.FC<ParameterTableProps> = ({ items, errorLabel, errorComponent, noLabel }) => {
   const { t } = useTranslation();
-
-  const cols = [
-    {
-      label: label,
-      accessor: (params: Record<string, string>) => (
-        <table>
-          <tbody>
-            {Object.keys(params).map((key) => (
-              <tr key={key}>
-                <ParameterKey>{key}</ParameterKey>
-                <ParameterValue>{readParameterValue(params[key])}</ParameterValue>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ),
-    },
-  ];
 
   return (
     <>
-      {Object.keys(items).length === 0 && (
-        <ItemRow margin="md">
-          {errorComponent ? errorComponent : <GenericError noIcon message={errorLabel || t('error.not-found')} />}
-        </ItemRow>
-      )}
-
-      {Object.keys(items).length > 0 && <PropertyTable scheme="bright" items={[items]} columns={cols} {...rest} />}
+      <ItemRow pad="md" style={{ paddingLeft: '0.25rem', fontSize: '0.875rem' }}>
+        {!noLabel && <div style={{ width: '120px' }}>{t('run.parameters')}</div>}
+        <div>
+          {Object.keys(items).length === 0 ? (
+            <ItemRow>{errorComponent ? errorComponent : errorLabel || t('error.not-found')}</ItemRow>
+          ) : (
+            <table>
+              <tbody>
+                {Object.keys(items).map((key) => (
+                  <tr key={key}>
+                    <ParameterKey>{key}</ParameterKey>
+                    <ParameterValue>{readParameterValue(items[key])}</ParameterValue>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </ItemRow>
     </>
   );
 };

@@ -201,7 +201,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
         <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
       </ErrorBoundary>
       <Tabs
-        widen
         activeTab={tab}
         tabs={[
           {
