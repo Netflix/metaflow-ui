@@ -290,7 +290,7 @@ const UnkownAnimation = (theme: DefaultTheme) => keyframes`
 
 const UnkownMoveAnimation = keyframes`
   0%, 100% { transform: translateX(-100%) }
-  50% { transform: translateX(200%) }
+  50% { transform: translateX(100%) }
 `;
 
 const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttempt: boolean }>`
@@ -310,7 +310,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
       &::after {
         content: '';
         position: absolute;
-        width: 50%;
+        width: 100%;
         height: 200%;
         background: rgb(255, 255, 255, 0.8);
         background: linear-gradient(
