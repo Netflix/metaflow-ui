@@ -25,7 +25,7 @@ const TagRow: React.FC<TagRowProps> = ({ tags, label, push }) => (
       <TagRowTitle>
         <SmallText>{label}</SmallText>
       </TagRowTitle>
-      <ItemRow pad="xs" style={{ flexWrap: 'wrap' }}>
+      <ItemRow pad="xs" style={{ flexWrap: 'wrap', width: 'auto' }}>
         {tags.map((tag, index) => (
           <RunTag
             key={tag}
