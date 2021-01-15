@@ -41,7 +41,9 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
           columns={[
             {
               label: t('fields.task-id'),
-              accessor: (item) => <ForceBreakText>{item.task_id}</ForceBreakText>,
+              accessor: (item) => (
+                <ForceBreakText>{item.foreach_label || item.task_name || item.task_id}</ForceBreakText>
+              ),
             },
             { label: t('items.step'), prop: 'step_name' },
             {

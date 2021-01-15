@@ -26,8 +26,12 @@ const TaskListLabel: React.FC<Props> = (props) => {
       {props.type === 'task' ? (
         <Link
           to={
-            getPath.task(props.item.flow_id, props.item.run_number, props.item.step_name, props.item.task_id) +
-            (props.paramsString ? `?${props.paramsString}` : '')
+            getPath.task(
+              props.item.flow_id,
+              props.item.run_id || props.item.run_number,
+              props.item.step_name,
+              props.item.task_name || props.item.task_id,
+            ) + (props.paramsString ? `?${props.paramsString}` : '')
           }
           data-testid="tasklistlabel-link"
         >

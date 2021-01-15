@@ -76,7 +76,7 @@ const ResultGroup: React.FC<Props> = React.memo(
                   key={`r-${i}`}
                   clickable
                   stale={isStale}
-                  onClick={() => history.push(getPath.run(r.flow_id, r.run_number))}
+                  onClick={() => history.push(getPath.run(r.flow_id, getRunId(r)))}
                 >
                   <TableRows
                     r={r}
