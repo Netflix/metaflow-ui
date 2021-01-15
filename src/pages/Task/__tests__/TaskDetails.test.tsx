@@ -21,7 +21,6 @@ describe('TaskDetails component', () => {
 
     fireEvent.click(getByTestId('task-expand-button').children[0]);
     expect(getByTestId('task-metadata')).toBeInTheDocument();
-    expect(getByTestId('task-metadata-ok')).toBeInTheDocument();
 
     // Loading state
     rerender(

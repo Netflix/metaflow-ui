@@ -5,19 +5,19 @@ import { ItemRow } from '../Structure';
 
 type ParameterTableProps = {
   items: Record<string, string>;
-  label: string;
+  noLabel?: boolean;
   errorLabel?: string;
   errorComponent?: React.ReactNode;
   'data-testid'?: string;
 };
 
-const ParameterTable: React.FC<ParameterTableProps> = ({ items, errorLabel, errorComponent }) => {
+const ParameterTable: React.FC<ParameterTableProps> = ({ items, errorLabel, errorComponent, noLabel }) => {
   const { t } = useTranslation();
 
   return (
     <>
       <ItemRow pad="md" style={{ paddingLeft: '0.25rem', fontSize: '0.875rem' }}>
-        <div style={{ width: '120px' }}>Parameters</div>
+        {!noLabel && <div style={{ width: '120px' }}>{t('run.parameters')}</div>}
         <div>
           {Object.keys(items).length === 0 ? (
             <ItemRow>{errorComponent ? errorComponent : errorLabel || t('error.not-found')}</ItemRow>

@@ -95,11 +95,7 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
               )}
 
               {status === 'Ok' && parameterTableItems && (
-                <ParameterTable
-                  label={t('run.parameters')}
-                  items={parameterTableItems}
-                  errorLabel={t('run.no-run-parameters')}
-                />
+                <ParameterTable items={parameterTableItems} errorLabel={t('run.no-run-parameters')} />
               )}
 
               {status === 'Error' && error && (

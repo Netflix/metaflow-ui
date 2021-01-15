@@ -80,9 +80,7 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
           {metadata.status === 'Error' && (
             <GenericError message={t('task.failed-to-load-metadata')} data-testid="task-metadata-error" />
           )}
-          {metadata.status === 'Ok' && (
-            <ParameterTable items={metadataParams} label={t('task.metadata')} data-testid="task-metadata-ok" />
-          )}
+          {metadata.status === 'Ok' && <ParameterTable items={metadataParams} data-testid="task-metadata-ok" noLabel />}
         </InformationRow>
       )}
 
