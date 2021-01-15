@@ -72,7 +72,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     RunParam,
     RunParam
   >({
-    url: `/flows/${params.flowId}/runs/${params.runNumber}/parameters`,
+    url: `/flows/${params.flowId}/runs/${run.run_number}/parameters`,
     subscribeToEvents: true,
     initialData: {},
   });
@@ -103,7 +103,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const { rows, steps, dispatch, counts, taskStatus, isAnyGroupOpen, taskError, stepError } = useRowData(
     params.flowId,
-    params.runNumber,
+    run.run_number.toString(),
   );
 
   //
