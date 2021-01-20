@@ -26,3 +26,16 @@ export const getLongestRowDuration = (rows: Row[]): number => {
     }
   }, 0);
 };
+
+export const getTaskLineStatus = (rows: Row[]): 'ok' | 'failed' | 'running' | 'unknown' => {
+  const statuses = rows.map((row) => {
+    if (row.type === 'task') {
+      return row.data.length > 1 ? 'failed' : row.data.length === 1 ? row.data[0].status : 'unknown';
+    }
+    return row.rowObject.isFailed ? 'failed' : 'ok';
+  });
+  if (statuses.indexOf('failed') > -1) return 'failed';
+  if (statuses.indexOf('unknown') > -1) return 'unknown';
+  if (statuses.indexOf('running') > -1) return 'running';
+  return 'ok';
+};
