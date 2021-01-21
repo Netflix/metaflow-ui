@@ -1,4 +1,4 @@
-import { Step, Task } from '../../types';
+import { Step, Task, TaskStatus } from '../../types';
 import { RowDataModel } from './useRowData';
 
 //
@@ -56,7 +56,7 @@ export function countTaskRowsByStatus(rows: RowDataModel): RowCounts {
 export type StepLineData = {
   started_at: number;
   finished_at: number;
-  isFailed: boolean;
+  status: TaskStatus;
   step_name: string;
   original?: Step;
 };
@@ -69,7 +69,7 @@ export function makeStepLineData(rows: RowDataModel): StepLineData[] {
       {
         started_at: row.step?.ts_epoch || 0,
         finished_at: row.finished_at,
-        isFailed: row.isFailed,
+        status: row.status,
         original: row.step,
         step_name: key,
       },
@@ -103,18 +103,16 @@ export function timepointsOfTasks(tasks: Task[]): [number, number] {
 // though if we get successful tasks after getting failed ones (should not really happen).
 //
 
-export function isFailedStep(stepTaskData: Record<string, Task[]>, newTasks: Task[]): boolean {
-  const ids = newTasks.map((t) => t.task_id);
-
-  for (const [key, tasks] of Object.entries(stepTaskData)) {
-    if (ids.indexOf(parseInt(key)) > -1) {
-      const hasFailed = tasks[tasks.length - 1].status === 'failed';
-      if (hasFailed) {
-        return true;
-      }
+export function getStepStatus(stepTaskData: Record<string, Task[]>): TaskStatus {
+  for (const data of Object.entries(stepTaskData)) {
+    const statuses = data[1].map((item) => item.status);
+    if (statuses.indexOf('failed') > -1) {
+      return 'failed';
+    } else if (statuses.indexOf('running') > -1) {
+      return 'running';
     }
   }
-  return false;
+  return 'completed';
 }
 
 //

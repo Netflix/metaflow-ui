@@ -72,7 +72,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               duration={item.rowObject.duration}
               labelDuration={item.rowObject.duration}
               onOpen={onOpen}
-              isFailed={item.rowObject.isFailed}
+              isFailed={item.rowObject.status === 'failed'}
               isLastAttempt
             />
           ) : (
@@ -264,12 +264,19 @@ const BoxGraphic = styled.div<{ root: boolean }>`
   line-height: 27px;
 `;
 
-function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst: boolean, isHovered?: boolean) {
+export function lineColor(
+  theme: DefaultTheme,
+  grayed: boolean,
+  state: string,
+  isFirst: boolean,
+  isHovered?: boolean,
+): string {
   if (grayed) {
     return '#c7c7c7';
   } else {
     switch (state) {
       case 'completed':
+      case 'ok':
         return !isFirst ? lighten(isHovered ? 0.2 : 0.3, theme.color.bg.red) : theme.color.bg.green;
       case 'running':
         return theme.color.bg.yellow;

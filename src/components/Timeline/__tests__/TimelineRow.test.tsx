@@ -3,6 +3,7 @@ import TimelineRow, { BoxGraphicElement } from '../TimelineRow';
 import { render } from '@testing-library/react';
 import { createGraphState, createTask, createStep } from '../../../utils/testhelper';
 import TestWrapper from '../../../utils/testing';
+import { TaskStatus } from '../../../types';
 
 const MockT = (str: string) => str;
 
@@ -50,7 +51,7 @@ describe('TimelineRow component', () => {
           finished_at: 1000,
           duration: 1000,
           step: createStep({}),
-          isFailed: false,
+          status: 'completed' as TaskStatus,
           data: {},
         },
       },

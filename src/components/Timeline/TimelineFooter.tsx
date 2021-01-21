@@ -5,7 +5,9 @@ import styled, { css } from 'styled-components';
 import { formatDuration } from '../../utils/format';
 import { StepLineData } from './taskdataUtils';
 import { Row } from './VirtualizedTimeline';
-import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
+import { getLongestRowDuration, getTaskLineStatus, startAndEndpointsOfRows } from '../../utils/row';
+import { lineColor } from './TimelineRow';
+import { TaskStatus } from '../../types';
 
 type TimelineFooterProps = {
   steps: StepLineData[];
@@ -14,6 +16,8 @@ type TimelineFooterProps = {
   move: (change: number) => void;
   updateHandle: (which: 'left' | 'right', to: number) => void;
 };
+
+type TaskLineData = { start: number; end: number; status: TaskStatus };
 
 const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHandle, rows, steps }) => {
   const _container = createRef<HTMLDivElement>();
@@ -62,7 +66,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
   //
   // Data processing
   //
-  const [taskBasedLines, setTaskBasedLines] = useState<{ start: number; end: number }[]>([]);
+  const [taskBasedLines, setTaskBasedLines] = useState<TaskLineData[]>([]);
   useEffect(() => {
     if (graph.group) {
       return;
@@ -76,23 +80,30 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
         grps.push(rows.slice(perGroup * i, perGroup * i + perGroup));
       }
       // Calculate start and end points for each group
-      const linegroups = grps.map(
-        graph.sortBy !== 'duration'
-          ? startAndEndpointsOfRows
-          : (grp) => {
-              const timings = startAndEndpointsOfRows(grp);
-              const longest = getLongestRowDuration(grp);
+      const linegroups = grps.map((grp) => {
+        const status = getTaskLineStatus(grp);
 
-              return {
-                start: timings.start,
-                end: timings.start + longest,
-              };
-            },
+        if (graph.sortBy !== 'duration') {
+          return { ...startAndEndpointsOfRows(grp), status };
+        } else {
+          const timings = startAndEndpointsOfRows(grp);
+          const longest = getLongestRowDuration(grp);
+
+          return {
+            start: timings.start,
+            end: timings.start + longest,
+            status,
+          };
+        }
+      });
+
+      setTaskBasedLines(
+        linegroups
+          .map((item) => (item.status === 'running' ? { ...item, end: graph.max } : item))
+          .filter((r) => r.start !== 0 && r.end !== 0),
       );
-
-      setTaskBasedLines(linegroups.filter((r) => r.start !== 0 && r.end !== 0));
     }
-  }, [rows, graph.group, graph.sortBy]);
+  }, [rows, graph.group, graph.sortBy, graph.max]);
 
   return (
     <TimelineFooterContainer>
@@ -107,11 +118,17 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
                   graph={graph}
                   started={step.started_at}
                   finished={step.finished_at}
-                  isFailed={step.isFailed}
+                  status={step.status}
                 />
               ))
             : taskBasedLines.map((step, index) => (
-                <MiniTimelineRow key={index} graph={graph} started={step.start} finished={step.end} isFailed={false} />
+                <MiniTimelineRow
+                  key={index}
+                  graph={graph}
+                  started={step.start}
+                  finished={step.end}
+                  status={step.status}
+                />
               ))}
         </MiniTimelineContainer>
       </TimelineFooterContent>
@@ -145,15 +162,15 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
 const MiniTimelineRow: React.FC<{
   started: number;
   finished: number;
-  isFailed: boolean;
+  status: TaskStatus;
   graph: GraphState;
-}> = ({ started, finished, isFailed, graph }) => {
+}> = ({ started, finished, status, graph }) => {
   const width = ((finished - started) / (graph.max - graph.min)) * 100;
   const left = graph.sortBy === 'duration' ? 0 : ((started - graph.min) / (graph.max - graph.min)) * 100;
 
   return (
     <MiniTimelineLine
-      isFailed={isFailed}
+      status={status}
       style={{
         width: width + '%',
         left: left + '%',
@@ -162,9 +179,9 @@ const MiniTimelineRow: React.FC<{
   );
 };
 
-const MiniTimelineLine = styled.div<{ isFailed: boolean }>`
+const MiniTimelineLine = styled.div<{ status: TaskStatus }>`
   position: relative;
-  background: ${(p) => (p.isFailed ? p.theme.color.bg.red : p.theme.color.bg.green)};
+  background: ${(p) => lineColor(p.theme, false, p.status, true, false)};
   height: 2px;
   min-height: 2px;
   margin-bottom: 1px;
@@ -226,6 +243,10 @@ const MiniTimelineZoomHandle: React.FC<HandleProps> = ({ label, onDragStart, whi
     </MiniTimelineLabel>
   </MiniTimelineHandle>
 );
+
+//
+// Style
+//
 
 const TimelineFooterContainer = styled.div`
   display: flex;
