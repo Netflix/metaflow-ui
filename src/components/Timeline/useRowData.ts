@@ -1,9 +1,9 @@
 import { useEffect, useReducer, useState } from 'react';
-import { Task, Step, AsyncStatus, APIError } from '../../types';
+import { Task, Step, AsyncStatus, APIError, TaskStatus } from '../../types';
 import useResource, { DataModel } from '../../hooks/useResource';
 import {
   countTaskRowsByStatus,
-  isFailedStep,
+  getStepStatus,
   makeStepLineData,
   makeTasksForStep,
   RowCounts,
@@ -17,7 +17,7 @@ export type StepRowData = {
   // We have to compute finished_at value so let it live in here now :(
   finished_at: number;
   duration: number;
-  isFailed: boolean;
+  status: TaskStatus;
   step?: Step;
   // Tasks for this step
   data: Record<string, Task[]>;
@@ -66,7 +66,14 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
         // Else initialise empty step row object
         return {
           ...obj,
-          [step.step_name]: { step: step, isOpen: true, isFailed: false, finished_at: 0, duration: 0, data: {} },
+          [step.step_name]: {
+            step: step,
+            isOpen: true,
+            status: 'unknown' as TaskStatus,
+            finished_at: 0,
+            duration: 0,
+            data: {},
+          },
         };
       }, state);
 
@@ -116,7 +123,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
             ...obj,
             [key]: {
               ...row,
-              isFailed: isFailedStep(newData, newItems),
+              status: getStepStatus(newData),
               finished_at: newEndTime,
               duration: row.step ? newEndTime - row.step.ts_epoch : row.duration,
               data: newData,
@@ -128,7 +135,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
           ...obj,
           [key]: {
             isOpen: true,
-            isFailed: isFailedStep(grouped, newItems),
+            status: getStepStatus(grouped),
             finished_at: endTime,
             duration: endTime - startTime,
             data: grouped[key].reduce<Record<number, Task[]>>((dataobj, item) => {

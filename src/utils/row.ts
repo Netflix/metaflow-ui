@@ -1,4 +1,5 @@
 import { Row } from '../components/Timeline/VirtualizedTimeline';
+import { TaskStatus } from '../types';
 
 const takeSmallest = (a: Row): number =>
   a.type === 'task' ? a.data[0].started_at || a.data[0].ts_epoch : a.data.ts_epoch;
@@ -27,15 +28,15 @@ export const getLongestRowDuration = (rows: Row[]): number => {
   }, 0);
 };
 
-export const getTaskLineStatus = (rows: Row[]): 'ok' | 'failed' | 'running' | 'unknown' => {
+export const getTaskLineStatus = (rows: Row[]): TaskStatus => {
   const statuses = rows.map((row) => {
     if (row.type === 'task') {
       return row.data.length > 1 ? 'failed' : row.data.length === 1 ? row.data[0].status : 'unknown';
     }
-    return row.rowObject.isFailed ? 'failed' : 'ok';
+    return row.rowObject.status;
   });
   if (statuses.indexOf('failed') > -1) return 'failed';
   if (statuses.indexOf('unknown') > -1) return 'unknown';
   if (statuses.indexOf('running') > -1) return 'running';
-  return 'ok';
+  return 'completed';
 };

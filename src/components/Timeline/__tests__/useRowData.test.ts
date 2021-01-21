@@ -1,4 +1,4 @@
-import { Task, Step } from '../../../types';
+import { Task, Step, TaskStatus } from '../../../types';
 import { rowDataReducer } from '../useRowData';
 
 export function createTask(partialTask: Partial<Task>): Task {
@@ -35,7 +35,7 @@ const DEFAULT_ROW_DATA = () => ({
   askel: {
     step: createStep({}),
     isOpen: false,
-    isFailed: false,
+    status: 'completed' as TaskStatus,
     finished_at: 0,
     duration: 0,
     data: { '1': [createTask({})] },
@@ -70,7 +70,7 @@ describe('useRowData hook - reducer', () => {
     expect(newStepObject).toEqual({
       isOpen: true,
       finished_at: 100,
-      isFailed: false,
+      status: 'completed',
       duration: 0,
       data: {
         1: [createTask({ step_name: 'newstep', ts_epoch: 100 })],
@@ -93,7 +93,7 @@ describe('useRowData hook - reducer', () => {
       step: createStep({}),
       isOpen: false,
       finished_at: 200,
-      isFailed: false,
+      status: 'completed',
       duration: 200,
       data: {
         '1': [createTask({})],
@@ -117,7 +117,7 @@ describe('useRowData hook - reducer', () => {
       step: createStep({}),
       isOpen: false,
       finished_at: 200,
-      isFailed: false,
+      status: 'completed',
       duration: 200,
       data: {
         '1': [createTask({ step_name: 'askel', task_id: 1, ts_epoch: 100, finished_at: 200, started_at: 100 })],

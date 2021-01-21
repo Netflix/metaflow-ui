@@ -72,7 +72,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               duration={item.rowObject.duration}
               labelDuration={item.rowObject.duration}
               onOpen={onOpen}
-              isFailed={item.rowObject.isFailed}
+              isFailed={item.rowObject.status === 'failed'}
               isLastAttempt
             />
           ) : (

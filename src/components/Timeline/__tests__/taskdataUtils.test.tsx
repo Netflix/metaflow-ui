@@ -1,5 +1,5 @@
-import { Step, Task } from '../../../types';
-import { countTaskRowsByStatus, isFailedStep, makeTasksForStep, timepointsOfTasks } from '../taskdataUtils';
+import { Step, Task, TaskStatus } from '../../../types';
+import { countTaskRowsByStatus, getStepStatus, makeTasksForStep, timepointsOfTasks } from '../taskdataUtils';
 import { RowDataModel } from '../useRowData';
 import { createStep, createTask } from './useRowData.test';
 
@@ -7,7 +7,7 @@ function makeRowData(step: Step, data: Record<string, Task[]>) {
   return {
     step,
     isOpen: false,
-    isFailed: false,
+    status: 'completed' as TaskStatus,
     finished_at: 0,
     duration: 0,
     data,
@@ -108,10 +108,10 @@ describe('taskdataUtils tests', () => {
   });
 
   //
-  // isFailedStep
+  // getStepStatus
   //
 
-  it('isFailedStep', () => {
+  it('getStepStatus', () => {
     const FAILED_TASK = createTask({ task_id: 2, status: 'failed' });
     const DATA = {
       '1': [createTask({ task_id: 1 })],
@@ -120,7 +120,7 @@ describe('taskdataUtils tests', () => {
 
     const TASKS = [FAILED_TASK];
 
-    expect(isFailedStep(DATA, TASKS)).toBe(true);
+    expect(getStepStatus(DATA, TASKS)).toBe('failed');
   });
 
   //

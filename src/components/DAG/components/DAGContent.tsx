@@ -25,7 +25,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, s
 
   const stepIds = stepData.map((item) => item.step_name);
   const failedStepIds = stepData.reduce(
-    (arr: string[], item) => (item.isFailed ? arr.concat([item.step_name]) : arr),
+    (arr: string[], item) => (item.status === 'failed' ? arr.concat([item.step_name]) : arr),
     [],
   );
 

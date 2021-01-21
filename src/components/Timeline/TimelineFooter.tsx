@@ -7,6 +7,7 @@ import { StepLineData } from './taskdataUtils';
 import { Row } from './VirtualizedTimeline';
 import { getLongestRowDuration, getTaskLineStatus, startAndEndpointsOfRows } from '../../utils/row';
 import { lineColor } from './TimelineRow';
+import { TaskStatus } from '../../types';
 
 type TimelineFooterProps = {
   steps: StepLineData[];
@@ -16,7 +17,7 @@ type TimelineFooterProps = {
   updateHandle: (which: 'left' | 'right', to: number) => void;
 };
 
-type TaskLineData = { start: number; end: number; status: 'ok' | 'failed' | 'running' | 'unknown' };
+type TaskLineData = { start: number; end: number; status: TaskStatus };
 
 const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHandle, rows, steps }) => {
   const _container = createRef<HTMLDivElement>();
@@ -96,9 +97,13 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
         }
       });
 
-      setTaskBasedLines(linegroups.filter((r) => r.start !== 0 && r.end !== 0));
+      setTaskBasedLines(
+        linegroups
+          .map((item) => (item.status === 'running' ? { ...item, end: graph.max } : item))
+          .filter((r) => r.start !== 0 && r.end !== 0),
+      );
     }
-  }, [rows, graph.group, graph.sortBy]);
+  }, [rows, graph.group, graph.sortBy, graph.max]);
 
   return (
     <TimelineFooterContainer>
@@ -113,7 +118,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
                   graph={graph}
                   started={step.started_at}
                   finished={step.finished_at}
-                  status={step.isFailed ? 'failed' : 'ok'}
+                  status={step.status}
                 />
               ))
             : taskBasedLines.map((step, index) => (
@@ -157,7 +162,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
 const MiniTimelineRow: React.FC<{
   started: number;
   finished: number;
-  status: 'ok' | 'failed' | 'running' | 'unknown';
+  status: TaskStatus;
   graph: GraphState;
 }> = ({ started, finished, status, graph }) => {
   const width = ((finished - started) / (graph.max - graph.min)) * 100;
@@ -174,7 +179,7 @@ const MiniTimelineRow: React.FC<{
   );
 };
 
-const MiniTimelineLine = styled.div<{ status: 'ok' | 'failed' | 'running' | 'unknown' }>`
+const MiniTimelineLine = styled.div<{ status: TaskStatus }>`
   position: relative;
   background: ${(p) => lineColor(p.theme, false, p.status, true, false)};
   height: 2px;
