@@ -227,6 +227,8 @@ const THeaderRightBottom = styled.div`
   border: 1px solid #e9e9e9;
   margin: 0 0 0.25rem;
   border-radius: 0.25rem;
+  width: 100%;
+  max-width: 750px;
 `;
 
 export default TaskListingHeader;
