@@ -118,9 +118,7 @@ describe('taskdataUtils tests', () => {
       '2': [FAILED_TASK],
     };
 
-    const TASKS = [FAILED_TASK];
-
-    expect(getStepStatus(DATA, TASKS)).toBe('failed');
+    expect(getStepStatus(DATA)).toBe('failed');
   });
 
   //

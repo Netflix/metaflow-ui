@@ -1,16 +1,3 @@
-type Handler = (k: string, v: string) => void;
-
-export function getParamChangeHandler(params: URLSearchParams, fn: (q: string) => void): Handler {
-  return (key, value) => {
-    if (value === null || value === '') {
-      params.delete(key);
-    } else {
-      params.set(key, value);
-    }
-    fn(params.toString());
-  };
-}
-
 export type DirectionText = 'down' | 'up';
 export type DirectionSymbolic = '+' | '-';
 

@@ -1,4 +1,6 @@
 import { GraphState } from '../components/Timeline/useGraph';
+import { StepRowData } from '../components/Timeline/useRowData';
+import { Row } from '../components/Timeline/VirtualizedTimeline';
 import { createCache, Resource } from '../hooks/useResource';
 import { Task, Step, Run, Metadata, APIError } from '../types';
 
@@ -108,5 +110,25 @@ export function createAPIError(err: Partial<APIError>): APIError {
     type: 'Error',
     detail: 'undefined is not a function',
     ...err,
+  };
+}
+
+export function createTaskRow(tasks: Task[] | undefined): Row {
+  return { type: 'task', data: tasks || [createTask({})] };
+}
+
+export function createStepRow(step: Partial<Step>, stepRowObject: Partial<StepRowData>): Row {
+  return {
+    type: 'step',
+    data: { ...createStep({}), ...step },
+    rowObject: {
+      isOpen: true,
+      finished_at: 1000,
+      duration: 1000,
+      status: 'completed',
+      step: { ...createStep({}), ...step },
+      data: {},
+      ...stepRowObject,
+    },
   };
 }
