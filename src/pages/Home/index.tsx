@@ -231,7 +231,7 @@ const Home: React.FC = () => {
 
   const handleLoadMore = () => {
     if (fakeParams) return;
-    if ((getResult()?.pages?.last || 9999) <= page) return;
+    if (getResult()?.pages?.next === null || 9999 <= page) return;
     if (showLoader) return;
     setPage(page + 1);
   };

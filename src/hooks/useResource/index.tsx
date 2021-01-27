@@ -47,15 +47,13 @@ interface ResourceLinks {
   first?: string;
   prev?: string;
   next?: string;
-  last?: string;
 }
 
 interface ResourcePages {
   self: number;
   first: number;
   prev: number;
-  next: number;
-  last: number;
+  next: number | null;
 }
 
 export type ResourceStatus = 'NotAsked' | 'Error' | 'Ok' | 'Loading';
@@ -277,11 +275,7 @@ export default function useResource<T, U>({
 
               // If we want all data and we are have next page available we fetch it.
               // Else this fetch is done and we call the callback
-              if (
-                fetchAllData &&
-                cacheItem.result.pages?.self !== cacheItem.result.pages?.last &&
-                cacheItem.result.links.next !== targetUrl
-              ) {
+              if (fetchAllData && cacheItem.result.links.next !== null && cacheItem.result.links.next !== targetUrl) {
                 fetchData(cacheItem.result.links.next || targetUrl, signal, cb, true);
               } else {
                 cb(true);
