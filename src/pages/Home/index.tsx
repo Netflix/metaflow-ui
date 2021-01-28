@@ -181,7 +181,7 @@ const Home: React.FC = () => {
     socketParamFilter: (params) => {
       // We need to remove status filter for websocket messages since we want to be able to track if
       // status changes from running to failed or completed even when we have status filter on
-      if (params.status) {
+      if (params.status === 'running') {
         const { status, ...newparams } = params;
         return newparams;
       }
