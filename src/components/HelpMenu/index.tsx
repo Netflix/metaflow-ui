@@ -95,7 +95,7 @@ const HelpMenuTitle = styled.div`
   padding: 0.25rem 0.5rem 0.75rem 1rem;
   display: flex;
   margin: 0 -0.5rem 0.25rem;
-  width: 320px;
+  width: 350px;
   border-bottom: ${(p) => p.theme.border.thinNormal};
 
   span {
@@ -144,6 +144,7 @@ const VersionContainer = styled.div`
   padding: 0.25rem 0.5rem 0;
   color: ${(p) => p.theme.color.text.mid};
   border-top: ${(p) => p.theme.border.thinNormal};
+  word-break: break-all;
 
   > *:last-child {
     padding-bottom: 0;
