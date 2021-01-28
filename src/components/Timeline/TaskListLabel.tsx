@@ -79,7 +79,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
 };
 
 function getTaskLabel(item: Task): string {
-  return item.foreach_label ? item.foreach_label : getTaskId(item);
+  return getTaskId(item);
 }
 
 export default TaskListLabel;
