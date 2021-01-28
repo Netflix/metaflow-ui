@@ -10,7 +10,7 @@ import useSeachField from '../../../hooks/useSearchField';
 const run: Run = {
   flow_id: 'string',
   user_name: 'string',
-  real_user: 'string',
+  user: 'string',
   ts_epoch: 123,
   tags: [],
   system_tags: [],

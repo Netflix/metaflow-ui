@@ -8,7 +8,7 @@ const run: Run = {
   flow_id: 'SplitForeachFlow',
   run_number: 26,
   user_name: 'SanteriCM',
-  real_user: 'SanteriCM',
+  user: 'SanteriCM',
   status: 'completed',
   ts_epoch: 1597034293177,
   finished_at: 1597034329717,
