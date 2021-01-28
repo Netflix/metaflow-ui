@@ -91,7 +91,7 @@ const ResultGroup: React.FC<Props> = React.memo(
           </tbody>
         </Table>
 
-        {targetCount < rows.length && (
+        {targetCount < rows.length && queryParams._group && (
           <div style={{ position: 'relative' }}>
             <Button
               className="load-more"
