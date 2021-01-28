@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import Icon from '../Icon';
 import { useTranslation } from 'react-i18next';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
-import SearchField from '../SearchField';
+// import SearchField from '../SearchField';
 import CollapseButton from './components/CollapseButton';
 import { RowCounts } from '../Timeline/taskdataUtils';
 import CustomSettings from './components/CustomSettings';
@@ -42,12 +42,12 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
   collapseAll,
   isFullscreen,
   setFullscreen,
-  searchField,
+  // searchField,
   counts,
   enableZoomControl = false,
   isAnyGroupOpen,
-  hasStepFilter,
-  resetSteps,
+  // hasStepFilter,
+  // resetSteps,
 }) => {
   const { t } = useTranslation();
   const { graph, setQueryParam } = graphHook;
@@ -64,20 +64,20 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
               collapse={() => collapseAll()}
               isAnyGroupOpen={isAnyGroupOpen}
             />
-
+            {/* 
             <SearchField
               initialValue={searchField.fieldProps.text}
               onUpdate={searchField.fieldProps.setText}
               status={searchField.results.status}
-            />
+            /> */}
           </THeaderLeftTop>
           <THeaderLeftBottom>
-            {hasStepFilter && (
+            {/*hasStepFilter && (
               <Button withIcon="left" onClick={() => resetSteps && resetSteps()}>
                 <Icon name="timeline" size="md" padRight />
                 <span>{t('timeline.show-all-steps')}</span>
               </Button>
-            )}
+            )*/}
           </THeaderLeftBottom>
         </THeaderLeft>
         <THeaderRight>
@@ -182,7 +182,6 @@ const THeaderLeftTop = styled.div`
   justify-content: space-between;
 
   padding: ${(p) => `0 ${p.theme.spacer.sm}rem 0 0`};
-  width: 245px;
 
   .field-text {
     font-size: 12px;
