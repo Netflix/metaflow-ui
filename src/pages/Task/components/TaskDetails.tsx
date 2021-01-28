@@ -14,6 +14,7 @@ import GenericError from '../../../components/GenericError';
 import Spinner from '../../../components/Spinner';
 import { ItemRow } from '../../../components/Structure';
 import { TimezoneContext } from '../../../components/TimezoneProvider';
+import { getTaskId } from '../../../utils/task';
 
 type Props = {
   task: ITask;
@@ -41,9 +42,7 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
           columns={[
             {
               label: t('fields.task-id'),
-              accessor: (item) => (
-                <ForceBreakText>{item.foreach_label || item.task_name || item.task_id}</ForceBreakText>
-              ),
+              accessor: (item) => <ForceBreakText>{getTaskId(item)}</ForceBreakText>,
             },
             { label: t('items.step'), prop: 'step_name' },
             {
