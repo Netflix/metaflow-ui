@@ -57,7 +57,7 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
     {
       label: t('fields.user'),
       accessor: (item: Run) => (
-        <StyledLink to={`/?real_user=${encodeURIComponent(item.real_user || 'null')}`}>{getUsername(item)}</StyledLink>
+        <StyledLink to={`/?user=${encodeURIComponent(item.user || 'null')}`}>{getUsername(item)}</StyledLink>
       ),
     },
     {

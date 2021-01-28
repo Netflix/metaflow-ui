@@ -52,7 +52,7 @@ const Home: React.FC = () => {
     _tags: StringParam,
     status: withDefault(StringParam, defaultParams.status),
     flow_id: StringParam,
-    real_user: StringParam,
+    user: StringParam,
   });
 
   const activeParams = cleanParams(qp);
@@ -202,7 +202,7 @@ const Home: React.FC = () => {
       setPage(1);
       setQp({ flow_id: title });
       setShowLoader(true);
-    } else if (activeParams._group === 'real_user') {
+    } else if (activeParams._group === 'user') {
       setPage(1);
 
       const param = title === 'None' ? 'null' : title;
@@ -213,7 +213,7 @@ const Home: React.FC = () => {
             .filter((str) => !str.startsWith('user:'))
             .join(',')
         : '';
-      setQp({ _tags: newtags, real_user: param });
+      setQp({ _tags: newtags, user: param });
       setShowLoader(true);
     }
   };
@@ -311,11 +311,11 @@ function cleanParams(qp: any): Record<string, string> {
 export function makeActiveRequestParameters(params: Record<string, string>): Record<string, string> {
   // We want to remove groupping from request in some cases
   // 1) When grouping is flow_id and only 1 flow_id filter is active, we want to show all runs of this group
-  // 2) When grouping is real_user and only 1 real_user filter is active, we want to show all runs of this group
+  // 2) When grouping is user and only 1 user filter is active, we want to show all runs of this group
   if (params._group) {
     if (params._group === 'flow_id' && hasOne(params.flow_id)) {
       return omit(['_group'], params);
-    } else if (params._group === 'real_user' && hasOne(params.real_user)) {
+    } else if (params._group === 'user' && hasOne(params.user)) {
       return omit(['_group'], params);
     }
   }
@@ -348,14 +348,14 @@ export function isDefaultParams(params: Record<string, string>): boolean {
 //
 // See if we are grouping view. We are not grouping if we:
 // - Are grouping by flow_ID BUT have one flow in flow filters
-// - Are grouping by real_user BUT have one user in user filters
+// - Are grouping by user BUT have one user in user filters
 // - have set grouping to none
 //
 export function isGrouping(params: Record<string, string>): boolean {
   if (params._group) {
     if (params._group === 'flow_id' && hasOne(params.flow_id)) {
       return false;
-    } else if (params._group === 'real_user' && hasOne(params.real_user)) {
+    } else if (params._group === 'user' && hasOne(params.user)) {
       return false;
     }
   } else {
@@ -422,7 +422,7 @@ export function sortRuns(runs: IRun[], order: string): IRun[] {
 
   if (key === 'ts_epoch' || key === 'duration' || key === 'finished_at') {
     return runs.sort(nmbSort(dir, key));
-  } else if (key === 'real_user' || key === 'status' || key === 'flow_id') {
+  } else if (key === 'user' || key === 'status' || key === 'flow_id') {
     return runs.sort(strSort(dir, key));
   }
 
