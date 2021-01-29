@@ -51,7 +51,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             open={isOpen}
             grouped={isGrouped}
             t={t}
-            duration={item.rowObject.status === 'running' ? graph.max - item.data.ts_epoch : item.rowObject.duration}
+            duration={getStepDuration(item, graph)}
           />
         ) : (
           <TaskListLabel
@@ -71,9 +71,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               row={item}
               grayed={isOpen}
               duration={item.rowObject.status === 'running' ? 0 : item.rowObject.duration}
-              labelDuration={
-                item.rowObject.status === 'running' ? graph.max - item.data.ts_epoch : item.rowObject.duration
-              }
+              labelDuration={getStepDuration(item, graph)}
               onOpen={onOpen}
               isLastAttempt
             />
@@ -198,6 +196,10 @@ function getLengthLabelPosition(fromLeft: number, width: number): LabelPosition 
   }
 
   return 'none';
+}
+
+function getStepDuration(item: { type: 'step'; data: Step; rowObject: StepRowData }, graph: GraphState): number {
+  return item.rowObject.status === 'running' ? graph.max - item.data.ts_epoch : item.rowObject.duration;
 }
 
 const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
