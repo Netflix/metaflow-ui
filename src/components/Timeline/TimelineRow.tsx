@@ -9,6 +9,7 @@ import { formatDuration } from '../../utils/format';
 import { lighten } from 'polished';
 import { TFunction } from 'i18next';
 import TaskListLabel from './TaskListLabel';
+import { StepRowData } from './useRowData';
 
 type TimelineRowProps = {
   // Row type and data
@@ -50,7 +51,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             open={isOpen}
             grouped={isGrouped}
             t={t}
-            duration={item.rowObject.duration}
+            duration={getStepDuration(item, graph)}
           />
         ) : (
           <TaskListLabel
@@ -67,12 +68,11 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
           {item.type === 'step' ? (
             <BoxGraphicElement
               graph={graph}
-              row={{ type: 'step', data: item.data }}
+              row={item}
               grayed={isOpen}
-              duration={item.rowObject.duration}
-              labelDuration={item.rowObject.duration}
+              duration={item.rowObject.status === 'running' ? 0 : item.rowObject.duration}
+              labelDuration={getStepDuration(item, graph)}
               onOpen={onOpen}
-              isFailed={item.rowObject.status === 'failed'}
               isLastAttempt
             />
           ) : (
@@ -95,10 +95,9 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
 };
 
 type BoxGraphicElementProps = {
-  row: { type: 'step'; data: Step } | { type: 'task'; data: Task };
+  row: { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task };
   graph: GraphState;
   grayed?: boolean;
-  isFailed?: boolean;
   isLastAttempt: boolean;
   duration: number | null;
   labelDuration?: number | null;
@@ -110,7 +109,6 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   row,
   graph,
   grayed,
-  isFailed,
   isLastAttempt,
   duration,
   labelDuration,
@@ -157,7 +155,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         {isLastAttempt && labelDuration && (
           <RowMetricLabel duration={labelDuration} labelPosition={labelPosition} data-testid="boxgraphic-label" />
         )}
-        <BoxGraphicLine grayed={grayed} state={getRowStatus(row, isFailed)} isLastAttempt={isLastAttempt} />
+        <BoxGraphicLine grayed={grayed} state={getRowStatus(row)} isLastAttempt={isLastAttempt} />
         <BoxGraphicMarkerStart />
         <BoxGraphicMarkerEnd />
       </BoxGraphic>
@@ -165,9 +163,11 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   );
 };
 
-function getRowStatus(row: { type: 'step'; data: Step } | { type: 'task'; data: Task }, isFailed?: boolean): string {
+function getRowStatus(
+  row: { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task },
+): string {
   if (row.type === 'step') {
-    return isFailed ? 'failed' : 'completed';
+    return row.rowObject.status;
   } else {
     if (row.data.status) {
       return row.data.status;
@@ -196,6 +196,10 @@ function getLengthLabelPosition(fromLeft: number, width: number): LabelPosition 
   }
 
   return 'none';
+}
+
+function getStepDuration(item: { type: 'step'; data: Step; rowObject: StepRowData }, graph: GraphState): number {
+  return item.rowObject.status === 'running' ? graph.max - item.data.ts_epoch : item.rowObject.duration;
 }
 
 const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
