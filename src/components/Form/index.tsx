@@ -85,6 +85,7 @@ export const DropdownField: React.FC<
     disabled?: boolean;
     noMinWidth?: boolean;
     maxWidth?: boolean;
+    labelRenderer?: (value: string) => JSX.Element;
   } & CommonFieldProps<HTMLSelectElement>
 > = ({ label, options, horizontal, noMinWidth, ...rest }) => {
   const [id] = useState(uuid());
