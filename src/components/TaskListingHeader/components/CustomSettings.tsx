@@ -1,23 +1,19 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import Button from '../../Button';
-import ButtonGroup from '../../ButtonGroup';
 import { ItemRow } from '../../Structure';
 import { Text } from '../../Text';
 import { RowCounts } from '../../Timeline/taskdataUtils';
 import { GraphSortBy, GraphState } from '../../Timeline/useGraph';
 import StatusLights from './StatusLights';
 import { CheckboxField, DropdownField } from '../../Form';
-import { SortIcon } from '../../Icon';
 
 //
 // Typedef
 //
 
 export type CustomSettingsProps = {
-  updateSortBy: (by: GraphSortBy) => void;
-  updateSortDir: () => void;
+  updateSort: (order: GraphSortBy, direction: string) => void;
   updateStatusFilter: (status: null | string) => void;
   updateGroupBy: (group: boolean) => void;
   graph: GraphState;
@@ -30,64 +26,67 @@ export type CustomSettingsProps = {
 
 const CustomSettings: React.FC<CustomSettingsProps> = ({
   updateStatusFilter,
-  updateSortBy,
-  updateSortDir,
+  updateSort,
   updateGroupBy,
   graph,
   counts,
 }) => {
   const { t } = useTranslation();
-  const SortButtonDef = (label: string, property: GraphSortBy) => (
-    <SortButton
-      label={label}
-      property={property}
-      current={graph.sortBy}
-      direction={graph.sortDir}
-      updateSortBy={updateSortBy}
-      updateSortDir={updateSortDir}
-    />
-  );
 
   return (
     <ItemRow style={{ height: '100%' }}>
       <ItemRow>
-        <Text style={{ whiteSpace: 'nowrap' }}>{t('timeline.order-by')}:</Text>
-        <ButtonGroup>
-          {SortButtonDef(t('timeline.started-at'), 'startTime')}
-          {SortButtonDef(t('timeline.finished-at'), 'endTime')}
-          {SortButtonDef(t('timeline.duration'), 'duration')}
-        </ButtonGroup>
+        <TaskListDropdownContainer>
+          <DropdownField
+            horizontal
+            onChange={(e) => {
+              if (e?.target.value === 'all') {
+                updateStatusFilter(null);
+              } else {
+                updateStatusFilter(e?.target.value || null);
+              }
+            }}
+            value={graph.statusFilter || 'all'}
+            options={[
+              ['all', t('run.filter-all') + ` (${counts.all})`],
+              ['completed', t('run.filter-completed') + ` (${counts.completed})`],
+              ['running', t('run.filter-running') + ` (${counts.running})`],
+              ['failed', t('run.filter-failed') + ` (${counts.failed})`],
+            ]}
+            labelRenderer={(val) => <StatusLabelRenderer val={val} status={graph.statusFilter} />}
+          />
+        </TaskListDropdownContainer>
+
+        <TaskListDropdownContainer>
+          <DropdownField
+            horizontal
+            onChange={(e) => {
+              const val = e?.target.value;
+              if (val) {
+                const [order, direction] = val.split(',');
+                updateSort(order as GraphSortBy, direction);
+              }
+            }}
+            value={`${graph.sortBy},${graph.sortDir}`}
+            options={[
+              ['startTime,asc', t('timeline.startTime,asc')],
+              ['startTime,desc', t('timeline.startTime,desc')],
+              ['endTime,asc', t('timeline.endTime,asc')],
+              ['endTime,desc', t('timeline.endTime,asc')],
+              ['duration,asc', t('timeline.duration,asc')],
+              ['duration,desc', t('timeline.duration,asc')],
+            ]}
+            labelRenderer={(val) => <OrderLabelRenderer val={val} />}
+          />
+        </TaskListDropdownContainer>
 
         <FiltersSection pad="sm">
-          <StatusContainer>
-            <Text>{t('fields.status')}:</Text>
-            <StatusLights status={graph.statusFilter || 'all'} />
-            <DropdownField
-              horizontal
-              onChange={(e) => {
-                if (e?.target.value === 'all') {
-                  updateStatusFilter(null);
-                } else {
-                  updateStatusFilter(e?.target.value || null);
-                }
-              }}
-              value={graph.statusFilter || 'all'}
-              options={[
-                ['all', t('run.filter-all') + ` (${counts.all})`],
-                ['completed', t('run.filter-completed') + ` (${counts.completed})`],
-                ['running', t('run.filter-running') + ` (${counts.running})`],
-                ['failed', t('run.filter-failed') + ` (${counts.failed})`],
-              ]}
-            />
-          </StatusContainer>
-          <div>
-            <CheckboxField
-              label={t('timeline.group-by-step')}
-              checked={graph.group}
-              onChange={() => updateGroupBy(!graph.group)}
-              data-testid="timeline-header-groupby-step"
-            />
-          </div>
+          <CheckboxField
+            label={t('timeline.group-by-step')}
+            checked={graph.group}
+            onChange={() => updateGroupBy(!graph.group)}
+            data-testid="timeline-header-groupby-step"
+          />
         </FiltersSection>
       </ItemRow>
     </ItemRow>
@@ -98,46 +97,64 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
 // Extra components
 //
 
-const SortButton: React.FC<{
-  label: string;
-  property: GraphSortBy;
-  current: GraphSortBy;
-  direction: 'asc' | 'desc';
-  updateSortDir: () => void;
-  updateSortBy: (prop: GraphSortBy) => void;
-}> = ({ current, label, property, direction, updateSortDir, updateSortBy }) => (
-  <Button
-    size="sm"
-    onClick={() => {
-      if (current === property) {
-        updateSortDir();
-      } else {
-        updateSortBy(property);
-      }
-    }}
-    active={current === property}
-    data-testid={`timeline-header-orderby-${property}`}
-  >
-    {label}
-    {current === property ? <HeaderSortIcon dir={direction} /> : null}
-  </Button>
-);
+const StatusLabelRenderer: React.FC<{ val: string; status: string | null | undefined }> = ({ val, status }) => {
+  const { t } = useTranslation();
+  return (
+    <StatusLabelContainer>
+      <DropdownLabelTitle>{t('fields.status')}</DropdownLabelTitle>
+      <Text>{val}</Text>
+      <StatusLights status={status || 'all'} />
+    </StatusLabelContainer>
+  );
+};
 
-const HeaderSortIcon: React.FC<{ dir: 'asc' | 'desc' }> = ({ dir }) => (
-  <SortIcon padLeft size="sm" active direction={dir === 'asc' ? 'up' : 'down'} />
-);
+const OrderLabelRenderer: React.FC<{ val: string }> = ({ val }) => {
+  const { t } = useTranslation();
+  return (
+    <OrderLabelContainer>
+      <DropdownLabelTitle>{t('timeline.order-by')}</DropdownLabelTitle>
+      <Text>{val}</Text>
+    </OrderLabelContainer>
+  );
+};
 
 //
 // Style
 //
 
-const StatusContainer = styled.div`
-  display: flex;
-  min-width: 180px;
-`;
-
 const FiltersSection = styled(ItemRow)`
   margin: 0 1rem;
+
+  .field-checkbox {
+    margin-bottom: 0;
+  }
+`;
+
+const StatusLabelContainer = styled.div`
+  display: flex;
+  min-width: 170px;
+`;
+
+const OrderLabelContainer = styled.div`
+  display: flex;
+  min-width: 280px;
+`;
+
+const TaskListDropdownContainer = styled.div`
+  border: 1px solid ${(p) => p.theme.color.border.normal};
+  border-radius: 4px;
+  margin: 0 0.375rem;
+
+  button {
+    height: 34px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+`;
+
+const DropdownLabelTitle = styled(Text)`
+  font-weight: bold;
+  margin-right: 5px;
 `;
 
 export default CustomSettings;

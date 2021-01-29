@@ -295,7 +295,7 @@ function getTaskPageLink(
     const startStep = rows['start'];
     if (startStep && Object.keys(startStep.data).length > 0) {
       const taskId = Object.keys(startStep.data)[0];
-      return getPath.task(flowId, runNumber, 'start', taskId);
+      return getPath.task(flowId, runNumber, 'start', taskId) + '?' + urlParams;
     }
   }
 

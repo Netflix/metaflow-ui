@@ -118,6 +118,12 @@ const en = {
       'not-grouped': 'Not grouped',
       asc: 'Ascending',
       desc: 'Descending',
+      'startTime,asc': 'Started at ascending',
+      'startTime,desc': 'Started at descending',
+      'endTime,asc': 'Finished at ascending',
+      'endTime,desc': 'Finished at descending',
+      'duration,asc': 'Duration ascending',
+      'duration,desc': 'Duration descending',
     },
 
     task: {
