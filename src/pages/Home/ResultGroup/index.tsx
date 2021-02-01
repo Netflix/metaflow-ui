@@ -37,13 +37,13 @@ const ResultGroup: React.FC<Props> = React.memo(
     const [isInViewport, targetRef] = useIsInViewport();
     const { timezone } = useContext(TimezoneContext);
 
-    const cols = [
-      { label: t('fields.flow_id'), key: 'flow_id', hidden: queryParams._group === 'flow_id' },
-      { label: t('fields.id'), key: 'run_number' },
-      { label: t('fields.user'), key: 'user', hidden: queryParams._group === 'user' },
-      { label: t('fields.started-at'), key: 'ts_epoch', maxWidth: '170' },
-      { label: t('fields.finished-at'), key: 'finished_at', maxWidth: '170' },
-      { label: t('fields.duration'), key: 'duration', maxWidth: '100' },
+    const cols: TableColDefinition[] = [
+      { label: t('fields.flow_id'), key: 'flow_id', sortable: true, hidden: queryParams._group === 'flow_id' },
+      { label: t('fields.id'), sortable: true, key: 'run_number' },
+      { label: t('fields.user'), sortable: true, key: 'user', hidden: queryParams._group === 'user' },
+      { label: t('fields.started-at'), sortable: true, key: 'ts_epoch', maxWidth: '170' },
+      { label: t('fields.finished-at'), sortable: true, key: 'finished_at', maxWidth: '170' },
+      { label: t('fields.duration'), sortable: true, key: 'duration', maxWidth: '100' },
       { label: t('fields.status'), key: 'status', maxWidth: '120' },
       { label: t('fields.user-tags'), key: 'tags' },
     ].filter((item) => !item.hidden);
@@ -186,6 +186,7 @@ const TimeCell = styled(TD)`
 type HeaderColumnProps = {
   label: string;
   queryKey: string;
+  sortable: boolean;
   onSort: (p: string) => void;
   currentOrder: string;
   maxWidth?: string;
@@ -193,10 +194,18 @@ type HeaderColumnProps = {
 
 const HeaderColumn = (props: HeaderColumnProps) => <HeaderColumnBase {...props} />;
 
+export type TableColDefinition = {
+  label: string;
+  key: string;
+  hidden?: boolean;
+  maxWidth?: string;
+  sortable?: boolean;
+};
+
 type TableHeaderProps = {
   handleClick: (str: string) => void;
   error: Error | null;
-  cols: { label: string; key: string; hidden?: boolean; maxWidth?: string }[];
+  cols: TableColDefinition[];
   onOrderChange: (p: string) => void;
   order: string;
   label: string;
@@ -229,6 +238,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
           label={col.label}
           queryKey={col.key}
           maxWidth={col.maxWidth}
+          sortable={!!col.sortable}
           onSort={onOrderChange}
           currentOrder={order}
         />

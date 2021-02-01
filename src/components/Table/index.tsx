@@ -97,6 +97,7 @@ interface HeaderColumnProps {
   queryKey: string;
   currentOrder: string;
   onSort: (ord: string) => void;
+  sortable: boolean;
   maxWidth?: string;
 }
 
@@ -104,6 +105,7 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({
   label,
   queryKey,
   currentOrder,
+  sortable = true,
   onSort,
   maxWidth,
   ...rest
@@ -114,14 +116,14 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({
   return (
     <TH
       active={active}
-      onClick={() => onSort(queryKey)}
+      onClick={() => (sortable ? onSort(queryKey) : null)}
       {...rest}
-      clickable
+      clickable={sortable}
       style={maxWidth ? { maxWidth: maxWidth + 'px', width: maxWidth + 'px' } : {}}
     >
       <HeaderColumnWrapper>
         {label}
-        <SortIcon active={active} direction={direction} padLeft />
+        {sortable && <SortIcon active={active} direction={direction} padLeft />}
       </HeaderColumnWrapper>
     </TH>
   );
