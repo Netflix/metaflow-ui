@@ -279,7 +279,7 @@ const Task: React.FC<TaskViewProps> = ({
                     <>
                       <SectionLoader
                         minHeight={110}
-                        status={stdoutRes.status}
+                        status={(stdout || []).length > 0 ? 'Ok' : stdoutRes.status}
                         error={stdoutRes.error}
                         component={<LogList rows={stdout} onShowFullscreen={() => setFullscreen('stdout')} />}
                       />
@@ -305,7 +305,7 @@ const Task: React.FC<TaskViewProps> = ({
                     <>
                       <SectionLoader
                         minHeight={110}
-                        status={stderrRes.status}
+                        status={(stderr || []).length > 0 ? 'Ok' : stderrRes.status}
                         error={stderrRes.error}
                         component={<LogList rows={stderr} onShowFullscreen={() => setFullscreen('stderr')} />}
                       />

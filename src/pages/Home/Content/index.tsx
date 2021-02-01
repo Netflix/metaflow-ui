@@ -70,8 +70,8 @@ const HomeContentArea: React.FC<Props> = ({
       {status === 'Error' && resultAmount === 0 && <APIErrorRenderer error={error} message={t('error.load-error')} />}
 
       <AutoLoadTrigger
-        status={showLoader ? 'Ok' : status}
-        updateVisibility={() => {
+        status={showLoader ? 'Loading' : status}
+        loadMore={() => {
           loadMore();
         }}
         resultAmount={resultAmount}

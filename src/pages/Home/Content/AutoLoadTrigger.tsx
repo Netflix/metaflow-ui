@@ -10,12 +10,12 @@ import { ItemRow } from '../../../components/Structure';
 //
 
 type AutoLoadProps = {
-  updateVisibility: () => void;
+  loadMore: () => void;
   status: AsyncStatus;
   resultAmount: number;
 };
 
-const AutoLoadTrigger: React.FC<AutoLoadProps> = ({ updateVisibility, status, resultAmount }) => {
+const AutoLoadTrigger: React.FC<AutoLoadProps> = ({ loadMore, status, resultAmount }) => {
   const [isInViewport, targetRef] = useIsInViewport({
     modBottom: '400px',
   });
@@ -24,10 +24,10 @@ const AutoLoadTrigger: React.FC<AutoLoadProps> = ({ updateVisibility, status, re
   // If component is in viewport, is ready from earlier request AND request is OK we can load more.
   useEffect(() => {
     if (isInViewport && isUpdatable && status === 'Ok') {
-      updateVisibility();
+      loadMore();
       setIsUpdatable(false);
     }
-  }, [isInViewport, updateVisibility, isUpdatable, status]);
+  }, [isInViewport, loadMore, isUpdatable, status]);
 
   // Set updatable AFTER previous request was OK
   useEffect(() => {
