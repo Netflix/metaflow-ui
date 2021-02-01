@@ -200,9 +200,6 @@ export default function useResource<T, U>({
       // If we have onUpdate function, lets update cache wihtout triggering update loop...
       const cacheSet = onUpdate ? cache.setInBackground : cache.set;
 
-      setStatus('Ok');
-      setError(null);
-
       // ..and update new data to component manually. This way we only send updated value to component instead of whole batch
       // Optionally we can also batch some amount of messages before sending them to component
       if (onUpdate || onWSUpdate) {
@@ -311,6 +308,7 @@ export default function useResource<T, U>({
 
     if (!pause) {
       setStatus('Loading');
+      setData(cache.get<T>(url)?.data || initialData);
       setError(null);
 
       fetchData(target, signal, (isSuccess) => {
