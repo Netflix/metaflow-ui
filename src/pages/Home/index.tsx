@@ -329,7 +329,7 @@ function makeWebsocketParameters(
   params: Record<string, string>,
   runGroups: Record<string, IRun[]>,
 ): Record<string, string> {
-  const { status, _page, ...rest } = params;
+  const { status, _page, _group, _limit, _group_limit, _order, ...rest } = params;
   let newparams = rest;
   const groupKeys = Object.keys(runGroups);
   // We need to remove status filter for websocket messages since we want to be able to track if
@@ -341,11 +341,11 @@ function makeWebsocketParameters(
   // If we are grouping by user or flow, we want to subscribe only to visible groups. So we add parameter
   // user:lte or flow_id:lte with last group. (lower than or equal works since groups are in alphabetical order)
   if (params._group === 'user') {
-    newparams = { ...newparams, ...(groupKeys.length > 0 ? { 'user:lte': groupKeys[groupKeys.length - 1] } : {}) };
+    newparams = { ...newparams, ...(groupKeys.length > 0 ? { 'user:le': groupKeys[groupKeys.length - 1] } : {}) };
   }
 
   if (params._group === 'flow_id') {
-    newparams = { ...newparams, ...(groupKeys.length > 0 ? { 'flow_id:lte': groupKeys[groupKeys.length - 1] } : {}) };
+    newparams = { ...newparams, ...(groupKeys.length > 0 ? { 'flow_id:le': groupKeys[groupKeys.length - 1] } : {}) };
   }
 
   return newparams;
