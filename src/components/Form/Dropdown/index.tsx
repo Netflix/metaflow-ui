@@ -112,7 +112,7 @@ const DropdownOptions = styled.div`
   padding: 10px;
   background: ${(p) => p.theme.color.bg.white};
   border: ${(p) => p.theme.border.thinMid};
-  z-index: 2;
+  z-index: 10;
   white-space: nowrap;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.06);
 `;
