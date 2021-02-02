@@ -11,6 +11,7 @@ export interface HookConfig<T, U> {
   url: string;
   // Parameters for url
   queryParams?: Record<string, string>;
+  websocketParams?: Record<string, string>;
   initialData: T | null;
   // URL for websockets / flag to use url instead
   subscribeToEvents?: boolean;
@@ -148,7 +149,8 @@ export default function useResource<T, U>({
   initialData = null,
   subscribeToEvents = false,
   queryParams = {},
-  socketParamFilter = (params) => params,
+  websocketParams,
+  socketParamFilter,
   updatePredicate = (_a, _b) => false,
   fetchAllData = false,
   onUpdate,
@@ -191,7 +193,7 @@ export default function useResource<T, U>({
 
   useWebsocket<U>({
     url: url,
-    queryParams: socketParamFilter ? socketParamFilter(queryParams || {}) : queryParams,
+    queryParams: socketParamFilter ? socketParamFilter(queryParams || {}) : websocketParams || queryParams,
     enabled: subscribeToEvents && !pause,
     onUpdate: (event: Event<any>) => {
       if (pause) return;

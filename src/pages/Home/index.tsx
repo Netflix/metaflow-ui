@@ -98,13 +98,18 @@ const Home: React.FC = () => {
   //
   // Data
   //
-
+  const requestParameters = makeActiveRequestParameters({
+    ...activeParams,
+    _page: String(page),
+    ...(fakeParams || {}),
+  });
   const { error, status, getResult } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
     subscribeToEvents: true,
     updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
-    queryParams: makeActiveRequestParameters({ ...activeParams, _page: String(page), ...(fakeParams || {}) }),
+    queryParams: requestParameters,
+    websocketParams: makeWebsocketParameters(requestParameters, runGroups),
     //
     // onUpdate handles HTTP request updates. In practise on start OR when filters/sorts changes.
     // is most cases we want to replace existing data EXCEPT when we are loading next page.
@@ -177,15 +182,6 @@ const Home: React.FC = () => {
       } catch (e) {
         logWarning('Unexpected error on websocket updates: ', e);
       }
-    },
-    socketParamFilter: (params) => {
-      // We need to remove status filter for websocket messages since we want to be able to track if
-      // status changes from running to failed or completed even when we have status filter on
-      if (params.status === 'running') {
-        const { status, ...newparams } = params;
-        return newparams;
-      }
-      return params;
     },
     postRequest() {
       setShowLoader(false);
@@ -327,6 +323,32 @@ export function makeActiveRequestParameters(params: Record<string, string>): Rec
   params._group_limit = String(parseInt(params._group_limit) + 1);
 
   return params;
+}
+
+function makeWebsocketParameters(
+  params: Record<string, string>,
+  runGroups: Record<string, IRun[]>,
+): Record<string, string> {
+  const { status, _page, _group, _limit, _group_limit, _order, ...rest } = params;
+  let newparams = rest;
+  const groupKeys = Object.keys(runGroups);
+  // We need to remove status filter for websocket messages since we want to be able to track if
+  // status changes from running to failed or completed even when we have status filter on
+  if (params.status !== 'running') {
+    newparams = { ...newparams, status };
+  }
+
+  // If we are grouping by user or flow, we want to subscribe only to visible groups. So we add parameter
+  // user:lte or flow_id:lte with last group. (lower than or equal works since groups are in alphabetical order)
+  if (params._group === 'user') {
+    newparams = { ...newparams, ...(groupKeys.length > 0 ? { 'user:le': groupKeys[groupKeys.length - 1] } : {}) };
+  }
+
+  if (params._group === 'flow_id') {
+    newparams = { ...newparams, ...(groupKeys.length > 0 ? { 'flow_id:le': groupKeys[groupKeys.length - 1] } : {}) };
+  }
+
+  return newparams;
 }
 
 //
