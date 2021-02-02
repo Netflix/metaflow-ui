@@ -30,7 +30,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
               props.item.flow_id,
               props.item.run_id || props.item.run_number,
               props.item.step_name,
-              props.item.task_name || props.item.task_id,
+              getTaskId(props.item),
             ) + (props.paramsString ? `?${props.paramsString}` : '')
           }
           data-testid="tasklistlabel-link"
