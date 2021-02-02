@@ -7,6 +7,7 @@ import { RowDataAction } from '../../../components/Timeline/useRowData';
 import TaskListRow from './TaskListRow';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
 import { HEADER_SIZE_PX } from '../../../constants';
+import { getTaskId } from '../../../utils/task';
 
 //
 // Tasklist
@@ -75,7 +76,7 @@ const TaskList: React.FC<Props> = ({ rows, rowDataDispatch, activeTaskId, result
                       ? () => (item.data ? rowDataDispatch({ type: 'toggle', id: item.data.step_name }) : null)
                       : undefined
                   }
-                  active={item.type === 'task' && item.data[0]?.task_id?.toString() === activeTaskId}
+                  active={item.type === 'task' && getTaskId(item.data[0]) === activeTaskId}
                   isOpen={item.type === 'step' && item.rowObject.isOpen}
                 />
               );
