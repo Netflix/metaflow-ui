@@ -67,6 +67,7 @@ const Home: React.FC = () => {
   }, [setQp]);
 
   const [showLoader, setShowLoader] = useState(false);
+  const [isLastPage, setLastPage] = useState(false);
 
   const handleParamChange = (key: string, value: string, keepFakeParams?: boolean) => {
     // We want to reset page when changing filters, but not when reordering
@@ -109,7 +110,7 @@ const Home: React.FC = () => {
     subscribeToEvents: true,
     updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
     queryParams: requestParameters,
-    websocketParams: makeWebsocketParameters(requestParameters, runGroups),
+    websocketParams: makeWebsocketParameters(requestParameters, runGroups, isLastPage),
     //
     // onUpdate handles HTTP request updates. In practise on start OR when filters/sorts changes.
     // is most cases we want to replace existing data EXCEPT when we are loading next page.
@@ -249,6 +250,15 @@ const Home: React.FC = () => {
     }
   }, [activeParams.flow_id, activeParams._tags, activeParams.status, activeParams._group]); // eslint-disable-line
 
+  useEffect(() => {
+    const next = getResult()?.pages?.next;
+    if (next === null) {
+      setLastPage(true);
+    } else if (typeof next === 'number') {
+      setLastPage(false);
+    }
+  }, [getResult]);
+
   return (
     <div style={{ display: 'flex', flex: 1 }}>
       <ErrorBoundary message={t('error.sidebar-error')}>
@@ -328,6 +338,7 @@ export function makeActiveRequestParameters(params: Record<string, string>): Rec
 function makeWebsocketParameters(
   params: Record<string, string>,
   runGroups: Record<string, IRun[]>,
+  isLastPage: boolean,
 ): Record<string, string> {
   const { status, _page, _group, _limit, _group_limit, _order, ...rest } = params;
   let newparams = rest;
@@ -341,11 +352,17 @@ function makeWebsocketParameters(
   // If we are grouping by user or flow, we want to subscribe only to visible groups. So we add parameter
   // user:lte or flow_id:lte with last group. (lower than or equal works since groups are in alphabetical order)
   if (params._group === 'user') {
-    newparams = { ...newparams, ...(groupKeys.length > 0 ? { 'user:le': groupKeys[groupKeys.length - 1] } : {}) };
+    newparams = {
+      ...newparams,
+      ...(groupKeys.length > 0 && !isLastPage ? { 'user:le': groupKeys[groupKeys.length - 1] } : {}),
+    };
   }
 
   if (params._group === 'flow_id') {
-    newparams = { ...newparams, ...(groupKeys.length > 0 ? { 'flow_id:le': groupKeys[groupKeys.length - 1] } : {}) };
+    newparams = {
+      ...newparams,
+      ...(groupKeys.length > 0 && !isLastPage ? { 'flow_id:le': groupKeys[groupKeys.length - 1] } : {}),
+    };
   }
 
   return newparams;
