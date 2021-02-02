@@ -10,6 +10,8 @@ import { Text } from '../../../components/Text';
 import { RemovableTag } from '../../../components/Tag';
 import FilterInput from '../../../components/FilterInput';
 
+import FEATURE from '../../../FEATURE';
+
 type Props = {
   // Update queryparameter
   handleParamChange: (key: string, value: string) => void;
@@ -34,21 +36,23 @@ const HomeSidebar: React.FC<Props> = ({
 
   return (
     <Sidebar className="sidebar">
-      <Section>
-        <GroupSectionHeader noPadding>
-          <DropdownField
-            horizontal
-            noMinWidth
-            value={params._group || ''}
-            onChange={(e) => e && handleParamChange('_group', e.target.value)}
-            options={[
-              ['', t('fields.group.none')],
-              ['flow_id', t('fields.group.flow')],
-              ['user', t('fields.group.user')],
-            ]}
-          />
-        </GroupSectionHeader>
-      </Section>
+      {FEATURE.RUN_GROUPS && (
+        <Section>
+          <GroupSectionHeader noPadding>
+            <DropdownField
+              horizontal
+              noMinWidth
+              value={params._group || ''}
+              onChange={(e) => e && handleParamChange('_group', e.target.value)}
+              options={[
+                ['', t('fields.group.none')],
+                ['flow_id', t('fields.group.flow')],
+                ['user', t('fields.group.user')],
+              ]}
+            />
+          </GroupSectionHeader>
+        </Section>
+      )}
 
       <Section>
         <SectionHeader>{t('fields.status')}</SectionHeader>
