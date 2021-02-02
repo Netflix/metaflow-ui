@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { ItemRow } from '../../Structure';
-import { Text } from '../../Text';
+import { ForceNoWrapText } from '../../Text';
 import { RowCounts } from '../../Timeline/taskdataUtils';
 import { GraphSortBy, GraphState } from '../../Timeline/useGraph';
 import StatusLights from './StatusLights';
@@ -102,7 +102,7 @@ const StatusLabelRenderer: React.FC<{ val: string; status: string | null | undef
   return (
     <StatusLabelContainer>
       <DropdownLabelTitle>{t('fields.status')}</DropdownLabelTitle>
-      <Text>{val}</Text>
+      <ForceNoWrapText>{val}</ForceNoWrapText>
       <StatusLights status={status || 'all'} />
     </StatusLabelContainer>
   );
@@ -113,7 +113,7 @@ const OrderLabelRenderer: React.FC<{ val: string }> = ({ val }) => {
   return (
     <OrderLabelContainer>
       <DropdownLabelTitle>{t('timeline.order-by')}</DropdownLabelTitle>
-      <Text>{val}</Text>
+      <ForceNoWrapText>{val}</ForceNoWrapText>
     </OrderLabelContainer>
   );
 };
@@ -132,7 +132,7 @@ const FiltersSection = styled(ItemRow)`
 
 const StatusLabelContainer = styled.div`
   display: flex;
-  min-width: 170px;
+  min-width: 134px;
 `;
 
 const OrderLabelContainer = styled.div`
@@ -152,7 +152,7 @@ const TaskListDropdownContainer = styled.div`
   }
 `;
 
-const DropdownLabelTitle = styled(Text)`
+const DropdownLabelTitle = styled(ForceNoWrapText)`
   font-weight: bold;
   margin-right: 5px;
 `;

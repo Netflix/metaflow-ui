@@ -23,3 +23,7 @@ export const ForceBreakText = styled.span`
 export const ForceNoBreakText = styled.span`
   word-break: normal;
 `;
+
+export const ForceNoWrapText = styled.span`
+  white-space: nowrap;
+`;
