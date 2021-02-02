@@ -21,6 +21,8 @@ import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { logWarning } from '../../utils/errorlogger';
 import { getTaskId } from '../../utils/task';
 
+import FEATURE from '../../FEATURE';
+
 //
 // Run page container, Check if we have run data before even trying anything else
 //
@@ -204,16 +206,20 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       <Tabs
         activeTab={tab}
         tabs={[
-          {
-            key: 'dag',
-            label: t('run.DAG'),
-            linkTo: getPath.dag(params.flowId, params.runNumber) + '?' + urlParams,
-            component: (
-              <ErrorBoundary message={t('error.dag-error')}>
-                <DAG run={run} steps={steps} />
-              </ErrorBoundary>
-            ),
-          },
+          ...(FEATURE.DAG
+            ? [
+                {
+                  key: 'dag',
+                  label: t('run.DAG'),
+                  linkTo: getPath.dag(params.flowId, params.runNumber) + '?' + urlParams,
+                  component: (
+                    <ErrorBoundary message={t('error.dag-error')}>
+                      <DAG run={run} steps={steps} />
+                    </ErrorBoundary>
+                  ),
+                },
+              ]
+            : []),
           {
             key: 'timeline',
             label: t('run.timeline'),
