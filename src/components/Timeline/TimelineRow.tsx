@@ -140,7 +140,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
       <BoxGraphic
         root={row.type === 'step'}
         style={{
-          width: width + '%',
+          width: row.type === 'step' ? `calc(${width}% + 10px)` : `${width}%`,
         }}
         onClick={() => {
           if (row.type === 'task') {
