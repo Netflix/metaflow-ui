@@ -23,6 +23,7 @@ import AnchoredView from './components/AnchoredView';
 import SectionLoader from './components/SectionLoader';
 import TaskDetails from './components/TaskDetails';
 import AttemptSelector from './components/AttemptSelector';
+import { getTaskId } from '../../utils/task';
 
 //
 // Typedef
@@ -271,7 +272,7 @@ const Task: React.FC<TaskViewProps> = ({
                   actionbar: (
                     <LogActionBar
                       data={stdout}
-                      name={`stdout-${task.ts_epoch}-${task.task_id}-attempt${task.attempt_id}`}
+                      name={`stdout-${task.ts_epoch}-${getTaskId(task)}-attempt${task.attempt_id}`}
                       setFullscreen={() => setFullscreen('stdout')}
                     />
                   ),

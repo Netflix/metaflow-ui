@@ -10,6 +10,7 @@ import { lighten } from 'polished';
 import { TFunction } from 'i18next';
 import TaskListLabel from './TaskListLabel';
 import { StepRowData } from './useRowData';
+import { getTaskId } from '../../utils/task';
 
 type TimelineRowProps = {
   // Row type and data
@@ -143,7 +144,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         }}
         onClick={() => {
           if (row.type === 'task') {
-            push(getPath.task(row.data.flow_id, row.data.run_number, row.data.step_name, row.data.task_id));
+            push(getPath.task(row.data.flow_id, row.data.run_number, row.data.step_name, getTaskId(row.data)));
           } else {
             if (onOpen) {
               onOpen();

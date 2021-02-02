@@ -19,6 +19,7 @@ import useGraph from '../../components/Timeline/useGraph';
 import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { logWarning } from '../../utils/errorlogger';
+import { getTaskId } from '../../utils/task';
 
 //
 // Run page container, Check if we have run data before even trying anything else
@@ -294,8 +295,13 @@ function getTaskPageLink(
   } else {
     const startStep = rows['start'];
     if (startStep && Object.keys(startStep.data).length > 0) {
-      const taskId = Object.keys(startStep.data)[0];
-      return getPath.task(flowId, runNumber, 'start', taskId) + '?' + urlParams;
+      const taskKey = Object.keys(startStep.data)[0];
+      const task = startStep.data[taskKey];
+
+      if (task && task.length > 0) {
+        const taskId = getTaskId(task[0]);
+        return getPath.task(flowId, runNumber, 'start', taskId) + '?' + urlParams;
+      }
     }
   }
 
