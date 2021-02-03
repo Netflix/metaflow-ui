@@ -172,12 +172,12 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       // TODO: Move this to somewhere else
       const timings = startAndEndpointsOfRows([...rowsToUpdate]);
       const endTime =
-        graph.graph.sortBy === 'duration' ? timings.start + getLongestRowDuration(rowsToUpdate) : timings.end;
+        graph.graph.sortBy === 'duration' ? run.ts_epoch + getLongestRowDuration(rowsToUpdate) : timings.end;
 
       if (timings.start !== 0 && endTime !== 0) {
         graph.dispatch({
           type: 'init',
-          start: timings.start,
+          start: run.ts_epoch,
           end: endTime,
         });
       }

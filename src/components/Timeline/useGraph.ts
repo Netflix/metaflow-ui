@@ -185,7 +185,11 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
       return { ...state, isCustomEnabled: action.value };
 
     case 'incrementTimelineLength':
-      return { ...state, max: state.max + 1000, timelineEnd: state.controlled ? state.timelineEnd : state.max + 1000 };
+      return {
+        ...state,
+        max: new Date().getTime(),
+        timelineEnd: state.controlled ? state.timelineEnd : new Date().getTime(),
+      };
 
     case 'reset':
       return { ...state, controlled: false, min: 0, max: 0, timelineStart: 0, timelineEnd: 0 };
