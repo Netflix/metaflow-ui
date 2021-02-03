@@ -158,7 +158,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         )}
         <BoxGraphicLine grayed={grayed} state={getRowStatus(row)} isLastAttempt={isLastAttempt} />
         <BoxGraphicMarkerStart />
-        <BoxGraphicMarkerEnd />
+        {getRowStatus(row) !== 'running' && <BoxGraphicMarkerEnd />}
       </BoxGraphic>
     </div>
   );
