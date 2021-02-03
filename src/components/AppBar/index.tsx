@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import logo from '../../assets/logo_dark_horizontal.svg';
 import Breadcrumb from '../Breadcrumb';
 import { ItemRow } from '../Structure';
@@ -8,15 +8,13 @@ import HelpMenu from '../HelpMenu';
 import ConnectionStatus from '../ConnectionStatus';
 
 const AppBar: React.FC = () => {
-  const location = useLocation();
-
   return (
     <Wrapper>
       <ConnectionStatusWrapper>
         <ConnectionStatus />
       </ConnectionStatusWrapper>
       <ItemRow pad="lg">
-        <LogoLink to={location.pathname === '/' ? '/' + location.search : '/'}>
+        <LogoLink to={'/'}>
           <Logo src={logo} />
         </LogoLink>
         <Breadcrumb />
