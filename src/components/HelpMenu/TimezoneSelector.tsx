@@ -2,7 +2,8 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import spacetime from 'spacetime';
 import styled from 'styled-components';
-import { SelectField } from '../Form';
+// import { SelectField } from '../Form';
+import Dropdown, { DropdownOption } from '../Form/Dropdown';
 import { TimezoneContext, TIMEZONES } from '../TimezoneProvider';
 
 const userTimezone = TIMEZONES.find((tz) => tz.offset === getCurrentTimeZoneOffset());
@@ -16,10 +17,9 @@ const TimezoneSelector: React.FC = () => {
     <div>
       <TimezoneRow>
         <div>{t('help.timezone')}</div>
-        <SelectField
-          horizontal
-          noMinWidth
-          options={[]}
+
+        <Dropdown
+          options={ZONES.map((o) => [o[0], o[1]])}
           value={(timezone || 0).toString()}
           onChange={(e) => {
             if (e && e.currentTarget) {
@@ -28,18 +28,35 @@ const TimezoneSelector: React.FC = () => {
           }}
         >
           {userTimezone && (
-            <optgroup label={t('help.local-time')}>
-              <option value={userTimezone.offset}>{userTimezone.label}</option>
-            </optgroup>
+            <>
+              <label>{t('help.local-time')}</label>
+              <TimezoneOption
+                textOnly
+                variant={timezone === userTimezone.offset ? 'primaryText' : 'text'}
+                size="sm"
+                onClick={() => {
+                  updateTimezone(userTimezone.offset);
+                }}
+              >
+                {userTimezone.label}
+              </TimezoneOption>
+            </>
           )}
-          <optgroup label={t('help.timezones')}>
-            {ZONES.map((o, index) => (
-              <option key={o[0] + index} value={o[0]}>
-                {o[1]}
-              </option>
-            ))}
-          </optgroup>
-        </SelectField>
+          <label>{t('help.timezones')}</label>
+          {ZONES.map((o, index) => (
+            <TimezoneOption
+              key={o[0] + index}
+              textOnly
+              variant={timezone === o[0] ? 'primaryText' : 'text'}
+              size="sm"
+              onClick={() => {
+                updateTimezone(o[0]);
+              }}
+            >
+              {o[1]}
+            </TimezoneOption>
+          ))}
+        </Dropdown>
       </TimezoneRow>
     </div>
   );
@@ -75,6 +92,11 @@ const TimezoneRow = styled.div`
     border-radius: 3px;
     margin-left: 0.5rem;
   }
+`;
+
+const TimezoneOption = styled(DropdownOption)`
+  white-space: pre-line;
+  text-align: left;
 `;
 
 export default TimezoneSelector;
