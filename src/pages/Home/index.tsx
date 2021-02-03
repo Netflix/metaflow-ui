@@ -326,7 +326,7 @@ export function makeActiveRequestParameters(params: Record<string, string>): Rec
     }
   }
 
-  if (hasOne(params._order) && params._order.indexOf('ts_epoch') === -1) {
+  if (hasOne(params._order) && (params._order.indexOf('flow_id') > -1 || params._order.indexOf('user') > -1)) {
     params._order = `${params._order},ts_epoch`;
   }
 
