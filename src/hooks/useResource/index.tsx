@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { apiHttp } from '../../constants';
 import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
@@ -191,8 +191,11 @@ export default function useResource<T, U>({
     };
   }, [target, cache]);
 
-  const handleWSUpdate = React.useCallback(
-    (event: Event<any>) => {
+  useWebsocket<U>({
+    url: url,
+    queryParams: socketParamFilter ? socketParamFilter(queryParams || {}) : websocketParams || queryParams,
+    enabled: subscribeToEvents && !pause,
+    onUpdate: (event: Event<any>) => {
       if (pause) return;
       // TODO: Create cache item if it doesn't exist (How though? We have only partial data available.)
       const currentCache = cache.get(target);
@@ -234,14 +237,6 @@ export default function useResource<T, U>({
         }
       }
     },
-    [onUpdate, onWSUpdate, cache, fullyDisableCache, initialData, target, pause, updatePredicate, useBatching],
-  );
-
-  useWebsocket<U>({
-    url: url,
-    queryParams: socketParamFilter ? socketParamFilter(queryParams || {}) : websocketParams || queryParams,
-    enabled: subscribeToEvents && !pause,
-    onUpdate: handleWSUpdate,
     uuid,
   });
 
