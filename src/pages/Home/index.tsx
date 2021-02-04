@@ -3,14 +3,13 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Run as IRun, QueryParam } from '../../types';
 import useResource from '../../hooks/useResource';
 
-import { fromPairs, omit } from '../../utils/object';
-import { pluck } from '../../utils/array';
+import { omit } from '../../utils/object';
+// import { pluck } from '../../utils/array';
 import { parseOrderParam, directionFromText, swapDirection, DirectionText } from '../../utils/url';
 
 import { useQueryParams, StringParam, withDefault } from 'use-query-params';
 import HomeSidebar from './Sidebar';
 import HomeContentArea from './Content';
-import { EventType } from '../../ws';
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { useTranslation } from 'react-i18next';
 import { logWarning } from '../../utils/errorlogger';
@@ -29,6 +28,8 @@ const Home: React.FC = () => {
   //
 
   const [page, setPage] = useState(1);
+  // Temporary cache for newly arrived runs
+  const [receivedRuns, setReceivedRuns] = useState<IRun[]>([]);
   const [runGroups, setRunGroups] = useState<Record<string, IRun[]>>({});
   // WARNING: These fake params are workaround for one special case. Generally when we are changing filters, we want to
   // reset page to start (page = 1). BUT when ordering stuff again, we want to keep same amount items as before. We don't
@@ -78,7 +79,7 @@ const Home: React.FC = () => {
 
     setShowLoader(true);
 
-    setQp({ [key]: value || null });
+    setQp({ [key]: value || undefined });
   };
 
   // Update parameter list
@@ -116,73 +117,17 @@ const Home: React.FC = () => {
     // is most cases we want to replace existing data EXCEPT when we are loading next page.
     //
     onUpdate: (items) => {
-      try {
-        const newItems = items
-          ? fromPairs<IRun[]>(
-              pluck(activeParams._group, items).map((val) => [
-                val as string,
-                items.filter((r) => r[activeParams._group] === val),
-              ]),
-            )
-          : {};
-
-        // If we changed just page (of grouped items), we need to merge old and new result.
-        // Also don't merge when using fakeParams since it means we are reordering, in that case everything needs to change.
-        if (page > 1 && !fakeParams) {
-          const merged = Object.keys(newItems).reduce((obj, key) => {
-            const runs = newItems[key];
-
-            if (obj[key]) {
-              return { ...obj, [key]: obj[key].concat(runs) };
-            }
-            return { ...obj, [key]: runs };
-          }, runGroups);
-
-          setRunGroups(merged);
-        } else {
-          setRunGroups(newItems);
-        }
-      } catch (e) {
-        logWarning('Unexpected error on runs fetch: ', e);
+      if (page === 1 || fakeParams) {
+        setRunGroups({});
       }
+      setReceivedRuns((runs) => runs.concat(items));
     },
     //
     // On websocket update we want to merge, or add given result to existing groups (if any).
     // For now if we are not grouping, groupKey is 'undefined'
     //
-    onWSUpdate: (item, eventType) => {
-      try {
-        const groupKey = item[activeParams._group] || 'undefined';
-        if (typeof groupKey === 'string') {
-          if (eventType === EventType.INSERT) {
-            setRunGroups((rg) => {
-              if (rg[groupKey]) {
-                return { ...rg, [groupKey]: sortRuns([...rg[groupKey], item], activeParams._order) };
-              }
-              return { ...rg, [groupKey]: [item] };
-            });
-          } else if (eventType === EventType.UPDATE) {
-            setRunGroups((rg) => {
-              if (rg[groupKey]) {
-                const index = rg[groupKey].findIndex((r) => r.run_number === item.run_number);
-                return {
-                  ...rg,
-                  [groupKey]:
-                    index > -1
-                      ? sortRuns(
-                          rg[groupKey].map((r) => (r.run_number === item.run_number ? item : r)),
-                          activeParams._order,
-                        )
-                      : sortRuns([...rg[groupKey], item], activeParams._order),
-                };
-              }
-              return { ...rg, [groupKey]: [item] };
-            });
-          }
-        }
-      } catch (e) {
-        logWarning('Unexpected error on websocket updates: ', e);
-      }
+    onWSUpdate: (item: IRun) => {
+      setReceivedRuns((runs) => runs.concat([item]));
     },
     postRequest() {
       setShowLoader(false);
@@ -195,23 +140,25 @@ const Home: React.FC = () => {
   //
 
   const handleGroupTitleClick = (title: string) => {
-    if (activeParams._group === 'flow_id') {
+    if (['flow_id', 'user'].indexOf(activeParams._group) > -1) {
       setPage(1);
-      setQp({ flow_id: title });
       setShowLoader(true);
-    } else if (activeParams._group === 'user') {
-      setPage(1);
+      setRunGroups({});
+      setReceivedRuns([]);
 
-      const param = title === 'None' ? 'null' : title;
-      // Remove other user tags
-      const newtags = activeParams._tags
-        ? activeParams._tags
-            .split(',')
-            .filter((str) => !str.startsWith('user:'))
-            .join(',')
-        : '';
-      setQp({ _tags: newtags, user: param });
-      setShowLoader(true);
+      if (activeParams._group === 'flow_id') {
+        setQp({ flow_id: title });
+      } else if (activeParams._group === 'user') {
+        const param = title === 'None' ? 'null' : title;
+        // Remove other user tags
+        const newtags = activeParams._tags
+          ? activeParams._tags
+              .split(',')
+              .filter((str) => !str.startsWith('user:'))
+              .join(',')
+          : '';
+        setQp({ _tags: newtags, user: param });
+      }
     }
   };
 
@@ -236,6 +183,37 @@ const Home: React.FC = () => {
   //
   // Effects
   //
+
+  useEffect(() => {
+    if (receivedRuns.length > 0) {
+      receivedRuns.forEach((item) => {
+        try {
+          const groupKey = item[activeParams._group] || 'undefined';
+          if (typeof groupKey === 'string') {
+            setRunGroups((rg) => {
+              if (rg[groupKey]) {
+                const index = rg[groupKey].findIndex((r) => r.run_number === item.run_number);
+                return {
+                  ...rg,
+                  [groupKey]:
+                    index > -1
+                      ? sortRuns(
+                          rg[groupKey].map((r) => (r.run_number === item.run_number ? item : r)),
+                          activeParams._order,
+                        )
+                      : sortRuns([...rg[groupKey], item], activeParams._order),
+                };
+              }
+              return { ...rg, [groupKey]: [item] };
+            });
+          }
+        } catch (e) {
+          logWarning('Unexpected error on websocket updates: ', e);
+        }
+      });
+      setReceivedRuns([]);
+    }
+  }, [activeParams._order, activeParams._group, receivedRuns]);
 
   useEffect(() => {
     if (Object.keys(cleanParams(activeParams)).length === 0) {
@@ -413,13 +391,22 @@ export function paramList(param: QueryParam): Array<string> {
   return param ? param.split(',').filter((p: string) => p !== '') : [];
 }
 
+const shouldUseTiebreaker = (
+  a: string | number | string[] | null | undefined,
+  b: string | number | string[] | null | undefined,
+  key: string,
+) => {
+  return a === b && key !== 'ts_epoch' && ['flow_id', 'user'].indexOf(key) > -1;
+};
+
 // Generic string sorting
 export const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun): number => {
-  const val1 = dir === 'down' ? a[key] : b[key];
-  const val2 = dir === 'down' ? b[key] : a[key];
+  const val1 = dir === 'up' ? a[key] : b[key];
+  const val2 = dir === 'up' ? b[key] : a[key];
 
-  if (val1 === val2 && key !== 'ts_epoch') {
-    return nmbSort(dir, 'ts_epoch')(a, b);
+  // Only use ts_epoch tiebreaker with flow_id or user
+  if (shouldUseTiebreaker(val1, val2, key)) {
+    return nmbSort('down', 'ts_epoch')(a, b);
   }
 
   if (typeof val1 === 'string' && typeof val2 === 'string') {
@@ -435,10 +422,11 @@ export const strSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun): 
 
 // Generic number sorting
 export const nmbSort = (dir: DirectionText, key: string) => (a: IRun, b: IRun): number => {
-  const val1 = dir === 'down' ? a[key] : b[key];
-  const val2 = dir === 'down' ? b[key] : a[key];
+  const val1 = dir === 'up' ? a[key] : b[key];
+  const val2 = dir === 'up' ? b[key] : a[key];
 
-  if (val1 === val2 && key !== 'ts_epoch') {
+  // Only use ts_epoch tiebreaker with flow_id or user
+  if (shouldUseTiebreaker(val1, val2, key)) {
     return nmbSort(dir, 'ts_epoch')(a, b);
   }
 
@@ -461,7 +449,7 @@ export function sortRuns(runs: IRun[], order: string): IRun[] {
 
   if (key === 'ts_epoch' || key === 'duration' || key === 'finished_at') {
     return runs.sort(nmbSort(dir, key));
-  } else if (key === 'user' || key === 'status' || key === 'flow_id') {
+  } else if (key === 'user' || key === 'status' || key === 'flow_id' || key === 'run') {
     return runs.sort(strSort(dir, key));
   }
 
