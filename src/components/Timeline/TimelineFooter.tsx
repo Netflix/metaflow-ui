@@ -117,7 +117,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
                   key={(step.original?.step_name || '') + step.started_at + step.finished_at}
                   graph={graph}
                   started={step.started_at}
-                  finished={step.finished_at}
+                  finished={step.status === 'running' ? graph.max : step.finished_at}
                   status={step.status}
                 />
               ))
