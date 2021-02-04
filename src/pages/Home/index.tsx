@@ -4,7 +4,6 @@ import { Run as IRun, QueryParam } from '../../types';
 import useResource from '../../hooks/useResource';
 
 import { omit } from '../../utils/object';
-// import { pluck } from '../../utils/array';
 import { parseOrderParam, directionFromText, swapDirection, DirectionText } from '../../utils/url';
 
 import { useQueryParams, StringParam, withDefault } from 'use-query-params';
@@ -67,16 +66,16 @@ const Home: React.FC = () => {
     setQp({ ...defaultParams }, 'replace');
   }, [setQp]);
 
-  const [showLoader, setShowLoader] = useState(false);
+  const [showLoader, setShowLoader] = useState(true);
   const [isLastPage, setLastPage] = useState(false);
 
   const handleParamChange = (key: string, value: string, keepFakeParams?: boolean) => {
     // We want to reset page when changing filters, but not when reordering
+    // TODO: Make sense of this
     if (!keepFakeParams) {
       setFakeParams(null);
       setPage(1);
     }
-
     setShowLoader(true);
 
     setQp({ [key]: value || undefined });
@@ -105,18 +104,23 @@ const Home: React.FC = () => {
     _page: String(page),
     ...(fakeParams || {}),
   });
+
   const { error, status, getResult } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: [],
-    subscribeToEvents: true,
+    // If we are showing big loader, it means we are replacing all the data in view. In that case
+    // we dont want websocket messages until we get the first response.
+    subscribeToEvents: !showLoader,
     updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
     queryParams: requestParameters,
     websocketParams: makeWebsocketParameters(requestParameters, runGroups, isLastPage),
     //
-    // onUpdate handles HTTP request updates. In practise on start OR when filters/sorts changes.
+    // onUpdate handles HTTP request updates. In practice on start OR when filters/sorts changes.
     // is most cases we want to replace existing data EXCEPT when we are loading next page.
     //
     onUpdate: (items) => {
+      // Remove old data if we are in first page/we handle fake params
+      // NOTE: This is in wrong place. We should probably clear earlier
       if (page === 1 || fakeParams) {
         setRunGroups({});
       }
@@ -320,6 +324,7 @@ function makeWebsocketParameters(
 ): Record<string, string> {
   const { status, _page, _group, _limit, _group_limit, _order, ...rest } = params;
   let newparams = rest;
+
   const groupKeys = Object.keys(runGroups);
   // We need to remove status filter for websocket messages since we want to be able to track if
   // status changes from running to failed or completed even when we have status filter on
@@ -329,18 +334,28 @@ function makeWebsocketParameters(
 
   // If we are grouping by user or flow, we want to subscribe only to visible groups. So we add parameter
   // user:lte or flow_id:lte with last group. (lower than or equal works since groups are in alphabetical order)
-  if (params._group === 'user') {
+  if (params._group) {
     newparams = {
       ...newparams,
-      ...(groupKeys.length > 0 && !isLastPage ? { 'user:le': groupKeys[groupKeys.length - 1] } : {}),
+      ...(groupKeys.length > 0 && !isLastPage
+        ? { [params._group === 'user' ? 'user:le' : 'flow_id:le']: groupKeys[groupKeys.length - 1] }
+        : {}),
     };
-  }
+  } else {
+    const data = runGroups['undefined'];
 
-  if (params._group === 'flow_id') {
-    newparams = {
-      ...newparams,
-      ...(groupKeys.length > 0 && !isLastPage ? { 'flow_id:le': groupKeys[groupKeys.length - 1] } : {}),
-    };
+    if (data?.length > 0 && _order && !isLastPage) {
+      const lastItem = data[data.length - 1];
+      const [dir, key] = parseOrderParam(_order);
+      const firstOrderKey = key.split(',')[0];
+      const value = lastItem[firstOrderKey];
+      if (value) {
+        newparams = {
+          ...newparams,
+          [`${firstOrderKey}:${dir === 'up' ? 'le' : 'ge'}`]: value as string,
+        };
+      }
+    }
   }
 
   return newparams;
