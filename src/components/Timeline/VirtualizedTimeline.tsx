@@ -16,6 +16,7 @@ import { ItemRow } from '../Structure';
 import { TFunction } from 'i18next';
 import Spinner from '../Spinner';
 import TaskListingHeader from '../TaskListingHeader';
+import FEATURE_FLAGS from '../../FEATURE';
 
 export const ROW_HEIGHT = 28;
 export type Row = { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task[] };
@@ -177,19 +178,25 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
               )}
             </FixedListContainer>
 
-            <TimelineFooter
-              graph={graph}
-              rows={rows}
-              steps={steps}
-              move={(value) => graphDispatch({ type: 'move', value: value })}
-              updateHandle={(which, to) => {
-                if (which === 'left') {
-                  graphDispatch({ type: 'setZoom', start: to < graph.min ? graph.min : to, end: graph.timelineEnd });
-                } else {
-                  graphDispatch({ type: 'setZoom', start: graph.timelineStart, end: to > graph.max ? graph.max : to });
-                }
-              }}
-            />
+            {FEATURE_FLAGS.TIMELINE_MINIMAP && (
+              <TimelineFooter
+                graph={graph}
+                rows={rows}
+                steps={steps}
+                move={(value) => graphDispatch({ type: 'move', value: value })}
+                updateHandle={(which, to) => {
+                  if (which === 'left') {
+                    graphDispatch({ type: 'setZoom', start: to < graph.min ? graph.min : to, end: graph.timelineEnd });
+                  } else {
+                    graphDispatch({
+                      type: 'setZoom',
+                      start: graph.timelineStart,
+                      end: to > graph.max ? graph.max : to,
+                    });
+                  }
+                }}
+              />
+            )}
           </div>
         )}
 
