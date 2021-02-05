@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { StringParam, useQueryParams } from 'use-query-params';
-import { Run as IRun, Task as ITask, Log, Metadata } from '../../types';
+import { Run as IRun, Task as ITask, Log, Metadata, AsyncStatus } from '../../types';
 import useResource from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import { logWarning } from '../../utils/errorlogger';
@@ -35,6 +35,7 @@ type TaskViewProps = {
   taskId: string;
   rows: Row[];
   rowDataDispatch: (action: RowDataAction) => void;
+  taskStatus: AsyncStatus;
   graph: GraphHook;
   searchField: SearchFieldReturnType;
   counts: RowCounts;
@@ -52,6 +53,7 @@ const Task: React.FC<TaskViewProps> = ({
   taskId,
   rows,
   rowDataDispatch,
+  taskStatus,
   graph,
   searchField,
   counts,
@@ -207,6 +209,7 @@ const Task: React.FC<TaskViewProps> = ({
         <TaskList
           rows={rows}
           rowDataDispatch={rowDataDispatch}
+          taskStatus={taskStatus}
           activeTaskId={taskId}
           results={searchField.results}
           grouped={graph.graph.group}

@@ -258,6 +258,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                     stepName={previousStepName || 'not-selected'}
                     taskId={previousTaskId || 'not-selected'}
                     rows={visibleRows}
+                    taskStatus={taskStatus}
                     rowDataDispatch={dispatch}
                     searchField={searchField}
                     graph={graph}
