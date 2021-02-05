@@ -1,6 +1,6 @@
 import React, { useState, useRef, useContext } from 'react';
 import styled, { css } from 'styled-components';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import useIsInViewport from 'use-is-in-viewport';
 
@@ -72,17 +72,13 @@ const ResultGroup: React.FC<Props> = React.memo(
               const isStale = !!(queryParams.status && queryParams.status.indexOf(r.status) === -1);
 
               return (
-                <TR
-                  key={`r-${i}`}
-                  clickable
-                  stale={isStale}
-                  onClick={() => history.push(getPath.run(r.flow_id, getRunId(r)))}
-                >
+                <TR key={`r-${i}`} clickable stale={isStale}>
                   <TableRows
                     r={r}
                     params={queryParams}
                     historyPush={history.push}
                     updateListValue={updateListValue}
+                    link={getPath.run(r.flow_id, getRunId(r))}
                     timezone={timezone}
                   />
                 </TR>
@@ -120,40 +116,66 @@ type TableRowsProps = {
   r: IRun;
   params: Record<string, string>;
   historyPush: (url: string) => void;
+  link: string;
   updateListValue: (key: string, value: string) => void;
   timezone: string;
 };
 
-const TableRows: React.FC<TableRowsProps> = React.memo(({ r, params, updateListValue, timezone }) => {
+const TableRows: React.FC<TableRowsProps> = React.memo(({ r, params, updateListValue, link, timezone }) => {
   return (
     <>
       {/* STATUS INDICATOR */}
       <StatusColorCell status={r.status} />
       {/* FLOW ID */}
-      {params._group !== 'flow_id' && <TD>{r.flow_id}</TD>}
+      {params._group !== 'flow_id' && <TDWithLink link={link}>{r.flow_id}</TDWithLink>}
       {/* ID */}
-      <TD>
+      <TDWithLink link={link}>
         <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
-      </TD>
+      </TDWithLink>
       {/* USER NAME */}
-      {params._group !== 'user' && <TD>{getUsername(r)}</TD>}
+      {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
       {/* STARTED AT */}
-      <TimeCell>{getRunStartTime(r, timezone)}</TimeCell>
+      <TimeCell link={link}>{getRunStartTime(r, timezone)}</TimeCell>
       {/* FINISHED AT */}
-      <TimeCell>{getRunEndTime(r, timezone)}</TimeCell>
+      <TimeCell link={link}>{getRunEndTime(r, timezone)}</TimeCell>
       {/* DURATION */}
-      <TimeCell>{getRunDuration(r)}</TimeCell>
+      <TimeCell link={link}>{getRunDuration(r)}</TimeCell>
       {/* STATUS */}
-      <TD>
+      <TDWithLink link={link}>
         <ForceNoBreakText>
           <StatusField status={r.status} />
         </ForceNoBreakText>
-      </TD>
+      </TDWithLink>
       {/* USER TAGS */}
-      <RunTags tags={r.tags || []} updateListValue={updateListValue} />
+      {(r.tags || []).length > 0 ? (
+        <RunTags tags={r.tags || []} updateListValue={updateListValue} />
+      ) : (
+        <TDWithLink link={link}></TDWithLink>
+      )}
     </>
   );
 });
+
+const LinkTD = styled(TD)`
+  position: relative;
+`;
+
+const GhostLink = styled(Link)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+`;
+
+const TDWithLink: React.FC<{ link: string }> = ({ children, link }) => {
+  return (
+    <LinkTD>
+      {children}
+      <GhostLink to={link}></GhostLink>
+    </LinkTD>
+  );
+};
 
 const statusColors: RunStatus = {
   completed: 'green',
@@ -175,7 +197,7 @@ export const StatusColorHeaderCell = styled(TH)`
   ${statusCellCSS};
 `;
 
-const TimeCell = styled(TD)`
+const TimeCell = styled(TDWithLink)`
   word-break: break-word;
 `;
 
