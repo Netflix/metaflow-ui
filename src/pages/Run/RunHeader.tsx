@@ -84,15 +84,6 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
 
         {expanded && (
           <>
-            <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
-
-            <TagRow
-              label={t('run.system-tags')}
-              tags={run.system_tags || []}
-              push={history.push}
-              noTagsMsg={t('run.no-system-tags')}
-            />
-
             <TitledRow
               title={t('run.parameters')}
               {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
@@ -109,6 +100,15 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
                     type: 'table',
                     content: parameterTableItems,
                   })}
+            />
+
+            <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
+
+            <TagRow
+              label={t('run.system-tags')}
+              tags={run.system_tags || []}
+              push={history.push}
+              noTagsMsg={t('run.no-system-tags')}
             />
           </>
         )}
