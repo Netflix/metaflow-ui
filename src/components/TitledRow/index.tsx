@@ -54,7 +54,7 @@ const StyledTitledRow = styled.div`
 `;
 
 const TitledRowTitle = styled.div`
-  font-weight: bold;
+  font-weight: 500;
   margin: 0.5rem 0;
 `;
 
@@ -66,7 +66,8 @@ const ContentBackground = styled.div`
 
 const ContentSection = styled.div`
   padding: 0.5rem 1rem;
-  white-space: pre;
+  white-space: pre-wrap;
+  word-break: break-all;
 `;
 
 const Row = styled.div`
@@ -78,6 +79,7 @@ const Row = styled.div`
 
   div:first-child {
     width: 200px;
+    min-width: 200px;
     border-right: 2px solid #fff;
   }
 `;
