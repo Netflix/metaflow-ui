@@ -166,7 +166,7 @@ const en = {
 
     search: {
       'no-results': 'No search results',
-      'no-tasks': 'No tasks with given settings',
+      'no-tasks': 'No tasks with selected settings',
     },
 
     connection: {

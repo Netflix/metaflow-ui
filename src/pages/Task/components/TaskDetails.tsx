@@ -15,6 +15,7 @@ import Spinner from '../../../components/Spinner';
 import { ItemRow } from '../../../components/Structure';
 import { TimezoneContext } from '../../../components/TimezoneProvider';
 import { getTaskId } from '../../../utils/task';
+import FEATURE_FLAGS from '../../../FEATURE';
 
 type Props = {
   task: ITask;
@@ -85,13 +86,15 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
         </InformationRow>
       )}
 
-      <ShowDetailsButton
-        toggle={() => setExpanded(!expanded)}
-        visible={expanded}
-        showText={t('task.show-task-metadata')}
-        hideText={t('task.hide-task-metadata')}
-        data-testid="task-expand-button"
-      />
+      {FEATURE_FLAGS.TASK_METADATA && (
+        <ShowDetailsButton
+          toggle={() => setExpanded(!expanded)}
+          visible={expanded}
+          showText={t('task.show-task-metadata')}
+          hideText={t('task.hide-task-metadata')}
+          data-testid="task-expand-button"
+        />
+      )}
     </>
   );
 };

@@ -33,6 +33,8 @@ jobs:
           REACT_APP_COMMIT_HASH: ${{ github.sha }}
           REACT_APP_FEATURE_DAG: 0 # Disable DAG view
           REACT_APP_FEATURE_RUN_GROUPS: 0 # Disable grouping
+          REACT_APP_FEATURE_TASK_METADATA: 0 # Disable grouping
+          REACT_APP_FEATURE_TIMELINE_MINIMAP: 0 # Disable grouping
 
       - uses: actions/upload-artifact@v2
         with:
