@@ -67,6 +67,8 @@ const en = {
 
     run: {
       'no-run-data': 'No run data',
+      'no-tags': 'No run tags',
+      'no-system-tags': 'No system tags',
       DAG: 'DAG',
       'dag-not-available': 'DAG is currently not available',
       'dag-only-available-AWS': 'DAG is only available when flow is executed on AWS.',
@@ -74,7 +76,7 @@ const en = {
         "DAG structure data doesn't exists. Data is only available when flow is executed on AWS",
       timeline: 'Timeline',
       parameters: 'Parameters',
-      'no-run-parameters': 'No run parameters.',
+      'no-parameters': 'No run parameters.',
       'run-parameters-error': 'Problem loading run parameters.',
       'show-run-details': 'Show run details',
       'hide-run-details': 'Hide run details',

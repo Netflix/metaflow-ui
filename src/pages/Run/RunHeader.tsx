@@ -4,14 +4,13 @@ import { useTranslation } from 'react-i18next';
 
 import { Run, RunParam, APIError } from '../../types';
 
-import { ItemRow } from '../../components/Structure';
 import StatusField from '../../components/Status';
 import InformationRow from '../../components/InformationRow';
 import PropertyTable from '../../components/PropertyTable';
 import { Link, useHistory } from 'react-router-dom';
 import { ResourceStatus } from '../../hooks/useResource';
 import { APIErrorRenderer } from '../../components/GenericError';
-import Spinner from '../../components/Spinner';
+
 import {
   getRunDuration,
   getRunEndTime,
@@ -20,10 +19,10 @@ import {
   getRunSystemTag,
   getUsername,
 } from '../../utils/run';
-import ParameterTable from '../../components/ParameterTable';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import TagRow from './components/TagRow';
+import TitledRow from '../../components/TitledRow';
 
 //
 // Typedef
@@ -82,29 +81,35 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
         <InformationRow spaceless>
           <PropertyTable scheme="dark" items={[run]} columns={columns} />
         </InformationRow>
-        {(run.tags || []).length > 0 && <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} />}
 
         {expanded && (
           <>
-            <TagRow label={t('run.system-tags')} tags={run.system_tags || []} push={history.push} />
+            <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
 
-            <InformationRow>
-              {status === 'Loading' && (
-                <ItemRow margin="lg" justify="center">
-                  <Spinner sm />
-                </ItemRow>
-              )}
+            <TagRow
+              label={t('run.system-tags')}
+              tags={run.system_tags || []}
+              push={history.push}
+              noTagsMsg={t('run.no-system-tags')}
+            />
 
-              {status === 'Ok' && parameterTableItems && (
-                <ParameterTable items={parameterTableItems} errorLabel={t('run.no-run-parameters')} />
-              )}
-
-              {status === 'Error' && error && (
-                <div style={{ margin: '1rem 0' }}>
-                  <APIErrorRenderer error={error} message={t('run.run-parameters-error')} icon={false} />
-                </div>
-              )}
-            </InformationRow>
+            <TitledRow
+              title={t('run.parameters')}
+              {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
+                ? {
+                    type: 'default',
+                    content:
+                      status === 'Error' && error ? (
+                        <APIErrorRenderer error={error} message={t('run.run-parameters-error')} icon={false} />
+                      ) : (
+                        t('run.no-parameters')
+                      ),
+                  }
+                : {
+                    type: 'table',
+                    content: parameterTableItems,
+                  })}
+            />
           </>
         )}
       </div>
