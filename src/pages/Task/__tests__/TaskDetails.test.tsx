@@ -1,43 +1,7 @@
-import React from 'react';
-import { fireEvent, render } from '@testing-library/react';
-import { createMetadata, createResource, createTask } from '../../../utils/testhelper';
-import TaskDetails, { getAttemptStartTime, getAttemptDuration } from '../components/TaskDetails';
-import TestWrapper from '../../../utils/testing';
+import { createTask } from '../../../utils/testhelper';
+import { getAttemptStartTime, getAttemptDuration } from '../components/TaskDetails';
 
 describe('TaskDetails component', () => {
-  test('<TaskDetails /> - Metadata', () => {
-    const props = {
-      task: createTask({}),
-      attempts: [createTask({})],
-      metadata: createResource([createMetadata({ field_name: 'somedata', value: 'yep' })], {}),
-    };
-
-    // Ok state
-    const { getByTestId, rerender } = render(
-      <TestWrapper>
-        <TaskDetails {...props} />
-      </TestWrapper>,
-    );
-
-    fireEvent.click(getByTestId('task-expand-button').children[0]);
-    expect(getByTestId('task-metadata')).toBeInTheDocument();
-
-    // Loading state
-    rerender(
-      <TestWrapper>
-        <TaskDetails {...props} metadata={{ ...props.metadata, status: 'Loading' }} />
-      </TestWrapper>,
-    );
-    expect(getByTestId('task-metadata-loading')).toBeInTheDocument();
-    // Error state
-    rerender(
-      <TestWrapper>
-        <TaskDetails {...props} metadata={{ ...props.metadata, status: 'Error' }} />
-      </TestWrapper>,
-    );
-    expect(getByTestId('task-metadata-error')).toBeInTheDocument();
-  });
-
   test('Util - getAttemptDuration', () => {
     // No attempts, no duration -> return empty string
     expect(getAttemptDuration([], createTask({ duration: undefined }))).toBe('');

@@ -1,7 +1,7 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import InformationRow from '../../../components/InformationRow';
-import ParameterTable from '../../../components/ParameterTable';
+
 import PropertyTable from '../../../components/PropertyTable';
 import ShowDetailsButton from '../../../components/ShowDetailsButton';
 import StatusField from '../../../components/Status';
@@ -10,12 +10,12 @@ import { Metadata, Task as ITask } from '../../../types';
 import { getISOString } from '../../../utils/date';
 import { formatDuration } from '../../../utils/format';
 import { Resource } from '../../../hooks/useResource';
-import GenericError from '../../../components/GenericError';
-import Spinner from '../../../components/Spinner';
-import { ItemRow } from '../../../components/Structure';
+import { APIErrorRenderer } from '../../../components/GenericError';
+
 import { TimezoneContext } from '../../../components/TimezoneProvider';
 import { getTaskId } from '../../../utils/task';
 import FEATURE_FLAGS from '../../../FEATURE';
+import TitledRow from '../../../components/TitledRow';
 
 type Props = {
   task: ITask;
@@ -68,22 +68,23 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
       </InformationRow>
 
       {expanded && (
-        <InformationRow data-testid="task-metadata">
-          {metadata.status === 'NotAsked' && (
-            <ItemRow justify="center" data-testid="task-metadata-notasked">
-              {t('task.metadata-not-loaded')}
-            </ItemRow>
-          )}
-          {metadata.status === 'Loading' && (
-            <ItemRow justify="center" data-testid="task-metadata-loading">
-              <Spinner />
-            </ItemRow>
-          )}
-          {metadata.status === 'Error' && (
-            <GenericError message={t('task.failed-to-load-metadata')} data-testid="task-metadata-error" />
-          )}
-          {metadata.status === 'Ok' && <ParameterTable items={metadataParams} data-testid="task-metadata-ok" noLabel />}
-        </InformationRow>
+        <TitledRow
+          title={t('task.metadata')}
+          {...(metadata.status !== 'Ok' || Object.keys(metadataParams).length === 0
+            ? {
+                type: 'default',
+                content:
+                  metadata.status === 'Error' && metadata.error ? (
+                    <APIErrorRenderer error={metadata.error} message={t('run.failed-to-load-metadata')} icon={false} />
+                  ) : (
+                    t('run.no-metadata')
+                  ),
+              }
+            : {
+                type: 'table',
+                content: metadataParams,
+              })}
+        />
       )}
 
       {FEATURE_FLAGS.TASK_METADATA && (
