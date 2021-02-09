@@ -297,24 +297,29 @@ function cleanParams(qp: any): Record<string, string> {
 //
 
 export function makeActiveRequestParameters(params: Record<string, string>): Record<string, string> {
+  let newParams = { ...params };
   // We want to remove groupping from request in some cases
   // 1) When grouping is flow_id and only 1 flow_id filter is active, we want to show all runs of this group
   // 2) When grouping is user and only 1 user filter is active, we want to show all runs of this group
-  if (params._group) {
-    if (params._group === 'flow_id' && hasOne(params.flow_id)) {
-      return omit(['_group'], params);
-    } else if (params._group === 'user' && hasOne(params.user)) {
-      return omit(['_group'], params);
+  if (newParams._group) {
+    if (newParams._group === 'flow_id' && hasOne(newParams.flow_id)) {
+      newParams = omit(['_group'], newParams);
+    } else if (newParams._group === 'user' && hasOne(newParams.user)) {
+      newParams = omit(['_group'], newParams);
     }
   }
 
-  if (hasOne(params._order) && (params._order.indexOf('flow_id') > -1 || params._order.indexOf('user') > -1)) {
-    params._order = `${params._order},ts_epoch`;
+  if (hasOne(newParams._order) && (newParams._order.indexOf('flow_id') > -1 || newParams._order.indexOf('user') > -1)) {
+    newParams._order = `${newParams._order},ts_epoch`;
   }
 
-  params._group_limit = String(parseInt(params._group_limit) + 1);
+  newParams._group_limit = String(parseInt(newParams._group_limit) + 1);
 
-  return params;
+  if (newParams.status && newParams.status.split(',').length === 3) {
+    delete newParams.status;
+  }
+
+  return newParams;
 }
 
 function makeWebsocketParameters(
