@@ -231,7 +231,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 ) : (
                   <Timeline
                     rows={visibleRows}
-                    steps={steps}
                     rowDataDispatch={dispatch}
                     status={taskStatus}
                     counts={counts}

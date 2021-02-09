@@ -117,6 +117,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   startTimeOfFirstAttempt,
 }) => {
   const { push } = useHistory();
+  const status = getRowStatus(row);
   // Extend visible area little bit to prevent lines seem like going out of bounds. Happens
   // in some cases with short end task
   const extendAmount = (graph.timelineEnd - graph.timelineStart) * 0.01;
@@ -131,7 +132,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         100
       : ((boxStartTime - graph.timelineStart) / visibleDuration) * 100;
 
-  const width = duration ? (duration / visibleDuration) * 100 : 100 - valueFromLeft;
+  const width = duration && status !== 'running' ? (duration / visibleDuration) * 100 : 100 - valueFromLeft;
 
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
@@ -156,9 +157,9 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         {isLastAttempt && labelDuration && (
           <RowMetricLabel duration={labelDuration} labelPosition={labelPosition} data-testid="boxgraphic-label" />
         )}
-        <BoxGraphicLine grayed={grayed} state={getRowStatus(row)} isLastAttempt={isLastAttempt} />
+        <BoxGraphicLine grayed={grayed} state={status} isLastAttempt={isLastAttempt} />
         <BoxGraphicMarkerStart />
-        {getRowStatus(row) !== 'running' && <BoxGraphicMarkerEnd />}
+        {status !== 'running' && <BoxGraphicMarkerEnd />}
       </BoxGraphic>
     </div>
   );
