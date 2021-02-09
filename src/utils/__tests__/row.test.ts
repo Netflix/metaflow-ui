@@ -31,13 +31,6 @@ test('getTaskLineStatus', () => {
       createTaskRow([createTask({ status: 'completed' })]),
     ]),
   ).toBe('running');
-  // Failed since there has been at least one retry (2 tasks in one row)
-  expect(
-    getTaskLineStatus([
-      createTaskRow([createTask({ status: 'completed' })]),
-      createTaskRow([createTask({ status: 'completed' }), createTask({ status: 'completed' })]),
-    ]),
-  ).toBe('failed');
   // Unkown since there is one unkown
   expect(
     getTaskLineStatus([

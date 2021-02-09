@@ -3,23 +3,21 @@ import { GraphState } from './useGraph';
 import styled, { css } from 'styled-components';
 
 import { formatDuration } from '../../utils/format';
-import { StepLineData } from './taskdataUtils';
-import { Row } from './VirtualizedTimeline';
+import { Row, StepRow } from './VirtualizedTimeline';
 import { getLongestRowDuration, getTaskLineStatus, startAndEndpointsOfRows } from '../../utils/row';
 import { lineColor } from './TimelineRow';
 import { TaskStatus } from '../../types';
 
 type TimelineFooterProps = {
-  steps: StepLineData[];
   graph: GraphState;
   rows: Row[];
   move: (change: number) => void;
   updateHandle: (which: 'left' | 'right', to: number) => void;
 };
 
-type TaskLineData = { start: number; end: number; status: TaskStatus };
+type LineData = { start: number; end: number; status: TaskStatus };
 
-const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHandle, rows, steps }) => {
+const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHandle, rows }) => {
   const _container = createRef<HTMLDivElement>();
   const [drag, setDrag] = useState({ dragging: false, start: 0 });
   const [handleDrag, setHandleDrag] = useState<{ dragging: boolean; which: 'left' | 'right' }>({
@@ -66,10 +64,21 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
   //
   // Data processing
   //
-  const [taskBasedLines, setTaskBasedLines] = useState<TaskLineData[]>([]);
+  const [lines, setLines] = useState<LineData[]>([]);
   useEffect(() => {
     if (graph.group) {
-      return;
+      const steps: LineData[] = rows
+        .filter((row) => row.type === 'step')
+        .map((steprow) => {
+          const srow = steprow as StepRow;
+          return {
+            start: srow.data.ts_epoch,
+            end: srow.rowObject.status === 'running' ? graph.max : srow.rowObject.finished_at,
+            status: srow.rowObject.status,
+          };
+        });
+
+      setLines(steps);
     } else {
       // If we are not grouping, we make lines from task rows.
       // 13 groups since we cannot fit more.
@@ -84,26 +93,23 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
         const status = getTaskLineStatus(grp);
 
         if (graph.sortBy !== 'duration') {
-          return { ...startAndEndpointsOfRows(grp), status };
+          const { start, end } = startAndEndpointsOfRows(grp);
+          return { status, start, end: status === 'running' ? graph.max : end };
         } else {
           const timings = startAndEndpointsOfRows(grp);
           const longest = getLongestRowDuration(grp);
 
           return {
-            start: timings.start,
-            end: timings.start + longest,
+            start: status === 'running' ? graph.min : timings.start,
+            end: status === 'running' ? graph.max : timings.start + longest,
             status,
           };
         }
       });
 
-      setTaskBasedLines(
-        linegroups
-          .map((item) => (item.status === 'running' ? { ...item, end: graph.max } : item))
-          .filter((r) => r.start !== 0 && r.end !== 0),
-      );
+      setLines(linegroups.filter((r) => r.start !== 0 && r.end !== 0));
     }
-  }, [rows, graph.group, graph.sortBy, graph.max]);
+  }, [rows, graph.group, graph.sortBy, graph.min, graph.max]);
 
   return (
     <TimelineFooterContainer>
@@ -111,25 +117,9 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
       <TimelineFooterContent>
         <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
         <MiniTimelineContainer ref={_container}>
-          {graph.group
-            ? steps.map((step) => (
-                <MiniTimelineRow
-                  key={(step.original?.step_name || '') + step.started_at + step.finished_at}
-                  graph={graph}
-                  started={step.started_at}
-                  finished={step.status === 'running' ? graph.max : step.finished_at}
-                  status={step.status}
-                />
-              ))
-            : taskBasedLines.map((step, index) => (
-                <MiniTimelineRow
-                  key={index}
-                  graph={graph}
-                  started={step.start}
-                  finished={step.end}
-                  status={step.status}
-                />
-              ))}
+          {lines.map((step, index) => (
+            <MiniTimelineRow key={index} graph={graph} started={step.start} finished={step.end} status={step.status} />
+          ))}
         </MiniTimelineContainer>
       </TimelineFooterContent>
 
