@@ -185,12 +185,16 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
                 move={(value) => graphDispatch({ type: 'move', value: value })}
                 updateHandle={(which, to) => {
                   if (which === 'left') {
-                    graphDispatch({ type: 'setZoom', start: to < graph.min ? graph.min : to, end: graph.timelineEnd });
+                    graphDispatch({
+                      type: 'setZoom',
+                      start: to < graph.min ? graph.min : to > graph.timelineEnd - 500 ? graph.timelineStart : to,
+                      end: graph.timelineEnd,
+                    });
                   } else {
                     graphDispatch({
                       type: 'setZoom',
                       start: graph.timelineStart,
-                      end: to > graph.max ? graph.max : to,
+                      end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
                     });
                   }
                 }}
