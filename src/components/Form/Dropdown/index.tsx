@@ -15,11 +15,12 @@ export const Dropdown: React.FC<
 > = ({ options, useNativeComponent = false, onChange, value, labelRenderer, children, ...rest }) => {
   const selectEl = useRef<HTMLSelectElement>(null);
   const [open, setOpen] = useState(false);
-  const activeOption = options.find((o) => o[0] === value) || options[0];
+  const activeOption = getActiveOption(options, value);
+  const acitveOptionId = activeOption[0];
 
   useEffect(() => {
     setOpen(false);
-  }, [activeOption]);
+  }, [acitveOptionId]);
 
   return (
     <DropdownWrapper>
@@ -95,6 +96,18 @@ export const Dropdown: React.FC<
     </DropdownWrapper>
   );
 };
+
+//
+// Utils
+//
+
+function getActiveOption(options: [string, string][], value: string | undefined): [string, string] {
+  return options.length === 0 ? ['', ''] : options.find((o) => o[0] === value) || options[0];
+}
+
+//
+// Styles
+//
 
 const DropdownWrapper = styled.div`
   position: relative;
