@@ -5,4 +5,6 @@ const FEATURE_FLAGS = {
   TIMELINE_MINIMAP: (process.env.REACT_APP_FEATURE_TIMELINE_MINIMAP || '1') === '1',
 };
 
+export type FeatureFlags = typeof FEATURE_FLAGS;
+
 export default FEATURE_FLAGS;
