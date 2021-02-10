@@ -1,6 +1,9 @@
+import { FeatureFlags } from './FEATURE';
+
 declare global {
   interface Window {
     METAFLOW_SERVICE: string;
+    FEATURES: FeatureFlags;
   }
 }
 /**

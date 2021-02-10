@@ -7,4 +7,6 @@ const FEATURE_FLAGS = {
 
 export type FeatureFlags = typeof FEATURE_FLAGS;
 
+window.FEATURES = FEATURE_FLAGS;
+
 export default FEATURE_FLAGS;
