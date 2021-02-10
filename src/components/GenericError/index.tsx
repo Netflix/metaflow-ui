@@ -106,13 +106,13 @@ export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ e
       <DetailsVersionInfo>
         <DetailsVersionSection>
           <DetailsVersionSectionLabel>Application version: </DetailsVersionSectionLabel>
-          <div>
+          <DetailsVersionText>
             {version.release_version} - {version.commit} - {version.env}
-          </div>
+          </DetailsVersionText>
         </DetailsVersionSection>
         <DetailsVersionSection>
           <DetailsVersionSectionLabel>Service version: </DetailsVersionSectionLabel>
-          <div>{version.service_version}</div>
+          <DetailsVersionText>{version.service_version}</DetailsVersionText>
         </DetailsVersionSection>
       </DetailsVersionInfo>
     </DetailContainer>
@@ -169,7 +169,7 @@ const DetailsLog = styled.div`
 const DetailsVersionInfo = styled.div`
   font-size: 13px;
   margin: 1rem 0;
-  display: flext;
+  display: flex;
 `;
 
 const DetailsVersionSection = styled.div`
@@ -179,6 +179,10 @@ const DetailsVersionSection = styled.div`
 
 const DetailsVersionSectionLabel = styled.div`
   margin-right: 0.25rem;
+`;
+
+const DetailsVersionText = styled.div`
+  word-break: break-all;
 `;
 
 export const DefaultAdditionalErrorInfo = (str: string): JSX.Element => (
