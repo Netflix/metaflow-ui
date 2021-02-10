@@ -320,7 +320,6 @@ function getTaskFromList(
   stepName: string | undefined,
   taskId: string | undefined,
 ): ITask[] | null {
-  console.log(stepName, taskId);
   if (!stepName || !taskId || !model[stepName]) return null;
 
   const stepTasks = model[stepName].data;
