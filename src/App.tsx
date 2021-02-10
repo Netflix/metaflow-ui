@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route, useLocation } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
 import { ThemeProvider } from 'styled-components';
@@ -20,6 +20,8 @@ import { getRouteMatch } from './utils/routing';
 import { apiHttp } from './constants';
 import { setServiceVersion } from './VERSION';
 import Logger from './components/Logger';
+import FEATURE_FLAGS, { FeatureFlags } from './FEATURE';
+import FeatureFlagLoader from './components/FeatureLoader';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -39,6 +41,7 @@ function ScrollToTop() {
 
 const App: React.FC = () => {
   const { t } = useTranslation();
+  const [flagsReceived, setFlagsReceived] = useState(false);
 
   useEffect(() => {
     fetch(apiHttp('/version'))
@@ -47,6 +50,24 @@ const App: React.FC = () => {
         if (value) {
           setServiceVersion(value);
         }
+      });
+
+    fetch(apiHttp('/features'))
+      .then((response) => (response.status === 200 ? response.json() : Promise.resolve(null)))
+      .then((values: Record<keyof FeatureFlags, boolean>) => {
+        const featureKeys = Object.keys(FEATURE_FLAGS);
+        if (values) {
+          Object.keys(values).forEach((key) => {
+            const fixedKey = key.split('_').slice(1, key.split('_').length).join('_');
+            if (featureKeys.indexOf(fixedKey) > -1) {
+              FEATURE_FLAGS[fixedKey as keyof FeatureFlags] = values[key as keyof FeatureFlags];
+            }
+          });
+        }
+        setFlagsReceived(true);
+      })
+      .catch(() => {
+        setFlagsReceived(true);
       });
   }, []);
 
@@ -59,12 +80,18 @@ const App: React.FC = () => {
             <Router>
               <ScrollToTop />
               <QueryParamProvider ReactRouterRoute={Route}>
-                <Notifications />
-                <AppBar />
-                <Page>
-                  <Root />
-                </Page>
-                <Logger />
+                {flagsReceived ? (
+                  <>
+                    <Notifications />
+                    <AppBar />
+                    <Page>
+                      <Root />
+                    </Page>
+                    <Logger />
+                  </>
+                ) : (
+                  <FeatureFlagLoader />
+                )}
               </QueryParamProvider>
             </Router>
           </TimezoneProvider>
