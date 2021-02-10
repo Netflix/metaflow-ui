@@ -11,8 +11,9 @@ export const Dropdown: React.FC<
     options: [string, string][];
     useNativeComponent?: boolean;
     labelRenderer?: (value: string) => JSX.Element;
+    optionRenderer?: (value: string, label: string) => JSX.Element;
   } & CommonFieldProps<HTMLSelectElement>
-> = ({ options, useNativeComponent = false, onChange, value, labelRenderer, children, ...rest }) => {
+> = ({ options, useNativeComponent = false, onChange, value, labelRenderer, optionRenderer, children, ...rest }) => {
   const selectEl = useRef<HTMLSelectElement>(null);
   const [open, setOpen] = useState(false);
   const activeOption = getActiveOption(options, value);
@@ -85,7 +86,7 @@ export const Dropdown: React.FC<
                       setOpen(false);
                     }}
                   >
-                    {o[1]}
+                    {optionRenderer ? optionRenderer(o[0], o[1]) : o[1]}
                   </DropdownOption>
                 );
               })}
