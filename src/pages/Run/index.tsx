@@ -4,7 +4,7 @@ import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
 import useRowData, { RowDataModel } from '../../components/Timeline/useRowData';
 import { getPath } from '../../utils/routing';
-import { Run as IRun, RunParam } from '../../types';
+import { Run as IRun, Task as ITask, RunParam } from '../../types';
 
 import TaskViewContainer from '../Task';
 import Spinner from '../../components/Spinner';
@@ -254,6 +254,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 ) : (
                   <TaskViewContainer
                     run={run}
+                    taskFromList={getTaskFromList(rows, params.stepName, params.taskId)}
                     stepName={previousStepName || 'not-selected'}
                     taskId={previousTaskId || 'not-selected'}
                     rows={visibleRows}
@@ -312,6 +313,24 @@ function getTaskPageLink(
   }
 
   return getPath.tasks(flowId, runNumber) + '?' + urlParams;
+}
+
+function getTaskFromList(
+  model: RowDataModel,
+  stepName: string | undefined,
+  taskId: string | undefined,
+): ITask[] | null {
+  console.log(stepName, taskId);
+  if (!stepName || !taskId || !model[stepName]) return null;
+
+  const stepTasks = model[stepName].data;
+  const match = Object.keys(stepTasks).find((taskId) => {
+    const task = stepTasks[taskId][0];
+    if (!task) return false;
+    return task.task_name === taskId || task.task_id.toString() === taskId;
+  });
+
+  return match ? model[stepName].data[match] : null;
 }
 
 export default RunContainer;
