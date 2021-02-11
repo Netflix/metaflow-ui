@@ -76,31 +76,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
     setStepPositions(stepPos);
   }, [rows]);
 
-  //
-  // Horizontal dragging of whole graph
-  //
-
-  const [drag, setDrag] = useState({ dragging: false, start: 0 });
-  const move = (clientX: number) => {
-    if (drag.dragging) {
-      if (_listContainer && _listContainer.current) {
-        const movement = (clientX - drag.start) / _listContainer.current?.clientWidth;
-        setDrag({ ...drag, start: clientX });
-        graphDispatch({ type: 'move', value: -((graph.max - graph.min) * movement) });
-      }
-    }
-  };
-
-  const startMove = (clientX: number) => {
-    setDrag({ ...drag, dragging: true, start: clientX });
-  };
-
-  const stopMove = () => {
-    if (drag.dragging) {
-      setDrag({ dragging: false, start: 0 });
-    }
-  };
-
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
@@ -120,14 +95,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
         {rows.length > 0 && (
           <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
             <FixedListContainer
-              onMouseDown={(e) => startMove(e.clientX)}
-              onMouseUp={() => stopMove()}
-              onMouseMove={(e) => move(e.clientX)}
-              onMouseLeave={() => stopMove()}
-              onTouchStart={(e) => startMove(e.touches[0].clientX)}
-              onTouchEnd={() => stopMove()}
-              onTouchMove={(e) => move(e.touches[0].clientX)}
-              onTouchCancel={() => stopMove()}
               sticky={!!stickyHeader && graph.group}
               style={{
                 height:

@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import TaskListLabel from '../../../components/Timeline/TaskListLabel';
 import { useTranslation } from 'react-i18next';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
+import { getRowStatus } from '../../../components/Timeline/TimelineRow';
 
 type Props = {
   index: number;
@@ -39,6 +40,7 @@ const TaskListRow: React.FC<Props> = ({
             toggle={toggle}
             open={isOpen}
             grouped={grouped}
+            status={getRowStatus(item)}
             t={t}
           />
         ) : null
@@ -49,6 +51,7 @@ const TaskListRow: React.FC<Props> = ({
           open={isOpen}
           duration={duration}
           grouped={grouped}
+          status={getRowStatus({ type: 'task', data: item.data[item.data.length - 1] })}
           t={t}
           paramsString={paramsString}
         />
