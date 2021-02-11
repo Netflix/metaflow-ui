@@ -7,6 +7,7 @@ import { Row, StepRow } from './VirtualizedTimeline';
 import { getLongestRowDuration, getTaskLineStatus, startAndEndpointsOfRows } from '../../utils/row';
 import { lineColor } from './TimelineRow';
 import { TaskStatus } from '../../types';
+import FEATURE_FLAGS from '../../FEATURE';
 
 type TimelineFooterProps = {
   graph: GraphState;
@@ -117,9 +118,16 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
       <TimelineFooterContent>
         <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
         <MiniTimelineContainer ref={_container}>
-          {lines.map((step, index) => (
-            <MiniTimelineRow key={index} graph={graph} started={step.start} finished={step.end} status={step.status} />
-          ))}
+          {FEATURE_FLAGS.TIMELINE_MINIMAP &&
+            lines.map((step, index) => (
+              <MiniTimelineRow
+                key={index}
+                graph={graph}
+                started={step.start}
+                finished={step.end}
+                status={step.status}
+              />
+            ))}
         </MiniTimelineContainer>
       </TimelineFooterContent>
 
