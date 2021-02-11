@@ -323,8 +323,8 @@ function getTaskFromList(
   if (!stepName || !taskId || !model[stepName]) return null;
 
   const stepTasks = model[stepName].data;
-  const match = Object.keys(stepTasks).find((taskId) => {
-    const task = stepTasks[taskId][0];
+  const match = Object.keys(stepTasks).find((id) => {
+    const task = stepTasks[id][0];
     if (!task) return false;
     return task.task_name === taskId || task.task_id.toString() === taskId;
   });
