@@ -161,7 +161,16 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
     }
 
     case 'setZoom':
-      return { ...state, timelineEnd: action.end, timelineStart: action.start, controlled: true };
+      const newVals = {
+        timelineEnd: action.end <= action.start ? action.start : action.end,
+        timelineStart: action.start >= action.end ? action.end : action.start,
+      };
+
+      return {
+        ...state,
+        ...newVals,
+        controlled: newVals.timelineEnd - newVals.timelineStart >= (state.max - state.min) * 0.97 ? false : true,
+      };
 
     case 'resetZoom':
       return resetTimeline(state);
@@ -185,7 +194,11 @@ export function graphReducer(state: GraphState, action: GraphAction): GraphState
       return { ...state, isCustomEnabled: action.value };
 
     case 'incrementTimelineLength':
-      return { ...state, max: state.max + 1000, timelineEnd: state.controlled ? state.timelineEnd : state.max + 1000 };
+      return {
+        ...state,
+        max: new Date().getTime(),
+        timelineEnd: state.controlled ? state.timelineEnd : new Date().getTime(),
+      };
 
     case 'reset':
       return { ...state, controlled: false, min: 0, max: 0, timelineStart: 0, timelineEnd: 0 };

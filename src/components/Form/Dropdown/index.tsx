@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import Icon from '../../Icon';
 import Button from '../../Button';
@@ -11,11 +11,17 @@ export const Dropdown: React.FC<
     options: [string, string][];
     useNativeComponent?: boolean;
     labelRenderer?: (value: string) => JSX.Element;
+    optionRenderer?: (value: string, label: string) => JSX.Element;
   } & CommonFieldProps<HTMLSelectElement>
-> = ({ options, useNativeComponent = false, onChange, value, labelRenderer, ...rest }) => {
+> = ({ options, useNativeComponent = false, onChange, value, labelRenderer, optionRenderer, children, ...rest }) => {
   const selectEl = useRef<HTMLSelectElement>(null);
   const [open, setOpen] = useState(false);
-  const activeOption = options.find((o) => o[0] === value) || options[0];
+  const activeOption = getActiveOption(options, value);
+  const acitveOptionId = activeOption[0];
+
+  useEffect(() => {
+    setOpen(false);
+  }, [acitveOptionId]);
 
   return (
     <DropdownWrapper>
@@ -59,30 +65,31 @@ export const Dropdown: React.FC<
       {open && (
         <>
           <DropdownOptions>
-            {options.map((o) => {
-              const val = o[0];
-              const isSelected = val === value;
-              return (
-                <DropdownOption
-                  key={o[0]}
-                  textOnly
-                  variant={isSelected ? 'primaryText' : 'text'}
-                  size="sm"
-                  onClick={() => {
-                    // Simulate native onChange event
-                    if (selectEl.current) {
-                      selectEl.current.value = val;
-                      const event = document.createEvent('HTMLEvents');
-                      event.initEvent('change', true, false);
-                      selectEl.current.dispatchEvent(event);
-                    }
-                    setOpen(false);
-                  }}
-                >
-                  {o[1]}
-                </DropdownOption>
-              );
-            })}
+            {children ||
+              options.map((o) => {
+                const val = o[0];
+                const isSelected = val === value;
+                return (
+                  <DropdownOption
+                    key={o[0]}
+                    textOnly
+                    variant={isSelected ? 'primaryText' : 'text'}
+                    size="sm"
+                    onClick={() => {
+                      // Simulate native onChange event
+                      if (selectEl.current) {
+                        selectEl.current.value = val;
+                        const event = document.createEvent('HTMLEvents');
+                        event.initEvent('change', true, false);
+                        selectEl.current.dispatchEvent(event);
+                      }
+                      setOpen(false);
+                    }}
+                  >
+                    {optionRenderer ? optionRenderer(o[0], o[1]) : o[1]}
+                  </DropdownOption>
+                );
+              })}
           </DropdownOptions>
           <PopupClickOverlay onClick={() => setOpen(false)} />
         </>
@@ -90,6 +97,18 @@ export const Dropdown: React.FC<
     </DropdownWrapper>
   );
 };
+
+//
+// Utils
+//
+
+function getActiveOption(options: [string, string][], value: string | undefined): [string, string] {
+  return options.length === 0 ? ['', ''] : options.find((o) => o[0] === value) || options[0];
+}
+
+//
+// Styles
+//
 
 const DropdownWrapper = styled.div`
   position: relative;
@@ -115,9 +134,12 @@ const DropdownOptions = styled.div`
   z-index: 10;
   white-space: nowrap;
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.06);
+
+  max-height: 80vh;
+  overflow-y: auto;
 `;
 
-const DropdownOption = styled(Button)`
+export const DropdownOption = styled(Button)`
   width: 100%;
 `;
 const PopupClickOverlay = styled.div`

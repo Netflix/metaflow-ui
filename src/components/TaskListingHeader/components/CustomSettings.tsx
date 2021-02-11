@@ -54,6 +54,7 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
               ['failed', t('run.filter-failed') + ` (${counts.failed})`],
             ]}
             labelRenderer={(val) => <StatusLabelRenderer val={val} status={graph.statusFilter} />}
+            optionRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} noTitle />}
           />
         </TaskListDropdownContainer>
 
@@ -97,11 +98,15 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
 // Extra components
 //
 
-const StatusLabelRenderer: React.FC<{ val: string; status: string | null | undefined }> = ({ val, status }) => {
+const StatusLabelRenderer: React.FC<{ val: string; status: string | null | undefined; noTitle?: boolean }> = ({
+  val,
+  status,
+  noTitle,
+}) => {
   const { t } = useTranslation();
   return (
     <StatusLabelContainer>
-      <DropdownLabelTitle>{t('fields.status')}</DropdownLabelTitle>
+      {!noTitle && <DropdownLabelTitle>{t('fields.status')}</DropdownLabelTitle>}
       <ForceNoWrapText>{val}</ForceNoWrapText>
       <StatusLights status={status || 'all'} />
     </StatusLabelContainer>

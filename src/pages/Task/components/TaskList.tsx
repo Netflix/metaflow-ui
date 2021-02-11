@@ -8,6 +8,8 @@ import TaskListRow from './TaskListRow';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
 import { HEADER_SIZE_PX } from '../../../constants';
 import { getTaskId } from '../../../utils/task';
+import { AsyncStatus } from '../../../types';
+import Spinner from '../../../components/Spinner';
 
 //
 // Tasklist
@@ -16,13 +18,22 @@ import { getTaskId } from '../../../utils/task';
 type Props = {
   rows: Row[];
   rowDataDispatch: (action: RowDataAction) => void;
+  taskStatus: AsyncStatus;
   activeTaskId: string;
   results: SearchResultModel;
   grouped: boolean;
   paramsString?: string;
 };
 
-const TaskList: React.FC<Props> = ({ rows, rowDataDispatch, activeTaskId, results, grouped, paramsString }) => {
+const TaskList: React.FC<Props> = ({
+  rows,
+  rowDataDispatch,
+  taskStatus,
+  activeTaskId,
+  results,
+  grouped,
+  paramsString,
+}) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
@@ -86,12 +97,21 @@ const TaskList: React.FC<Props> = ({ rows, rowDataDispatch, activeTaskId, result
           />
         )}
 
+        {/* Search ok, no results */}
         {rows.length === 0 && results.status === 'Ok' && (
           <div style={{ padding: '1rem 0' }}>{t('search.no-results')}</div>
         )}
-        {rows.length === 0 && results.status === 'NotAsked' && (
+        {/* Not searched, no more loading, no results -> Not tasks message */}
+        {rows.length === 0 && results.status === 'NotAsked' && taskStatus !== 'Loading' && (
           <div style={{ padding: '1rem 0' }}>{t('search.no-tasks')}</div>
         )}
+        {/* No rows, still loading more */}
+        {rows.length === 0 && taskStatus === 'Loading' && (
+          <div style={{ padding: '1rem 0', display: 'flex', justifyContent: 'center' }}>
+            <Spinner sm />
+          </div>
+        )}
+        {/* Search failed */}
         {results.status === 'Error' && <div>{t('search.error')}</div>}
       </div>
     </TaskListContainer>

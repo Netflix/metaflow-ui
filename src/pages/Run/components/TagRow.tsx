@@ -1,9 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import InformationRow from '../../../components/InformationRow';
 import { ItemRow } from '../../../components/Structure';
-// import Tag from '../../../components/Tag';
-import { SmallText } from '../../../components/Text';
+import TitledRow from '../../../components/TitledRow';
 
 //
 // Typedef
@@ -13,42 +11,42 @@ type TagRowProps = {
   tags: string[];
   label: string;
   push: (path: string) => void;
+  noTagsMsg: string;
 };
 
 //
 // Component
 //
 
-const TagRow: React.FC<TagRowProps> = ({ tags, label, push }) => (
-  <InformationRow scrollOverflow={false}>
-    <ItemRow pad="md" style={{ paddingLeft: '0.25rem' }}>
-      <TagRowTitle>
-        <SmallText>{label}</SmallText>
-      </TagRowTitle>
-      <ItemRow pad="xs" style={{ flexWrap: 'wrap', width: 'auto' }}>
-        {tags.map((tag, index) => (
-          <RunTag
-            key={tag}
-            onClick={() => {
-              push('/?_tags=' + encodeURIComponent(tag));
-            }}
-          >
-            {tag}
-            {index !== tags.length - 1 && ', '}
-          </RunTag>
-        ))}
-      </ItemRow>
-    </ItemRow>
-  </InformationRow>
-);
+const TagRow: React.FC<TagRowProps> = ({ tags, label, push, noTagsMsg }) => {
+  return (
+    <TitledRow
+      title={label}
+      type="default"
+      content={
+        <ItemRow pad="xs" style={{ flexWrap: 'wrap', width: 'auto' }}>
+          {tags.length > 0
+            ? tags.map((tag, index) => (
+                <RunTag
+                  key={tag}
+                  onClick={() => {
+                    push('/?_tags=' + encodeURIComponent(tag));
+                  }}
+                >
+                  {tag}
+                  {index !== tags.length - 1 && ', '}
+                </RunTag>
+              ))
+            : noTagsMsg}
+        </ItemRow>
+      }
+    />
+  );
+};
 
 //
 // Style
 //
-
-const TagRowTitle = styled.div`
-  width: 120px;
-`;
 
 const RunTag = styled.span`
   cursor: pointer;

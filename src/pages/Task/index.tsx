@@ -2,7 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { StringParam, useQueryParams } from 'use-query-params';
-import { Run as IRun, Task as ITask, Log, Metadata } from '../../types';
+import { Run as IRun, Task as ITask, Log, Metadata, AsyncStatus } from '../../types';
 import useResource from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import { logWarning } from '../../utils/errorlogger';
@@ -31,10 +31,12 @@ import { getTaskId } from '../../utils/task';
 
 type TaskViewProps = {
   run: IRun;
+  taskFromList: ITask[] | null;
   stepName: string;
   taskId: string;
   rows: Row[];
   rowDataDispatch: (action: RowDataAction) => void;
+  taskStatus: AsyncStatus;
   graph: GraphHook;
   searchField: SearchFieldReturnType;
   counts: RowCounts;
@@ -48,10 +50,12 @@ type TaskViewProps = {
 
 const Task: React.FC<TaskViewProps> = ({
   run,
+  taskFromList,
   stepName,
   taskId,
   rows,
   rowDataDispatch,
+  taskStatus,
   graph,
   searchField,
   counts,
@@ -78,13 +82,15 @@ const Task: React.FC<TaskViewProps> = ({
   //
   // Task/attempt data
   //
-  const { data: tasks, status, error } = useResource<ITask[], ITask>({
+  const { data: tasksFromFetch, status, error } = useResource<ITask[], ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts?postprocess=true`,
     subscribeToEvents: true,
     initialData: null,
     updatePredicate: (a, b) => a.attempt_id === b.attempt_id,
-    pause: stepName === 'not-selected' || taskId === 'not-selected',
+    pause: stepName === 'not-selected' || taskId === 'not-selected' || !!taskFromList,
   });
+
+  const tasks = taskFromList || tasksFromFetch;
 
   const attemptId = qp.attempt ? parseInt(qp.attempt) : tasks ? tasks.length - 1 : 0;
   const task = tasks?.find((item) => item.attempt_id === attemptId) || null;
@@ -207,37 +213,32 @@ const Task: React.FC<TaskViewProps> = ({
         <TaskList
           rows={rows}
           rowDataDispatch={rowDataDispatch}
+          taskStatus={taskStatus}
           activeTaskId={taskId}
           results={searchField.results}
           grouped={graph.graph.group}
           paramsString={paramsString}
         />
 
-        {status === 'Loading' && (
+        {status === 'Loading' && !taskFromList && (
           <TaskLoaderContainer>
             <Spinner md />
           </TaskLoaderContainer>
         )}
 
-        {status === 'Error' && (
+        {status === 'Error' && !taskFromList && (
           <Space>
             <APIErrorRenderer error={error} icon="listItemNotFound" message={t('error.load-error')} />
           </Space>
         )}
 
-        {status === 'Ok' && tasks?.length === 0 && (
+        {status === 'Ok' && tasks?.length === 0 && !taskFromList && (
           <Space>
             <GenericError icon="listItemNotFound" message={t('error.not-found')} />
           </Space>
         )}
 
-        {taskId === 'not-selected' && status !== 'Loading' && (
-          <Space>
-            <GenericError icon="listItemNotFound" message={t('task.no-task-selected')} />
-          </Space>
-        )}
-
-        {fullscreen === null && status === 'Ok' && task && (
+        {fullscreen === null && (status === 'Ok' || taskFromList) && task && (
           <>
             <AnchoredView
               activeSection={qp.section}

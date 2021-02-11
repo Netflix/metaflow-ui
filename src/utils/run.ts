@@ -3,7 +3,7 @@ import { getISOString } from './date';
 import { formatDuration } from './format';
 
 export function getRunId(run: Run): string {
-  return run.run_id || (run.run_number || 0).toString();
+  return run.run || run.run_id || (run.run_number || 0).toString();
 }
 
 /**
@@ -39,6 +39,10 @@ export function getRunEndTime(run: Run, timezone?: string): string | null {
  * @param run - Run object
  */
 export function getRunDuration(run: Run): string | null {
+  if (run.status === 'running') {
+    return formatDuration(new Date().getTime() - run.ts_epoch, 0);
+  }
+
   return run.duration
     ? formatDuration(run.duration, 0)
     : run.finished_at

@@ -31,12 +31,12 @@ export const getLongestRowDuration = (rows: Row[]): number => {
 export const getTaskLineStatus = (rows: Row[]): TaskStatus => {
   const statuses = rows.map((row) => {
     if (row.type === 'task') {
-      return row.data.length > 1 ? 'failed' : row.data.length === 1 ? row.data[0].status : 'unknown';
+      return row.data.length > 0 ? row.data[0].status || 'unknown' : 'unknown';
     }
     return row.rowObject.status;
   });
+  if (statuses.indexOf('running') > -1) return 'running';
   if (statuses.indexOf('failed') > -1) return 'failed';
   if (statuses.indexOf('unknown') > -1) return 'unknown';
-  if (statuses.indexOf('running') > -1) return 'running';
   return 'completed';
 };

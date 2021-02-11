@@ -4,7 +4,7 @@ import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
 import useRowData, { RowDataModel } from '../../components/Timeline/useRowData';
 import { getPath } from '../../utils/routing';
-import { Run as IRun, RunParam } from '../../types';
+import { Run as IRun, Task as ITask, RunParam } from '../../types';
 
 import TaskViewContainer from '../Task';
 import Spinner from '../../components/Spinner';
@@ -172,12 +172,12 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       // TODO: Move this to somewhere else
       const timings = startAndEndpointsOfRows([...rowsToUpdate]);
       const endTime =
-        graph.graph.sortBy === 'duration' ? timings.start + getLongestRowDuration(rowsToUpdate) : timings.end;
+        graph.graph.sortBy === 'duration' ? run.ts_epoch + getLongestRowDuration(rowsToUpdate) : timings.end;
 
       if (timings.start !== 0 && endTime !== 0) {
         graph.dispatch({
           type: 'init',
-          start: timings.start,
+          start: run.ts_epoch,
           end: endTime,
         });
       }
@@ -231,7 +231,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 ) : (
                   <Timeline
                     rows={visibleRows}
-                    steps={steps}
                     rowDataDispatch={dispatch}
                     status={taskStatus}
                     counts={counts}
@@ -255,9 +254,11 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 ) : (
                   <TaskViewContainer
                     run={run}
+                    taskFromList={getTaskFromList(rows, params.stepName, params.taskId)}
                     stepName={previousStepName || 'not-selected'}
                     taskId={previousTaskId || 'not-selected'}
                     rows={visibleRows}
+                    taskStatus={taskStatus}
                     rowDataDispatch={dispatch}
                     searchField={searchField}
                     graph={graph}
@@ -312,6 +313,23 @@ function getTaskPageLink(
   }
 
   return getPath.tasks(flowId, runNumber) + '?' + urlParams;
+}
+
+function getTaskFromList(
+  model: RowDataModel,
+  stepName: string | undefined,
+  taskId: string | undefined,
+): ITask[] | null {
+  if (!stepName || !taskId || !model[stepName]) return null;
+
+  const stepTasks = model[stepName].data;
+  const match = Object.keys(stepTasks).find((taskId) => {
+    const task = stepTasks[taskId][0];
+    if (!task) return false;
+    return task.task_name === taskId || task.task_id.toString() === taskId;
+  });
+
+  return match ? model[stepName].data[match] : null;
 }
 
 export default RunContainer;

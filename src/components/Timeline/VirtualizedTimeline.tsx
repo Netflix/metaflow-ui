@@ -6,7 +6,7 @@ import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
 import { GraphHook, GraphState, GraphSortBy } from './useGraph';
 import { StepRowData, RowDataAction, RowDataModel } from './useRowData';
-import { RowCounts, StepLineData } from './taskdataUtils';
+import { RowCounts } from './taskdataUtils';
 import { useTranslation } from 'react-i18next';
 import TimelineFooter from './TimelineFooter';
 import FullPageContainer from '../FullPageContainer';
@@ -16,9 +16,12 @@ import { ItemRow } from '../Structure';
 import { TFunction } from 'i18next';
 import Spinner from '../Spinner';
 import TaskListingHeader from '../TaskListingHeader';
+import FEATURE_FLAGS from '../../FEATURE';
 
 export const ROW_HEIGHT = 28;
-export type Row = { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task[] };
+export type StepRow = { type: 'step'; data: Step; rowObject: StepRowData };
+export type TaskRow = { type: 'task'; data: Task[] };
+export type Row = StepRow | TaskRow;
 type StepIndex = { name: string; index: number };
 
 //
@@ -27,7 +30,6 @@ type StepIndex = { name: string; index: number };
 //
 type TimelineProps = {
   rows: Row[];
-  steps: StepLineData[];
   rowDataDispatch: React.Dispatch<RowDataAction>;
   status: AsyncStatus;
   counts: RowCounts;
@@ -40,7 +42,6 @@ type TimelineProps = {
 const VirtualizedTimeline: React.FC<TimelineProps> = ({
   graph: graphHook,
   rows,
-  steps,
   rowDataDispatch,
   status,
   counts,
@@ -177,19 +178,28 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
               )}
             </FixedListContainer>
 
-            <TimelineFooter
-              graph={graph}
-              rows={rows}
-              steps={steps}
-              move={(value) => graphDispatch({ type: 'move', value: value })}
-              updateHandle={(which, to) => {
-                if (which === 'left') {
-                  graphDispatch({ type: 'setZoom', start: to < graph.min ? graph.min : to, end: graph.timelineEnd });
-                } else {
-                  graphDispatch({ type: 'setZoom', start: graph.timelineStart, end: to > graph.max ? graph.max : to });
-                }
-              }}
-            />
+            {FEATURE_FLAGS.TIMELINE_MINIMAP && (
+              <TimelineFooter
+                graph={graph}
+                rows={rows}
+                move={(value) => graphDispatch({ type: 'move', value: value })}
+                updateHandle={(which, to) => {
+                  if (which === 'left') {
+                    graphDispatch({
+                      type: 'setZoom',
+                      start: to < graph.min ? graph.min : to > graph.timelineEnd - 500 ? graph.timelineStart : to,
+                      end: graph.timelineEnd,
+                    });
+                  } else {
+                    graphDispatch({
+                      type: 'setZoom',
+                      start: graph.timelineStart,
+                      end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
+                    });
+                  }
+                }}
+              />
+            )}
           </div>
         )}
 
