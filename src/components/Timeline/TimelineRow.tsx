@@ -95,9 +95,17 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
 
 const RowElement: React.FC<{ item: Row; onOpen: () => void }> = ({ item, children, onOpen }) => {
   if (item.type === 'task') {
-    return <RowGraphLinkContainer to={getPathFor.task(item.data[0])}>{children}</RowGraphLinkContainer>;
+    return (
+      <RowGraphLinkContainer to={getPathFor.task(item.data[0])} data-testid="timeline-row-graphic-container">
+        {children}
+      </RowGraphLinkContainer>
+    );
   }
-  return <RowGraphContainer onClick={onOpen}>{children}</RowGraphContainer>;
+  return (
+    <RowGraphContainer onClick={onOpen} data-testid="timeline-row-graphic-container">
+      {children}
+    </RowGraphContainer>
+  );
 };
 
 type BoxGraphicElementProps = {
