@@ -2,15 +2,14 @@ import React from 'react';
 import styled, { css, DefaultTheme, keyframes } from 'styled-components';
 import { Row } from './VirtualizedTimeline';
 import { GraphState } from './useGraph';
-import { useHistory } from 'react-router-dom';
-import { getPath } from '../../utils/routing';
+import { Link } from 'react-router-dom';
+import { getPathFor } from '../../utils/routing';
 import { Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { lighten } from 'polished';
 import { TFunction } from 'i18next';
 import TaskListLabel from './TaskListLabel';
 import { StepRowData } from './useRowData';
-import { getTaskId } from '../../utils/task';
 
 type TimelineRowProps = {
   // Row type and data
@@ -65,7 +64,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             t={t}
           />
         )}
-        <RowGraphContainer data-testid="timeline-row-graphic-container">
+        <RowElement item={item} onOpen={onOpen}>
           {item.type === 'step' ? (
             <BoxGraphicElement
               graph={graph}
@@ -73,7 +72,6 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               grayed={isOpen}
               duration={item.rowObject.status === 'running' ? 0 : item.rowObject.duration}
               labelDuration={getStepDuration(item, graph)}
-              onOpen={onOpen}
               isLastAttempt
             />
           ) : (
@@ -89,10 +87,17 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               />
             ))
           )}
-        </RowGraphContainer>
+        </RowElement>
       </Element>
     </>
   );
+};
+
+const RowElement: React.FC<{ item: Row; onOpen: () => void }> = ({ item, children, onOpen }) => {
+  if (item.type === 'task') {
+    return <RowGraphLinkContainer to={getPathFor.task(item.data[0])}>{children}</RowGraphLinkContainer>;
+  }
+  return <RowGraphContainer onClick={onOpen}>{children}</RowGraphContainer>;
 };
 
 type BoxGraphicElementProps = {
@@ -102,7 +107,6 @@ type BoxGraphicElementProps = {
   isLastAttempt: boolean;
   duration: number | null;
   labelDuration?: number | null;
-  onOpen?: () => void;
   startTimeOfFirstAttempt?: number;
 };
 
@@ -113,10 +117,8 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   isLastAttempt,
   duration,
   labelDuration,
-  onOpen,
   startTimeOfFirstAttempt,
 }) => {
-  const { push } = useHistory();
   const status = getRowStatus(row);
   // Extend visible area little bit to prevent lines seem like going out of bounds. Happens
   // in some cases with short end task
@@ -142,22 +144,6 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         root={row.type === 'step'}
         style={{
           width: row.type === 'step' ? `calc(${width}% + 10px)` : `${width}%`,
-        }}
-        onClick={() => {
-          if (row.type === 'task') {
-            push(
-              getPath.task(
-                row.data.flow_id,
-                row.data.run_id || row.data.run_number,
-                row.data.step_name,
-                getTaskId(row.data),
-              ),
-            );
-          } else {
-            if (onOpen) {
-              onOpen();
-            }
-          }
         }}
         data-testid="boxgraphic"
       >
@@ -260,12 +246,19 @@ const StickyStyledRow = styled(StyledRow)`
   left: 0;
 `;
 
-const RowGraphContainer = styled.div`
+const RowContainerStyles = css`
   position: relative;
   width: 100%;
   border-left: ${(p) => p.theme.border.thinLight};
   overflow-x: hidden;
-  cursor: grab;
+`;
+
+const RowGraphLinkContainer = styled(Link)`
+  ${RowContainerStyles}
+`;
+
+const RowGraphContainer = styled.div`
+  ${RowContainerStyles}
 `;
 
 const BoxGraphic = styled.div<{ root: boolean }>`

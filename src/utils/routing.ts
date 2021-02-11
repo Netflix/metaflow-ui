@@ -1,4 +1,5 @@
 import { match, matchPath } from 'react-router-dom';
+import { Task } from '../types';
 
 export const SHORT_PATHS = {
   runSubview: `/:flowId/:runNumber/view/:viewType`,
@@ -22,6 +23,11 @@ export const getPath = {
     `/${flowId}/${runNumber}/${stepName}/${taskId}`,
   run: (flowId: PathValue, runNumber: PathValue): string => `/${flowId}/${runNumber}`,
   home: (): string => '/',
+};
+
+export const getPathFor = {
+  task: (item: Task): string =>
+    `/${item.flow_id}/${item.run_id || item.run_number}/${item.step_name}/${item.task_name || item.task_id}`,
 };
 
 export type KnownURLParams = {
