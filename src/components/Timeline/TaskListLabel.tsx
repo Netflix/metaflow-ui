@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 import { Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { getPath } from '../../utils/routing';
+import { colorByStatus } from '../../utils/style';
 import { getTaskId } from '../../utils/task';
 import Icon from '../Icon';
 
@@ -14,6 +15,7 @@ type BaseProps = {
   t: TFunction;
   duration: number | null;
   paramsString?: string;
+  status: string;
 };
 type TaskRow = { type: 'task'; item: Task } & BaseProps;
 type StepRow = { type: 'step'; item: Step; toggle: () => void } & BaseProps;
@@ -22,7 +24,7 @@ type Props = TaskRow | StepRow;
 const TaskListLabel: React.FC<Props> = (props) => {
   const { open, grouped, t } = props;
   return (
-    <RowLabel type={props.type} isOpen={open} group={grouped}>
+    <RowLabel type={props.type} isOpen={open} group={grouped} status={props.status}>
       {props.type === 'task' ? (
         <Link
           to={
@@ -84,7 +86,7 @@ function getTaskLabel(item: Task): string {
 
 export default TaskListLabel;
 
-const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: boolean }>`
+const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: boolean; status: string }>`
   flex: 0 0 245px;
   max-width: 245px;
   overflow: hidden;
@@ -92,6 +94,8 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   font-size: ${(p) => (p.type === 'task' ? '12px' : '14px')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
   line-height: 27px;
+  border-left: 2px solid ${(p) => colorByStatus(p.theme, p.status)};
+  padding-left: ${(p) => (p.group ? '0' : '0.5rem')};
 
   a {
     display: flex;

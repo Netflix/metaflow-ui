@@ -52,6 +52,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             grouped={isGrouped}
             t={t}
             duration={getStepDuration(item, graph)}
+            status={getRowStatus(item)}
           />
         ) : (
           <TaskListLabel
@@ -61,6 +62,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             duration={item.data[item.data.length - 1].duration || null}
             grouped={isGrouped}
             paramsString={paramsString}
+            status={getRowStatus({ type: 'task', data: item.data[item.data.length - 1] })}
             t={t}
           />
         )}
@@ -166,7 +168,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   );
 };
 
-function getRowStatus(
+export function getRowStatus(
   row: { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task },
 ): string {
   if (row.type === 'step') {
