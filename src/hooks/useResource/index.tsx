@@ -297,10 +297,18 @@ export default function useResource<T, U>({
             })
             .catch(() => {
               newError(targetUrl, defaultError);
+              if (postRequest) {
+                postRequest(targetUrl);
+              }
             });
         }
       })
-      .catch((_e) => newError(targetUrl, defaultError));
+      .catch((_e) => {
+        newError(targetUrl, defaultError);
+        if (postRequest) {
+          postRequest(targetUrl);
+        }
+      });
   }
 
   useEffect(() => {
