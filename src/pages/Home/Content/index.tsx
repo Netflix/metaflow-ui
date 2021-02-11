@@ -67,7 +67,11 @@ const HomeContentArea: React.FC<Props> = ({
         <Spinner md />
       </BigLoader>
 
-      {status === 'Error' && resultAmount === 0 && <APIErrorRenderer error={error} message={t('error.load-error')} />}
+      {status === 'Error' && resultAmount === 0 && (
+        <ContentErrorContainer>
+          <APIErrorRenderer error={error} message={t('error.load-error')} />
+        </ContentErrorContainer>
+      )}
 
       <AutoLoadTrigger
         status={showLoader ? 'Loading' : status}
@@ -105,4 +109,8 @@ const BigLoader = styled.div<{ visible: boolean }>`
   z-index: 999;
   opacity: ${(p) => (p.visible ? '1' : '0')};
   transition: 0.5s opacity;
+`;
+
+const ContentErrorContainer = styled.div`
+  padding: 3rem 0;
 `;
