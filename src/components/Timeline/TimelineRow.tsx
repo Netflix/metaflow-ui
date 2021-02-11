@@ -141,7 +141,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
       <BoxGraphic
         root={row.type === 'step'}
         style={{
-          width: row.type === 'step' ? `calc(${width}% + 10px)` : `${width}%`,
+          width: `${width}%`,
         }}
         onClick={() => {
           if (row.type === 'task') {
@@ -272,7 +272,7 @@ const BoxGraphic = styled.div<{ root: boolean }>`
   position: absolute;
   cursor: pointer;
   color: ${(p) => p.theme.color.text.dark};
-  min-width: 10px;
+  min-width: 5px;
   height: 27px;
   line-height: 27px;
 `;
