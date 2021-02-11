@@ -16,7 +16,7 @@ export function formatDuration(time: number, precision?: number): string {
   if (hours > 0) str += hours + 'h ';
   if (minutes > 0) str += minutes + 'm ';
   if (seconds > 0 || str === '')
-    str += (precision === 0 ? Math.floor(seconds) : secondsToPrecision(seconds, precision || 1)) + 's';
+    str += (precision === 0 || secs > 60 ? Math.floor(seconds) : secondsToPrecision(seconds, precision || 1)) + 's';
 
   return str;
 }
