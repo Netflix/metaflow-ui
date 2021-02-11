@@ -67,11 +67,11 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
   const iconProps = icon === false ? { noIcon: true } : { icon: icon };
 
   return (
-    <div>
+    <APIErrorContainer>
       <GenericError message={msg} {...iconProps} />
       {error && error.status !== 404 && <APIErrorDetails error={error} t={t} />}
       {error && error.status === 404 && customNotFound && <div>{customNotFound}</div>}
-    </div>
+    </APIErrorContainer>
   );
 };
 
@@ -118,6 +118,11 @@ export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ e
     </DetailContainer>
   );
 };
+
+const APIErrorContainer = styled.div`
+  width: 100%;
+  margin: 1rem 0;
+`;
 
 const DetailContainer = styled.div`
   padding: 2rem;
