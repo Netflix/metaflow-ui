@@ -16,7 +16,6 @@ import { ItemRow } from '../Structure';
 import { TFunction } from 'i18next';
 import Spinner from '../Spinner';
 import TaskListingHeader from '../TaskListingHeader';
-import FEATURE_FLAGS from '../../FEATURE';
 
 export const ROW_HEIGHT = 28;
 export type StepRow = { type: 'step'; data: Step; rowObject: StepRowData };
@@ -178,28 +177,26 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
               )}
             </FixedListContainer>
 
-            {FEATURE_FLAGS.TIMELINE_MINIMAP && (
-              <TimelineFooter
-                graph={graph}
-                rows={rows}
-                move={(value) => graphDispatch({ type: 'move', value: value })}
-                updateHandle={(which, to) => {
-                  if (which === 'left') {
-                    graphDispatch({
-                      type: 'setZoom',
-                      start: to < graph.min ? graph.min : to > graph.timelineEnd - 500 ? graph.timelineStart : to,
-                      end: graph.timelineEnd,
-                    });
-                  } else {
-                    graphDispatch({
-                      type: 'setZoom',
-                      start: graph.timelineStart,
-                      end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
-                    });
-                  }
-                }}
-              />
-            )}
+            <TimelineFooter
+              graph={graph}
+              rows={rows}
+              move={(value) => graphDispatch({ type: 'move', value: value })}
+              updateHandle={(which, to) => {
+                if (which === 'left') {
+                  graphDispatch({
+                    type: 'setZoom',
+                    start: to < graph.min ? graph.min : to > graph.timelineEnd - 500 ? graph.timelineStart : to,
+                    end: graph.timelineEnd,
+                  });
+                } else {
+                  graphDispatch({
+                    type: 'setZoom',
+                    start: graph.timelineStart,
+                    end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
+                  });
+                }
+              }}
+            />
           </div>
         )}
 
