@@ -28,7 +28,7 @@ export interface HookConfig<T, U> {
   // ?
   privateCache?: boolean;
   // ?
-  postRequest?: (target: string) => void;
+  postRequest?: (success: boolean, target: string) => void;
   pause?: boolean;
   fullyDisableCache?: boolean;
   useBatching?: boolean;
@@ -268,7 +268,7 @@ export default function useResource<T, U>({
               if (onUpdate) {
                 onUpdate(cacheItem.data as T);
                 if (postRequest) {
-                  postRequest(targetUrl);
+                  postRequest(true, targetUrl);
                 }
               }
 
@@ -297,10 +297,18 @@ export default function useResource<T, U>({
             })
             .catch(() => {
               newError(targetUrl, defaultError);
+              if (postRequest) {
+                postRequest(false, targetUrl);
+              }
             });
         }
       })
-      .catch((_e) => newError(targetUrl, defaultError));
+      .catch((_e) => {
+        newError(targetUrl, defaultError);
+        if (postRequest) {
+          postRequest(false, targetUrl);
+        }
+      });
   }
 
   useEffect(() => {

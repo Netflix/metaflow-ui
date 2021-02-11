@@ -228,17 +228,19 @@ export default function useRowData(flowId: string, runNumber: string): UseRowDat
     onUpdate: (items) => {
       dispatch({ type: 'fillTasks', data: items });
     },
-    postRequest: (target) => {
-      const urlWithPostProcessing = target.replace(/(postprocess=).*?(&|$)/, '$1true$2');
+    postRequest: (success, target) => {
+      if (success) {
+        const urlWithPostProcessing = target.replace(/(postprocess=).*?(&|$)/, '$1true$2');
 
-      fetch(urlWithPostProcessing)
-        .then((response) => response.json())
-        .then((data: DataModel<Task[]>) => {
-          dispatch({ type: 'fillTasks', data: data.data });
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+        fetch(urlWithPostProcessing)
+          .then((response) => response.json())
+          .then((data: DataModel<Task[]>) => {
+            dispatch({ type: 'fillTasks', data: data.data });
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     },
     fullyDisableCache: true,
     useBatching: true,
