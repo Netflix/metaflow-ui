@@ -15,11 +15,11 @@ describe('Format utils', () => {
 
   test('formatDuration() - Minutes and hours', () => {
     expect(formatDuration(1000 * 60)).toBe('1m ');
-    expect(formatDuration(1000 * 75)).toBe('1m 15.0s');
+    expect(formatDuration(1000 * 75)).toBe('1m 15s');
 
     expect(formatDuration(1000 * 60 * 60)).toBe('1h ');
     expect(formatDuration(1000 * 60 * 75)).toBe('1h 15m ');
-    expect(formatDuration(1000 * 60 * 75 + 1500)).toBe('1h 15m 1.5s');
+    expect(formatDuration(1000 * 60 * 75 + 1500)).toBe('1h 15m 1s');
 
     expect(formatDuration(1000 * 59 + 950)).toBe('59.9s');
     expect(formatDuration(1000 * 59 + 950, 0)).toBe('59s');
