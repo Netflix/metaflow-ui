@@ -145,7 +145,14 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         }}
         onClick={() => {
           if (row.type === 'task') {
-            push(getPath.task(row.data.flow_id, row.data.run_number, row.data.step_name, getTaskId(row.data)));
+            push(
+              getPath.task(
+                row.data.flow_id,
+                row.data.run_id || row.data.run_number,
+                row.data.step_name,
+                getTaskId(row.data),
+              ),
+            );
           } else {
             if (onOpen) {
               onOpen();
