@@ -272,7 +272,7 @@ const BoxGraphic = styled.div<{ root: boolean }>`
   position: absolute;
   cursor: pointer;
   color: ${(p) => p.theme.color.text.dark};
-  min-width: 3px;
+  min-width: 5px;
   height: 27px;
   line-height: 27px;
 `;
