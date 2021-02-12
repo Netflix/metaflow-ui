@@ -42,7 +42,12 @@ function renderValue(value: React.ReactNode) {
   } else if (typeof value === 'string') {
     return readParameterValue(value);
   }
-  return value;
+  try {
+    const stringified = JSON.stringify(value, null, 2);
+    return stringified;
+  } catch (e) {
+    return '';
+  }
 }
 
 //
