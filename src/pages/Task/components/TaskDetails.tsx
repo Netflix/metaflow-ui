@@ -106,6 +106,9 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
 // have started at value which indicates that actual duration value of attempt is correct.
 //
 export function getAttemptDuration(tasks: ITask[], task: ITask): string {
+  if (task.status === 'running') {
+    return formatDuration(Date.now() - (task.started_at || task.ts_epoch));
+  }
   // If task has started at, it must have proper duration as well. Else calculate
   if (!task.started_at && tasks && tasks.length > 1) {
     const attemptBefore = tasks[tasks.indexOf(task) - 1];
