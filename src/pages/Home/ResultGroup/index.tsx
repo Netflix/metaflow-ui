@@ -1,4 +1,4 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 import styled, { css } from 'styled-components';
 import { Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -121,7 +121,7 @@ type TableRowsProps = {
   timezone: string;
 };
 
-const TableRows: React.FC<TableRowsProps> = React.memo(({ r, params, updateListValue, link, timezone }) => {
+const TableRows: React.FC<TableRowsProps> = ({ r, params, updateListValue, link, timezone }) => {
   return (
     <>
       {/* STATUS INDICATOR */}
@@ -139,7 +139,9 @@ const TableRows: React.FC<TableRowsProps> = React.memo(({ r, params, updateListV
       {/* FINISHED AT */}
       <TimeCell link={link}>{getRunEndTime(r, timezone)}</TimeCell>
       {/* DURATION */}
-      <TimeCell link={link}>{getRunDuration(r)}</TimeCell>
+      <TimeCell link={link}>
+        <RunDuration run={r} />
+      </TimeCell>
       {/* STATUS */}
       <TDWithLink link={link}>
         <ForceNoBreakText>
@@ -154,7 +156,23 @@ const TableRows: React.FC<TableRowsProps> = React.memo(({ r, params, updateListV
       )}
     </>
   );
-});
+};
+
+const RunDuration: React.FC<{ run: IRun }> = ({ run }) => {
+  const rerender = useState(0);
+  // If run is in running state, we want to force update every second for duration rendering
+  useEffect(() => {
+    let t = 0;
+    if (run.status === 'running') {
+      t = setInterval(() => {
+        rerender[1]((tick) => tick + 1);
+      }, 1000);
+    }
+    return () => clearInterval(t);
+  }, [run.status]); // eslint-disable-line
+
+  return <>{getRunDuration(run)}</>;
+};
 
 const LinkTD = styled(TD)`
   position: relative;
