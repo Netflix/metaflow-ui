@@ -157,8 +157,12 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         }}
         data-testid="boxgraphic"
       >
-        {isLastAttempt && labelDuration && (
-          <RowMetricLabel duration={labelDuration} labelPosition={labelPosition} data-testid="boxgraphic-label" />
+        {((isLastAttempt && labelDuration) || status === 'running') && (
+          <RowMetricLabel
+            duration={labelDuration || Date.now() - boxStartTime}
+            labelPosition={labelPosition}
+            data-testid="boxgraphic-label"
+          />
         )}
         <BoxGraphicLine grayed={grayed} state={status} isLastAttempt={isLastAttempt} />
         <BoxGraphicMarkerStart />

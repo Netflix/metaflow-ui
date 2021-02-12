@@ -22,7 +22,7 @@ type StepRow = { type: 'step'; item: Step; toggle: () => void } & BaseProps;
 type Props = TaskRow | StepRow;
 
 const TaskListLabel: React.FC<Props> = (props) => {
-  const { open, grouped, t } = props;
+  const { open, grouped } = props;
   return (
     <RowLabel type={props.type} isOpen={open} group={grouped} status={props.status}>
       {props.type === 'task' ? (
@@ -52,7 +52,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
             </RowLabelTaskName>
             <RowDuration data-testid="tasklistlabel-duration">
               {props.item.status === 'running'
-                ? t('filters.running')
+                ? formatDuration(Date.now() - (props.item.started_at || props.item.ts_epoch), 1)
                 : props.duration
                 ? formatDuration(props.duration, 1)
                 : null}
@@ -71,7 +71,11 @@ const TaskListLabel: React.FC<Props> = (props) => {
               {props.item.step_name}
             </RowStepName>
             <RowDuration data-testid="tasklistlabel-duration">
-              {props.duration ? formatDuration(props.duration, 1) : null}
+              {props.status === 'running'
+                ? formatDuration(Date.now() - props.item.ts_epoch, 1)
+                : props.duration
+                ? formatDuration(props.duration, 1)
+                : null}
             </RowDuration>
           </RowLabelContent>
         </StepLabel>
