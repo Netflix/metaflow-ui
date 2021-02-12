@@ -39,7 +39,7 @@ const ResultGroup: React.FC<Props> = React.memo(
 
     const cols: TableColDefinition[] = [
       { label: t('fields.flow_id'), key: 'flow_id', sortable: true, hidden: queryParams._group === 'flow_id' },
-      { label: t('fields.id'), sortable: true, key: 'run' },
+      { label: t('fields.id'), key: 'run' },
       { label: t('fields.user'), sortable: true, key: 'user', hidden: queryParams._group === 'user' },
       { label: t('fields.started-at'), sortable: true, key: 'ts_epoch', maxWidth: '170' },
       { label: t('fields.finished-at'), sortable: true, key: 'finished_at', maxWidth: '170' },
