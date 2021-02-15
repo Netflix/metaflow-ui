@@ -42,7 +42,11 @@ function renderValue(value: React.ReactNode) {
   } else if (typeof value === 'string' && value.indexOf('http') === 0) {
     // TODO make detection smarter
     // parse link for urls
-    return <a href={value} target="_blank" rel="noopener noreferrer">{value}</a>
+    return (
+      <a href={value} target="_blank" rel="noopener noreferrer">
+        {value}
+      </a>
+    );
   } else if (typeof value === 'string' && value.indexOf('http') === -1) {
     return readParameterValue(value);
   }

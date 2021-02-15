@@ -79,22 +79,25 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
 export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ error, t }) => {
   const [open, setOpen] = useState(false);
   const version = getVersionInfo();
+  // TODO make these dynamic
   const versionsTable = {
-    'ID': `${error.id}`,
+    ID: `${error.id}`,
     'Application version': `${version.release_version} - ${version.commit} - ${version.env}`,
-    'Service version': `${version.service_version}`
+    'Service version': `${version.service_version}`,
   };
   // TODO make these dynamic
   const linksTable = {
-    'Documentation': 'https://docs.metaflow.org/',
-    'Help': 'https://gitter.im/metaflow_org/community?source=orgpage'
+    Documentation: 'https://docs.metaflow.org/',
+    Help: 'https://gitter.im/metaflow_org/community?source=orgpage',
   };
 
   if (!open) {
     return (
       <DetailContainer data-testid="error-details">
         <DetailsTitle>
-          <span className="statusCode" data-testid="error-details-title">{error.status}</span>
+          <span className="statusCode" data-testid="error-details-title">
+            {error.status}
+          </span>
           <p className="statusTitle">{error.title}</p>
         </DetailsTitle>
         {error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
@@ -109,30 +112,23 @@ export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ e
   return (
     <DetailContainer data-testid="error-details">
       <DetailsTitle className={open && 'open'}>
-        <span className="statusCode" data-testid="error-details-title">{error.status}</span>
+        <span className="statusCode" data-testid="error-details-title">
+          {error.status}
+        </span>
         <p className="statusTitle">{error.title}</p>
       </DetailsTitle>
 
       {error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
 
-      <TitledRow
-        title={t('error.error-details')}
-        type="table"
-        content={versionsTable}
-      />
+      <TitledRow title={t('error.error-details')} type="table" content={versionsTable} />
+      <TitledRow title={t('task.links')} type="table" content={linksTable} />
 
-      <TitledRow
-        title={t('task.links')}
-        type="table"
-        content={linksTable}
-      />
-
-      {error.traceback && 
+      {error.traceback && (
         <>
-        <DetailsHeader>{t('error.stack-trace')}</DetailsHeader>
-        <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>
+          <DetailsHeader>{t('error.stack-trace')}</DetailsHeader>
+          <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>
         </>
-      }
+      )}
 
       <DetailsOpenLink onClick={() => setOpen(false)} data-testid="error-details-seemore">
         {t('error.hide-more-details')}

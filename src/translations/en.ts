@@ -22,8 +22,8 @@ const en = {
       timezone: 'Timezone',
       'local-time': 'Local time',
       timezones: 'Timezones',
-      'documentation': 'Documentation',
-      'help': 'Help',
+      documentation: 'Documentation',
+      help: 'Help',
     },
 
     fields: {
