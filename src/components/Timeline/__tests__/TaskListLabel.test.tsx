@@ -29,7 +29,7 @@ describe('TaskListLabel component', () => {
     );
 
     expect(getByTestId('tasklistlabel-text').textContent).toBe('1');
-    expect(getByTestId('tasklistlabel-link')).toHaveAttribute('href', '/BasicFlow/1/askel/1');
+    expect(getByTestId('tasklistlabel-link')).toHaveAttribute('href', '/BasicFlow/1/start/1');
     expect(getByTestId('tasklistlabel-duration').textContent).toBe('1.1s');
   });
 
@@ -40,7 +40,7 @@ describe('TaskListLabel component', () => {
       </TestWrapper>,
     );
 
-    expect(getByTestId('tasklistlabel-text').textContent).toBe('askel/1');
+    expect(getByTestId('tasklistlabel-text').textContent).toBe('start/1');
   });
 
   test('<TaskListLabel> - Step', () => {
@@ -52,7 +52,7 @@ describe('TaskListLabel component', () => {
       </TestWrapper>,
     );
 
-    expect(getByTestId('tasklistlabel-text').textContent).toBe('askel');
+    expect(getByTestId('tasklistlabel-text').textContent).toBe('start');
     expect(getByTestId('tasklistlabel-open-icon').attributes.getNamedItem('rotate')?.value).toBe('0');
     expect(getByTestId('tasklistlabel-duration').textContent).toBe('1.2s');
 

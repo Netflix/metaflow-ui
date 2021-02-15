@@ -1,8 +1,8 @@
 import { GraphState } from '../components/Timeline/useGraph';
-import { StepRowData } from '../components/Timeline/useRowData';
+import { RowDataModel, StepRowData } from '../components/Timeline/useRowData';
 import { Row } from '../components/Timeline/VirtualizedTimeline';
 import { createCache, Resource } from '../hooks/useResource';
-import { Task, Step, Run, Metadata, APIError } from '../types';
+import { Task, Step, Run, Metadata, APIError, TaskStatus } from '../types';
 
 //
 // LOT OF TESTS DEPEND ON THESE VALUES AS DEFAULTS SO DONT CHANGE THESE!!!
@@ -30,7 +30,7 @@ export function createTask(partialTask: Partial<Task>): Task {
   return {
     flow_id: 'BasicFlow',
     run_number: 1,
-    step_name: 'askel',
+    step_name: 'start',
     task_id: 1,
     status: 'completed',
     user_name: 'SanteriCM',
@@ -48,7 +48,7 @@ export function createStep(partialStep: Partial<Step>): Step {
   return {
     flow_id: 'BasicFlow',
     run_number: 1,
-    step_name: 'askel',
+    step_name: 'start',
     user_name: 'SanteriCM',
     ts_epoch: 1595574762958,
     tags: ['testingtag'],
@@ -131,4 +131,24 @@ export function createStepRow(step: Partial<Step>, stepRowObject: Partial<StepRo
       ...stepRowObject,
     },
   };
+}
+
+export function createStepRowData(
+  rowdata: Partial<StepRowData>,
+  step: Partial<Step>,
+  tasks: Record<string, Task[]>,
+): StepRowData {
+  return {
+    step: createStep(step),
+    isOpen: true,
+    status: 'completed' as TaskStatus,
+    finished_at: 0,
+    duration: 0,
+    data: { '1': [createTask({})], ...tasks },
+    ...rowdata,
+  };
+}
+
+export function createRowDataModel(data: Record<string, StepRowData>): RowDataModel {
+  return { start: createStepRowData({}, {}, {}), ...data };
 }
