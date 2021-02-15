@@ -20,6 +20,7 @@ type Props = {
   updateListValue: (key: string, value: string) => void;
   loadMore: () => void;
   targetCount: number;
+  grouping: boolean;
 };
 
 const HomeContentArea: React.FC<Props> = ({
@@ -33,6 +34,7 @@ const HomeContentArea: React.FC<Props> = ({
   params,
   loadMore,
   targetCount,
+  grouping,
 }) => {
   const { t } = useTranslation();
   const resultAmount = Object.keys(runGroups).length;
@@ -51,6 +53,7 @@ const HomeContentArea: React.FC<Props> = ({
               handleGroupTitleClick={handleGroupTitleClick}
               updateListValue={updateListValue}
               targetCount={targetCount}
+              grouping={grouping}
               resourceUrl="/runs"
               hideLoadMore={k === 'undefined'}
             />
