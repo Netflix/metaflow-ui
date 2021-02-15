@@ -29,7 +29,7 @@ const bgColor = {
   white: '#fff',
   dark: '#767676',
   black: '#333',
-  light: '#f6f6f6',
+  light: 'rgba(0,0,0,0.03)', // '#f6f6f6',
   blue: brandColor.blue,
   blueLight: '#e4f0ff',
   silver: '#E8EAED',

@@ -22,6 +22,8 @@ const en = {
       timezone: 'Timezone',
       'local-time': 'Local time',
       timezones: 'Timezones',
+      'documentation': 'Documentation',
+      'help': 'Help',
     },
 
     fields: {
@@ -179,13 +181,16 @@ const en = {
     },
 
     error: {
+      'error-details': 'Error details',
       'show-more-details': 'Show error details',
+      'hide-more-details': 'Hide error details',
       'generic-error': 'Error happened',
       'load-error': 'Error loading data',
       'no-results': 'No results found',
       'no-runs': 'No runs found',
       'no-tasks': 'No tasks found',
       'not-found': 'Not available',
+      'stack-trace': 'Stack trace',
 
       'failed-to-load-dag': 'Failed to load DAG.',
       's3-access-denied': 'Access denied. There was a problem with AWS credentials.',
