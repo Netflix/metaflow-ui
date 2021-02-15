@@ -114,10 +114,6 @@ const Home: React.FC = () => {
     updatePredicate: (a, b) => a.flow_id === b.flow_id && a.run_number === b.run_number,
     queryParams: requestParameters,
     websocketParams: makeWebsocketParameters(requestParameters, runGroups, isLastPage),
-    //
-    // onUpdate handles HTTP request updates. In practice on start OR when filters/sorts changes.
-    // is most cases we want to replace existing data EXCEPT when we are loading next page.
-    //
     onUpdate: (items) => {
       // Remove old data if we are in first page/we handle fake params
       // NOTE: This is in wrong place. We should probably clear earlier
@@ -127,12 +123,14 @@ const Home: React.FC = () => {
       setReceivedRuns((runs) => runs.concat(items));
     },
     //
-    // On websocket update we want to merge, or add given result to existing groups (if any).
-    // For now if we are not grouping, groupKey is 'undefined'
+    // On websocket update just add items to new groups
     //
     onWSUpdate: (item: IRun) => {
       setReceivedRuns((runs) => runs.concat([item]));
     },
+    //
+    // Make sure that we dont have loader anymore after request
+    //
     postRequest() {
       setShowLoader(false);
       setFakeParams(null);

@@ -294,20 +294,17 @@ export default function useResource<T, U>({
               } else {
                 newError(targetUrl, defaultError);
               }
+              postRequest && postRequest(false, targetUrl);
             })
             .catch(() => {
               newError(targetUrl, defaultError);
-              if (postRequest) {
-                postRequest(false, targetUrl);
-              }
+              postRequest && postRequest(false, targetUrl);
             });
         }
       })
       .catch((_e) => {
         newError(targetUrl, defaultError);
-        if (postRequest) {
-          postRequest(false, targetUrl);
-        }
+        postRequest && postRequest(false, targetUrl);
       });
   }
 
