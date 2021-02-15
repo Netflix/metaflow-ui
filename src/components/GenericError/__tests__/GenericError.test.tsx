@@ -79,15 +79,15 @@ describe('GenericError component', () => {
       </TestWrapper>,
     );
 
-    expect(queryByTestId('error-details-title')).toBeNull();
+    expect(queryByTestId('error-details-title').textContent).toBe('500');
 
     fireEvent.click(getByTestId('error-details-seemore'));
 
-    expect(getByTestId('error-details-title').textContent).toBe('500 - Unknown error (generic-error)');
+    expect(getByTestId('error-details-title').textContent).toBe('500');
     expect(getByTestId('error-details-subtitle').textContent).toBe('Absolute failure');
     expect(getByTestId('error-details-logs').textContent).toBe('Doing stuff\nERROR!!');
 
-    fireEvent.click(getByTestId('error-details-close'));
-    expect(queryByTestId('error-details-title')).toBeNull();
+    fireEvent.click(getByTestId('error-details-seemore'));
+    expect(queryByTestId('error-details-title').textContent).toBe('500');
   });
 });
