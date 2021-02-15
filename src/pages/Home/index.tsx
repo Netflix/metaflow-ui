@@ -131,12 +131,14 @@ const Home: React.FC = () => {
     //
     // Make sure that we dont have loader anymore after request
     //
-    postRequest() {
+    postRequest(success) {
+      if (!success && (page === 1 || fakeParams)) {
+        setRunGroups({});
+      }
       setShowLoader(false);
       setFakeParams(null);
     },
   });
-
   //
   // Event Handlers
   //

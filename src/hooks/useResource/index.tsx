@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useReducer } from 'react';
 import { apiHttp } from '../../constants';
 import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
 import useInterval from '../useInterval';
-import { APIError } from '../../types';
+import { APIError, AsyncStatus } from '../../types';
 import { setLogItem } from '../../utils/debugdb';
 
 export interface HookConfig<T, U> {
@@ -57,8 +57,6 @@ interface ResourcePages {
   next: number | null;
 }
 
-export type ResourceStatus = 'NotAsked' | 'Error' | 'Ok' | 'Loading';
-
 export interface Resource<T> {
   url: string;
   data: T | null;
@@ -66,7 +64,7 @@ export interface Resource<T> {
   getResult: () => DataModel<T> | undefined;
   cache: CacheInterface;
   target: string;
-  status: ResourceStatus;
+  status: AsyncStatus;
 }
 
 interface CacheItem<T> {
@@ -143,6 +141,25 @@ const singletonCache = createCache();
 //
 const updateBatcher: Record<string, any> = {};
 
+type StatusState = {
+  id: number;
+  status: AsyncStatus;
+};
+
+type StatusAction = { type: 'setid'; id: number } | { type: 'setstatus'; id: number; status: AsyncStatus };
+
+const StatusReducer = (state: StatusState, action: StatusAction): StatusState => {
+  switch (action.type) {
+    case 'setid':
+      return { ...state, id: action.id };
+    case 'setstatus':
+      if (action.id === state.id) {
+        return { ...state, status: action.status };
+      }
+      return state;
+  }
+};
+
 // TODO: cache map, cache subscriptions, ws connections, cache mutations
 export default function useResource<T, U>({
   url,
@@ -166,7 +183,7 @@ export default function useResource<T, U>({
   const [error, setError] = useState<APIError | null>(null);
   const initData = cache.get<T>(url)?.data || initialData;
   const [data, setData] = useState<T | null>(initData);
-  const [status, setStatus] = useState<ResourceStatus>('NotAsked');
+  const [status, statusDispatch] = useReducer(StatusReducer, { id: 0, status: 'NotAsked' });
 
   const q = new URLSearchParams(queryParams).toString();
   const target = apiHttp(`${url}${q ? '?' + q : ''}`);
@@ -240,13 +257,19 @@ export default function useResource<T, U>({
     uuid,
   });
 
-  function newError(targetUrl: string, err: APIError) {
+  function newError(targetUrl: string, err: APIError, id: number) {
     setLogItem(`ERROR ${targetUrl} ${JSON.stringify(err)}`);
-    setStatus('Error');
+    statusDispatch({ type: 'setstatus', id, status: 'Error' });
     setError(err);
   }
 
-  function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, isSilent?: boolean) {
+  function fetchData(
+    targetUrl: string,
+    signal: AbortSignal,
+    cb: (isSuccess: boolean) => void,
+    requestid: number,
+    isSilent?: boolean,
+  ) {
     setLogItem(`GET SENT ${targetUrl}`);
     fetch(targetUrl, { signal })
       .then((response) => {
@@ -275,35 +298,35 @@ export default function useResource<T, U>({
               // If we want all data and we are have next page available we fetch it.
               // Else this fetch is done and we call the callback
               if (fetchAllData && cacheItem.result.links.next !== null && cacheItem.result.links.next !== targetUrl) {
-                fetchData(cacheItem.result.links.next || targetUrl, signal, cb, true);
+                fetchData(cacheItem.result.links.next || targetUrl, signal, cb, requestid, true);
               } else {
                 cb(true);
               }
             })
             .catch(() => {
-              newError(targetUrl, defaultError);
+              newError(targetUrl, defaultError, requestid);
             });
         } else {
           response
             .json()
             .then((result) => {
               if (typeof result === 'object' && result.id) {
-                newError(targetUrl, result);
+                newError(targetUrl, result, requestid);
               } else if (response.status === 404) {
-                newError(targetUrl, notFoundError);
+                newError(targetUrl, notFoundError, requestid);
               } else {
-                newError(targetUrl, defaultError);
+                newError(targetUrl, defaultError, requestid);
               }
               postRequest && postRequest(false, targetUrl);
             })
             .catch(() => {
-              newError(targetUrl, defaultError);
+              newError(targetUrl, defaultError, requestid);
               postRequest && postRequest(false, targetUrl);
             });
         }
       })
       .catch((_e) => {
-        newError(targetUrl, defaultError);
+        newError(targetUrl, defaultError, requestid);
         postRequest && postRequest(false, targetUrl);
       });
   }
@@ -314,20 +337,25 @@ export default function useResource<T, U>({
     let fulfilled = false;
 
     if (!pause) {
-      setStatus('Loading');
+      const requestid = Date.now();
+      statusDispatch({ type: 'setid', id: requestid });
+      statusDispatch({ type: 'setstatus', id: requestid, status: 'Loading' });
       setData(cache.get<T>(url)?.data || initialData);
       setError(null);
 
-      fetchData(target, signal, (isSuccess) => {
-        fulfilled = true;
-        if (isSuccess) {
-          setStatus('Ok');
-        } else {
-          newError(target, defaultError);
-        }
-      });
-    } else {
-      setStatus('NotAsked');
+      fetchData(
+        target,
+        signal,
+        (isSuccess) => {
+          fulfilled = true;
+          if (isSuccess) {
+            statusDispatch({ type: 'setstatus', id: requestid, status: 'Ok' });
+          } else {
+            newError(target, defaultError, requestid);
+          }
+        },
+        requestid,
+      );
     }
 
     return () => {
@@ -337,5 +365,5 @@ export default function useResource<T, U>({
     };
   }, [target, pause]); // eslint-disable-line
 
-  return { url, target, data, error, getResult: () => cache.get<T>(target)?.result, cache, status };
+  return { url, target, data, error, getResult: () => cache.get<T>(target)?.result, cache, status: status.status };
 }
