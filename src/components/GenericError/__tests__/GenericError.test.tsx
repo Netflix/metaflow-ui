@@ -73,13 +73,13 @@ describe('GenericError component', () => {
   });
 
   test('<APIErrorDetails /> - renders error details accordingly', () => {
-    const { queryByTestId, getByTestId } = render(
+    const { getByTestId } = render(
       <TestWrapper>
         <APIErrorDetails error={DEFAULT_ERROR} t={(str: string) => str} />
       </TestWrapper>,
     );
 
-    expect(queryByTestId('error-details-title').textContent).toBe('500');
+    expect(getByTestId('error-details-title').textContent).toBe('500');
 
     fireEvent.click(getByTestId('error-details-seemore'));
 
@@ -88,6 +88,6 @@ describe('GenericError component', () => {
     expect(getByTestId('error-details-logs').textContent).toBe('Doing stuff\nERROR!!');
 
     fireEvent.click(getByTestId('error-details-seemore'));
-    expect(queryByTestId('error-details-title').textContent).toBe('500');
+    expect(getByTestId('error-details-title').textContent).toBe('500');
   });
 });
