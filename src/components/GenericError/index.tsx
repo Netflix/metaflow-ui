@@ -87,8 +87,16 @@ export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ e
   };
   // TODO make these dynamic
   const linksTable = {
-    Documentation: 'https://docs.metaflow.org/',
-    Help: 'https://gitter.im/metaflow_org/community?source=orgpage',
+    Documentation: (
+      <a href="https://docs.metaflow.org/" target="_blank" rel="noopener noreferrer">
+        https://docs.metaflow.org/
+      </a>
+    ),
+    Help: (
+      <a href="https://gitter.im/metaflow_org/community?source=orgpage" target="_blank" rel="noopener noreferrer">
+        https://gitter.im/metaflow_org/community?source=orgpage
+      </a>
+    ),
   };
 
   if (!open) {
