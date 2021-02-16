@@ -63,31 +63,27 @@ describe('GenericError component', () => {
     expect(getByTestId('error-details')).toBeInTheDocument();
   });
 
-  test('<APIErrorRenderer /> - renders custom 404 component', () => {
+  // error rendering has been streamlined and need for custom error messages is disabled for now
+  /* test('<APIErrorRenderer /> - renders custom 404 component', () => {
     const { getByTestId } = render(
       <TestWrapper>
         <APIErrorRenderer error={NOTFOUND_ERROR} customNotFound={<div data-testid="custom-404">HAHAA!</div>} />
       </TestWrapper>,
     );
     expect(getByTestId('custom-404')).toBeInTheDocument();
-  });
+  });*/
 
   test('<APIErrorDetails /> - renders error details accordingly', () => {
     const { getByTestId } = render(
       <TestWrapper>
-        <APIErrorDetails error={DEFAULT_ERROR} t={(str: string) => str} />
+        <APIErrorDetails error={DEFAULT_ERROR} noIcon={false} t={(str: string) => str} />
       </TestWrapper>,
     );
 
-    expect(getByTestId('error-details-title').textContent).toBe('500');
-
     fireEvent.click(getByTestId('error-details-seemore'));
-
-    expect(getByTestId('error-details-title').textContent).toBe('500');
-    expect(getByTestId('error-details-subtitle').textContent).toBe('Absolute failure');
+    expect(getByTestId('titled-row-row-status-0').lastChild?.textContent).toBe('500');
+    expect(getByTestId('titled-row-row-detail-2').lastChild?.textContent).toBe('Absolute failure');
     expect(getByTestId('error-details-logs').textContent).toBe('Doing stuff\nERROR!!');
-
     fireEvent.click(getByTestId('error-details-seemore'));
-    expect(getByTestId('error-details-title').textContent).toBe('500');
   });
 });

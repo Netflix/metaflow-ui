@@ -52,10 +52,10 @@ type APIErrorRendererProps = {
   error: APIError | null;
   message?: string;
   icon?: IconKeys | JSX.Element | false;
-  customNotFound?: React.ReactNode;
+  customNotFound?: React.ReactNode; // error rendering streamlined for now and this is not needed
 };
 
-export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, message, customNotFound, icon }) => {
+export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, message, icon }) => {
   const { t } = useTranslation();
   let msg = t('error.generic-error');
 
