@@ -35,19 +35,13 @@ const TitledRow: React.FC<Props> = (props) => {
 //
 
 function renderValue(value: React.ReactNode) {
+  if (React.isValidElement(value)) return value;
+
   if (typeof value === 'boolean') {
     return value ? 'True' : 'False';
   } else if (typeof value === 'number') {
     return value;
-  } else if (typeof value === 'string' && value.indexOf('http') === 0) {
-    // TODO make detection smarter
-    // parse link for urls
-    return (
-      <a href={value} target="_blank" rel="noopener noreferrer">
-        {value}
-      </a>
-    );
-  } else if (typeof value === 'string' && value.indexOf('http') === -1) {
+  } else if (typeof value === 'string') {
     return readParameterValue(value);
   }
   try {
