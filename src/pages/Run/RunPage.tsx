@@ -153,7 +153,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
           end: endTime,
         });
       }
-
       setVisibleRows(rowsToUpdate);
     } catch (e) {
       logWarning('Unexpected error while contructing task rows: ', e);
@@ -162,7 +161,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   }, [
     rows,
     graph.graph.stepFilter,
-    graph.graph.min,
     graph.graph.sortBy,
     graph.graph.sortDir,
     graph.graph.statusFilter,

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createRef, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { List } from 'react-virtualized';
 import { Step, Task, AsyncStatus } from '../../types';
 import styled from 'styled-components';
@@ -16,6 +16,7 @@ import { TFunction } from 'i18next';
 import Spinner from '../Spinner';
 import TaskListingHeader from '../TaskListingHeader';
 import TimelineNoRows from './TimelineNoRows';
+import { RenderedRows } from 'react-virtualized/dist/es/List';
 
 export const ROW_HEIGHT = 28;
 export type StepRow = { type: 'step'; data: Step; rowObject: StepRowData };
@@ -49,7 +50,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   isAnyGroupOpen,
 }) => {
   const { t } = useTranslation();
-  const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef<HTMLDivElement>(null);
   const listContainer = useComponentSize(_listContainer);
@@ -77,6 +77,45 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
     setStepPositions(stepPos);
   }, [rows]);
 
+  //
+  // Event handling
+  //
+
+  const footerHandleUpdate = (which: 'left' | 'right', to: number) => {
+    if (which === 'left') {
+      graphDispatch({
+        type: 'setZoom',
+        start: to < graph.min ? graph.min : to > graph.timelineEnd - 500 ? graph.timelineStart : to,
+        end: graph.timelineEnd,
+      });
+    } else {
+      graphDispatch({
+        type: 'setZoom',
+        start: graph.timelineStart,
+        end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
+      });
+    }
+  };
+
+  const onRowsRendered = (params: RenderedRows) => {
+    const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
+
+    if (stepNeedsSticky) {
+      setStickyHeader(stepNeedsSticky.name);
+    } else {
+      if (stickyHeader) {
+        setStickyHeader(null);
+      }
+    }
+  };
+
+  const getContainerHeight = () => {
+    return (
+      (listContainer.height - 69 > rows.length * ROW_HEIGHT ? rows.length * ROW_HEIGHT : listContainer.height - 69) +
+      'px'
+    );
+  };
+
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
@@ -94,33 +133,18 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
           resetSteps={() => setQueryParam({ steps: null })}
         />
         {rows.length > 0 && (
-          <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
+          <ListContainer ref={_listContainer}>
             <FixedListContainer
               sticky={!!stickyHeader && graph.group}
               style={{
-                height:
-                  (listContainer.height - 69 > rows.length * ROW_HEIGHT
-                    ? rows.length * ROW_HEIGHT
-                    : listContainer.height - 69) + 'px',
+                height: getContainerHeight(),
                 width: listContainer.width + 'px',
               }}
             >
               <List
-                // eslint-disable-next-line react/no-string-refs
-                ref={_listref}
                 overscanRowCount={10}
                 rowCount={rows.length}
-                onRowsRendered={(params) => {
-                  const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
-
-                  if (stepNeedsSticky) {
-                    setStickyHeader(stepNeedsSticky.name);
-                  } else {
-                    if (stickyHeader) {
-                      setStickyHeader(null);
-                    }
-                  }
-                }}
+                onRowsRendered={onRowsRendered}
                 rowHeight={ROW_HEIGHT}
                 rowRenderer={createRowRenderer({
                   rows,
@@ -151,26 +175,10 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
               graph={graph}
               rows={rows}
               move={(value) => graphDispatch({ type: 'move', value: value })}
-              updateHandle={(which, to) => {
-                if (which === 'left') {
-                  graphDispatch({
-                    type: 'setZoom',
-                    start: to < graph.min ? graph.min : to > graph.timelineEnd - 500 ? graph.timelineStart : to,
-                    end: graph.timelineEnd,
-                  });
-                } else {
-                  graphDispatch({
-                    type: 'setZoom',
-                    start: graph.timelineStart,
-                    end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
-                  });
-                }
-              }}
-              updateDragging={(isDragging) => {
-                setDragging(isDragging);
-              }}
+              updateHandle={footerHandleUpdate}
+              updateDragging={setDragging}
             />
-          </div>
+          </ListContainer>
         )}
 
         {rows.length === 0 && (
@@ -281,6 +289,11 @@ const VirtualizedTimelineSubContainer = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+`;
+
+const ListContainer = styled.div`
+  flex: 1;
+  min-height: 500px;
 `;
 
 const FixedListContainer = styled.div<{ sticky?: boolean }>`
