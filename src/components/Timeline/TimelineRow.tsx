@@ -1,10 +1,10 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import styled, { css, DefaultTheme, keyframes } from 'styled-components';
 import { Row } from './VirtualizedTimeline';
 import { GraphState } from './useGraph';
 import { Link } from 'react-router-dom';
 import { getPathFor } from '../../utils/routing';
-import { Step, Task, TaskStatus } from '../../types';
+import { Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { lighten } from 'polished';
 import { TFunction } from 'i18next';
@@ -136,15 +136,27 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   dragging,
 }) => {
   const status = getRowStatus(row);
+  // Extend visible area little bit to prevent lines seem like going out of bounds. Happens
+  // in some cases with short end task
+  const extendAmount = (graph.timelineEnd - graph.timelineStart) * 0.01;
+  const visibleDuration = graph.timelineEnd - graph.timelineStart + extendAmount;
   const boxStartTime = row.type === 'step' ? row.data.ts_epoch : row.data.started_at || row.data.ts_epoch;
 
-  const { left, width, labelPosition } = useMemo(
-    () => calculateRowMetrics(graph, boxStartTime, duration, startTimeOfFirstAttempt, status),
-    [graph, boxStartTime, duration, startTimeOfFirstAttempt, status],
-  );
+  // Calculate have much box needs to be pushed from (or to) left
+  const valueFromLeft =
+    graph.alignment === 'fromLeft'
+      ? ((graph.min - graph.timelineStart + (startTimeOfFirstAttempt ? boxStartTime - startTimeOfFirstAttempt : 0)) /
+          visibleDuration) *
+        100
+      : ((boxStartTime - graph.timelineStart) / visibleDuration) * 100;
+
+  const width = duration && status !== 'running' ? (duration / visibleDuration) * 100 : 100 - valueFromLeft;
+
+  const labelPosition = getLengthLabelPosition(valueFromLeft, width);
+
   return (
     <BoxGraphicContainer
-      style={{ transform: `translateX(${left}%)` }}
+      style={{ transform: `translateX(${valueFromLeft}%)` }}
       dragging={dragging}
       data-testid="boxgraphic-container"
     >
@@ -173,7 +185,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
 
 export function getRowStatus(
   row: { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task },
-): TaskStatus {
+): string {
   if (row.type === 'step') {
     return row.rowObject.status;
   } else {
@@ -183,31 +195,6 @@ export function getRowStatus(
       return row.data.finished_at ? 'completed' : 'running';
     }
   }
-}
-
-function calculateRowMetrics(
-  graph: GraphState,
-  boxStartTime: number,
-  duration: number | null,
-  startTime: number | undefined,
-  status: TaskStatus,
-) {
-  // Extend visible area little bit to prevent lines seem like going out of bounds. Happens
-  // in some cases with short end task
-  const extendAmount = (graph.timelineEnd - graph.timelineStart) * 0.01;
-  const visibleDuration = graph.timelineEnd - graph.timelineStart + extendAmount;
-
-  // Calculate have much box needs to be pushed from (or to) left
-  const left =
-    graph.alignment === 'fromLeft'
-      ? ((graph.min - graph.timelineStart + (startTime ? boxStartTime - startTime : 0)) / visibleDuration) * 100
-      : ((boxStartTime - graph.timelineStart) / visibleDuration) * 100;
-
-  const width = duration && status !== 'running' ? (duration / visibleDuration) * 100 : 100 - left;
-
-  const labelPosition = getLengthLabelPosition(left, width);
-
-  return { width, left, labelPosition };
 }
 
 const RowMetricLabel: React.FC<{
