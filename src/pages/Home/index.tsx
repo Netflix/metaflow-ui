@@ -267,6 +267,7 @@ const Home: React.FC = () => {
           targetCount={
             isGrouping(activeParams) ? parseInt(activeParams._group_limit) : parseInt(activeParams._limit) * page
           }
+          grouping={isGrouping(activeParams)}
         />
       </ErrorBoundary>
     </div>
