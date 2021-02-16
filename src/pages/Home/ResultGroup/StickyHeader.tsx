@@ -2,9 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { HEADER_SIZE_PX } from '../../../constants';
 import styled from 'styled-components';
 
+//
+// Typedef
+//
+
 type Props = {
   tableRef: React.RefObject<HTMLTableElement>;
 };
+
+//
+// Component
+//
 
 const StickyHeader: React.FC<Props> = ({ tableRef, children }) => {
   const scrollState = useState(0);
@@ -25,12 +33,20 @@ const StickyHeader: React.FC<Props> = ({ tableRef, children }) => {
   return <StickyHeaderTHead className={isSticky ? 'sticky' : ''}>{children}</StickyHeaderTHead>;
 };
 
+//
+// Utils
+//
+
 function headerShouldStick(rect: DOMRect | undefined) {
   if (rect && rect.y < HEADER_SIZE_PX && rect.y + rect.height > 84) {
     return true;
   }
   return false;
 }
+
+//
+// Styles
+//
 
 const StickyHeaderTHead = styled.thead`
   position: relative;

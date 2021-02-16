@@ -2,13 +2,12 @@ import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { Run, RunParam, APIError } from '../../types';
+import { Run, RunParam, APIError, AsyncStatus } from '../../types';
 
 import StatusField from '../../components/Status';
 import InformationRow from '../../components/InformationRow';
 import PropertyTable from '../../components/PropertyTable';
 import { Link, useHistory } from 'react-router-dom';
-import { ResourceStatus } from '../../hooks/useResource';
 import { APIErrorRenderer } from '../../components/GenericError';
 
 import {
@@ -31,7 +30,7 @@ import TitledRow from '../../components/TitledRow';
 type Props = {
   run: Run;
   parameters: RunParam | null;
-  status: ResourceStatus;
+  status: AsyncStatus;
   error: APIError | null;
 };
 
