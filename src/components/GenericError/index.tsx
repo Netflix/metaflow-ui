@@ -70,22 +70,35 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
   return (
     <APIErrorContainer>
       <GenericError message={msg} {...iconProps} />
-      {error && error.status !== 404 && <APIErrorDetails error={error} t={t} />}
-      {error && error.status === 404 && customNotFound && <div>{customNotFound}</div>}
+      {error && <APIErrorDetails error={error} noIcon={icon === false} t={t} />}
     </APIErrorContainer>
   );
 };
 
-export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ error, t }) => {
+export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TFunction }> = ({ error, noIcon, t }) => {
   const [open, setOpen] = useState(false);
   const version = getVersionInfo();
-  // TODO make these dynamic
-  const versionsTable = {
-    ID: `${error.id}`,
-    'Application version': `${version.release_version} - ${version.commit} - ${version.env}`,
-    'Service version': `${version.service_version}`,
-  };
-  // TODO make these dynamic
+
+  // TODO: update these later on
+  // noIcon option can probably be cleaned away later on
+  // shouldn't actually ever happen
+  const versionsTable = noIcon
+    ? {
+        ID: `${error.id}`,
+        'Application version': `${version.release_version} - ${version.commit} - ${version.env}`,
+        'Service version': `${version.service_version}`,
+      }
+    : {
+        Status: `${error.status}`,
+        Title: `${error.title}`,
+        Detail: `${error.detail || '-'}`,
+        ID: `${error.id}`,
+        'Application version': `${version.release_version} - ${version.commit} - ${version.env}`,
+        'Service version': `${version.service_version}`,
+      };
+
+  // TODO: update these later on
+  // these should come with the error object in the future
   const linksTable = {
     Documentation: (
       <a href="https://docs.metaflow.org/" target="_blank" rel="noopener noreferrer">
@@ -101,14 +114,18 @@ export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ e
 
   if (!open) {
     return (
-      <DetailContainer data-testid="error-details">
-        <DetailsTitle>
-          <span className="statusCode" data-testid="error-details-title">
-            {error.status}
-          </span>
-          <p className="statusTitle">{error.title}</p>
-        </DetailsTitle>
-        {error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
+      <DetailContainer className={!noIcon ? 'noIcon' : ''} data-testid="error-details">
+        {noIcon && (
+          <DetailsTitle>
+            <span className="statusCode" data-testid="error-details-title">
+              {error.status}
+            </span>
+            <p className="statusTitle">{error.title}</p>
+          </DetailsTitle>
+        )}
+        {noIcon && error.detail && (
+          <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>
+        )}
         <DetailsOpenLink onClick={() => setOpen(true)} data-testid="error-details-seemore">
           {t('error.show-more-details')}
           <Icon name="arrowDown" rotate={open ? 180 : 0} padLeft />
@@ -118,15 +135,17 @@ export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ e
   }
 
   return (
-    <DetailContainer data-testid="error-details">
-      <DetailsTitle className={open && 'open'}>
-        <span className="statusCode" data-testid="error-details-title">
-          {error.status}
-        </span>
-        <p className="statusTitle">{error.title}</p>
-      </DetailsTitle>
+    <DetailContainer className={!noIcon ? 'noIcon' : ''} data-testid="error-details">
+      {noIcon && (
+        <DetailsTitle className={open && 'open'}>
+          <span className="statusCode" data-testid="error-details-title">
+            {error.status}
+          </span>
+          <p className="statusTitle">{error.title}</p>
+        </DetailsTitle>
+      )}
 
-      {error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
+      {noIcon && error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
 
       <TitledRow title={t('error.error-details')} type="table" content={versionsTable} />
       <TitledRow title={t('task.links')} type="table" content={linksTable} />
@@ -155,6 +174,10 @@ const DetailContainer = styled.div`
   padding: 2rem 0 0;
   max-width: 632px;
   margin: 0 auto;
+
+  &.noIcon {
+    padding: 0.5rem 0 0;
+  }
 `;
 
 const DetailsOpenLink = styled.div`

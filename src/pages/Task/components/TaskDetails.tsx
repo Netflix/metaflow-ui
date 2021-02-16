@@ -75,7 +75,7 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
                 type: 'default',
                 content:
                   metadata.status === 'Error' && metadata.error ? (
-                    <APIErrorRenderer error={metadata.error} message={t('run.failed-to-load-metadata')} icon={false} />
+                    <APIErrorRenderer error={metadata.error} message={t('run.failed-to-load-metadata')} />
                   ) : (
                     t('run.no-metadata')
                   ),
