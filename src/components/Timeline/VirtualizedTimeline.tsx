@@ -60,6 +60,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   const [stickyHeader, setStickyHeader] = useState<null | string>(null);
   const [showFullscreen, setFullscreen] = useState(false);
   const { graph, dispatch: graphDispatch, setQueryParam } = graphHook;
+  const [dragging, setDragging] = useState(false);
 
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
@@ -128,6 +129,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
                   isGrouped: graph.group,
                   paramsString,
                   t: t,
+                  dragging: dragging,
                 })}
                 height={listContainer.height - (stickyHeader ? ROW_HEIGHT : 0) - 69}
                 width={listContainer.width}
@@ -140,6 +142,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
                   graph={graph}
                   onToggle={() => rowDataDispatch({ type: 'close', id: stickyHeader })}
                   t={t}
+                  dragging={dragging}
                 />
               )}
             </FixedListContainer>
@@ -162,6 +165,9 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
                     end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
                   });
                 }
+              }}
+              updateDragging={(isDragging) => {
+                setDragging(isDragging);
               }}
             />
           </div>
@@ -198,13 +204,23 @@ type RowRendererProps = {
   isGrouped: boolean;
   paramsString: string;
   t: TFunction;
+  dragging: boolean;
 };
 
-function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped, t }: RowRendererProps) {
+function getUniqueKey(index: number, row: Row) {
+  const key = index + row.type;
+  if (row.type === 'step') {
+    return key + row.data.step_name;
+  } else {
+    return key + row.data[0]?.task_id;
+  }
+}
+
+function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped, t, dragging }: RowRendererProps) {
   return ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = rows[index];
     return (
-      <div style={style} key={index}>
+      <div style={style} key={getUniqueKey(index, row)}>
         <TimelineRow
           item={row}
           graph={graph}
@@ -213,6 +229,7 @@ function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped
           onOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
           paramsString={paramsString}
           t={t}
+          dragging={dragging}
         />
       </div>
     );
@@ -225,12 +242,24 @@ const StickyHeader: React.FC<{
   graph: GraphState;
   t: TFunction;
   onToggle: () => void;
-}> = ({ stickyStep, items, graph, onToggle, t }) => {
+  dragging: boolean;
+}> = ({ stickyStep, items, graph, onToggle, t, dragging }) => {
   const item = items.find((item) => item.type === 'step' && item.data.step_name === stickyStep);
 
   if (!item || item.type !== 'step') return null;
 
-  return <TimelineRow item={item} isOpen={true} isGrouped={true} graph={graph} onOpen={onToggle} t={t} sticky />;
+  return (
+    <TimelineRow
+      item={item}
+      isOpen={true}
+      isGrouped={true}
+      graph={graph}
+      onOpen={onToggle}
+      t={t}
+      dragging={dragging}
+      sticky
+    />
+  );
 };
 
 const VirtualizedTimelineContainer = styled.div`
@@ -257,6 +286,8 @@ const VirtualizedTimelineSubContainer = styled.div`
 const FixedListContainer = styled.div<{ sticky?: boolean }>`
   position: relative;
   padding-top: ${(p) => (p.sticky ? ROW_HEIGHT : 0)}px;
+  transition: 0.5s height;
+  overflow: hidden;
 `;
 
 //
