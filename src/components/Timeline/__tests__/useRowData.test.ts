@@ -5,7 +5,7 @@ export function createTask(partialTask: Partial<Task>): Task {
   return {
     flow_id: 'BasicFlow',
     run_number: 1,
-    step_name: 'askel',
+    step_name: 'start',
     task_id: 1,
     user_name: 'SanteriCM',
     status: 'completed',
@@ -22,7 +22,7 @@ export function createStep(partialStep: Partial<Step>): Step {
   return {
     flow_id: 'BasicFlow',
     run_number: 1,
-    step_name: 'askel',
+    step_name: 'start',
     user_name: 'SanteriCM',
     ts_epoch: 0,
     tags: ['testingtag'],
@@ -32,7 +32,7 @@ export function createStep(partialStep: Partial<Step>): Step {
 }
 
 const DEFAULT_ROW_DATA = () => ({
-  askel: {
+  start: {
     step: createStep({}),
     isOpen: false,
     status: 'completed' as TaskStatus,
@@ -45,14 +45,14 @@ const DEFAULT_ROW_DATA = () => ({
 describe('useRowData hook - reducer', () => {
   it('fillStep - non existing', () => {
     const newState = rowDataReducer({}, { type: 'fillStep', data: [createStep({})] });
-    expect(newState['askel'].isOpen).toBe(true);
-    expect(newState['askel'].data).toEqual({});
+    expect(newState['start'].isOpen).toBe(true);
+    expect(newState['start'].data).toEqual({});
   });
 
   it('fillStep - existing', () => {
     const newState = rowDataReducer(DEFAULT_ROW_DATA(), { type: 'fillStep', data: [createStep({ ts_epoch: 100 })] });
-    expect(newState['askel'].isOpen).toBe(true);
-    expect(newState['askel'].step?.ts_epoch).toEqual(100);
+    expect(newState['start'].isOpen).toBe(true);
+    expect(newState['start'].step?.ts_epoch).toEqual(100);
   });
 
   it('fillTasks - empty task list', () => {
@@ -65,7 +65,7 @@ describe('useRowData hook - reducer', () => {
       type: 'fillTasks',
       data: [createTask({ step_name: 'newstep', ts_epoch: 100 })],
     });
-    expect(Object.keys(newState)).toEqual(['askel', 'newstep']);
+    expect(Object.keys(newState)).toEqual(['start', 'newstep']);
     const newStepObject = newState.newstep;
     expect(newStepObject).toEqual({
       isOpen: true,
@@ -82,10 +82,10 @@ describe('useRowData hook - reducer', () => {
     // Fill step row with new task, (of new task id)...
     const newState = rowDataReducer(DEFAULT_ROW_DATA(), {
       type: 'fillTasks',
-      data: [createTask({ step_name: 'askel', task_id: 2, ts_epoch: 100, finished_at: 200 })],
+      data: [createTask({ step_name: 'start', task_id: 2, ts_epoch: 100, finished_at: 200 })],
     });
-    expect(Object.keys(newState)).toEqual(['askel']);
-    const newStepObject = newState.askel;
+    expect(Object.keys(newState)).toEqual(['start']);
+    const newStepObject = newState.start;
 
     expect(Object.keys(newStepObject.data)).toEqual(['1', '2']);
     // Result has added one row to data property AND updated duration and finished_at values
@@ -97,7 +97,7 @@ describe('useRowData hook - reducer', () => {
       duration: 200,
       data: {
         '1': [createTask({})],
-        '2': [createTask({ step_name: 'askel', task_id: 2, ts_epoch: 100, finished_at: 200 })],
+        '2': [createTask({ step_name: 'start', task_id: 2, ts_epoch: 100, finished_at: 200 })],
       },
     });
   });
@@ -108,8 +108,8 @@ describe('useRowData hook - reducer', () => {
       type: 'fillTasks',
       data: [createTask({ ts_epoch: 100, finished_at: 200 })],
     });
-    expect(Object.keys(newState)).toEqual(['askel']);
-    const newStepObject = newState.askel;
+    expect(Object.keys(newState)).toEqual(['start']);
+    const newStepObject = newState.start;
 
     expect(Object.keys(newStepObject.data)).toEqual(['1']);
     // Result has old task replaced since it didn't have finsihed_at time
@@ -120,7 +120,7 @@ describe('useRowData hook - reducer', () => {
       status: 'completed',
       duration: 200,
       data: {
-        '1': [createTask({ step_name: 'askel', task_id: 1, ts_epoch: 100, finished_at: 200, started_at: 100 })],
+        '1': [createTask({ step_name: 'start', task_id: 1, ts_epoch: 100, finished_at: 200, started_at: 100 })],
       },
     });
   });
@@ -128,22 +128,22 @@ describe('useRowData hook - reducer', () => {
   it('toggle', () => {
     // Row with 'non-esixiting-id' doesnt exist so state is equals to old state
     expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'non-existing-id' })).toEqual(DEFAULT_ROW_DATA());
-    // Row with 'askel' exists. Boolean is toggled
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'askel' })).not.toEqual(DEFAULT_ROW_DATA());
+    // Row with 'start' exists. Boolean is toggled
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'start' })).not.toEqual(DEFAULT_ROW_DATA());
   });
 
   it('open', () => {
     // Row with 'non-esixiting-id' doesnt exist so state is equals to old state
     expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'non-existing-id' })).toEqual(DEFAULT_ROW_DATA());
-    // Row with 'askel' exists. Boolean is set true
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'askel' })['askel'].isOpen).toBe(true);
+    // Row with 'start' exists. Boolean is set true
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'start' })['start'].isOpen).toBe(true);
   });
 
   it('open', () => {
     // Row with 'non-esixiting-id' doesnt exist so state is equals to old state
     expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'non-existing-id' })).toEqual(DEFAULT_ROW_DATA());
-    // Row with 'askel' exists. Boolean is set true
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'askel' })['askel'].isOpen).toBe(false);
+    // Row with 'start' exists. Boolean is set true
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'start' })['start'].isOpen).toBe(false);
   });
 
   it('reset', () => {

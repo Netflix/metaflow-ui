@@ -4,18 +4,18 @@ import { Step, Task, AsyncStatus } from '../../types';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
-import { GraphHook, GraphState, GraphSortBy } from './useGraph';
-import { StepRowData, RowDataAction, RowDataModel } from './useRowData';
+import { GraphHook, GraphState } from './useGraph';
+import { StepRowData, RowDataAction } from './useRowData';
 import { RowCounts } from './taskdataUtils';
 import { useTranslation } from 'react-i18next';
 import TimelineFooter from './TimelineFooter';
 import FullPageContainer from '../FullPageContainer';
-import { SearchFieldReturnType, SearchResultModel } from '../../hooks/useSearchField';
-import GenericError from '../GenericError';
+import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import { ItemRow } from '../Structure';
 import { TFunction } from 'i18next';
 import Spinner from '../Spinner';
 import TaskListingHeader from '../TaskListingHeader';
+import TimelineNoRows from './TimelineNoRows';
 
 export const ROW_HEIGHT = 28;
 export type StepRow = { type: 'step'; data: Step; rowObject: StepRowData };
@@ -170,7 +170,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
         {rows.length === 0 && (
           <>
             {status !== 'NotAsked' && status !== 'Loading' && searchField.results.status !== 'Loading' && (
-              <NoRowsContainer searchStatus={searchField.results.status} counts={counts} />
+              <TimelineNoRows searchStatus={searchField.results.status} counts={counts} />
             )}
 
             {(status === 'Loading' || searchField.results.status === 'Loading') && (
@@ -219,24 +219,6 @@ function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped
   };
 }
 
-const NoRowsContainer: React.FC<{ counts: RowCounts; searchStatus: AsyncStatus }> = ({ counts, searchStatus }) => {
-  const { t } = useTranslation();
-
-  const errorProps =
-    searchStatus === 'NotAsked'
-      ? { message: t('timeline.no-rows'), icon: 'listNotFound' as const }
-      : { message: t('search.no-results'), icon: 'searchNotFound' as const };
-
-  return (
-    <ItemRow justify="center" margin="lg">
-      <div>
-        <GenericError {...errorProps} />
-        {counts.all > 0 && <ItemRow margin="md">{`${counts.all} ${t('timeline.hidden-by-settings')}`}</ItemRow>}
-      </div>
-    </ItemRow>
-  );
-};
-
 const StickyHeader: React.FC<{
   stickyStep: string;
   items: Row[];
@@ -280,94 +262,6 @@ const FixedListContainer = styled.div<{ sticky?: boolean }>`
 //
 // Utils
 //
-
-function getRowStartTime(row: Row): number {
-  if (row.type === 'task') {
-    return row.data[0].started_at || row.data[0].ts_epoch;
-  }
-  return 0;
-}
-
-function getRowFinishedTime(row: Row): number {
-  if (row.type === 'task') {
-    const lastTask = row.data[row.data.length - 1];
-    return lastTask ? lastTask.finished_at || lastTask.ts_epoch : 0;
-  }
-  return 0;
-}
-
-export function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc'): (a: Row, b: Row) => number {
-  return (a: Row, b: Row) => {
-    const fst = sortDir === 'asc' ? a : b;
-    const snd = sortDir === 'asc' ? b : a;
-
-    if (sortBy === 'startTime' && fst.type === 'task' && snd.type === 'task') {
-      return getRowStartTime(fst) - getRowStartTime(snd);
-    }
-    if (sortBy === 'endTime' && fst.type === 'task' && snd.type === 'task') {
-      return getRowFinishedTime(fst) - getRowFinishedTime(snd);
-    } else if (sortBy === 'duration') {
-      return taskDuration(fst) - taskDuration(snd);
-    }
-
-    return 0;
-  };
-}
-
-function taskDuration(a: Row): number {
-  if (a.type === 'task') {
-    return getRowFinishedTime(a) - getRowStartTime(a);
-  }
-  return 0;
-}
-
-function shouldApplySearchFilter(results: SearchResultModel) {
-  return results.status !== 'NotAsked';
-}
-
-export function makeVisibleRows(
-  rowDataState: RowDataModel,
-  graph: GraphState,
-  visibleSteps: string[],
-  searchResults: SearchResultModel,
-): Row[] {
-  const matchIds = searchResults.result.map((item) => item.task_id);
-
-  return visibleSteps.reduce((arr: Row[], currentStepName: string): Row[] => {
-    const rowData = rowDataState[currentStepName];
-
-    if (!rowData) return arr;
-
-    // If step row is open, add its tasks to the list.
-    let rowTasks = Object.keys(rowData.data).map((item) => ({
-      type: 'task' as const,
-      data: rowData.data[item],
-    }));
-
-    if (graph.statusFilter) {
-      rowTasks = rowTasks.filter(
-        (item) =>
-          (graph.statusFilter === 'failed' && item.data.length > 1) ||
-          item.data.find((task) => task.status === graph.statusFilter),
-      );
-    }
-
-    if (shouldApplySearchFilter(searchResults)) {
-      rowTasks = rowTasks.filter((item) => matchIds.indexOf(item.data[0]?.task_id?.toString()) > -1);
-    }
-
-    return rowTasks.length === 0
-      ? arr
-      : arr.concat(
-          graph.group && rowData.step ? [{ type: 'step' as const, data: rowData.step, rowObject: rowData }] : [],
-          rowData.isOpen || !graph.group
-            ? graph.group
-              ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir))
-              : rowTasks
-            : [],
-        );
-  }, []);
-}
 
 function timelineNeedStickyHeader(stepPositions: StepIndex[], currentIndex: number) {
   return stepPositions.find((item, index) => {
