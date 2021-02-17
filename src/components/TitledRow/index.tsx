@@ -12,12 +12,12 @@ type Props =
 
 const TitledRow: React.FC<Props> = (props) => {
   return (
-    <StyledTitledRow>
-      <TitledRowTitle>{props.title}</TitledRowTitle>
+    <StyledTitledRow data-testid="titled-row">
+      <TitledRowTitle data-testid="titled-row-title">{props.title}</TitledRowTitle>
       <ContentBackground>
         {props.type === 'table' ? (
-          Object.keys(props.content).map((key) => (
-            <Row key={key}>
+          Object.keys(props.content).map((key, index) => (
+            <Row data-testid={`titled-row-row-${key.toLowerCase()}-${index}`} key={key}>
               <ContentSection>{key}</ContentSection>
               <ContentSection>{renderValue(props.content[key])}</ContentSection>
             </Row>
@@ -35,6 +35,8 @@ const TitledRow: React.FC<Props> = (props) => {
 //
 
 function renderValue(value: React.ReactNode) {
+  if (React.isValidElement(value)) return value;
+
   if (typeof value === 'boolean') {
     return value ? 'True' : 'False';
   } else if (typeof value === 'number') {

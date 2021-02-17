@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import { APIError } from '../../types';
 import { getVersionInfo } from '../../VERSION';
 import Icon, { IconKeys } from '../Icon';
+import TitledRow from '../TitledRow';
 
 type Props = {
   message: string;
@@ -51,10 +52,10 @@ type APIErrorRendererProps = {
   error: APIError | null;
   message?: string;
   icon?: IconKeys | JSX.Element | false;
-  customNotFound?: React.ReactNode;
+  customNotFound?: React.ReactNode; // error rendering streamlined for now and this is not needed
 };
 
-export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, message, customNotFound, icon }) => {
+export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, message, icon }) => {
   const { t } = useTranslation();
   let msg = t('error.generic-error');
 
@@ -69,52 +70,97 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
   return (
     <APIErrorContainer>
       <GenericError message={msg} {...iconProps} />
-      {error && error.status !== 404 && <APIErrorDetails error={error} t={t} />}
-      {error && error.status === 404 && customNotFound && <div>{customNotFound}</div>}
+      {error && <APIErrorDetails error={error} noIcon={icon === false} t={t} />}
     </APIErrorContainer>
   );
 };
 
-export const APIErrorDetails: React.FC<{ error: APIError; t: TFunction }> = ({ error, t }) => {
+export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TFunction }> = ({ error, noIcon, t }) => {
   const [open, setOpen] = useState(false);
   const version = getVersionInfo();
 
+  // TODO: update these later on
+  // noIcon option can probably be cleaned away later on
+  // shouldn't actually ever happen
+  const versionsTable = noIcon
+    ? {
+        ID: `${error.id}`,
+        'Application version': `${version.release_version} - ${version.commit} - ${version.env}`,
+        'Service version': `${version.service_version}`,
+      }
+    : {
+        Status: `${error.status}`,
+        Title: `${error.title}`,
+        Detail: `${error.detail || '-'}`,
+        ID: `${error.id}`,
+        'Application version': `${version.release_version} - ${version.commit} - ${version.env}`,
+        'Service version': `${version.service_version}`,
+      };
+
+  // TODO: update these later on
+  // these should come with the error object in the future
+  const linksTable = {
+    Documentation: (
+      <a href="https://docs.metaflow.org/" target="_blank" rel="noopener noreferrer">
+        https://docs.metaflow.org/
+      </a>
+    ),
+    Help: (
+      <a href="https://gitter.im/metaflow_org/community?source=orgpage" target="_blank" rel="noopener noreferrer">
+        https://gitter.im/metaflow_org/community?source=orgpage
+      </a>
+    ),
+  };
+
   if (!open) {
     return (
-      <DetailContainer data-testid="error-details">
+      <DetailContainer className={!noIcon ? 'noIcon' : ''} data-testid="error-details">
+        {noIcon && (
+          <DetailsTitle>
+            <span className="statusCode" data-testid="error-details-title">
+              {error.status}
+            </span>
+            <p className="statusTitle">{error.title}</p>
+          </DetailsTitle>
+        )}
+        {noIcon && error.detail && (
+          <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>
+        )}
         <DetailsOpenLink onClick={() => setOpen(true)} data-testid="error-details-seemore">
           {t('error.show-more-details')}
+          <Icon name="arrowDown" rotate={open ? 180 : 0} padLeft />
         </DetailsOpenLink>
       </DetailContainer>
     );
   }
 
   return (
-    <DetailContainer data-testid="error-details">
-      <DetailsTitle>
-        <span data-testid="error-details-title">
-          {error.status} - {error.title} <span style={{ fontSize: '16px' }}>({error.id})</span>
-        </span>
-        <DetailsCloseButton onClick={() => setOpen(false)} data-testid="error-details-close">
-          <Icon name="times" size="lg" />
-        </DetailsCloseButton>
-      </DetailsTitle>
-      {error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
+    <DetailContainer className={!noIcon ? 'noIcon' : ''} data-testid="error-details">
+      {noIcon && (
+        <DetailsTitle className={open && 'open'}>
+          <span className="statusCode" data-testid="error-details-title">
+            {error.status}
+          </span>
+          <p className="statusTitle">{error.title}</p>
+        </DetailsTitle>
+      )}
 
-      {error.traceback && <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>}
+      {noIcon && error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
 
-      <DetailsVersionInfo>
-        <DetailsVersionSection>
-          <DetailsVersionSectionLabel>Application version: </DetailsVersionSectionLabel>
-          <DetailsVersionText>
-            {version.release_version} - {version.commit} - {version.env}
-          </DetailsVersionText>
-        </DetailsVersionSection>
-        <DetailsVersionSection>
-          <DetailsVersionSectionLabel>Service version: </DetailsVersionSectionLabel>
-          <DetailsVersionText>{version.service_version}</DetailsVersionText>
-        </DetailsVersionSection>
-      </DetailsVersionInfo>
+      <TitledRow title={t('error.error-details')} type="table" content={versionsTable} />
+      <TitledRow title={t('task.links')} type="table" content={linksTable} />
+
+      {error.traceback && (
+        <>
+          <DetailsHeader>{t('error.stack-trace')}</DetailsHeader>
+          <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>
+        </>
+      )}
+
+      <DetailsOpenLink onClick={() => setOpen(false)} data-testid="error-details-seemore">
+        {t('error.hide-more-details')}
+        <Icon name="arrowDown" rotate={open ? 180 : 0} padLeft />
+      </DetailsOpenLink>
     </DetailContainer>
   );
 };
@@ -125,68 +171,69 @@ const APIErrorContainer = styled.div`
 `;
 
 const DetailContainer = styled.div`
-  padding: 2rem;
-  max-width: 1200px;
+  padding: 2rem 0 0;
+  max-width: 632px;
   margin: 0 auto;
+
+  &.noIcon {
+    padding: 0.5rem 0 0;
+  }
 `;
 
 const DetailsOpenLink = styled.div`
   color: ${(p) => p.theme.color.text.blue};
-  text-align: center;
   cursor: pointer;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+  text-align: right;
 `;
 
 const DetailsTitle = styled.div`
-  font-size: 30px;
-  padding: 0.5rem 0;
+  align-items: center;
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
-`;
+  padding: 0.5rem 0;
 
-const DetailsCloseButton = styled.div`
-  cursor: pointer;
+  .statusCode {
+    font-size: 4rem;
+  }
+  .statusTitle {
+    font-size: 2rem;
+    margin: 2rem 0 0;
+  }
+  .explanation {
+    font-size: 1rem;
+    margin: 0 0 0.5rem;
+  }
 `;
 
 const DetailsSubTitle = styled.div`
-  font-size: 18px;
-  padding: 0.5rem 0;
+  font-size: 1rem;
+  padding: 0 0 0.5rem;
+  text-align: center;
+`;
+
+const DetailsHeader = styled.div`
+  font-weight: 500;
+  margin: 1rem 0 0.5rem;
 `;
 
 const DetailsLog = styled.div`
-  margin-top: 0.5rem;
+  background: ${(p) => p.theme.color.bg.light};
+  border: ${(p) => p.theme.border.thinNormal};
+  border-radius: 3px;
+  color: ${(p) => p.theme.color.text.light};
+  font-family: monospace;
   font-size: 14px;
   line-height: 1.2rem;
-  background: ${(p) => p.theme.color.bg.light};
-  color: ${(p) => p.theme.color.text.light};
-  border: ${(p) => p.theme.border.thinNormal};
-  white-space: pre;
-  border-radius: 3px;
-  padding: 1rem;
-  font-family: monospace;
+  margin: 0.5rem 0;
   max-height: 400px;
+  max-width: 100%;
   overflow-x: hidden;
   overflow-y: auto;
-  word-break: break-all;
-  max-width: 100%;
+  padding: 1rem;
   white-space: break-spaces;
-`;
-
-const DetailsVersionInfo = styled.div`
-  font-size: 13px;
-  margin: 1rem 0;
-  display: flex;
-`;
-
-const DetailsVersionSection = styled.div`
-  display: flex;
-  margin-right: 2rem;
-`;
-
-const DetailsVersionSectionLabel = styled.div`
-  margin-right: 0.25rem;
-`;
-
-const DetailsVersionText = styled.div`
   word-break: break-all;
 `;
 

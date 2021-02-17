@@ -90,7 +90,7 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
                     type: 'default',
                     content:
                       status === 'Error' && error ? (
-                        <APIErrorRenderer error={error} message={t('run.run-parameters-error')} icon={false} />
+                        <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
                       ) : (
                         t('run.no-parameters')
                       ),
