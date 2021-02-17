@@ -21,7 +21,7 @@ export interface HookConfig<T, U> {
   fetchAllData?: boolean;
   // Update function to trigger something on component when new data arrives. This way we dont have to update whole data set
   // if we get one new entity
-  onUpdate?: (item: T) => void;
+  onUpdate?: (item: T, response?: DataModel<T>) => void;
   // Separate update function for websocket messages.
   onWSUpdate?: (item: U, eventType: EventType) => void;
   socketParamFilter?: (params: Record<string, string>) => Record<string, string>;
@@ -146,12 +146,15 @@ type StatusState = {
   status: AsyncStatus;
 };
 
-type StatusAction = { type: 'setid'; id: number } | { type: 'setstatus'; id: number; status: AsyncStatus };
+type StatusAction =
+  | { type: 'setstatus'; id: number; status: AsyncStatus }
+  | { type: 'set'; id: number; status: AsyncStatus };
 
 const StatusReducer = (state: StatusState, action: StatusAction): StatusState => {
   switch (action.type) {
-    case 'setid':
-      return { ...state, id: action.id };
+    case 'set': {
+      return { ...state, id: action.id, status: action.status };
+    }
     case 'setstatus':
       if (action.id === state.id) {
         return { ...state, status: action.status };
@@ -184,7 +187,6 @@ export default function useResource<T, U>({
   const initData = cache.get<T>(url)?.data || initialData;
   const [data, setData] = useState<T | null>(initData);
   const [status, statusDispatch] = useReducer(StatusReducer, { id: 0, status: 'NotAsked' });
-
   const q = new URLSearchParams(queryParams).toString();
   const target = apiHttp(`${url}${q ? '?' + q : ''}`);
   // Call batch update
@@ -289,10 +291,8 @@ export default function useResource<T, U>({
               }
 
               if (onUpdate) {
-                onUpdate(cacheItem.data as T);
-                if (postRequest) {
-                  postRequest(true, targetUrl);
-                }
+                onUpdate(cacheItem.data as T, result);
+                postRequest && postRequest(true, targetUrl);
               }
 
               // If we want all data and we are have next page available we fetch it.
@@ -338,10 +338,15 @@ export default function useResource<T, U>({
 
     if (!pause) {
       const requestid = Date.now();
-      statusDispatch({ type: 'setid', id: requestid });
-      statusDispatch({ type: 'setstatus', id: requestid, status: 'Loading' });
-      setData(cache.get<T>(url)?.data || initialData);
-      setError(null);
+      statusDispatch({ type: 'set', id: requestid, status: 'Loading' });
+
+      if (!fullyDisableCache) {
+        setData(cache.get<T>(url)?.data || initialData);
+      }
+
+      if (error !== null) {
+        setError(null);
+      }
 
       fetchData(
         target,
