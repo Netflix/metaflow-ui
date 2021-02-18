@@ -22,6 +22,7 @@ import { setServiceVersion } from './VERSION';
 import Logger from './components/Logger';
 import FEATURE_FLAGS, { FeatureFlags } from './FEATURE';
 import FeatureFlagLoader from './components/FeatureLoader';
+import { initializeGA } from './utils/analytics';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -38,6 +39,8 @@ function ScrollToTop() {
 
   return null;
 }
+// Initialize google analytics if tracking id is available. Route tracking is found from root/index.tsx file
+initializeGA();
 
 const App: React.FC = () => {
   const { t } = useTranslation();

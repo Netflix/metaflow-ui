@@ -5,6 +5,7 @@ import useWebsocket from '../useWebsocket';
 import useInterval from '../useInterval';
 import { APIError, AsyncStatus } from '../../types';
 import { setLogItem } from '../../utils/debugdb';
+import { logWarning } from '../../utils/errorlogger';
 
 export interface HookConfig<T, U> {
   // URL for fetch request
@@ -261,6 +262,7 @@ export default function useResource<T, U>({
     setLogItem(`ERROR ${targetUrl} ${JSON.stringify(err)}`);
     statusDispatch({ type: 'setstatus', id, status: 'Error' });
     setError(err);
+    logWarning(`HTTP error id: ${err.id}, url: ${targetUrl}`);
   }
 
   function fetchData(

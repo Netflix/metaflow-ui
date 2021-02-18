@@ -1,11 +1,18 @@
-import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Route, Switch, useLocation } from 'react-router-dom';
 import NotFound from '../NotFound';
 import HomePage from '../Home';
 import RunPage from '../Run';
 import { SHORT_PATHS } from '../../utils/routing';
+import { analyticsSendPageView } from '../../utils/analytics';
 
 const RootPage: React.FC = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    analyticsSendPageView(location.pathname + location.search);
+  }, [location]);
+
   return (
     <>
       <Switch>
