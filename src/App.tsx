@@ -22,6 +22,8 @@ import { setServiceVersion } from './VERSION';
 import Logger from './components/Logger';
 import FEATURE_FLAGS, { FeatureFlags } from './FEATURE';
 import FeatureFlagLoader from './components/FeatureLoader';
+import { initializeGA } from './utils/analytics';
+import { logWarning } from './utils/errorlogger';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -44,6 +46,7 @@ const App: React.FC = () => {
   const [flagsReceived, setFlagsReceived] = useState(false);
 
   useEffect(() => {
+    // Get info about servers versions
     fetch(apiHttp('/version'))
       .then((response) => (response.status === 200 ? response.text() : Promise.resolve('')))
       .then((value) => {
@@ -51,7 +54,7 @@ const App: React.FC = () => {
           setServiceVersion(value);
         }
       });
-
+    // Get info about features that are enabled by server
     fetch(apiHttp('/features'))
       .then((response) => (response.status === 200 ? response.json() : Promise.resolve(null)))
       .then((values: Record<keyof FeatureFlags, boolean>) => {
@@ -68,6 +71,21 @@ const App: React.FC = () => {
       })
       .catch(() => {
         setFlagsReceived(true);
+      });
+    // Get configurations
+    fetch(apiHttp('/config'))
+      .then((response) => (response.status === 200 ? response.json() : Promise.resolve(null)))
+      .then((values: Record<string, string> | null) => {
+        if (values) {
+          if (values.GA_TRACKING_ID) {
+            initializeGA(values.GA_TRACKING_ID);
+          }
+        } else {
+          logWarning('Failed to fetch configurations');
+        }
+      })
+      .catch(() => {
+        logWarning('Failed to fetch configurations');
       });
   }, []);
 
