@@ -27,6 +27,7 @@ import {
   makeVisibleRows,
   sortRows,
 } from './Run.utils';
+import styled from 'styled-components';
 
 //
 // Typedef
@@ -170,8 +171,16 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     searchField.results,
   ]);
 
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setVisible(true);
+    }, 1);
+  }, []);
+
   return (
-    <>
+    <RunPageContainer visible={visible}>
       <ErrorBoundary message={t('error.run-header-error')}>
         <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
       </ErrorBoundary>
@@ -244,8 +253,13 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
           },
         ]}
       />
-    </>
+    </RunPageContainer>
   );
 };
+
+const RunPageContainer = styled.div<{ visible: boolean }>`
+  transition: 0.5s opacity;
+  opacity: ${(p) => (p.visible ? '1' : '0')};
+`;
 
 export default RunPage;

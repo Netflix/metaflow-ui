@@ -55,9 +55,11 @@ const Spinner = styled.div<Props & { visible: boolean }>`
 const SmoothSpinner: React.FC<Props> = (props) => {
   const [visible, setVisible] = useState(false);
   useEffect(() => {
-    setTimeout(() => {
+    const t = setTimeout(() => {
       setVisible(true);
     }, 100);
+
+    return () => clearTimeout(t);
   }, []);
   return <Spinner {...props} visible={visible} />;
 };
