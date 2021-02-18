@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import styled, { keyframes, DefaultTheme } from 'styled-components';
 
 const Keyframes = keyframes`
@@ -26,7 +27,9 @@ const getSize = (p: {
     ? p.theme.spinner.sizes.lg
     : p.theme.spinner.sizes.sm;
 
-const Spinner = styled.div<{ size?: number; borderWidth?: number; sm?: boolean; md?: boolean; lg?: boolean }>`
+type Props = { size?: number; borderWidth?: number; sm?: boolean; md?: boolean; lg?: boolean };
+
+const Spinner = styled.div<Props & { visible: boolean }>`
   display: inline-block;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -42,6 +45,21 @@ const Spinner = styled.div<{ size?: number; borderWidth?: number; sm?: boolean; 
   border-color: ${(p) => p.theme.spinner.color} ${(p) => p.theme.spinner.color} ${(p) => p.theme.spinner.color}
     transparent;
   animation: ${Keyframes} 1.2s linear infinite;
+  transition: opacity 0.5s;
+  opacity: ${(p) => (p.visible ? '1' : '0')};
 `;
 
-export default Spinner;
+//
+// Use timeout to smoothen up appearance of spinner
+//
+const SmoothSpinner: React.FC<Props> = (props) => {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    setTimeout(() => {
+      setVisible(true);
+    }, 100);
+  }, []);
+  return <Spinner {...props} visible={visible} />;
+};
+
+export default SmoothSpinner;
