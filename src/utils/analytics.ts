@@ -8,8 +8,13 @@ export function initializeGA(): void {
   }
 }
 
+let prevUrl = '';
 export function analyticsSendPageView(url: string): void {
   if (trackingId) {
+    if (prevUrl === url) {
+      return;
+    }
+    prevUrl = url;
     ReactGA.pageview(url);
   }
 }
