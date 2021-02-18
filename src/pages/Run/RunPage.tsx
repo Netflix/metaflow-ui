@@ -28,6 +28,7 @@ import {
   sortRows,
 } from './Run.utils';
 import styled from 'styled-components';
+import { FixedContent } from '../../components/Structure';
 
 //
 // Typedef
@@ -257,9 +258,10 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   );
 };
 
-const RunPageContainer = styled.div<{ visible: boolean }>`
+const RunPageContainer = styled(FixedContent)<{ visible: boolean }>`
   transition: 0.5s opacity;
   opacity: ${(p) => (p.visible ? '1' : '0')};
+  height: calc(100vh - 9rem);
 `;
 
 export default RunPage;
