@@ -1,16 +1,20 @@
 import ReactGA from 'react-ga';
 
-const trackingId = process.env.REACT_APP_GA_TRACKING_ID;
+//
+// TODO: Make analytics more generic way so we are not tied to google
+//
 
-export function initializeGA(): void {
+let trackingEnabled = false;
+export function initializeGA(trackingId: string | null = null): void {
   if (trackingId) {
+    trackingEnabled = true;
     ReactGA.initialize(trackingId);
   }
 }
 
 let prevUrl = '';
 export function analyticsSendPageView(url: string): void {
-  if (trackingId) {
+  if (trackingEnabled) {
     if (prevUrl === url) {
       return;
     }
@@ -20,7 +24,7 @@ export function analyticsSendPageView(url: string): void {
 }
 
 export function analyticsSendException(description: string, fatal = false): void {
-  if (trackingId) {
+  if (trackingEnabled) {
     ReactGA.exception({ description, fatal });
   }
 }
