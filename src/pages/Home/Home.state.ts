@@ -33,7 +33,6 @@ type HomeAction =
   | { type: 'groupReset' };
 
 const HomeReducer = (state: HomeState, action: HomeAction): HomeState => {
-  console.log(action);
   switch (action.type) {
     case 'setPage':
       return { ...state, page: action.page, placeHolderParameters: null };

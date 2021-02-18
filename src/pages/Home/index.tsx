@@ -11,10 +11,9 @@ import useHomeParameters, { defaultHomeParameters } from './useHomeParameters';
 import HomeReducer from './Home.state';
 import { isGrouping, makeActiveRequestParameters, makeWebsocketParameters, paramList } from './Home.utils';
 
-let count = 0;
 const Home: React.FC = () => {
   const { t } = useTranslation();
-  console.log(count++);
+
   //
   // State
   //
