@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { paramList, isDefaultParams } from '../index';
 
 import { CheckboxField, DropdownField } from '../../../components/Form';
 import { Section, SectionHeader } from '../../../components/Structure';
@@ -11,6 +10,7 @@ import { RemovableTag } from '../../../components/Tag';
 import FilterInput from '../../../components/FilterInput';
 
 import FEATURE from '../../../FEATURE';
+import { isDefaultParams, paramList } from '../Home.utils';
 
 type Props = {
   // Update queryparameter
