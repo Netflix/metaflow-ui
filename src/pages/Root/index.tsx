@@ -11,7 +11,7 @@ const RootPage: React.FC = () => {
 
   useEffect(() => {
     analyticsSendPageView(location.pathname + location.search);
-  }, [location]);
+  }, [location.pathname]); // eslint-disable-line
 
   return (
     <>
