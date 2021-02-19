@@ -6,7 +6,6 @@ import { Run as IRun } from '../../types';
 
 import Spinner from '../../components/Spinner';
 import { APIErrorRenderer } from '../../components/GenericError';
-import { FixedContent } from '../../components/Structure';
 import RunPage from './RunPage';
 
 //
@@ -36,7 +35,7 @@ const RunContainer: React.FC = () => {
   });
 
   return (
-    <FixedContent>
+    <div>
       {status === 'Loading' && !run?.run_number && (
         <div style={{ textAlign: 'center', margin: '2rem 0' }}>
           <Spinner md />
@@ -46,7 +45,7 @@ const RunContainer: React.FC = () => {
       {status === 'Error' && !run?.run_number && <APIErrorRenderer error={error} message={t('timeline.no-run-data')} />}
 
       {run?.run_number && <RunPage run={run} params={params} />}
-    </FixedContent>
+    </div>
   );
 };
 
