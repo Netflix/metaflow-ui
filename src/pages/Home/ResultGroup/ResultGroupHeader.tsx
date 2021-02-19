@@ -15,41 +15,38 @@ type ResultGroupHeaderProps = {
   clickable: boolean;
 };
 
-const ResultGroupHeader: React.FC<ResultGroupHeaderProps> = ({
-  handleClick,
-  error,
-  cols,
-  onOrderChange,
-  order,
-  label,
-  clickable,
-}) => (
-  <>
-    <TR className="result-group-title">
-      <th colSpan={cols.length + 2} style={{ textAlign: 'left' }}>
-        <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
-          {label}
-        </ResultGroupTitle>
-        {error && <Label type={LabelType.Warning}>{error.message}</Label>}
-      </th>
-    </TR>
-    <TR className="result-group-columns">
-      <StatusColorHeaderCell />
-      {cols.map((col) => (
-        <HeaderColumn
-          key={col.key}
-          label={col.label}
-          queryKey={col.key}
-          maxWidth={col.maxWidth}
-          sortable={!!col.sortable}
-          onSort={onOrderChange}
-          currentOrder={order}
-        />
-      ))}
+const ResultGroupHeader: React.FC<ResultGroupHeaderProps> = React.memo(
+  ({ handleClick, error, cols, onOrderChange, order, label, clickable }) => (
+    <>
+      <TR className="result-group-title">
+        <th colSpan={cols.length + 2} style={{ textAlign: 'left' }}>
+          <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
+            {label}
+          </ResultGroupTitle>
+          {error && <Label type={LabelType.Warning}>{error.message}</Label>}
+        </th>
+      </TR>
+      <TR className="result-group-columns">
+        <StatusColorHeaderCell />
+        {cols.map((col) => (
+          <HeaderColumn
+            key={col.key}
+            label={col.label}
+            queryKey={col.key}
+            maxWidth={col.maxWidth}
+            sortable={!!col.sortable}
+            onSort={onOrderChange}
+            currentOrder={order}
+          />
+        ))}
 
-      <th></th>
-    </TR>
-  </>
+        <th></th>
+      </TR>
+    </>
+  ),
+  (previous, next) => {
+    return previous.label === next.label && previous.order === next.order;
+  },
 );
 
 const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
