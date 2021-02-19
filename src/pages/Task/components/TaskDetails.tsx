@@ -19,11 +19,10 @@ import TitledRow from '../../../components/TitledRow';
 
 type Props = {
   task: ITask;
-  attempts: ITask[];
   metadata: Resource<Metadata[]>;
 };
 
-const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
+const TaskDetails: React.FC<Props> = ({ task, metadata }) => {
   const { t } = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const { timezone } = useContext(TimezoneContext);
@@ -52,8 +51,7 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
             },
             {
               label: t('fields.started-at'),
-              accessor: (item) =>
-                item.ts_epoch ? getISOString(new Date(getAttemptStartTime(attempts, item)), timezone) : '',
+              accessor: (item) => (item.started_at ? getISOString(new Date(item.started_at), timezone) : ''),
             },
             {
               label: t('fields.finished-at'),
@@ -61,7 +59,7 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
             },
             {
               label: t('fields.duration'),
-              accessor: (item) => getAttemptDuration(attempts, item),
+              accessor: (item) => getAttemptDuration(item),
             },
           ]}
         />
@@ -100,39 +98,11 @@ const TaskDetails: React.FC<Props> = ({ task, attempts, metadata }) => {
   );
 };
 
-//
-// Figure out the duration of current attempt of current task. There might be many attempts
-// and on those cases we need to calculate duration from previous attempt IF attempt doesn't
-// have started at value which indicates that actual duration value of attempt is correct.
-//
-export function getAttemptDuration(tasks: ITask[], task: ITask): string {
-  if (task.status === 'running') {
-    return formatDuration(Date.now() - (task.started_at || task.ts_epoch));
-  }
-  // If task has started at, it must have proper duration as well. Else calculate
-  if (!task.started_at && tasks && tasks.length > 1) {
-    const attemptBefore = tasks[tasks.indexOf(task) - 1];
-
-    if (attemptBefore && attemptBefore.duration && task.duration) {
-      return formatDuration(task.duration - attemptBefore.duration);
-    }
+export function getAttemptDuration(task: ITask): string {
+  if (task.status === 'running' && task.started_at) {
+    return formatDuration(Date.now() - task.started_at);
   }
   return task.duration ? formatDuration(task.duration) : '';
-}
-
-export function getAttemptStartTime(allAttempts: ITask[] | null, task: ITask): number {
-  const taskTimeStamp = task.started_at || task.ts_epoch;
-
-  if (!allAttempts) return taskTimeStamp;
-
-  const first = allAttempts.find((t) => t.attempt_id === 0);
-
-  if (task.attempt_id === 0 || (first && first.ts_epoch !== taskTimeStamp)) {
-    return taskTimeStamp;
-  } else {
-    const previous = allAttempts.find((t) => t.attempt_id === task.attempt_id - 1);
-    return previous?.finished_at || taskTimeStamp;
-  }
 }
 
 export default TaskDetails;

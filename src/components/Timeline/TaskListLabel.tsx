@@ -51,8 +51,8 @@ const TaskListLabel: React.FC<Props> = (props) => {
               </RowTaskName>
             </RowLabelTaskName>
             <RowDuration data-testid="tasklistlabel-duration">
-              {props.item.status === 'running'
-                ? formatDuration(Date.now() - (props.item.started_at || props.item.ts_epoch), 1)
+              {props.item.status === 'running' && props.item.started_at
+                ? formatDuration(Date.now() - props.item.started_at, 1)
                 : props.duration
                 ? formatDuration(props.duration, 1)
                 : null}

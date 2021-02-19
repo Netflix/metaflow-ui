@@ -2,7 +2,7 @@ import { Row } from '../components/Timeline/VirtualizedTimeline';
 import { TaskStatus } from '../types';
 
 const takeSmallest = (a: Row): number =>
-  a.type === 'task' ? a.data[0].started_at || a.data[0].ts_epoch : a.data.ts_epoch;
+  a.type === 'task' ? a.data[0].started_at || Number.MAX_SAFE_INTEGER : a.data.ts_epoch;
 
 const takeBiggest = (a: Row): number =>
   (a.type === 'task' ? a.data[a.data.length - 1].finished_at : a.data.finished_at) || 0;

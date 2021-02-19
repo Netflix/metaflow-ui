@@ -134,7 +134,11 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   // in some cases with short end task
   const extendAmount = (graph.timelineEnd - graph.timelineStart) * 0.01;
   const visibleDuration = graph.timelineEnd - graph.timelineStart + extendAmount;
-  const boxStartTime = row.type === 'step' ? row.data.ts_epoch : row.data.started_at || row.data.ts_epoch;
+  const boxStartTime = row.type === 'step' ? row.data.ts_epoch : row.data.started_at;
+
+  if (!boxStartTime) {
+    return null;
+  }
 
   // Calculate have much box needs to be pushed from (or to) left
   const valueFromLeft =
