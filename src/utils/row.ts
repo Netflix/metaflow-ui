@@ -1,18 +1,32 @@
 import { Row } from '../components/Timeline/VirtualizedTimeline';
 import { TaskStatus } from '../types';
 
-const takeSmallest = (a: Row): number =>
-  a.type === 'task' ? a.data[0].started_at || Number.MAX_SAFE_INTEGER : a.data.ts_epoch;
+const takeSmallest = (a: Row): number | null => (a.type === 'task' ? a.data[0].started_at || null : a.data.ts_epoch);
 
 const takeBiggest = (a: Row): number =>
   (a.type === 'task' ? a.data[a.data.length - 1].finished_at : a.data.finished_at) || 0;
 
+const sortSmallest = (a: Row, b: Row) => {
+  const aval = takeSmallest(a);
+  const bval = takeSmallest(b);
+
+  if (aval === bval) {
+    return 0;
+  }
+  if (!aval) {
+    return -1;
+  } else if (!bval) {
+    return 1;
+  }
+  return aval - bval;
+};
+
 export const startAndEndpointsOfRows = (rows: Row[]): { start: number; end: number } => {
-  const start = rows.sort((a, b) => takeSmallest(a) - takeSmallest(b))[0];
+  const start = rows.sort(sortSmallest)[0];
   const end = rows.sort((a, b) => takeBiggest(b) - takeBiggest(a))[0];
 
   return {
-    start: start ? takeSmallest(start) : 0,
+    start: start ? takeSmallest(start) || 0 : 0,
     end: end ? takeBiggest(end) : 0,
   };
 };
