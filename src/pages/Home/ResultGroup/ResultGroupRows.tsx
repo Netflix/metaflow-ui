@@ -26,42 +26,52 @@ type ResultGroupRowsProps = {
 // Component
 //
 
-const ResultGroupRows: React.FC<ResultGroupRowsProps> = ({ r, params, updateListValue, link, timezone }) => {
-  return (
-    <>
-      {/* STATUS INDICATOR */}
-      <StatusColorCell status={r.status} />
-      {/* FLOW ID */}
-      {params._group !== 'flow_id' && <TDWithLink link={link}>{r.flow_id}</TDWithLink>}
-      {/* ID */}
-      <TDWithLink link={link}>
-        <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
-      </TDWithLink>
-      {/* USER NAME */}
-      {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
-      {/* STARTED AT */}
-      <TimeCell link={link}>{getRunStartTime(r, timezone)}</TimeCell>
-      {/* FINISHED AT */}
-      <TimeCell link={link}>{getRunEndTime(r, timezone)}</TimeCell>
-      {/* DURATION */}
-      <TimeCell link={link}>
-        <ResultGroupDuration run={r} />
-      </TimeCell>
-      {/* STATUS */}
-      <TDWithLink link={link}>
-        <ForceNoBreakText>
-          <StatusField status={r.status} />
-        </ForceNoBreakText>
-      </TDWithLink>
-      {/* USER TAGS */}
-      {(r.tags || []).length > 0 ? (
-        <ResultGroupTags tags={r.tags || []} updateListValue={updateListValue} />
-      ) : (
-        <TDWithLink link={link}></TDWithLink>
-      )}
-    </>
-  );
-};
+const ResultGroupRows: React.FC<ResultGroupRowsProps> = React.memo(
+  ({ r, params, updateListValue, link, timezone }) => {
+    return (
+      <>
+        {/* STATUS INDICATOR */}
+        <StatusColorCell status={r.status} />
+        {/* FLOW ID */}
+        {params._group !== 'flow_id' && <TDWithLink link={link}>{r.flow_id}</TDWithLink>}
+        {/* ID */}
+        <TDWithLink link={link}>
+          <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
+        </TDWithLink>
+        {/* USER NAME */}
+        {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
+        {/* STARTED AT */}
+        <TimeCell link={link}>{getRunStartTime(r, timezone)}</TimeCell>
+        {/* FINISHED AT */}
+        <TimeCell link={link}>{getRunEndTime(r, timezone)}</TimeCell>
+        {/* DURATION */}
+        <TimeCell link={link}>
+          <ResultGroupDuration run={r} />
+        </TimeCell>
+        {/* STATUS */}
+        <TDWithLink link={link}>
+          <ForceNoBreakText>
+            <StatusField status={r.status} />
+          </ForceNoBreakText>
+        </TDWithLink>
+        {/* USER TAGS */}
+        {(r.tags || []).length > 0 ? (
+          <ResultGroupTags tags={r.tags || []} updateListValue={updateListValue} />
+        ) : (
+          <TDWithLink link={link}></TDWithLink>
+        )}
+      </>
+    );
+  },
+  (previous, next) => {
+    return (
+      previous.link === next.link &&
+      previous.timezone === next.timezone &&
+      previous.r.status === next.r.status &&
+      previous.r.finished_at === next.r.finished_at
+    );
+  },
+);
 
 //
 // Cells
