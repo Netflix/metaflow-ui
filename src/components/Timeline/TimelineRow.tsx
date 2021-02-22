@@ -23,6 +23,7 @@ type TimelineRowProps = {
   sticky?: boolean;
   paramsString?: string;
   t: TFunction;
+  dragging: boolean;
 };
 
 type LabelPosition = 'left' | 'right' | 'none';
@@ -36,6 +37,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   paramsString,
   sticky,
   t,
+  dragging,
 }) => {
   if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
@@ -75,6 +77,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               duration={item.rowObject.status === 'running' ? 0 : item.rowObject.duration}
               labelDuration={getStepDuration(item, graph)}
               isLastAttempt
+              dragging={dragging}
             />
           ) : (
             item.data.map((task, index) => (
@@ -86,6 +89,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
                 duration={task.duration || 0}
                 labelDuration={item.data[item.data.length - 1].duration}
                 startTimeOfFirstAttempt={graph.sortBy === 'duration' ? item.data[0].started_at || 0 : undefined}
+                dragging={dragging}
               />
             ))
           )}
@@ -118,6 +122,7 @@ type BoxGraphicElementProps = {
   duration: number | null;
   labelDuration?: number | null;
   startTimeOfFirstAttempt?: number;
+  dragging: boolean;
 };
 
 export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
@@ -128,6 +133,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   duration,
   labelDuration,
   startTimeOfFirstAttempt,
+  dragging,
 }) => {
   const status = getRowStatus(row);
   // Extend visible area little bit to prevent lines seem like going out of bounds. Happens
@@ -149,13 +155,18 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
   return (
-    <div style={{ width: '100%', transform: `translateX(${valueFromLeft}%)` }} data-testid="boxgraphic-container">
+    <BoxGraphicContainer
+      style={{ transform: `translateX(${valueFromLeft}%)` }}
+      dragging={dragging}
+      data-testid="boxgraphic-container"
+    >
       <BoxGraphic
         root={row.type === 'step'}
         style={{
           width: `${width}%`,
         }}
         data-testid="boxgraphic"
+        dragging={dragging}
       >
         {((isLastAttempt && labelDuration) || status === 'running') && (
           <RowMetricLabel
@@ -168,7 +179,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         <BoxGraphicMarkerStart />
         {status !== 'running' && <BoxGraphicMarkerEnd />}
       </BoxGraphic>
-    </div>
+    </BoxGraphicContainer>
   );
 };
 
@@ -210,6 +221,11 @@ function getLengthLabelPosition(fromLeft: number, width: number): LabelPosition 
 function getStepDuration(item: { type: 'step'; data: Step; rowObject: StepRowData }, graph: GraphState): number {
   return item.rowObject.status === 'running' ? graph.max - item.data.ts_epoch : item.rowObject.duration;
 }
+
+const BoxGraphicContainer = styled.div<{ dragging: boolean }>`
+  width: 100%;
+  transition: ${(p) => (p.dragging ? 'none' : '0.5s transform')};
+`;
 
 const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
   position: absolute;
@@ -275,13 +291,14 @@ const RowGraphContainer = styled.div`
   ${RowContainerStyles}
 `;
 
-const BoxGraphic = styled.div<{ root: boolean }>`
+const BoxGraphic = styled.div<{ root: boolean; dragging: boolean }>`
   position: absolute;
   cursor: pointer;
   color: ${(p) => p.theme.color.text.dark};
   min-width: 5px;
   height: 27px;
   line-height: 27px;
+  transition: ${(p) => (p.dragging ? 'none' : '0.5s width')};
 `;
 
 export function lineColor(
