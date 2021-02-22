@@ -152,6 +152,7 @@ describe('useResource hook', () => {
   //
   test('useResource - Real time, controlled batch update (Array)', async () => {
     const mockfn = jest.fn();
+    jest.useFakeTimers();
     const { getByTestId } = render(
       <ResourceListComponent uuid="resourceHookTest" subscribeToEvents={true} onUpdate={mockfn} useBatching={true} />,
     );
@@ -172,6 +173,7 @@ describe('useResource hook', () => {
     });
     // Websocket update should not appear on view...
     await waitFor(() => expect(getByTestId('container').textContent).toBe('123'));
+    jest.advanceTimersByTime(1000);
     // ...but onUpdate should have been called with the all data
     await waitFor(() =>
       expect(mockfn).toHaveBeenLastCalledWith([

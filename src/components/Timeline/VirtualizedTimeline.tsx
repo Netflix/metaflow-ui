@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createRef, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { List } from 'react-virtualized';
 import { Step, Task, AsyncStatus } from '../../types';
 import styled from 'styled-components';
@@ -16,6 +16,7 @@ import { TFunction } from 'i18next';
 import Spinner from '../Spinner';
 import TaskListingHeader from '../TaskListingHeader';
 import TimelineNoRows from './TimelineNoRows';
+import { RenderedRows } from 'react-virtualized/dist/es/List';
 
 export const ROW_HEIGHT = 28;
 export type StepRow = { type: 'step'; data: Step; rowObject: StepRowData };
@@ -49,7 +50,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   isAnyGroupOpen,
 }) => {
   const { t } = useTranslation();
-  const _listref = createRef<List>();
   // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
   const _listContainer = useRef<HTMLDivElement>(null);
   const listContainer = useComponentSize(_listContainer);
@@ -60,6 +60,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   const [stickyHeader, setStickyHeader] = useState<null | string>(null);
   const [showFullscreen, setFullscreen] = useState(false);
   const { graph, dispatch: graphDispatch, setQueryParam } = graphHook;
+  const [dragging, setDragging] = useState(false);
 
   // Update step position indexes (for sticky headers). We might wanna do this else where
   useEffect(() => {
@@ -75,6 +76,45 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
 
     setStepPositions(stepPos);
   }, [rows]);
+
+  //
+  // Event handling
+  //
+
+  const footerHandleUpdate = (which: 'left' | 'right', to: number) => {
+    if (which === 'left') {
+      graphDispatch({
+        type: 'setZoom',
+        start: to < graph.min ? graph.min : to > graph.timelineEnd - 500 ? graph.timelineStart : to,
+        end: graph.timelineEnd,
+      });
+    } else {
+      graphDispatch({
+        type: 'setZoom',
+        start: graph.timelineStart,
+        end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
+      });
+    }
+  };
+
+  const onRowsRendered = (params: RenderedRows) => {
+    const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
+
+    if (stepNeedsSticky) {
+      setStickyHeader(stepNeedsSticky.name);
+    } else {
+      if (stickyHeader) {
+        setStickyHeader(null);
+      }
+    }
+  };
+
+  const getContainerHeight = () => {
+    return (
+      (listContainer.height - 69 > rows.length * ROW_HEIGHT ? rows.length * ROW_HEIGHT : listContainer.height - 69) +
+      'px'
+    );
+  };
 
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
@@ -93,33 +133,18 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
           resetSteps={() => setQueryParam({ steps: null })}
         />
         {rows.length > 0 && (
-          <div style={{ flex: '1', minHeight: '500px' }} ref={_listContainer}>
+          <ListContainer ref={_listContainer}>
             <FixedListContainer
               sticky={!!stickyHeader && graph.group}
               style={{
-                height:
-                  (listContainer.height - 69 > rows.length * ROW_HEIGHT
-                    ? rows.length * ROW_HEIGHT
-                    : listContainer.height - 69) + 'px',
+                height: getContainerHeight(),
                 width: listContainer.width + 'px',
               }}
             >
               <List
-                // eslint-disable-next-line react/no-string-refs
-                ref={_listref}
                 overscanRowCount={10}
                 rowCount={rows.length}
-                onRowsRendered={(params) => {
-                  const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
-
-                  if (stepNeedsSticky) {
-                    setStickyHeader(stepNeedsSticky.name);
-                  } else {
-                    if (stickyHeader) {
-                      setStickyHeader(null);
-                    }
-                  }
-                }}
+                onRowsRendered={onRowsRendered}
                 rowHeight={ROW_HEIGHT}
                 rowRenderer={createRowRenderer({
                   rows,
@@ -128,6 +153,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
                   isGrouped: graph.group,
                   paramsString,
                   t: t,
+                  dragging: dragging,
                 })}
                 height={listContainer.height - (stickyHeader ? ROW_HEIGHT : 0) - 69}
                 width={listContainer.width}
@@ -140,6 +166,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
                   graph={graph}
                   onToggle={() => rowDataDispatch({ type: 'close', id: stickyHeader })}
                   t={t}
+                  dragging={dragging}
                 />
               )}
             </FixedListContainer>
@@ -148,23 +175,10 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
               graph={graph}
               rows={rows}
               move={(value) => graphDispatch({ type: 'move', value: value })}
-              updateHandle={(which, to) => {
-                if (which === 'left') {
-                  graphDispatch({
-                    type: 'setZoom',
-                    start: to < graph.min ? graph.min : to > graph.timelineEnd - 500 ? graph.timelineStart : to,
-                    end: graph.timelineEnd,
-                  });
-                } else {
-                  graphDispatch({
-                    type: 'setZoom',
-                    start: graph.timelineStart,
-                    end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
-                  });
-                }
-              }}
+              updateHandle={footerHandleUpdate}
+              updateDragging={setDragging}
             />
-          </div>
+          </ListContainer>
         )}
 
         {rows.length === 0 && (
@@ -198,13 +212,23 @@ type RowRendererProps = {
   isGrouped: boolean;
   paramsString: string;
   t: TFunction;
+  dragging: boolean;
 };
 
-function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped, t }: RowRendererProps) {
+function getUniqueKey(index: number, row: Row) {
+  const key = index + row.type;
+  if (row.type === 'step') {
+    return key + row.data.step_name;
+  } else {
+    return key + row.data[0]?.task_id;
+  }
+}
+
+function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped, t, dragging }: RowRendererProps) {
   return ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = rows[index];
     return (
-      <div style={style} key={index}>
+      <div style={style} key={getUniqueKey(index, row)}>
         <TimelineRow
           item={row}
           graph={graph}
@@ -213,6 +237,7 @@ function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped
           onOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
           paramsString={paramsString}
           t={t}
+          dragging={dragging}
         />
       </div>
     );
@@ -225,12 +250,24 @@ const StickyHeader: React.FC<{
   graph: GraphState;
   t: TFunction;
   onToggle: () => void;
-}> = ({ stickyStep, items, graph, onToggle, t }) => {
+  dragging: boolean;
+}> = ({ stickyStep, items, graph, onToggle, t, dragging }) => {
   const item = items.find((item) => item.type === 'step' && item.data.step_name === stickyStep);
 
   if (!item || item.type !== 'step') return null;
 
-  return <TimelineRow item={item} isOpen={true} isGrouped={true} graph={graph} onOpen={onToggle} t={t} sticky />;
+  return (
+    <TimelineRow
+      item={item}
+      isOpen={true}
+      isGrouped={true}
+      graph={graph}
+      onOpen={onToggle}
+      t={t}
+      dragging={dragging}
+      sticky
+    />
+  );
 };
 
 const VirtualizedTimelineContainer = styled.div`
@@ -254,9 +291,16 @@ const VirtualizedTimelineSubContainer = styled.div`
   flex-direction: column;
 `;
 
+const ListContainer = styled.div`
+  flex: 1;
+  min-height: 500px;
+`;
+
 const FixedListContainer = styled.div<{ sticky?: boolean }>`
   position: relative;
   padding-top: ${(p) => (p.sticky ? ROW_HEIGHT : 0)}px;
+  transition: 0.5s height;
+  overflow: hidden;
 `;
 
 //

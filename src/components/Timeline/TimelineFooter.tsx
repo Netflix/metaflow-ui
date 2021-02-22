@@ -14,11 +14,12 @@ type TimelineFooterProps = {
   rows: Row[];
   move: (change: number) => void;
   updateHandle: (which: 'left' | 'right', to: number) => void;
+  updateDragging: (dragging: boolean) => void;
 };
 
 type LineData = { start: number; end: number; status: TaskStatus };
 
-const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHandle, rows }) => {
+const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHandle, rows, updateDragging }) => {
   const _container = createRef<HTMLDivElement>();
   const [drag, setDrag] = useState({ dragging: false, start: 0 });
   const [handleDrag, setHandleDrag] = useState<{ dragging: boolean; which: 'left' | 'right' }>({
@@ -112,11 +113,20 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
     }
   }, [rows, graph.group, graph.sortBy, graph.min, graph.max]);
 
+  useEffect(() => {
+    updateDragging(drag.dragging || handleDrag.dragging);
+  }, [drag.dragging, handleDrag.dragging, updateDragging]);
+
   return (
     <TimelineFooterContainer>
       <TimelineFooterLeft></TimelineFooterLeft>
       <TimelineFooterContent>
-        <MiniTimelineActive graph={graph} startMove={startMove} startHandleMove={startHandleDrag}></MiniTimelineActive>
+        <MiniTimelineActive
+          graph={graph}
+          dragging={drag.dragging || handleDrag.dragging}
+          startMove={startMove}
+          startHandleMove={startHandleDrag}
+        ></MiniTimelineActive>
         <MiniTimelineContainer ref={_container}>
           {FEATURE_FLAGS.TIMELINE_MINIMAP &&
             lines.map((step, index) => (
@@ -188,14 +198,16 @@ const MiniTimelineLine = styled.div<{ status: TaskStatus }>`
 
 const MiniTimelineActive: React.FC<{
   graph: GraphState;
+  dragging: boolean;
   startMove: (value: number) => void;
   startHandleMove: (which: 'left' | 'right') => void;
-}> = ({ graph, startMove, startHandleMove }) => {
+}> = ({ graph, dragging, startMove, startHandleMove }) => {
   const width = ((graph.timelineEnd - graph.timelineStart) / (graph.max - graph.min)) * 100;
   const left = ((graph.timelineStart - graph.min) / (graph.max - graph.min)) * 100;
 
   return (
     <MiniTimelineActiveSection
+      dragging={dragging}
       style={{
         width: width + '%',
         left: left + '%',
@@ -286,7 +298,7 @@ const MiniTimelineContainer = styled.div`
   pointer-events: none;
 `;
 
-const MiniTimelineActiveSection = styled.div`
+const MiniTimelineActiveSection = styled.div<{ dragging: boolean }>`
   position: relative;
   height: 49px;
   background #fff;
@@ -294,6 +306,7 @@ const MiniTimelineActiveSection = styled.div`
   border-right: ${(p) => p.theme.border.thinLight};
   border-bottom: 8px solid ${(p) => p.theme.color.border.light};
   cursor: grab;
+  transition: ${(p) => (p.dragging ? 'none' : '0.5s left, 0.5s width')};
 `;
 
 const MiniTimelineHandle = styled.div`

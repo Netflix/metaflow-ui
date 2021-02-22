@@ -196,7 +196,7 @@ export default function useResource<T, U>({
       onUpdate(updateBatcher[target]);
       updateBatcher[target] = [];
     }
-  }, 500);
+  }, 1000);
 
   useEffect(() => {
     const unsubCache = cache.subscribe(target, () => {
