@@ -1,12 +1,10 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { StringParam, useQueryParams } from 'use-query-params';
 import { Run as IRun, Task as ITask, Log, Metadata, AsyncStatus } from '../../types';
 import useResource from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
-import { logWarning } from '../../utils/errorlogger';
-import Plugins, { Plugin, PluginTaskSection } from '../../plugins';
 
 import Spinner from '../../components/Spinner';
 import { GraphHook } from '../../components/Timeline/useGraph';
@@ -96,55 +94,6 @@ const Task: React.FC<TaskViewProps> = ({
   const task = tasks?.find((item) => item.attempt_id === attemptId) || null;
   const isCurrentTaskFinished = !!(task && task.finished_at);
 
-  //
-  // Plugins helpers begin
-  //
-  const sectionPlugins = useMemo(() => Plugins.all().filter((plugin) => plugin['task-view']?.sections), []);
-
-  const pluginComponentsForSection = useMemo(
-    () => (sectionKey: string) => {
-      try {
-        return sectionPlugins.reduce((components: PluginTaskSection[], plugin: Plugin) => {
-          const sectionMatches = (plugin['task-view']?.sections || []).filter((section) => section.key === sectionKey);
-          return [...components, ...sectionMatches];
-        }, []);
-      } catch (e) {
-        logWarning('There war unexpected error on plugins: ', e);
-        return [];
-      }
-    },
-    [sectionPlugins],
-  );
-  const renderComponentsForSection = useMemo(
-    () => (sectionKey: string) => {
-      try {
-        return pluginComponentsForSection(sectionKey).map(({ component: Component }, index) => {
-          return Component ? <Component key={index} task={task} artifacts={null} /> : null;
-        });
-      } catch (e) {
-        logWarning('There war unexpected error on plugins: ', e);
-        return [];
-      }
-    },
-    [task, pluginComponentsForSection],
-  );
-  const pluginSectionsCustom = useMemo(() => {
-    try {
-      return sectionPlugins
-        .reduce((sections: string[], plugin: Plugin) => {
-          const sectionKeys = (plugin['task-view']?.sections || []).map((section) => section.key);
-          return [...sections, ...sectionKeys];
-        }, []) // Find section keys from plugins
-        .filter((v, i, a) => a.indexOf(v) === i) // Remove duplicates
-        .filter((key) => !['taskinfo', 'stdout', 'stderr', 'artifacts'].includes(key)); // Ignore built-in sections
-    } catch (e) {
-      logWarning('There war unexpected error on plugins: ', e);
-      return [];
-    }
-  }, [sectionPlugins]);
-
-  //
-  // Plugins helpers end
   //
   // Related data start
   //
@@ -258,8 +207,6 @@ const Task: React.FC<TaskViewProps> = ({
                   component: (
                     <>
                       <TaskDetails task={task} attempts={tasks || []} metadata={metadata} />
-
-                      {renderComponentsForSection('taskinfo')}
                     </>
                   ),
                 },
@@ -285,7 +232,6 @@ const Task: React.FC<TaskViewProps> = ({
                         error={stdoutRes.error}
                         component={<LogList rows={stdout} onShowFullscreen={() => setFullscreen('stdout')} />}
                       />
-                      {renderComponentsForSection('stdout')}
                     </>
                   ),
                 },
@@ -311,34 +257,9 @@ const Task: React.FC<TaskViewProps> = ({
                         error={stderrRes.error}
                         component={<LogList rows={stderr} onShowFullscreen={() => setFullscreen('stderr')} />}
                       />
-
-                      {renderComponentsForSection('stderr')}
                     </>
                   ),
                 },
-                //
-                // Other custom components
-                //
-                ...pluginSectionsCustom.map((sectionKey, index) => {
-                  const sections = pluginComponentsForSection(sectionKey).filter((s) => s.component);
-                  // Get order and label for each section
-                  // Plugin that is registered first is the priority
-                  const order = sections.find((s) => s.order)?.order;
-                  const label = sections.find((s) => s.label)?.label;
-
-                  return {
-                    key: sectionKey,
-                    order: order || 100 + index,
-                    label: label || sectionKey,
-                    component: (
-                      <>
-                        {sections.map(({ component: Component }, index) => {
-                          return Component ? <Component key={index} task={task} artifacts={null} /> : null;
-                        })}
-                      </>
-                    ),
-                  };
-                }),
               ].sort((a, b) => a.order - b.order)}
             />
           </>
