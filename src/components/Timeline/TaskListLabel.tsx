@@ -6,7 +6,7 @@ import { Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { getPath } from '../../utils/routing';
 import { colorByStatus } from '../../utils/style';
-import { getTaskId } from '../../utils/task';
+import { getTaskDuration, getTaskId } from '../../utils/task';
 import Icon from '../Icon';
 
 type BaseProps = {
@@ -51,11 +51,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
               </RowTaskName>
             </RowLabelTaskName>
             <RowDuration data-testid="tasklistlabel-duration">
-              {props.item.status === 'running'
-                ? formatDuration(Date.now() - (props.item.started_at || props.item.ts_epoch), 1)
-                : props.duration
-                ? formatDuration(props.duration, 1)
-                : null}
+              {formatDuration(getTaskDuration(props.item), 1)}
             </RowDuration>
           </RowLabelContent>
         </Link>

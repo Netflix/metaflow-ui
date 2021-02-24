@@ -63,7 +63,7 @@ describe('useRowData hook - reducer', () => {
   it('fillTasks - Add task to non existent step', () => {
     const newState = rowDataReducer(DEFAULT_ROW_DATA(), {
       type: 'fillTasks',
-      data: [createTask({ step_name: 'newstep', ts_epoch: 100 })],
+      data: [createTask({ step_name: 'newstep', started_at: 100 })],
     });
     expect(Object.keys(newState)).toEqual(['start', 'newstep']);
     const newStepObject = newState.newstep;
@@ -73,7 +73,7 @@ describe('useRowData hook - reducer', () => {
       status: 'completed',
       duration: 0,
       data: {
-        1: [createTask({ step_name: 'newstep', ts_epoch: 100 })],
+        1: [createTask({ step_name: 'newstep', started_at: 100 })],
       },
     });
   });

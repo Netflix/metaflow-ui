@@ -2,7 +2,10 @@
  * Converts milliseconds to duration string. We are never rounding anything up
  * @param time Time in milliseconds
  */
-export function formatDuration(time: number, precision?: number): string {
+export function formatDuration(time: number | null, precision?: number): string {
+  if (time === null) {
+    return '';
+  }
   if (time < 0) {
     return precision === 0 ? '0s' : '0.0s';
   }

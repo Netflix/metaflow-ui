@@ -6,7 +6,12 @@ test('startAndEndpointsOfRows', () => {
     createTaskRow([createTask({ ts_epoch: 10, finished_at: 50 }), createTask({ ts_epoch: 60, finished_at: 150 })]),
     createTaskRow([createTask({ ts_epoch: 10, finished_at: 50 }), createTask({ ts_epoch: 60, finished_at: 180 })]),
   ];
-  expect(startAndEndpointsOfRows(rows)).toEqual({ start: 10, end: 180 });
+  expect(startAndEndpointsOfRows(rows)).toEqual({ start: 0, end: 180 });
+  const rows2 = [
+    createTaskRow([createTask({ started_at: 10, finished_at: 50 }), createTask({ started_at: 60, finished_at: 150 })]),
+    createTaskRow([createTask({ started_at: 10, finished_at: 50 }), createTask({ started_at: 60, finished_at: 180 })]),
+  ];
+  expect(startAndEndpointsOfRows(rows2)).toEqual({ start: 10, end: 180 });
 });
 
 test('getLongestRowDuration', () => {

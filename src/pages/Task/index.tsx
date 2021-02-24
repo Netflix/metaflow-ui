@@ -257,7 +257,7 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.task-info'),
                   component: (
                     <>
-                      <TaskDetails task={task} attempts={tasks || []} metadata={metadata} />
+                      <TaskDetails task={task} metadata={metadata} />
 
                       {renderComponentsForSection('taskinfo')}
                     </>
