@@ -224,6 +224,12 @@ function getUniqueKey(index: number, row: Row) {
   }
 }
 
+function rowOnOpen(row: Row, dispatch: (action: RowDataAction) => void) {
+  if (row.type === 'step') {
+    dispatch({ type: 'toggle', id: row.data.step_name });
+  }
+}
+
 function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped, t, dragging }: RowRendererProps) {
   return ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = rows[index];
@@ -234,7 +240,7 @@ function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped
           graph={graph}
           isGrouped={isGrouped}
           isOpen={row.type === 'step' && row.rowObject.isOpen}
-          onOpen={() => (row.type === 'step' ? dispatch({ type: 'toggle', id: row.data.step_name }) : () => null)}
+          onOpen={() => rowOnOpen(row, dispatch)}
           paramsString={paramsString}
           t={t}
           dragging={dragging}

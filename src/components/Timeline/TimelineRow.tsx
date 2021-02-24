@@ -86,7 +86,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
                 graph={graph}
                 row={{ type: 'task', data: task }}
                 isLastAttempt={index === item.data.length - 1}
-                duration={getTaskDuration(item.data[item.data.length - 1])}
+                duration={getTaskDuration(task)}
                 startTimeOfFirstAttempt={graph.sortBy === 'duration' ? item.data[0].started_at || 0 : undefined}
                 dragging={dragging}
               />
