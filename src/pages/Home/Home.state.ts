@@ -11,6 +11,9 @@ type HomeState = {
   isLastPage: boolean;
   // Groups to render {[groupName]: data}
   data: Record<string, Run[]>;
+  // New runs that are not yet added to list
+  // TODO: Explain better here why this is
+  newData: Run[];
   // Active parameters
   params: Record<string, string>;
   // WARNING: These placeHolderParameters are workaround for one special case. Generally when we are changing filters, we want to
@@ -21,6 +24,8 @@ type HomeState = {
   // For example if we are in page 5 with limit 15, when we reorder fakeparams would be set to page=1&limit=75. However url params are kept
   // in page=5&limit15 so that when user scrolls down, we can fetch sixth page easily.
   placeHolderParameters: { _limit: string; _page: string } | null;
+  // Track if we are scrolled from top. This will cause new runs to go "newData" pool instead of straight to view
+  isScrolledFromTop: boolean;
 };
 
 type HomeAction =
@@ -28,9 +33,11 @@ type HomeAction =
   | { type: 'setPage'; page: number }
   | { type: 'setLastPage'; isLast: boolean }
   | { type: 'data'; data: Run[]; replace: boolean; isLastPage?: boolean }
+  | { type: 'realtimeData'; data: Run[] }
   | { type: 'setParams'; params: Record<string, string> }
   | { type: 'postRequest' }
-  | { type: 'groupReset' };
+  | { type: 'groupReset' }
+  | { type: 'setScroll'; isScrolledFromTop: boolean };
 
 const HomeReducer = (state: HomeState, action: HomeAction): HomeState => {
   switch (action.type) {
@@ -57,40 +64,112 @@ const HomeReducer = (state: HomeState, action: HomeAction): HomeState => {
       return {
         ...state,
         isLastPage: typeof action.isLastPage === 'boolean' ? action.isLastPage : state.isLastPage,
-        data: action.data.reduce(
-          (data, item) => {
-            const groupKey = item[state.params._group] || 'undefined';
-            if (typeof groupKey === 'string') {
-              if (data[groupKey]) {
-                const index = data[groupKey].findIndex((r) => r.run_number === item.run_number);
-                return {
-                  ...data,
-                  [groupKey]:
-                    index > -1
-                      ? sortRuns(
-                          data[groupKey].map((r) => (r.run_number === item.run_number ? item : r)),
-                          state.params._order,
-                        )
-                      : sortRuns([...data[groupKey], item], state.params._order),
-                };
-              } else {
-                return {
-                  ...data,
-                  [groupKey]: [item],
-                };
-              }
-            }
-            return data;
-          },
-          action.replace ? {} : state.data,
-        ),
+        data: mergeTo(action.data, action.replace ? {} : state.data, state.params),
       };
+
+    case 'realtimeData': {
+      if (state.isScrolledFromTop) {
+        return {
+          ...state,
+          ...mergeWithSeparatePool(action.data, { data: state.data, newData: state.newData }, state.params),
+        };
+      }
+      return {
+        ...state,
+        data: mergeTo(action.data, state.data, state.params),
+      };
+    }
 
     case 'postRequest':
       return { ...state, showLoader: false };
 
     case 'groupReset':
       return { ...state, data: {}, showLoader: true, page: 1 };
+
+    case 'setScroll': {
+      if (!action.isScrolledFromTop && state.isScrolledFromTop && Object.keys(state.newData).length > 0) {
+        return {
+          ...state,
+          isScrolledFromTop: action.isScrolledFromTop,
+          data: mergeTo(state.newData, state.data, state.params),
+          newData: [],
+        };
+      }
+      return { ...state, isScrolledFromTop: action.isScrolledFromTop };
+    }
   }
 };
+
+function mergeTo(
+  runs: Run[],
+  initialData: Record<string, Run[]>,
+  params: Record<string, string>,
+): Record<string, Run[]> {
+  return runs.reduce((data, item) => {
+    const groupKey = item[params._group] || 'undefined';
+    if (typeof groupKey === 'string') {
+      if (data[groupKey]) {
+        const index = data[groupKey].findIndex((r) => r.run_number === item.run_number);
+        return {
+          ...data,
+          [groupKey]:
+            index > -1
+              ? sortRuns(
+                  data[groupKey].map((r) => (r.run_number === item.run_number ? item : r)),
+                  params._order,
+                )
+              : sortRuns([...data[groupKey], item], params._order),
+        };
+      } else {
+        return {
+          ...data,
+          [groupKey]: [item],
+        };
+      }
+    }
+    return data;
+  }, initialData);
+}
+
+type DataAndNew = {
+  data: Record<string, Run[]>;
+  newData: Run[];
+};
+
+function mergeWithSeparatePool(runs: Run[], initialData: DataAndNew, params: Record<string, string>): DataAndNew {
+  return runs.reduce((data, item): DataAndNew => {
+    const groupKey = item[params._group] || 'undefined';
+    if (typeof groupKey === 'string') {
+      // If we already have same group, we need to check if we can add current item there
+      if (data.data[groupKey]) {
+        const index = data.data[groupKey].findIndex((r) => r.run_number === item.run_number);
+        // If we already have this run, we can update it....
+        if (index > -1) {
+          return {
+            data: {
+              ...data.data,
+              [groupKey]: sortRuns(
+                data.data[groupKey].map((r) => (r.run_number === item.run_number ? item : r)),
+                params._order,
+              ),
+            },
+            newData: data.newData,
+          };
+        }
+      }
+      //...else we need to merge or add it to newData
+      const indexInNewData = data.newData.findIndex((r) => r.run_number === item.run_number);
+
+      return {
+        data: data.data,
+        newData:
+          indexInNewData > -1
+            ? data.newData.map((r) => (r.run_number === item.run_number ? item : r))
+            : [...data.newData, item],
+      };
+    }
+    return data;
+  }, initialData);
+}
+
 export default HomeReducer;
