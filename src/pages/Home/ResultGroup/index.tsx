@@ -185,10 +185,10 @@ export const StyledResultGroup = styled(Section)`
 `;
 
 const StyledTR = styled(TR)`
-  transition: transform 0.15s, filter 0.25s;
+  transition: transform 0.15s, box-shadow 0.25s;
   &:hover {
     transform: scale(1.005);
-    filter: drop-shadow(2px 1px 4px rgba(0, 0, 0, 0.2));
+    box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.25);
   }
 `;
 
