@@ -99,7 +99,8 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
 
   // TODO: update these later on
   // these should come with the error object in the future
-  const linksTable = {
+  // will be re-enabled when error links data is updated
+  /*const linksTable = {
     Documentation: (
       <a href="https://docs.metaflow.org/" target="_blank" rel="noopener noreferrer">
         https://docs.metaflow.org/
@@ -110,7 +111,7 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
         https://gitter.im/metaflow_org/community?source=orgpage
       </a>
     ),
-  };
+  }; */
 
   if (!open) {
     return (
@@ -148,7 +149,8 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
       {noIcon && error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
 
       <TitledRow title={t('error.error-details')} type="table" content={versionsTable} />
-      <TitledRow title={t('task.links')} type="table" content={linksTable} />
+      {/* will be re-enabled when error links data is updated */}
+      {/* <TitledRow title={t('task.links')} type="table" content={linksTable} /> */}
 
       {error.traceback && (
         <>

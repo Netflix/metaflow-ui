@@ -22,7 +22,7 @@ describe('TimelineRow component', () => {
     );
   });
 
-  test('<TimelineRow> - task row', () => {
+  test('<TimelineRow> - task row without start times', () => {
     const task = createTask({});
     const { getByTestId } = render(
       <TestWrapper>
@@ -35,7 +35,26 @@ describe('TimelineRow component', () => {
         />
       </TestWrapper>,
     );
-    // Should have two graphic bars (one is retry)
+    // Dont render elements rows since there is no started at values
+    expect(getByTestId('timeline-row-graphic-container').children.length).toBe(0);
+  });
+
+  test('<TimelineRow> - task row', () => {
+    const { getByTestId } = render(
+      <TestWrapper>
+        <TimelineRow
+          graph={createGraphState({})}
+          onOpen={jest.fn()}
+          isGrouped={true}
+          item={{
+            type: 'task',
+            data: [createTask({ started_at: 10 }), createTask({ started_at: 1000, finished_at: 9999999999 })],
+          }}
+          t={MockT}
+        />
+      </TestWrapper>,
+    );
+    // Render two elements, one retry
     expect(getByTestId('timeline-row-graphic-container').children.length).toBe(2);
   });
 
@@ -69,7 +88,7 @@ describe('TimelineRow component', () => {
   });
 
   test('<BoxGraphicElement>', () => {
-    const task = createTask({ ts_epoch: 100, finished_at: 450, duration: 350 });
+    const task = createTask({ ts_epoch: 100, started_at: 100, finished_at: 450, duration: 350 });
     const props = {
       graph: createGraphState({}),
       row: { type: 'task' as const, data: task },

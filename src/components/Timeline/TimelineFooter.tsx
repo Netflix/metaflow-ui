@@ -131,7 +131,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
           {FEATURE_FLAGS.TIMELINE_MINIMAP &&
             lines.map((step, index) => (
               <MiniTimelineRow
-                key={index}
+                key={index + step.start}
                 graph={graph}
                 started={step.start}
                 finished={step.end}
@@ -194,6 +194,7 @@ const MiniTimelineLine = styled.div<{ status: TaskStatus }>`
   min-height: 2px;
   margin-bottom: 1px;
   min-width: 2px;
+  transition: width 0.5s, left 0.5s;
 `;
 
 const MiniTimelineActive: React.FC<{

@@ -10,6 +10,7 @@ import { lighten } from 'polished';
 import { TFunction } from 'i18next';
 import TaskListLabel from './TaskListLabel';
 import { StepRowData } from './useRowData';
+import { getTaskDuration } from '../../utils/task';
 
 type TimelineRowProps = {
   // Row type and data
@@ -74,8 +75,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               graph={graph}
               row={item}
               grayed={isOpen}
-              duration={item.rowObject.status === 'running' ? 0 : item.rowObject.duration}
-              labelDuration={getStepDuration(item, graph)}
+              duration={item.rowObject.status === 'running' ? getStepDuration(item, graph) : item.rowObject.duration}
               isLastAttempt
               dragging={dragging}
             />
@@ -86,8 +86,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
                 graph={graph}
                 row={{ type: 'task', data: task }}
                 isLastAttempt={index === item.data.length - 1}
-                duration={task.duration || 0}
-                labelDuration={item.data[item.data.length - 1].duration}
+                duration={getTaskDuration(task)}
                 startTimeOfFirstAttempt={graph.sortBy === 'duration' ? item.data[0].started_at || 0 : undefined}
                 dragging={dragging}
               />
@@ -120,7 +119,6 @@ type BoxGraphicElementProps = {
   grayed?: boolean;
   isLastAttempt: boolean;
   duration: number | null;
-  labelDuration?: number | null;
   startTimeOfFirstAttempt?: number;
   dragging: boolean;
 };
@@ -131,7 +129,6 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   grayed,
   isLastAttempt,
   duration,
-  labelDuration,
   startTimeOfFirstAttempt,
   dragging,
 }) => {
@@ -140,7 +137,11 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
   // in some cases with short end task
   const extendAmount = (graph.timelineEnd - graph.timelineStart) * 0.01;
   const visibleDuration = graph.timelineEnd - graph.timelineStart + extendAmount;
-  const boxStartTime = row.type === 'step' ? row.data.ts_epoch : row.data.started_at || row.data.ts_epoch;
+  const boxStartTime = row.type === 'step' ? row.data.ts_epoch : row.data.started_at;
+
+  if (!boxStartTime) {
+    return null;
+  }
 
   // Calculate have much box needs to be pushed from (or to) left
   const valueFromLeft =
@@ -168,12 +169,8 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         data-testid="boxgraphic"
         dragging={dragging}
       >
-        {((isLastAttempt && labelDuration) || status === 'running') && (
-          <RowMetricLabel
-            duration={labelDuration || Date.now() - boxStartTime}
-            labelPosition={labelPosition}
-            data-testid="boxgraphic-label"
-          />
+        {(isLastAttempt || status === 'running') && (
+          <RowMetricLabel duration={duration} labelPosition={labelPosition} data-testid="boxgraphic-label" />
         )}
         <BoxGraphicLine grayed={grayed} state={status} isLastAttempt={isLastAttempt} />
         <BoxGraphicMarkerStart />

@@ -137,7 +137,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
             isOpen: true,
             status: getStepStatus(grouped),
             finished_at: endTime,
-            duration: endTime - startTime,
+            duration: startTime ? endTime - startTime : 0,
             data: grouped[key].reduce<Record<number, Task[]>>((dataobj, item) => {
               return { ...dataobj, [item.task_id]: makeTasksForStep(dataobj, item) };
             }, {}),

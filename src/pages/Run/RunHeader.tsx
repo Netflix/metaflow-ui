@@ -81,26 +81,26 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
           <PropertyTable scheme="dark" items={[run]} columns={columns} />
         </InformationRow>
 
+        <TitledRow
+          title={t('run.parameters')}
+          {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
+            ? {
+                type: 'default',
+                content:
+                  status === 'Error' && error ? (
+                    <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
+                  ) : (
+                    t('run.no-parameters')
+                  ),
+              }
+            : {
+                type: 'table',
+                content: parameterTableItems,
+              })}
+        />
+
         {expanded && (
           <>
-            <TitledRow
-              title={t('run.parameters')}
-              {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
-                ? {
-                    type: 'default',
-                    content:
-                      status === 'Error' && error ? (
-                        <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
-                      ) : (
-                        t('run.no-parameters')
-                      ),
-                  }
-                : {
-                    type: 'table',
-                    content: parameterTableItems,
-                  })}
-            />
-
             <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
 
             <TagRow
