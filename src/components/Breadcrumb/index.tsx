@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useLocation, match, useHistory } from 'react-router-dom';
+import { useLocation, match, useHistory, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
 import { getPath, getRouteMatch, KnownURLParams } from '../../utils/routing';
@@ -105,21 +105,17 @@ const Breadcrumb: React.FC = () => {
               const isLastItem = index + 1 === buttonList.length;
               return (
                 <CrumbComponent key={index}>
-                  <ButtonCrumb
-                    key={index}
-                    textOnly
-                    active={isLastItem}
-                    title={label}
-                    onClick={() => {
-                      if (isLastItem) {
-                        openModal();
-                      } else {
-                        history.push(path);
-                      }
-                    }}
-                  >
-                    {label}
-                  </ButtonCrumb>
+                  {isLastItem ? (
+                    <ButtonCrumb key={index} textOnly active={isLastItem} title={label} onClick={() => openModal()}>
+                      {label}
+                    </ButtonCrumb>
+                  ) : (
+                    <Link to={path}>
+                      <ButtonCrumb key={index} textOnly active={isLastItem} title={label} onClick={() => null}>
+                        {label}
+                      </ButtonCrumb>
+                    </Link>
+                  )}
                   {!isLastItem && <BreadcrumbDivider />}
                 </CrumbComponent>
               );
