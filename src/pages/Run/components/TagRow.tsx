@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { ItemRow } from '../../../components/Structure';
 import TitledRow from '../../../components/TitledRow';
@@ -18,7 +19,7 @@ type TagRowProps = {
 // Component
 //
 
-const TagRow: React.FC<TagRowProps> = ({ tags, label, push, noTagsMsg }) => {
+const TagRow: React.FC<TagRowProps> = ({ tags, label, noTagsMsg }) => {
   return (
     <TitledRow
       title={label}
@@ -27,12 +28,7 @@ const TagRow: React.FC<TagRowProps> = ({ tags, label, push, noTagsMsg }) => {
         <ItemRow pad="xs" style={{ flexWrap: 'wrap', width: 'auto' }}>
           {tags.length > 0
             ? tags.map((tag, index) => (
-                <RunTag
-                  key={tag}
-                  onClick={() => {
-                    push('/?_tags=' + encodeURIComponent(tag));
-                  }}
-                >
+                <RunTag key={tag} to={'/?_tags=' + encodeURIComponent(tag)}>
                   {tag}
                   {index !== tags.length - 1 && ', '}
                 </RunTag>
@@ -48,9 +44,11 @@ const TagRow: React.FC<TagRowProps> = ({ tags, label, push, noTagsMsg }) => {
 // Style
 //
 
-const RunTag = styled.span`
+const RunTag = styled(Link)`
   cursor: pointer;
   font-size: 0.875rem;
+  color: ${(p) => p.theme.color.text.dark};
+  text-decoration: none;
 
   &:hover {
     text-decoration: underline;
