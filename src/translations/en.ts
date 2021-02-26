@@ -15,6 +15,8 @@ const en = {
     home: {
       home: 'Home',
       'show-all-runs': 'Show all runs',
+      'new-run-available': 'New runs at the top',
+      'scroll-to-top': 'Scroll to top',
     },
 
     help: {

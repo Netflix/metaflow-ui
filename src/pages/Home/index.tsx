@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import useHomeParameters, { defaultHomeParameters } from './useHomeParameters';
 import HomeReducer from './Home.state';
 import { isGrouping, makeActiveRequestParameters, makeWebsocketParameters, paramList } from './Home.utils';
+import ScrollToTop from './ScrollToTop';
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
@@ -18,18 +19,20 @@ const Home: React.FC = () => {
   // State
   //
 
-  const [{ showLoader, isLastPage, page, data, params, placeHolderParameters, initialised }, dispatch] = useReducer(
-    HomeReducer,
-    {
-      initialised: false,
-      showLoader: true,
-      isLastPage: false,
-      page: 1,
-      data: {},
-      params: defaultHomeParameters,
-      placeHolderParameters: null,
-    },
-  );
+  const [
+    { showLoader, isLastPage, page, rungroups, newRuns, params, placeHolderParameters, initialised, isScrolledFromTop },
+    dispatch,
+  ] = useReducer(HomeReducer, {
+    initialised: false,
+    showLoader: true,
+    isLastPage: false,
+    page: 1,
+    rungroups: {},
+    newRuns: [],
+    params: defaultHomeParameters,
+    placeHolderParameters: null,
+    isScrolledFromTop: false,
+  });
 
   //
   // QueryParams
@@ -64,7 +67,7 @@ const Home: React.FC = () => {
     // we dont want websocket messages until we get the first response.
     subscribeToEvents: !showLoader,
     queryParams: requestParameters,
-    websocketParams: makeWebsocketParameters(requestParameters, data, isLastPage),
+    websocketParams: makeWebsocketParameters(requestParameters, rungroups, isLastPage),
     onUpdate: (items, result) => {
       // Remove old data if we are in first page/we handle fake params
       const replaceOld = page === 1 || !!placeHolderParameters;
@@ -77,7 +80,7 @@ const Home: React.FC = () => {
     // On websocket update just add items to new groups
     //
     onWSUpdate: (item: IRun) => {
-      dispatch({ type: 'data', data: [item], replace: false });
+      dispatch({ type: 'realtimeData', data: [item] });
     },
     //
     // Make sure that we dont have loader anymore after request
@@ -160,6 +163,18 @@ const Home: React.FC = () => {
     }
   }, [params.flow_id, params._tags, params.status, params._group]); // eslint-disable-line
 
+  //
+  // Scroll status
+  //
+  useEffect(() => {
+    const listener = () => {
+      dispatch({ type: 'setScroll', isScrolledFromTop: window.scrollY > 100 });
+    };
+
+    window.addEventListener('scroll', listener);
+    return () => window.removeEventListener('scroll', listener);
+  }, []);
+
   return (
     <div style={{ display: 'flex', flex: 1 }}>
       <ErrorBoundary message={t('error.sidebar-error')}>
@@ -178,7 +193,7 @@ const Home: React.FC = () => {
           status={status}
           showLoader={showLoader}
           params={params}
-          runGroups={data}
+          runGroups={rungroups}
           handleOrderChange={handleOrderChange}
           handleGroupTitleClick={handleGroupTitleClick}
           updateListValue={updateListValue}
@@ -186,6 +201,7 @@ const Home: React.FC = () => {
           targetCount={isGrouping(params) ? parseInt(params._group_limit) : parseInt(params._limit) * page}
           grouping={isGrouping(params)}
         />
+        <ScrollToTop show={isScrolledFromTop} newRunsAvailable={newRuns.length > 0} />
       </ErrorBoundary>
     </div>
   );
