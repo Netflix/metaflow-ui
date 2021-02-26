@@ -3,7 +3,7 @@
 - Fill out the template below. Any pull request that does not include enough information to be reviewed in a timely manner may be closed at the maintainers' discretion.
 - The pull request must only fix an existing bug. To contribute other changes, you must use a different template.
 - The pull request must update the test suite to demonstrate the changed functionality.
-- After you create the pull request, all status checks must be pass before a maintainer reviews your contribution. For more details, please see <https://github.com/Netflix/metaflow-ui/blob/master/CONTRIBUTING.md>.
+- After you create the pull request, all status checks must be passed before a maintainer reviews your contribution. For more details, please see <https://github.com/Netflix/metaflow-ui/blob/master/CONTRIBUTING.md>.
 
 ### Identify the Bug
 
@@ -20,7 +20,7 @@ Note: In some cases, one person's "bug" is another person's "feature." If the pu
 
 <!--
 
-We must be able to understand the design of your change from this description. If we can't get a good idea of what the code will be doing from the description here, the pull request may be closed at the maintainers' discretion. Keep in mind that the maintainer reviewing this PR may not be familiar with or have worked with the code here recently, so please walk us through the concepts.
+We must be able to understand the design of your change from this description. If we can't get a good idea of what the code does from the description here, the pull request may be closed at the maintainers' discretion. Keep in mind that the maintainer reviewing this PR may not be familiar with or have worked with the code here recently, so please walk us through the concepts.
 
 -->
 
