@@ -1,9 +1,11 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import Icon from '../../components/Icon';
 
 const ScrollToTop: React.FC<{ show: boolean; newRunsAvailable: boolean }> = ({ show, newRunsAvailable }) => {
-  const textContent = newRunsAvailable ? 'New runs at the top' : 'Scroll to top';
+  const { t } = useTranslation();
+  const textContent = newRunsAvailable ? t('home.new-run-available') : t('home.scroll-to-top');
   return (
     <ScrollToTopButton
       show={show}
