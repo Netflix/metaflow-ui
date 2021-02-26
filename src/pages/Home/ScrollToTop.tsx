@@ -34,6 +34,7 @@ const ScrollToTopButton = styled.div<{ show: boolean; fullWidth: number }>`
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
   transform: ${(p) => (p.show ? 'translateY(0)' : 'translateY(70px)')};
   transition: transform 0.5s cubic-bezier(0.44, 1.89, 0.55, 0.79), width 0.25s;
 
