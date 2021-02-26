@@ -8,10 +8,11 @@ const ScrollToTop: React.FC<{ show: boolean; newRunsAvailable: boolean }> = ({ s
     <ScrollToTopButton
       show={show}
       onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      // Full width is letter amount * 7 pixels + 40px (icon width) + 12px (margin to right)
-      fullWidth={textContent.length * 7 + 40 + 12}
+      // Full width is (letter amount * 8 pixels) + (40px (icon width)) + (12px (margin to right))
+      fullWidth={textContent.length * 8 + 40}
     >
       <Icon size="sm" name="toTopArrow" />
+      <NewStuffIndicator show={newRunsAvailable} />
       <TextContent>{textContent}</TextContent>
     </ScrollToTopButton>
   );
@@ -42,6 +43,18 @@ const ScrollToTopButton = styled.div<{ show: boolean; fullWidth: number }>`
   &:hover {
     width: ${(p) => `${p.fullWidth}px`};
   }
+`;
+
+const NewStuffIndicator = styled.div<{ show: boolean }>`
+  position: absolute;
+  top: 10px;
+  left: 27px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.5s cubic-bezier(0.44, 1.89, 0.55, 0.79);
+  transform: ${(p) => (p.show ? 'scale(1)' : 'scale(0)')};
 `;
 
 const TextContent = styled.div`

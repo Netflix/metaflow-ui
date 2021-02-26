@@ -20,15 +20,15 @@ const Home: React.FC = () => {
   //
 
   const [
-    { showLoader, isLastPage, page, data, newData, params, placeHolderParameters, initialised, isScrolledFromTop },
+    { showLoader, isLastPage, page, rungroups, newRuns, params, placeHolderParameters, initialised, isScrolledFromTop },
     dispatch,
   ] = useReducer(HomeReducer, {
     initialised: false,
     showLoader: true,
     isLastPage: false,
     page: 1,
-    data: {},
-    newData: [],
+    rungroups: {},
+    newRuns: [],
     params: defaultHomeParameters,
     placeHolderParameters: null,
     isScrolledFromTop: false,
@@ -67,7 +67,7 @@ const Home: React.FC = () => {
     // we dont want websocket messages until we get the first response.
     subscribeToEvents: !showLoader,
     queryParams: requestParameters,
-    websocketParams: makeWebsocketParameters(requestParameters, data, isLastPage),
+    websocketParams: makeWebsocketParameters(requestParameters, rungroups, isLastPage),
     onUpdate: (items, result) => {
       // Remove old data if we are in first page/we handle fake params
       const replaceOld = page === 1 || !!placeHolderParameters;
@@ -193,7 +193,7 @@ const Home: React.FC = () => {
           status={status}
           showLoader={showLoader}
           params={params}
-          runGroups={data}
+          runGroups={rungroups}
           handleOrderChange={handleOrderChange}
           handleGroupTitleClick={handleGroupTitleClick}
           updateListValue={updateListValue}
@@ -201,7 +201,7 @@ const Home: React.FC = () => {
           targetCount={isGrouping(params) ? parseInt(params._group_limit) : parseInt(params._limit) * page}
           grouping={isGrouping(params)}
         />
-        <ScrollToTop show={isScrolledFromTop} newRunsAvailable={newData.length > 0} />
+        <ScrollToTop show={isScrolledFromTop} newRunsAvailable={newRuns.length > 0} />
       </ErrorBoundary>
     </div>
   );
