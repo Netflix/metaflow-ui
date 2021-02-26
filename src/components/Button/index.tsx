@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled, { css, ButtonColors } from 'styled-components';
-import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { darken } from 'polished';
 
 export type ButtonProps = {
@@ -49,9 +49,16 @@ const Button: React.FC<ButtonProps> = ({
 };
 
 export const ButtonLink: React.FC<Omit<ButtonProps, 'onClick'> & { to: string }> = ({ to, ...rest }) => {
-  const history = useHistory();
-  return <BigButton {...rest} onClick={() => history.push(to)} />;
+  return (
+    <StyledButtonLink to={to}>
+      <BigButton {...rest} onClick={() => null} />
+    </StyledButtonLink>
+  );
 };
+
+const StyledButtonLink = styled(Link)`
+  text-decoration: none;
+`;
 
 const DisabledButtonCSS = css`
   border-color: ${(p) => p.theme.color.bg.light};
