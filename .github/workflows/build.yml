@@ -1,6 +1,9 @@
 name: Build and test
 
-on: [push]
+on:
+  push:
+    branches:
+      - '**'
 
 jobs:
   build_and_test:
