@@ -10,6 +10,7 @@ import { HEADER_SIZE_PX } from '../../../constants';
 import { getTaskId } from '../../../utils/task';
 import { AsyncStatus } from '../../../types';
 import Spinner from '../../../components/Spinner';
+import { getStepDuration } from '../../../components/Timeline/TimelineRow';
 
 //
 // Tasklist
@@ -80,7 +81,9 @@ const TaskList: React.FC<Props> = ({
                   grouped={grouped}
                   paramsString={paramsString}
                   duration={
-                    item.type === 'step' ? item.rowObject.duration : item.data[item.data.length - 1].duration || null
+                    item.type === 'step'
+                      ? getStepDuration(item.data, item.rowObject.status, item.rowObject.duration)
+                      : item.data[item.data.length - 1].duration || null
                   }
                   toggle={
                     item.type === 'step'

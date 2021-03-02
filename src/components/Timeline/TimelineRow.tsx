@@ -54,7 +54,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             open={isOpen}
             grouped={isGrouped}
             t={t}
-            duration={getStepDuration(item, graph)}
+            duration={getStepDuration(item.data, item.rowObject.status, item.rowObject.duration)}
             status={getRowStatus(item)}
           />
         ) : (
@@ -75,7 +75,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
               graph={graph}
               row={item}
               grayed={isOpen}
-              duration={item.rowObject.status === 'running' ? getStepDuration(item, graph) : item.rowObject.duration}
+              duration={getStepDuration(item.data, item.rowObject.status, item.rowObject.duration)}
               isLastAttempt
               dragging={dragging}
             />
@@ -215,8 +215,12 @@ function getLengthLabelPosition(fromLeft: number, width: number): LabelPosition 
   return 'none';
 }
 
-function getStepDuration(item: { type: 'step'; data: Step; rowObject: StepRowData }, graph: GraphState): number {
-  return item.rowObject.status === 'running' ? graph.max - item.data.ts_epoch : item.rowObject.duration;
+export function getStepDuration(step: Step, status: string, calculatedDuration: number): number {
+  if (status === 'running') {
+    return Date.now() - step.ts_epoch;
+  }
+
+  return step.duration && step.duration > calculatedDuration ? step.duration : calculatedDuration;
 }
 
 const BoxGraphicContainer = styled.div<{ dragging: boolean }>`
