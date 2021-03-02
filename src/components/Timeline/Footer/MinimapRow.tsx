@@ -19,8 +19,10 @@ type MinimapRowProps = {
 // Component
 //
 const MinimapRow: React.FC<MinimapRowProps> = ({ started, finished, status, graph }) => {
-  const width = ((finished - started) / (graph.max - graph.min)) * 100;
-  const left = graph.sortBy === 'duration' ? 0 : ((started - graph.min) / (graph.max - graph.min)) * 100;
+  const extendAmount = (graph.max - graph.min) * 0.01;
+  const visibleDuration = graph.max - graph.min + extendAmount;
+  const width = ((finished - started) / visibleDuration) * 100;
+  const left = graph.sortBy === 'duration' ? 0 : ((started - graph.min) / visibleDuration) * 100;
 
   return (
     <MinimapLine

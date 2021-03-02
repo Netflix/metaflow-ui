@@ -169,6 +169,7 @@ export const BoxGraphicElement: React.FC<BoxGraphicElementProps> = ({
         }}
         data-testid="boxgraphic"
         dragging={dragging}
+        title={formatDuration(duration)}
       >
         {(isLastAttempt || status === 'running') && (
           <RowMetricLabel duration={duration} labelPosition={labelPosition} data-testid="boxgraphic-label" />
@@ -299,26 +300,20 @@ const BoxGraphic = styled.div<{ root: boolean; dragging: boolean }>`
   transition: ${(p) => (p.dragging ? 'none' : '0.5s width')};
 `;
 
-export function lineColor(
-  theme: DefaultTheme,
-  grayed: boolean,
-  state: string,
-  isFirst: boolean,
-  isHovered?: boolean,
-): string {
+export function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst: boolean): string {
   if (grayed) {
     return '#c7c7c7';
   } else {
     switch (state) {
       case 'completed':
       case 'ok':
-        return !isFirst ? lighten(isHovered ? 0.2 : 0.3, theme.color.bg.red) : theme.color.bg.green;
+        return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.green;
       case 'running':
         return theme.color.bg.yellow;
       case 'failed':
-        return !isFirst ? lighten(isHovered ? 0.2 : 0.3, theme.color.bg.red) : theme.color.bg.red;
+        return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.red;
       case 'unknown':
-        return !isFirst ? lighten(isHovered ? 0.2 : 0.3, theme.color.bg.dark) : theme.color.bg.dark;
+        return !isFirst ? lighten(0.3, theme.color.bg.dark) : theme.color.bg.dark;
       default:
         return lighten(0.5, theme.color.bg.dark);
     }
@@ -368,7 +363,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
     `}
 
   &:hover {
-    background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isLastAttempt, true)};
+    background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isLastAttempt)};
   }
 `;
 
