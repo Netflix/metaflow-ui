@@ -12,14 +12,6 @@ const DEFAULT_ERROR = {
   type: 'error',
 };
 
-const NOTFOUND_ERROR = {
-  id: 'not-found',
-  traceback: undefined,
-  status: 404,
-  title: 'Resource not found',
-  type: 'error',
-};
-
 describe('GenericError component', () => {
   test('<GenericError /> - renders', () => {
     const { getByText } = render(<GenericError message="STOP RIGHT THERE!" />);
@@ -62,16 +54,6 @@ describe('GenericError component', () => {
     );
     expect(getByTestId('error-details')).toBeInTheDocument();
   });
-
-  // error rendering has been streamlined and need for custom error messages is disabled for now
-  /* test('<APIErrorRenderer /> - renders custom 404 component', () => {
-    const { getByTestId } = render(
-      <TestWrapper>
-        <APIErrorRenderer error={NOTFOUND_ERROR} customNotFound={<div data-testid="custom-404">HAHAA!</div>} />
-      </TestWrapper>,
-    );
-    expect(getByTestId('custom-404')).toBeInTheDocument();
-  });*/
 
   test('<APIErrorDetails /> - renders error details accordingly', () => {
     const { getByTestId } = render(

@@ -12,24 +12,23 @@ export type GraphAlignment = 'fromLeft' | 'fromStartTime';
 export type GraphSortBy = 'startTime' | 'endTime' | 'duration';
 
 export type GraphState = {
-  // Relative or absolute rendering? Absolute = just line length
+  // Alignment for graphics in line. It's from left or from actual start position of attempt
   alignment: GraphAlignment;
   // Sorting for tasks
   // Note that sorting works little differently depending on grouping. If we have grouping on, we sort
   // tasks within the steps. Else we sort tasks as one list.
-  // NOTE: Should we sort steps as well?
   sortBy: GraphSortBy;
   // Sort direction
   sortDir: 'asc' | 'desc';
-  // Minimum value in graph
+  // Minimum timestamp in graph. This is starting point
   min: number;
-  // Maximum length of graph
+  // Maximum timestamp of graph. This is ending point
   max: number;
-  // Selected starting point (default to 0)
+  // Selected starting point. This is start of the visible section.
   timelineStart: number;
-  // Selected ending point (default to last task timestamp)
+  // Selected ending point. This is end of the visible section.
   timelineEnd: number;
-  // Is zoom level user controlled?
+  // If user has zoomed in, we don't want to update zoom status when new updates come in.
   controlled: boolean;
   // Local step filters
   stepFilter: string[];

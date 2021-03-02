@@ -14,7 +14,7 @@ import ResultGroupTags from './ResultGroupTags';
 // Typedef
 //
 
-type ResultGroupRowsProps = {
+type ResultGroupCellsProps = {
   r: Run;
   params: Record<string, string>;
   link: string;
@@ -26,7 +26,7 @@ type ResultGroupRowsProps = {
 // Component
 //
 
-const ResultGroupRows: React.FC<ResultGroupRowsProps> = React.memo(
+const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
   ({ r, params, updateListValue, link, timezone }) => {
     return (
       <>
@@ -108,4 +108,4 @@ const IDFieldContainer = styled.div`
   align-items: center;
 `;
 
-export default ResultGroupRows;
+export default ResultGroupCells;

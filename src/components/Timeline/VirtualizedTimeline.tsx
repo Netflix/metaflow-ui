@@ -8,12 +8,10 @@ import { GraphHook, GraphState } from './useGraph';
 import { StepRowData, RowDataAction } from './useRowData';
 import { RowCounts } from './taskdataUtils';
 import { useTranslation } from 'react-i18next';
-import TimelineFooter from './TimelineFooter';
+import TimelineFooter from './Footer';
 import FullPageContainer from '../FullPageContainer';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
-import { ItemRow } from '../Structure';
 import { TFunction } from 'i18next';
-import Spinner from '../Spinner';
 import TaskListingHeader from '../TaskListingHeader';
 import TimelineNoRows from './TimelineNoRows';
 import { RenderedRows } from 'react-virtualized/dist/es/List';
@@ -182,17 +180,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
         )}
 
         {rows.length === 0 && (
-          <>
-            {status !== 'NotAsked' && status !== 'Loading' && searchField.results.status !== 'Loading' && (
-              <TimelineNoRows searchStatus={searchField.results.status} counts={counts} />
-            )}
-
-            {(status === 'Loading' || searchField.results.status === 'Loading') && (
-              <ItemRow justify="center" margin="lg">
-                <Spinner md />
-              </ItemRow>
-            )}
-          </>
+          <TimelineNoRows searchStatus={searchField.results.status} tasksStatus={status} counts={counts} />
         )}
       </VirtualizedTimelineSubContainer>
     </VirtualizedTimelineContainer>
@@ -280,12 +268,6 @@ const VirtualizedTimelineContainer = styled.div`
   display: flex;
   height: 100%;
   width: 100%;
-
-  -webkit-touch-callout: none; /* iOS Safari */
-  -webkit-user-select: none; /* Safari */
-  -khtml-user-select: none; /* Konqueror HTML */
-  -moz-user-select: none; /* Old versions of Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none;
 `;
 

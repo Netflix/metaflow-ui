@@ -10,6 +10,7 @@ const BASE_PROPS = {
   open: true,
   grouped: true,
   t: MockT,
+  status: 'Ok',
 };
 
 describe('TaskListLabel component', () => {
