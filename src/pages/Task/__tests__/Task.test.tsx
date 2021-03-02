@@ -39,6 +39,8 @@ describe('Task page', () => {
             rowDataDispatch={(_action) => null}
             graph={graph}
             searchField={searchField}
+            taskFromList={null}
+            taskStatus="Ok"
             paramsString=""
             isAnyGroupOpen={true}
             counts={{ all: 0, completed: 0, failed: 0, running: 0 }}

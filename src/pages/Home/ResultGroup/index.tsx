@@ -1,20 +1,18 @@
-import React, { useRef, useContext, useState, useEffect } from 'react';
+import React, { useRef, useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import useIsInViewport from 'use-is-in-viewport';
 
 import { Run as IRun } from '../../../types';
-import { getPath } from '../../../utils/routing';
 
-import Table, { TR } from '../../../components/Table';
+import Table from '../../../components/Table';
 import { Section } from '../../../components/Structure';
 import StickyHeader from './StickyHeader';
-import { getRunId } from '../../../utils/run';
 import { TimezoneContext } from '../../../components/TimezoneProvider';
 
 import ResultGroupHeader from './ResultGroupHeader';
-import ResultGroupRows from './ResultGroupRows';
 import ResultGroupFooter from './ResultGroupFooter';
+import ResultGroupRow from './ResultGroupRow';
 
 //
 // Typedef
@@ -96,7 +94,7 @@ const ResultGroup: React.FC<Props> = React.memo(
               // Run is seen as stale if it doesnt match status filters anymore after its status changed
               const isStale = !!(queryParams.status && queryParams.status.indexOf(r.status) === -1);
               return (
-                <Row
+                <ResultGroupRow
                   key={i}
                   run={r}
                   isStale={isStale}
@@ -119,53 +117,6 @@ const ResultGroup: React.FC<Props> = React.memo(
 );
 
 //
-// Row component that will lock it's state when hovered
-//
-const Row: React.FC<{
-  isStale: boolean;
-  queryParams: Record<string, string>;
-  updateListValue: (key: string, value: string) => void;
-  run: IRun;
-  timezone: string;
-}> = ({ isStale, queryParams, updateListValue, run, timezone }) => {
-  const [runToRender, setRunToRender] = useState(run);
-  const [isHovering, setIsHovering] = useState(false);
-
-  useEffect(() => {
-    if (!isHovering) {
-      setRunToRender(run);
-    }
-  }, [isHovering]); // eslint-disable-line
-
-  useEffect(() => {
-    if (!isHovering || run.run_number === runToRender.run_number) {
-      setRunToRender(run);
-    }
-  }, [run]); // eslint-disable-line
-
-  return (
-    <StyledTR
-      clickable
-      stale={isStale}
-      onMouseOver={() => {
-        setIsHovering(true);
-      }}
-      onMouseLeave={() => {
-        setIsHovering(false);
-      }}
-    >
-      <ResultGroupRows
-        r={runToRender}
-        params={queryParams}
-        updateListValue={updateListValue}
-        link={getPath.run(runToRender.flow_id, getRunId(runToRender))}
-        timezone={timezone}
-      />
-    </StyledTR>
-  );
-};
-
-//
 // Styles
 //
 
@@ -181,14 +132,6 @@ export const StyledResultGroup = styled(Section)`
   th {
     background: ${(p) => p.theme.color.bg.white};
     z-index: 10;
-  }
-`;
-
-const StyledTR = styled(TR)`
-  transition: transform 0.15s, box-shadow 0.25s;
-  &:hover {
-    transform: scale(1.005);
-    box-shadow: 2px 1px 4px rgba(0, 0, 0, 0.25);
   }
 `;
 

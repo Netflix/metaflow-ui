@@ -1,13 +1,16 @@
 import React, { createRef, useEffect, useState } from 'react';
-import { GraphState } from './useGraph';
-import styled, { css } from 'styled-components';
+import { GraphState } from '../useGraph';
+import styled from 'styled-components';
+import { Row, StepRow } from '../VirtualizedTimeline';
+import { getLongestRowDuration, getTaskLineStatus, startAndEndpointsOfRows } from '../../../utils/row';
+import { TaskStatus } from '../../../types';
+import FEATURE_FLAGS from '../../../FEATURE';
+import MinimapRow from './MinimapRow';
+import MinimapActiveSection from './MinimapActiveSection';
 
-import { formatDuration } from '../../utils/format';
-import { Row, StepRow } from './VirtualizedTimeline';
-import { getLongestRowDuration, getTaskLineStatus, startAndEndpointsOfRows } from '../../utils/row';
-import { lineColor } from './TimelineRow';
-import { TaskStatus } from '../../types';
-import FEATURE_FLAGS from '../../FEATURE';
+//
+// Typedef
+//
 
 type TimelineFooterProps = {
   graph: GraphState;
@@ -18,6 +21,10 @@ type TimelineFooterProps = {
 };
 
 type LineData = { start: number; end: number; status: TaskStatus };
+
+//
+// Component
+//
 
 const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHandle, rows, updateDragging }) => {
   const _container = createRef<HTMLDivElement>();
@@ -121,16 +128,16 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
     <TimelineFooterContainer>
       <TimelineFooterLeft></TimelineFooterLeft>
       <TimelineFooterContent>
-        <MiniTimelineActive
+        <MinimapActiveSection
           graph={graph}
           dragging={drag.dragging || handleDrag.dragging}
           startMove={startMove}
           startHandleMove={startHandleDrag}
-        ></MiniTimelineActive>
-        <MiniTimelineContainer ref={_container}>
+        ></MinimapActiveSection>
+        <MinimapContainer ref={_container}>
           {FEATURE_FLAGS.TIMELINE_MINIMAP &&
             lines.map((step, index) => (
-              <MiniTimelineRow
+              <MinimapRow
                 key={index + step.start}
                 graph={graph}
                 started={step.start}
@@ -138,7 +145,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
                 status={step.status}
               />
             ))}
-        </MiniTimelineContainer>
+        </MinimapContainer>
       </TimelineFooterContent>
 
       {(drag.dragging || handleDrag.dragging) && (
@@ -166,96 +173,6 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
     </TimelineFooterContainer>
   );
 };
-
-const MiniTimelineRow: React.FC<{
-  started: number;
-  finished: number;
-  status: TaskStatus;
-  graph: GraphState;
-}> = ({ started, finished, status, graph }) => {
-  const extendAmount = (graph.max - graph.min) * 0.01;
-  const visibleDuration = graph.max - graph.min + extendAmount;
-  const width = ((finished - started) / visibleDuration) * 100;
-  const left = graph.sortBy === 'duration' ? 0 : ((started - graph.min) / visibleDuration) * 100;
-
-  return (
-    <MiniTimelineLine
-      status={status}
-      style={{
-        width: width + '%',
-        left: left + '%',
-      }}
-    ></MiniTimelineLine>
-  );
-};
-
-const MiniTimelineLine = styled.div<{ status: TaskStatus }>`
-  position: relative;
-  background: ${(p) => lineColor(p.theme, false, p.status, true)};
-  height: 2px;
-  min-height: 2px;
-  margin-bottom: 1px;
-  min-width: 2px;
-  transition: width 0.5s, left 0.5s;
-`;
-
-const MiniTimelineActive: React.FC<{
-  graph: GraphState;
-  dragging: boolean;
-  startMove: (value: number) => void;
-  startHandleMove: (which: 'left' | 'right') => void;
-}> = ({ graph, dragging, startMove, startHandleMove }) => {
-  const width = ((graph.timelineEnd - graph.timelineStart) / (graph.max - graph.min)) * 100;
-  const left = ((graph.timelineStart - graph.min) / (graph.max - graph.min)) * 100;
-
-  return (
-    <MiniTimelineActiveSection
-      dragging={dragging}
-      style={{
-        width: width + '%',
-        left: left + '%',
-      }}
-      onMouseDown={(e) => startMove(e.clientX)}
-      onTouchStart={(e) => startMove(e.touches[0].clientX)}
-    >
-      <MiniTimelineZoomHandle
-        which="left"
-        isZoomed={width < 20}
-        label={graph.timelineStart <= graph.min ? '0.0s' : formatDuration(graph.timelineStart - graph.min)}
-        onDragStart={() => startHandleMove('left')}
-      />
-      <MiniTimelineZoomHandle
-        which="right"
-        isZoomed={width < 20}
-        stackText={width + left > 90}
-        label={formatDuration(graph.timelineEnd - graph.min)}
-        onDragStart={() => startHandleMove('right')}
-      />
-    </MiniTimelineActiveSection>
-  );
-};
-
-type HandleProps = {
-  which: 'left' | 'right';
-  label: string;
-  onDragStart: () => void;
-  isZoomed: boolean;
-  stackText?: boolean;
-};
-
-const MiniTimelineZoomHandle: React.FC<HandleProps> = ({ label, onDragStart, which, isZoomed, stackText }) => (
-  <MiniTimelineHandle
-    style={which === 'right' ? { right: '-5px' } : { left: '-5px' }}
-    onMouseDown={() => onDragStart()}
-  >
-    <MiniTimelineIconLine />
-    <MiniTimelineIconLine />
-    <MiniTimelineIconLine />
-    <MiniTimelineLabel which={which} isZoomed={isZoomed} stackText={stackText}>
-      {label}
-    </MiniTimelineLabel>
-  </MiniTimelineHandle>
-);
 
 //
 // Style
@@ -285,7 +202,7 @@ const TimelineFooterContent = styled.div`
   height: 49px;
 `;
 
-const MiniTimelineContainer = styled.div`
+const MinimapContainer = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -299,57 +216,6 @@ const MiniTimelineContainer = styled.div`
   height: 41px;
 
   pointer-events: none;
-`;
-
-const MiniTimelineActiveSection = styled.div<{ dragging: boolean }>`
-  position: relative;
-  height: 49px;
-  background #fff;
-  border-left: ${(p) => p.theme.border.thinLight};
-  border-right: ${(p) => p.theme.border.thinLight};
-  border-bottom: 8px solid ${(p) => p.theme.color.border.light};
-  cursor: grab;
-  transition: ${(p) => (p.dragging ? 'none' : '0.5s left, 0.5s width')};
-`;
-
-const MiniTimelineHandle = styled.div`
-  position: absolute;
-  top: 7px;
-  height: 29px;
-  width: 10px;
-  background: ${(p) => p.theme.color.bg.blue};
-  z-index: 2;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
-
-const MiniTimelineIconLine = styled.div`
-  height: 1px;
-  width: 4px;
-  background: ${(p) => p.theme.color.bg.white};
-  margin-bottom: 2px;
-`;
-
-const LeftLabelPositioning = css<{ isZoomed: boolean }>`
-  ${(p) => (p.isZoomed ? 'right: 100%;' : 'left: 0%')}
-`;
-
-const RightLabelPositioning = css<{ isZoomed: boolean }>`
-  ${(p) => (p.isZoomed ? 'left: 0%' : 'right: 100%;')}
-`;
-
-const MiniTimelineLabel = styled.div<{ which: 'left' | 'right'; isZoomed: boolean; stackText?: boolean }>`
-  position: absolute;
-  top: 50px;
-
-  right: ${(p) => (p.which === 'right' ? '100%' : 'none')};
-  font-size: 14px;
-  white-space: ${(p) => (p.stackText && p.isZoomed ? 'none' : 'pre')};
-
-  ${(p) => (p.which === 'left' ? LeftLabelPositioning : RightLabelPositioning)}
 `;
 
 export default TimelineFooter;

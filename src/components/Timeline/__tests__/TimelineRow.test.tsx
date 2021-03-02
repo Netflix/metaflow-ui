@@ -16,6 +16,7 @@ describe('TimelineRow component', () => {
           onOpen={jest.fn()}
           item={{ type: 'task', data: [createTask({})] }}
           isGrouped={true}
+          dragging={false}
           t={MockT}
         />
       </TestWrapper>,
@@ -31,6 +32,7 @@ describe('TimelineRow component', () => {
           onOpen={jest.fn()}
           isGrouped={true}
           item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
+          dragging={false}
           t={MockT}
         />
       </TestWrapper>,
@@ -50,6 +52,7 @@ describe('TimelineRow component', () => {
             type: 'task',
             data: [createTask({ started_at: 10 }), createTask({ started_at: 1000, finished_at: 9999999999 })],
           }}
+          dragging={false}
           t={MockT}
         />
       </TestWrapper>,
@@ -76,6 +79,7 @@ describe('TimelineRow component', () => {
       },
       isOpen: true,
       t: MockT,
+      dragging: false,
     };
 
     const { getByTestId } = render(
@@ -96,6 +100,7 @@ describe('TimelineRow component', () => {
       duration: 350,
       labelDuration: 350,
       isLastAttempt: true,
+      dragging: false,
     };
 
     const { getByTestId, rerender } = render(
@@ -135,7 +140,7 @@ describe('TimelineRow component', () => {
     // Try with unfinished item. No label since bar takes so wide space
     rerender(
       <TestWrapper>
-        <BoxGraphicElement {...props} graph={createGraphState({})} duration={null} labelDuration={undefined} />
+        <BoxGraphicElement {...props} graph={createGraphState({})} duration={null} />
       </TestWrapper>,
     );
     expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(9.900990099009901%)');
