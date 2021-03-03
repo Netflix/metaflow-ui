@@ -42,6 +42,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "CI=true react-scripts test --env=jsdom --coverage",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "eject": "react-scripts eject",
     "format": "prettier --write src"
