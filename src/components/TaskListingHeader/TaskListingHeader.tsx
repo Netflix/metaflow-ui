@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraphState, GraphHook } from '../Timeline/useGraph';
+import { GraphState, GraphHook, GraphMode } from '../Timeline/useGraph';
 import { ItemRow } from '../Structure';
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
@@ -123,7 +123,7 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
 // Utils
 //
 
-function getMode(graph: GraphState) {
+export function getMode(graph: GraphState): GraphMode {
   if (graph.isCustomEnabled) {
     return 'custom';
   } else if (graph.group === true && !graph.statusFilter && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {

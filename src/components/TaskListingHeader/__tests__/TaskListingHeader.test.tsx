@@ -1,10 +1,11 @@
 import React from 'react';
-import TaskListingHeader from '../TaskListingHeader';
+import TaskListingHeader, { getMode } from '../TaskListingHeader';
 import { render, fireEvent } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
 import useGraph from '../../Timeline/useGraph';
 import useSeachField from '../../../hooks/useSearchField';
 import CollapseButton from '../components/CollapseButton';
+import { createGraphState } from '../../../utils/testhelper';
 
 const headerFunctionProps = {
   expandAll: () => null,
@@ -34,6 +35,54 @@ describe('TaskListingHeader component', () => {
       );
     };
     render(<Component />);
+  });
+
+  test('getMode', () => {
+    const graph = createGraphState({ isCustomEnabled: true });
+
+    expect(getMode(graph)).toBe('custom');
+    // Predefined modes
+    expect(
+      getMode({
+        ...graph,
+        isCustomEnabled: false,
+        group: true,
+        statusFilter: null,
+        sortBy: 'startTime',
+        sortDir: 'asc',
+      }),
+    ).toBe('overview');
+    expect(
+      getMode({
+        ...graph,
+        isCustomEnabled: false,
+        group: false,
+        statusFilter: null,
+        sortBy: 'startTime',
+        sortDir: 'desc',
+      }),
+    ).toBe('monitoring');
+    expect(
+      getMode({
+        ...graph,
+        isCustomEnabled: false,
+        group: true,
+        statusFilter: 'failed',
+        sortBy: 'startTime',
+        sortDir: 'asc',
+      }),
+    ).toBe('error-tracker');
+    // Random settings -> custom
+    expect(
+      getMode({
+        ...graph,
+        isCustomEnabled: false,
+        group: false,
+        statusFilter: 'running',
+        sortBy: 'endTime',
+        sortDir: 'asc',
+      }),
+    ).toBe('custom');
   });
 
   test('<CollapseButton> - settings button', () => {
