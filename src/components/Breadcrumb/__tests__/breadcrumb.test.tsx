@@ -1,5 +1,5 @@
 import React from 'react';
-import Breadcrumb, { findAdditionalButtons } from '..';
+import Breadcrumb, { findAdditionalButtons, notEmptyAndEqual, pathFromString } from '..';
 import { render, fireEvent } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
 
@@ -71,6 +71,23 @@ describe('Breadcrumb component', () => {
       ...STEP_RESULT,
       { label: '14', path: '/HugeFlow/5/start/14' },
     ]);
+  });
+
+  test('notEmptyAndEqual', () => {
+    expect(notEmptyAndEqual('', 'test')).toBe(false);
+    expect(notEmptyAndEqual('q', 'test')).toBe(false);
+    expect(notEmptyAndEqual('q', '')).toBe(false);
+    expect(notEmptyAndEqual('', '')).toBe(false);
+    expect(notEmptyAndEqual('test', 'test')).toBe(true);
+  });
+
+  test('pathFromString', () => {
+    expect(pathFromString('')).toBe('/');
+    expect(pathFromString('flowName')).toBe('/?flow_id=flowName');
+    expect(pathFromString('flowName/runId')).toBe('/flowName/runId/view/timeline');
+    expect(pathFromString('flowName/runId/step')).toBe('/flowName/runId/view/timeline?steps=step');
+    expect(pathFromString('flowName/runId/step/task')).toBe('/flowName/runId/step/task');
+    expect(pathFromString('flowName/runId/step/task/error')).toBe(null);
   });
 
   // Rendering

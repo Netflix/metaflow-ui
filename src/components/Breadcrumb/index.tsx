@@ -28,47 +28,27 @@ const Breadcrumb: React.FC = () => {
   const [str, setStr] = useState(currentBreadcrumbPath.replace(/\s/g, ''));
   const [warning, setWarning] = useState('');
 
+  //
+  // Handlers
+  //
+
   const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.charCode === 13) {
       // If user presses enter without changing value, lets hide popup
-      if ((e.currentTarget.value || '').length > 0 && e.currentTarget.value === currentBreadcrumbPath) {
+      if (notEmptyAndEqual(e.currentTarget.value, currentBreadcrumbPath)) {
         closeUp();
       } else {
-        const parts = e.currentTarget.value.split('/').filter((item) => item);
+        const path = pathFromString(e.currentTarget.value);
 
-        if (parts.length === 0) {
-          history.push(getPath.home());
-        } else if (parts.length === 1) {
-          history.push(getPath.home() + '?flow_id=' + parts[0]);
-        } else if (parts.length === 2) {
-          history.push(getPath.timeline(parts[0], parts[1]));
-        } else if (parts.length === 3) {
-          history.push(getPath.step(parts[0], parts[1], parts[2]));
-        } else if (parts.length === 4) {
-          history.push(getPath.task(parts[0], parts[1], parts[2], parts[3]));
+        if (path) {
+          history.push(path);
         } else {
           setWarning(t('breadcrumb.no-match'));
-        }
-
-        if (parts.length > -1 && parts.length < 5) {
           closeUp();
         }
       }
     }
   };
-
-  useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeUp();
-      }
-    };
-    window.addEventListener('keydown', handleEsc);
-
-    return () => {
-      window.removeEventListener('keydown', handleEsc);
-    };
-  }, []);
 
   const closeUp = () => {
     setEdit(false);
@@ -79,6 +59,20 @@ const Breadcrumb: React.FC = () => {
     setEdit(true);
     setStr(currentBreadcrumbPath.replace(/\s/g, ''));
   };
+
+  //
+  // Esc listeners
+  //
+
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeUp();
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, []);
 
   return (
     <StyledBreadcrumb pad="md">
@@ -190,6 +184,26 @@ const BreadcrumbKeyValueList: React.FC<{ items: { key: string; value: string }[]
 //
 // Utils
 //
+
+export function notEmptyAndEqual(value: string, current: string): boolean {
+  return (value || '').length > 0 && value === current;
+}
+
+export function pathFromString(str: string): string | null {
+  const parts = str.split('/').filter((item) => item);
+  if (parts.length === 0) {
+    return getPath.home();
+  } else if (parts.length === 1) {
+    return getPath.home() + '?flow_id=' + parts[0];
+  } else if (parts.length === 2) {
+    return getPath.timeline(parts[0], parts[1]);
+  } else if (parts.length === 3) {
+    return getPath.step(parts[0], parts[1], parts[2]);
+  } else if (parts.length === 4) {
+    return getPath.task(parts[0], parts[1], parts[2], parts[3]);
+  }
+  return null;
+}
 
 type BreadcrumbButtons = { label: string; path: string };
 
