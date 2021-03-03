@@ -2,9 +2,12 @@ import React, { ReactNode, useState } from 'react';
 import styled from 'styled-components';
 import { v4 as uuid } from 'uuid';
 import Icon from '../Icon';
-import caretDownURL from '../../assets/caret_down.svg';
 import Spinner from '../Spinner';
 import Dropdown from './Dropdown';
+
+//
+// Base field
+//
 
 export type CommonFieldProps<T> = {
   className?: string;
@@ -51,32 +54,9 @@ export const Field: React.FC<FieldBaseProps> = ({
   );
 };
 
-export const SelectField: React.FC<
-  {
-    label?: string;
-    options: [string, string][];
-    disabled?: boolean;
-    noMinWidth?: boolean;
-    maxWidth?: boolean;
-  } & CommonFieldProps<HTMLSelectElement>
-> = ({ label, options, horizontal, noMinWidth, children, ...rest }) => {
-  const [id] = useState(uuid());
-  const testid = rest['data-testid'];
-
-  return (
-    <Field horizontal={horizontal} type="select" data-testid={testid} noMinWidth={noMinWidth}>
-      {label && <label htmlFor={id}>{label}</label>}
-      <select id={id} {...rest}>
-        {children ||
-          options.map((o, index) => (
-            <option key={o[0] + index} value={o[0]}>
-              {o[1]}
-            </option>
-          ))}
-      </select>
-    </Field>
-  );
-};
+//
+// Dropdown
+//
 
 export const DropdownField: React.FC<
   {
@@ -99,6 +79,10 @@ export const DropdownField: React.FC<
     </Field>
   );
 };
+
+//
+// Checkbox
+//
 
 export const CheckboxField: React.FC<{ label: string; checked: boolean } & CommonFieldProps<HTMLInputElement>> = ({
   label,
@@ -123,6 +107,10 @@ export const CheckboxField: React.FC<{ label: string; checked: boolean } & Commo
     </Field>
   );
 };
+
+//
+// TextInput
+//
 
 export const TextInputField = React.forwardRef<
   HTMLInputElement,
@@ -183,6 +171,10 @@ export const TextInputField = React.forwardRef<
   },
 );
 
+//
+// Style
+//
+
 const InputLoader = styled.div<{ visible: boolean }>`
   position: absolute;
   right: 5px;
@@ -228,7 +220,6 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     &:focus,
     &:not(:disabled):hover {
       background: ${(p) => p.theme.color.bg.white};
-      // border-color: ${(p) => p.theme.color.border.dark};
     }
   }
 
@@ -276,21 +267,5 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   input,
   select {
     border: 0;
-  }
-
-  select {
-    appearance: none;
-    background-image: url(${caretDownURL});
-    background-position: center right;
-    background-repeat: no-repeat;
-    background-size: 1rem;
-    line-height: 1.5rem;
-    border: 1px solid transparent;
-    padding: ${(p) => p.theme.spacer.xs}rem ${(p) => p.theme.spacer.md}rem ${(p) => p.theme.spacer.xs}rem
-      ${(p) => p.theme.spacer.xs}rem;
-
-    &:hover {
-      background-color: ${(p) => p.theme.color.bg.light};
-    }
   }
 `;
