@@ -35,6 +35,7 @@ export interface Step extends MetaDataBaseObject {
   run_id?: string;
   step_name: string;
   finished_at?: number;
+  duration?: number;
 }
 
 export interface Task extends MetaDataBaseObject {
