@@ -3,7 +3,17 @@ import styled, { css } from 'styled-components';
 import Icon from '../Icon';
 import { SectionHeader } from '../Structure';
 
-const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: string }> = ({ onSubmit, sectionLabel }) => {
+//
+// Typedef
+//
+
+type FilterInputProps = { onSubmit: (k: string) => void; sectionLabel: string };
+
+//
+// Component
+//
+
+const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel }) => {
   const [hasFocus, setHasFocus] = useState(false);
   const [val, setVal] = useState('');
   const inputEl = useRef<HTMLInputElement>(null);
@@ -17,6 +27,7 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
     >
       <FitlerInputContainer>
         <input
+          data-testid="filter-input-field"
           ref={inputEl}
           placeholder={sectionLabel}
           value={val}
@@ -38,6 +49,7 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
           }}
         />
         <SubmitIconHolder
+          data-testid="filter-input-submit-button"
           focus={hasFocus}
           onMouseDown={() => {
             if (inputEl?.current?.value) {
@@ -53,6 +65,10 @@ const FilterInput: React.FC<{ onSubmit: (k: string) => void; sectionLabel: strin
     </FilterInputWrapper>
   );
 };
+
+//
+// Styles
+//
 
 const FilterInputWrapper = styled(SectionHeader)<{ active: boolean }>`
   padding-bottom: 0.375rem;
