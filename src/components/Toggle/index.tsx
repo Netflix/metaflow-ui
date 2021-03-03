@@ -1,10 +1,24 @@
 import React from 'react';
 import styled from 'styled-components';
 
+//
+// @deprecated
+// NOTE: This component is not in use anymore. Safe to delete or keep for possible
+// future use?
+//
+
+//
+// Typedef
+//
+
 type ToggleProps = {
   value: boolean;
   onClick: () => void;
 };
+
+//
+// Component
+//
 
 const Toggle: React.FC<ToggleProps> = ({ value, onClick }) => {
   return (
@@ -13,6 +27,10 @@ const Toggle: React.FC<ToggleProps> = ({ value, onClick }) => {
     </ToggleContainer>
   );
 };
+
+//
+// Styles
+//
 
 const ToggleContainer = styled.div<{ selected: boolean }>`
   height: 24px;
