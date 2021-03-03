@@ -2,6 +2,9 @@ import { formatDuration } from '../format';
 
 describe('Format utils', () => {
   test('formatDuration() - Seconds and precision', () => {
+    expect(formatDuration(-1)).toBe('0.0s');
+    expect(formatDuration(-1, 0)).toBe('0s');
+
     expect(formatDuration(0)).toBe('0.0s');
     expect(formatDuration(0, 0)).toBe('0s');
     expect(formatDuration(0, 2)).toBe('0.00s');
