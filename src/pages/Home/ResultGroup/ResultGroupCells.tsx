@@ -5,7 +5,7 @@ import StatusField from '../../../components/Status';
 import { TD } from '../../../components/Table';
 import { ForceNoBreakText } from '../../../components/Text';
 import { Run } from '../../../types';
-import { getRunEndTime, getRunId, getRunStartTime, getUsername } from '../../../utils/run';
+import { getRunEndTime, getRunId, getRunStartTime, getProjectFieldValue, getUsername } from '../../../utils/run';
 import ResultGroupDuration from './ResultGroupDuration';
 import { StatusColorCell } from './ResultGroupStatus';
 import ResultGroupTags from './ResultGroupTags';
@@ -40,6 +40,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         </TDWithLink>
         {/* USER NAME */}
         {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
+        <TD>{getProjectFieldValue(r)}</TD>
         {/* STARTED AT */}
         <TimeCell link={link}>{getRunStartTime(r, timezone)}</TimeCell>
         {/* FINISHED AT */}

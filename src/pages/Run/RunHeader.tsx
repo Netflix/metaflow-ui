@@ -15,8 +15,9 @@ import {
   getRunEndTime,
   getRunId,
   getRunStartTime,
-  getRunSystemTag,
+  getTagOfType,
   getUsername,
+  getProjectFieldValue,
 } from '../../utils/run';
 import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
@@ -61,13 +62,13 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
     },
     {
       label: t('fields.project'),
-      accessor: (item: Run) => getRunSystemTag(item, 'project'),
-      hidden: !getRunSystemTag(run, 'project'),
+      accessor: (item: Run) => getProjectFieldValue(item),
+      hidden: !getTagOfType(run.system_tags, 'project'),
     },
     {
       label: t('fields.language'),
-      accessor: (item: Run) => getRunSystemTag(item, 'language'),
-      hidden: !getRunSystemTag(run, 'language'),
+      accessor: (item: Run) => getTagOfType(item.system_tags, 'language'),
+      hidden: !getTagOfType(run.system_tags, 'language'),
     },
     { label: t('fields.started-at'), accessor: (r: Run) => getRunStartTime(r, timezone) },
     { label: t('fields.finished-at'), accessor: (r: Run) => getRunEndTime(r, timezone) },
