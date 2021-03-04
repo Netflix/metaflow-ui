@@ -18,12 +18,14 @@ const TitledRow: React.FC<Props> = (props) => {
         {props.type === 'table' ? (
           Object.keys(props.content).map((key, index) => (
             <Row data-testid={`titled-row-row-${key.toLowerCase()}-${index}`} key={key}>
-              <ContentSection>{key}</ContentSection>
-              <ContentSection>{renderValue(props.content[key])}</ContentSection>
+              <ContentSection data-testid="titledrow-row-title">{key}</ContentSection>
+              <ContentSection data-testid="titledrow-row-value">
+                {valueToRenderableType(props.content[key])}
+              </ContentSection>
             </Row>
           ))
         ) : (
-          <ContentSection>{props.content}</ContentSection>
+          <ContentSection data-testid="titled-row-default-mode">{props.content}</ContentSection>
         )}
       </ContentBackground>
     </StyledTitledRow>
@@ -34,7 +36,7 @@ const TitledRow: React.FC<Props> = (props) => {
 // Utils
 //
 
-function renderValue(value: React.ReactNode) {
+export function valueToRenderableType(value: React.ReactNode): React.ReactChild {
   if (React.isValidElement(value)) return value;
 
   if (typeof value === 'boolean') {

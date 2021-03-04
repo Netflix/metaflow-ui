@@ -4,10 +4,19 @@ import logo from '../../assets/logo_dark_horizontal.svg';
 import Icon from '../Icon';
 import useComponentSize from '@rehooks/component-size';
 
+//
+// Typedef
+//
+
 type FullPageContainerProps = {
   onClose: () => void;
+  // Function that returns component. Gets available height as parameter
   component?: (height: number) => JSX.Element;
 };
+
+//
+// Component
+//
 
 const FullPageContainer: React.FC<FullPageContainerProps> = ({ children, onClose, component }) => {
   const _content = useRef<HTMLDivElement>(null);
@@ -17,16 +26,21 @@ const FullPageContainer: React.FC<FullPageContainerProps> = ({ children, onClose
       <FullPageContainerHeader>
         <Logo src={logo} />
 
-        <FullPageContainerClose onClick={() => onClose()}>
+        <FullPageContainerClose data-testid="fullpage-close-button" onClick={() => onClose()}>
           <Icon name="times" size="lg" />
         </FullPageContainerClose>
       </FullPageContainerHeader>
-      <FullPageContainerContent ref={_content}>
+
+      <FullPageContainerContent ref={_content} data-testid="fullpage-content">
         {component ? component(ContentSize.height) : children}
       </FullPageContainerContent>
     </FullPageStyleContainer>
   );
 };
+
+//
+// Styles
+//
 
 const FullPageStyleContainer = styled.div`
   position: fixed;

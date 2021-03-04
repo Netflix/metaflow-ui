@@ -239,8 +239,4 @@ const DetailsLog = styled.div`
   word-break: break-all;
 `;
 
-export const DefaultAdditionalErrorInfo = (str: string): JSX.Element => (
-  <div style={{ textAlign: 'center', margin: '1rem 0' }}>{str}</div>
-);
-
 export default GenericError;
