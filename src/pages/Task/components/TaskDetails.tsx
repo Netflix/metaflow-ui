@@ -16,6 +16,7 @@ import { TimezoneContext } from '../../../components/TimezoneProvider';
 import { getTaskId } from '../../../utils/task';
 import FEATURE_FLAGS from '../../../FEATURE';
 import TitledRow from '../../../components/TitledRow';
+import HeightAnimatedContainer from '../../../components/HeightAnimatedContainer';
 
 type Props = {
   task: ITask;
@@ -65,25 +66,29 @@ const TaskDetails: React.FC<Props> = ({ task, metadata }) => {
         />
       </InformationRow>
 
-      {expanded && (
-        <TitledRow
-          title={t('task.metadata')}
-          {...(metadata.status !== 'Ok' || Object.keys(metadataParams).length === 0
-            ? {
-                type: 'default',
-                content:
-                  metadata.status === 'Error' && metadata.error ? (
-                    <APIErrorRenderer error={metadata.error} message={t('run.failed-to-load-metadata')} />
-                  ) : (
-                    t('run.no-metadata')
-                  ),
-              }
-            : {
-                type: 'table',
-                content: metadataParams,
-              })}
-        />
-      )}
+      <HeightAnimatedContainer>
+        <div>
+          {expanded && (
+            <TitledRow
+              title={t('task.metadata')}
+              {...(metadata.status !== 'Ok' || Object.keys(metadataParams).length === 0
+                ? {
+                    type: 'default',
+                    content:
+                      metadata.status === 'Error' && metadata.error ? (
+                        <APIErrorRenderer error={metadata.error} message={t('run.failed-to-load-metadata')} />
+                      ) : (
+                        t('run.no-metadata')
+                      ),
+                  }
+                : {
+                    type: 'table',
+                    content: metadataParams,
+                  })}
+            />
+          )}
+        </div>
+      </HeightAnimatedContainer>
 
       {FEATURE_FLAGS.TASK_METADATA && (
         <ShowDetailsButton

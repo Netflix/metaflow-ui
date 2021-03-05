@@ -70,6 +70,7 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
   return (
     <APIErrorContainer>
       <GenericError message={msg} {...iconProps} />
+
       {error && <APIErrorDetails error={error} noIcon={icon === false} t={t} />}
     </APIErrorContainer>
   );

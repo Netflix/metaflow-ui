@@ -22,6 +22,7 @@ import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import TagRow from './components/TagRow';
 import TitledRow from '../../components/TitledRow';
+import HeightAnimatedContainer from '../../components/HeightAnimatedContainer';
 
 //
 // Typedef
@@ -76,43 +77,44 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
 
   return (
     <RunHeaderContainer>
-      <div>
-        <InformationRow spaceless>
-          <PropertyTable scheme="dark" items={[run]} columns={columns} />
-        </InformationRow>
+      <HeightAnimatedContainer>
+        <div>
+          <InformationRow spaceless>
+            <PropertyTable scheme="dark" items={[run]} columns={columns} />
+          </InformationRow>
 
-        <TitledRow
-          title={t('run.parameters')}
-          {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
-            ? {
-                type: 'default',
-                content:
-                  status === 'Error' && error ? (
-                    <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
-                  ) : (
-                    t('run.no-parameters')
-                  ),
-              }
-            : {
-                type: 'table',
-                content: parameterTableItems,
-              })}
-        />
+          <TitledRow
+            title={t('run.parameters')}
+            {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
+              ? {
+                  type: 'default',
+                  content:
+                    status === 'Error' && error ? (
+                      <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
+                    ) : (
+                      t('run.no-parameters')
+                    ),
+                }
+              : {
+                  type: 'table',
+                  content: parameterTableItems,
+                })}
+          />
 
-        {expanded && (
-          <>
-            <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
+          {expanded && (
+            <>
+              <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
 
-            <TagRow
-              label={t('run.system-tags')}
-              tags={run.system_tags || []}
-              push={history.push}
-              noTagsMsg={t('run.no-system-tags')}
-            />
-          </>
-        )}
-      </div>
-
+              <TagRow
+                label={t('run.system-tags')}
+                tags={run.system_tags || []}
+                push={history.push}
+                noTagsMsg={t('run.no-system-tags')}
+              />
+            </>
+          )}
+        </div>
+      </HeightAnimatedContainer>
       <ShowDetailsButton
         toggle={() => setExpanded(!expanded)}
         visible={expanded}
