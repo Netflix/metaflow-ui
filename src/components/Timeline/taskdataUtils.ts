@@ -113,9 +113,11 @@ export function timepointsOfTasks(tasks: Task[]): [number | null, number] {
 export function getStepStatus(stepTaskData: Record<string, Task[]>): TaskStatus {
   for (const data of Object.entries(stepTaskData)) {
     const statuses = data[1].map((item) => item.status);
-    if (statuses.indexOf('running') > -1) {
+    const statusOfLastItem = statuses[statuses.length - 1];
+    if (statusOfLastItem === 'running') {
       return 'running';
-    } else if (statuses.indexOf('failed') > -1) {
+    }
+    if (statusOfLastItem === 'failed') {
       return 'failed';
     }
   }
