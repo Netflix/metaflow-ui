@@ -11,6 +11,7 @@ import { getTaskId } from '../../../utils/task';
 import { AsyncStatus } from '../../../types';
 import Spinner from '../../../components/Spinner';
 import { getStepDuration } from '../../../components/Timeline/TimelineRow';
+import { toRelativeSize } from '../../../utils/style';
 
 //
 // Tasklist
@@ -68,7 +69,7 @@ const TaskList: React.FC<Props> = ({
           <List
             overscanRowCount={5}
             rowCount={rows.length}
-            rowHeight={28}
+            rowHeight={toRelativeSize(28)}
             rowRenderer={({ index, style }) => {
               const item = rows[index];
 
@@ -96,7 +97,7 @@ const TaskList: React.FC<Props> = ({
               );
             }}
             height={listSize}
-            width={245}
+            width={toRelativeSize(245)}
           />
         )}
 
@@ -123,7 +124,7 @@ const TaskList: React.FC<Props> = ({
 
 const TaskListContainer = styled.div`
   font-size: 0.75rem;
-  width: 244px;
+  width: 15.25rem;
   flex-shrink: 0;
 `;
 

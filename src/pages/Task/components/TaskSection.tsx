@@ -64,7 +64,7 @@ const TaskSectionHeader = styled.div`
   }
 `;
 const TaskSectionContent = styled.div`
-  padding: 15px;
+  padding: 1rem;
 `;
 
 export default TaskSection;

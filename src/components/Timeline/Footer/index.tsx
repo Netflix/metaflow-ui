@@ -189,7 +189,7 @@ const TimelineFooterContainer = styled.div`
 
 const TimelineFooterLeft = styled.div`
   display: inline-block;
-  width: 245px;
+  width: 15.3125rem;
   margin: 0.5rem 0;
   padding-right: 0.5rem;
 `;

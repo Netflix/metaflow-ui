@@ -37,9 +37,9 @@ const MinimapHandle: React.FC<HandleProps> = ({ label, onDragStart, which, isZoo
 
 const MiniTimelineHandle = styled.div`
   position: absolute;
-  top: 7px;
-  height: 29px;
-  width: 10px;
+  top: 0.4375rem;
+  height: 1.8125rem;
+  width: 0.625rem;
   background: ${(p) => p.theme.color.bg.blue};
   z-index: 2;
 
@@ -51,7 +51,7 @@ const MiniTimelineHandle = styled.div`
 
 const MiniTimelineIconLine = styled.div`
   height: 1px;
-  width: 4px;
+  width: 0.25rem;
   background: ${(p) => p.theme.color.bg.white};
   margin-bottom: 2px;
 `;
@@ -66,7 +66,7 @@ const RightLabelPositioning = css<{ isZoomed: boolean }>`
 
 const MiniTimelineLabel = styled.div<{ which: 'left' | 'right'; isZoomed: boolean; stackText?: boolean }>`
   position: absolute;
-  top: 50px;
+  top: 3.125rem;
 
   right: ${(p) => (p.which === 'right' ? '100%' : 'none')};
   font-size: 0.875rem;

@@ -81,13 +81,13 @@ function getTaskLabel(item: Task): string {
 export default TaskListLabel;
 
 const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: boolean; status: string }>`
-  flex: 0 0 245px;
-  max-width: 245px;
+  flex: 0 0 15.3125rem;
+  max-width: 15.3125rem;
   overflow: hidden;
   cursor: pointer;
   font-size: ${(p) => (p.type === 'task' ? '0.75rem' : '0.875rem')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
-  line-height: 27px;
+  line-height: 1.6875rem;
   border-left: 2px solid ${(p) => colorByStatus(p.theme, p.status)};
   padding-left: ${(p) => (p.group ? '0' : '0.5rem')};
 
@@ -151,8 +151,8 @@ const StepLabel = styled.div`
   font-size: 0.75rem;
 
   i {
-    width: 30px;
-    height: 28px;
+    width: 1.875rem;
+    height: 1.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -160,6 +160,6 @@ const StepLabel = styled.div`
   }
 
   > div {
-    padding-left: 10px;
+    padding-left: 0.625rem;
   }
 `;
