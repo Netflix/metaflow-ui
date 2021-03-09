@@ -56,11 +56,11 @@ const StickyHeaderTHead = styled.thead`
   }
 
   .result-group-title th {
-    top: ${HEADER_SIZE_PX}px;
+    top: 7rem;
   }
 
   .result-group-columns th {
-    top: ${HEADER_SIZE_PX + 56}px;
+    top: 10.5rem;
 `;
 
 export default StickyHeader;

@@ -17,7 +17,7 @@ const ParameterTable: React.FC<ParameterTableProps> = ({ items, errorLabel, erro
   return (
     <>
       <ItemRow pad="md" style={{ paddingLeft: '0.25rem', fontSize: '0.875rem' }}>
-        {!noLabel && <div style={{ width: '120px' }}>{t('run.parameters')}</div>}
+        {!noLabel && <div style={{ width: '7.5rem' }}>{t('run.parameters')}</div>}
         <div>
           {Object.keys(items).length === 0 ? (
             <ItemRow>{errorComponent ? errorComponent : errorLabel || t('error.not-found')}</ItemRow>

@@ -280,7 +280,7 @@ const ButtonCrumb = styled(BigButton)`
   color: ${(p) => p.theme.color.text.dark};
 
   overflow-x: hidden;
-  max-width: 300px;
+  max-width: 18.75rem;
   text-overflow: ellipsis;
   background: transparent;
 
@@ -307,7 +307,7 @@ const BreadcrumbDivider = styled.div`
 
 const EditButton = styled(Button)`
   background: transparent;
-  height: 38px;
+  height: 2.375rem;
 
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
@@ -350,7 +350,7 @@ const GoToHolder = styled.div`
   position: relative;
   font-size: 0.875rem;
   height: 2rem;
-  margin-top: -9px;
+  margin-top: -0.5625rem;
   z-index: 2;
 `;
 
@@ -378,7 +378,7 @@ const BreadcrumbWarning = styled.div`
 
 const KeyValueListLabel = styled.div`
   color: ${(p) => p.theme.color.text.mid};
-  width: 75px;
+  width: 4.6875rem;
 `;
 
 const KeyValueListValue = styled.div`
@@ -387,7 +387,7 @@ const KeyValueListValue = styled.div`
 
 const KeyValueListItem = styled.div`
   display: flex;
-  padding: 5px 0;
+  padding: 0.3125rem 0;
 `;
 
 const ModalOutsideClickDetector = styled.div`

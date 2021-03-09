@@ -109,7 +109,7 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
   position: absolute;
   right: 0;
   top: 0;
-  line-height: 26px;
+  line-height: 1.625rem;
   cursor: pointer;
   z-index: 10;
 

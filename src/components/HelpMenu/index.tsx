@@ -77,7 +77,7 @@ const HelpMenu: React.FC = () => {
 
 const HelpMenuContainer = styled.div`
   position: relative;
-  font-size: 14px;
+  font-size: 0.75rem;
 
   i {
     cursor: pointer;
@@ -95,7 +95,7 @@ const HelpMenuTitle = styled.div`
   padding: 0.25rem 0.5rem 0.75rem 1rem;
   display: flex;
   margin: 0 -0.5rem 0.25rem;
-  width: 350px;
+  width: 21.875rem;
   border-bottom: ${(p) => p.theme.border.thinNormal};
 
   span {
@@ -135,7 +135,7 @@ export const HelpMenuRow = styled.div`
   .field {
     width: 100%;
     border: 1px solid #e9e9e9;
-    border-radius: 3px;
+    border-radius: 0.1875rem;
   }
 `;
 

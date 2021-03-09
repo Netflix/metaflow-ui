@@ -69,7 +69,7 @@ const MiniTimelineLabel = styled.div<{ which: 'left' | 'right'; isZoomed: boolea
   top: 50px;
 
   right: ${(p) => (p.which === 'right' ? '100%' : 'none')};
-  font-size: 14px;
+  font-size: 0.875rem;
   white-space: ${(p) => (p.stackText && p.isZoomed ? 'none' : 'pre')};
 
   ${(p) => (p.which === 'left' ? LeftLabelPositioning : RightLabelPositioning)}

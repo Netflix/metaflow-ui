@@ -86,9 +86,9 @@ const Text = styled(SmallText)<{ status: RealtimeStatus }>`
 `;
 
 const StatusColorIndicator = styled.div<{ status: RealtimeStatus }>`
-  height: 8px;
-  width: 8px;
-  border-radius: 2px;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 0.125rem;
   transition: background-color 0.15s;
 
   background-color: ${(p) => {

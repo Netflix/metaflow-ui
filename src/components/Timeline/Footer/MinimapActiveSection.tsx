@@ -56,11 +56,11 @@ const MinimapActiveSection: React.FC<ActiveSectionProps> = ({ graph, dragging, s
 
 const MiniTimelineActiveSection = styled.div<{ dragging: boolean }>`
   position: relative;
-  height: 49px;
+  height: 3.0625rem;
   background #fff;
   border-left: ${(p) => p.theme.border.thinLight};
   border-right: ${(p) => p.theme.border.thinLight};
-  border-bottom: 8px solid ${(p) => p.theme.color.border.light};
+  border-bottom: 0.5rem solid ${(p) => p.theme.color.border.light};
   cursor: grab;
   transition: ${(p) => (p.dragging ? 'none' : '0.5s left, 0.5s width')};
 `;

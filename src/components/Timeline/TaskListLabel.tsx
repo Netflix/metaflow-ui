@@ -85,7 +85,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   max-width: 245px;
   overflow: hidden;
   cursor: pointer;
-  font-size: ${(p) => (p.type === 'task' ? '12px' : '14px')};
+  font-size: ${(p) => (p.type === 'task' ? '0.75rem' : '0.875rem')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
   line-height: 27px;
   border-left: 2px solid ${(p) => colorByStatus(p.theme, p.status)};
@@ -148,7 +148,7 @@ const StepLabel = styled.div`
   display: flex;
   align-items: center;
   user-select: text;
-  font-size: 12px;
+  font-size: 0.75rem;
 
   i {
     width: 30px;

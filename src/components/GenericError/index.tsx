@@ -174,7 +174,7 @@ const APIErrorContainer = styled.div`
 
 const DetailContainer = styled.div`
   padding: 2rem 0 0;
-  max-width: 632px;
+  max-width: 39.5rem;
   margin: 0 auto;
 
   &.noIcon {
@@ -224,13 +224,13 @@ const DetailsHeader = styled.div`
 const DetailsLog = styled.div`
   background: ${(p) => p.theme.color.bg.light};
   border: ${(p) => p.theme.border.thinNormal};
-  border-radius: 3px;
+  border-radius: 0.1875rem;
   color: ${(p) => p.theme.color.text.light};
   font-family: monospace;
-  font-size: 14px;
+  font-size: 0.75rem;
   line-height: 1.2rem;
   margin: 0.5rem 0;
-  max-height: 400px;
+  max-height: 25rem;
   max-width: 100%;
   overflow-x: hidden;
   overflow-y: auto;

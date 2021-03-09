@@ -182,8 +182,8 @@ const TimelineFooterContainer = styled.div`
   display: flex;
   position: relative;
   width: 100%;
-  height: 40px;
-  margin-bottom: 25px;
+  height: 2.5rem;
+  margin-bottom: 1.5625rem;
   border-top: ${(p) => p.theme.border.mediumLight};
 `;
 
@@ -199,7 +199,7 @@ const TimelineFooterContent = styled.div`
   flex: 1;
   background: ${(p) => p.theme.color.bg.light};
   border-bottom: ${(p) => p.theme.border.thinLight};
-  height: 49px;
+  height: 3.0625rem;
 `;
 
 const MinimapContainer = styled.div`
@@ -213,7 +213,7 @@ const MinimapContainer = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  height: 41px;
+  height: 2.5625rem;
 
   pointer-events: none;
 `;

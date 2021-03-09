@@ -237,7 +237,7 @@ const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
   padding: 0 10px;
   top: 1px;
   line-height: 26px;
-  font-size: 12px;
+  font-size: 0.75rem;
   white-space: nowrap;
 
   &::after {

@@ -122,7 +122,7 @@ const TaskList: React.FC<Props> = ({
 };
 
 const TaskListContainer = styled.div`
-  font-size: 12px;
+  font-size: 0.75rem;
   width: 244px;
   flex-shrink: 0;
 `;
