@@ -96,8 +96,8 @@ const LogListContainer = styled.div`
   background: ${(p) => p.theme.color.bg.light};
   border-bottom: ${(p) => p.theme.border.thinNormal};
   font-family: monospace;
-  border-radius: 4px;
-  font-size: 14px;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
   overflow: hidden;
   white-space: pre-wrap;
 `;
@@ -114,10 +114,10 @@ const LogLine = styled.div`
 
 const LogLineNumber = styled.div`
   opacity: 0.6;
-  font-size: 12px;
-  line-height: 16px;
+  font-size: 0.75rem;
+  line-height: 1rem;
   padding-right: 0.5rem;
-  min-width: 35px;
+  min-width: 2.1875rem;
   user-select: none;
 `;
 
@@ -131,7 +131,7 @@ const ScrollToBottomButton = styled.div`
   right: 2rem;
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: 4px;
+  border-radius: 0.25rem;
 
   background: rgba(0, 0, 0, 0.5);
   color: ${(p) => p.theme.color.text.white};

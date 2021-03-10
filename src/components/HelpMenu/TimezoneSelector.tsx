@@ -88,7 +88,7 @@ const TimezoneRow = styled.div`
   .field {
     width: 100%;
     border: none;
-    border-radius: 3px;
+    border-radius: 0.1875rem;
     margin-left: 0.5rem;
   }
 `;

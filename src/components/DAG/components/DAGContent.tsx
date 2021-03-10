@@ -169,10 +169,10 @@ export function stateOfStep(item: StepTree, [stepIds, failedIds]: [string[], str
 //
 
 const DAGRenderingContainer = styled.div<{ showFullscreen: boolean }>`
-  margin: ${(p) => (p.showFullscreen ? '0' : '0 -45px')};
+  margin: ${(p) => (p.showFullscreen ? '0' : '0 -2.875px')};
   overflow-x: ${(p) => (p.showFullscreen ? 'visible' : 'auto')};
   font-family: monospace;
-  font-size: 14px;
+  font-size: 0.875rem;
 `;
 
 const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; isLast?: boolean }>`
@@ -212,22 +212,22 @@ const NormalItem = styled.div<{ state: StepBoxStatus }>`
   padding: 0.75rem 1.5rem;
 
   position: relative;
-  border-radius: 4px;
+  border-radius: 0.25rem;
   transition: 0.15s border;
   background: ${(p) => p.theme.color.bg.white};
   cursor: pointer;
 `;
 
 const NormalItemChildContainer = styled.div`
-  margin-top: 15px;
+  margin-top: 1rem;
 `;
 
 const BaseContainerStyle = css`
   border: ${(p) => p.theme.border.thinMid};
-  background: ${(p) => p.theme.color.bg.light};
+  background: #f6f6f6;
   display: flex;
-  margin: 15px;
-  border-radius: 4px;
+  margin: 1rem;
+  border-radius: 0.25rem;
   position: relative;
   z-index: 1;
 `;
@@ -239,14 +239,14 @@ const ContainerItem = styled.div`
 const ForeachContainer = styled.div`
   ${BaseContainerStyle}
   background: rgba(192, 192, 192, 0.3);
-  transform: translateX(-5px) translateY(-5px);
-  margin-top: 19px;
+  transform: translateX(-0.3125rem) translateY(-0.3125rem);
+  margin-top: 1.1875rem;
 `;
 
 const ForeachItem = styled.div`
   ${BaseContainerStyle}
-  background: ${(p) => p.theme.color.bg.light};
+  background: #f6f6f6;
   margin: 0;
-  transform: translateX(5px) translateY(5px);
+  transform: translateX(0.3125rem) translateY(0.3125rem);
   flex: 1;
 `;

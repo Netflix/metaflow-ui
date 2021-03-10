@@ -147,7 +147,7 @@ export function getMode(graph: GraphState): GraphMode {
 
 const TaskListingContainer = styled.div`
   border-bottom: ${(p) => p.theme.border.mediumLight};
-  font-size: 14px;
+  font-size: 0.875rem;
   position: relative;
 `;
 
@@ -164,8 +164,8 @@ const SettingsRowLeft = styled.div`
 `;
 
 const ExpandButton = styled(Button)`
-  height: 36px;
-  width: 36px;
+  height: 2.25rem;
+  width: 2.25rem;
 
   i {
     margin: 0 auto;

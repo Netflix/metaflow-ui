@@ -123,12 +123,12 @@ const DropdownButton = styled(Button)`
 const DropdownOptions = styled.div`
   position: absolute;
   width: 100%;
-  min-width: 150px;
+  min-width: 9.375rem;
 
   top: 110%;
   left: 0;
 
-  padding: 10px;
+  padding: 0.625rem;
   background: ${(p) => p.theme.color.bg.white};
   border: ${(p) => p.theme.border.thinMid};
   z-index: 10;

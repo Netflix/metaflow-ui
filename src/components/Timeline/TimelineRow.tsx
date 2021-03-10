@@ -234,10 +234,10 @@ const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
   position: absolute;
   left: ${({ position }) => (position === 'right' ? '100%' : 'auto')};
   right: ${({ position }) => (position === 'left' ? '100%' : 'auto')};
-  padding: 0 10px;
+  padding: 0 0.625rem;
   top: 1px;
-  line-height: 26px;
-  font-size: 12px;
+  line-height: 1.625rem;
+  font-size: 0.75rem;
   white-space: nowrap;
 
   &::after {
@@ -245,7 +245,7 @@ const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
     transition: background 0.15s;
     position: absolute;
     width: 100%;
-    height: 6px;
+    height: 0.375rem;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
@@ -257,7 +257,7 @@ const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
 const StyledRow = styled.div`
   display: flex;
   width: 100%;
-  min-height: 28px;
+  min-height: 1.75rem;
   border-bottom: ${(p) => p.theme.border.thinLight};
   transition: background 0.15s;
 
@@ -298,9 +298,9 @@ const BoxGraphic = styled.div<{ root: boolean; dragging: boolean }>`
   position: absolute;
   cursor: pointer;
   color: ${(p) => p.theme.color.text.dark};
-  min-width: 5px;
-  height: 27px;
-  line-height: 27px;
+  min-width: 0.3125rem;
+  height: 1.6875rem;
+  line-height: 1.6875rem;
   transition: ${(p) => (p.dragging ? 'none' : '0.5s width')};
 `;
 
@@ -338,7 +338,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
   position: absolute;
   background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isLastAttempt)};
   width: 100%;
-  height: 6px;
+  height: 0.375rem;
   top: 50%;
   transform: translateY(-50%);
   transition: background 0.15s;
@@ -372,7 +372,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
 `;
 
 const BoxGraphicMarker = css`
-  height: 3px;
+  height: 0.1875rem;
   width: 1px;
   background: ${(p) => p.theme.color.bg.dark};
   position: absolute;

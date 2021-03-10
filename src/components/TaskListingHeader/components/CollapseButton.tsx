@@ -32,8 +32,8 @@ const StyledCollapseButton = styled.div`
   position: relative;
   margin-right: 0.25rem;
   button {
-    height: 36px;
-    width: 36px;
+    height: 2.25rem;
+    width: 2.25rem;
     justify-content: center;
   }
 `;
