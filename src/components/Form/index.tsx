@@ -65,7 +65,7 @@ export const DropdownField: React.FC<
     disabled?: boolean;
     noMinWidth?: boolean;
     maxWidth?: boolean;
-    labelRenderer?: (value: string) => JSX.Element;
+    labelRenderer?: (value: string, label: string) => JSX.Element;
     optionRenderer?: (value: string, label: string) => JSX.Element;
   } & CommonFieldProps<HTMLSelectElement>
 > = ({ label, options, horizontal, noMinWidth, ...rest }) => {

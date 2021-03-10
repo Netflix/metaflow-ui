@@ -10,7 +10,7 @@ export const Dropdown: React.FC<
     id?: string;
     options: [string, string][];
     useNativeComponent?: boolean;
-    labelRenderer?: (value: string) => JSX.Element;
+    labelRenderer?: (value: string, label: string) => JSX.Element;
     optionRenderer?: (value: string, label: string) => JSX.Element;
   } & CommonFieldProps<HTMLSelectElement>
 > = ({ options, useNativeComponent = false, onChange, value, labelRenderer, optionRenderer, children, ...rest }) => {
@@ -56,7 +56,7 @@ export const Dropdown: React.FC<
               textAlign: 'left',
             }}
           >
-            {labelRenderer ? labelRenderer(activeOption[1]) : activeOption[1]}
+            {labelRenderer ? labelRenderer(activeOption[0], activeOption[1]) : activeOption[1]}
           </span>
           <Icon name="arrowDown" padLeft />
         </DropdownButton>
