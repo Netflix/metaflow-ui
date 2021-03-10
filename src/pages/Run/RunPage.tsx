@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import useResource from '../../hooks/useResource';
-import useRowData from '../../components/Timeline/useRowData';
+import useRowData from '../../components/Timeline/useTaskData';
 import { getPath } from '../../utils/routing';
 import { Run as IRun, RunParam } from '../../types';
 

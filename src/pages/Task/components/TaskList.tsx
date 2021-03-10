@@ -3,14 +3,14 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { List } from 'react-virtualized';
 import { SearchResultModel } from '../../../hooks/useSearchField';
-import { RowDataAction } from '../../../components/Timeline/useRowData';
+import { RowDataAction } from '../../../components/Timeline/useTaskData';
 import TaskListRow from './TaskListRow';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
 import { HEADER_SIZE_PX } from '../../../constants';
 import { getTaskId } from '../../../utils/task';
 import { AsyncStatus } from '../../../types';
 import Spinner from '../../../components/Spinner';
-import { getStepDuration } from '../../../components/Timeline/TimelineRow';
+import { getStepDuration } from '../../../components/Timeline/TimelineRow/utils';
 
 //
 // Tasklist

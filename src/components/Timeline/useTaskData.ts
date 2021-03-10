@@ -11,6 +11,13 @@ import {
   timepointsOfTasks,
 } from './taskdataUtils';
 
+//
+// useTaskData hook is responsible of fetching all step and task data for given run. It automatically
+// fetches, and receives all realtime updates from server.
+//
+// Task data is grouped by steps
+//
+
 export type StepRowData = {
   // Is row opened?
   isOpen: boolean;
@@ -181,7 +188,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
 // Hook
 //
 
-export type UseRowDataHook = {
+export type useTaskDataHook = {
   rows: RowDataModel;
   dispatch: React.Dispatch<RowDataAction>;
   taskStatus: AsyncStatus;
@@ -192,7 +199,7 @@ export type UseRowDataHook = {
   stepError: APIError | null;
 };
 
-export default function useRowData(flowId: string, runNumber: string): UseRowDataHook {
+export default function useTaskData(flowId: string, runNumber: string): useTaskDataHook {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
 
   // Fetch & subscribe to steps

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { TaskStatus } from '../../../types';
-import { lineColor } from '../TimelineRow';
+import { lineColor } from '../TimelineRow/utils';
 import { GraphState } from '../useGraph';
 
 //

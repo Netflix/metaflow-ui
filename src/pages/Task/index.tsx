@@ -14,7 +14,7 @@ import FullPageContainer from '../../components/FullPageContainer';
 import TaskListingHeader from '../../components/TaskListingHeader';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import { RowCounts } from '../../components/Timeline/taskdataUtils';
-import { RowDataAction } from '../../components/Timeline/useRowData';
+import { RowDataAction } from '../../components/Timeline/useTaskData';
 import GenericError, { APIErrorRenderer } from '../../components/GenericError';
 import TaskList from './components/TaskList';
 import AnchoredView from './components/AnchoredView';

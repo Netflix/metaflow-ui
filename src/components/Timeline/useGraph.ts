@@ -8,6 +8,10 @@ import {
   withDefault,
 } from 'use-query-params';
 
+//
+// useGraph is responsible for tracking timeline metrics and parameters for constructing actual rows.
+//
+
 export type GraphAlignment = 'fromLeft' | 'fromStartTime';
 export type GraphSortBy = 'startTime' | 'endTime' | 'duration';
 
