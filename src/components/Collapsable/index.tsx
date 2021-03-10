@@ -21,7 +21,7 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title }) => {
   return (
     <CollapseContainer>
       <HeightAnimatedContainer>
-        <CollapsableHeader onClick={() => setOpen(!open)}>
+        <CollapsableHeader onClick={() => setOpen(!open)} data-testid="collapsable-header">
           <div>{title}</div>
           <Icon name="arrowDown" rotate={open ? 180 : 0} />
         </CollapsableHeader>
