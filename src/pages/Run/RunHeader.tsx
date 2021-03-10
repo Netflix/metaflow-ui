@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
@@ -18,11 +18,11 @@ import {
   getRunSystemTag,
   getUsername,
 } from '../../utils/run';
-import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import TagRow from './components/TagRow';
 import TitledRow from '../../components/TitledRow';
 import HeightAnimatedContainer from '../../components/HeightAnimatedContainer';
+import Collapsable from '../../components/Collapsable';
 
 //
 // Typedef
@@ -43,7 +43,6 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { timezone } = useContext(TimezoneContext);
-  const [expanded, setExpanded] = useState(false);
 
   const parameterTableItems = (parameters ? Object.entries(parameters) : []).reduce((obj, param) => {
     const [param_name, param_props] = param;
@@ -100,27 +99,20 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
                   content: parameterTableItems,
                 })}
           />
-
-          {expanded && (
-            <>
-              <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
-
-              <TagRow
-                label={t('run.system-tags')}
-                tags={run.system_tags || []}
-                push={history.push}
-                noTagsMsg={t('run.no-system-tags')}
-              />
-            </>
-          )}
         </div>
       </HeightAnimatedContainer>
-      <ShowDetailsButton
-        toggle={() => setExpanded(!expanded)}
-        visible={expanded}
-        showText={t('run.show-run-details')}
-        hideText={t('run.hide-run-details')}
-      />
+      <Collapsable title={t('run.run-details')}>
+        <>
+          <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
+
+          <TagRow
+            label={t('run.system-tags')}
+            tags={run.system_tags || []}
+            push={history.push}
+            noTagsMsg={t('run.no-system-tags')}
+          />
+        </>
+      </Collapsable>
     </RunHeaderContainer>
   );
 };

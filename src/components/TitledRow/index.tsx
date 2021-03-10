@@ -64,6 +64,7 @@ const StyledTitledRow = styled.div`
 
 const TitledRowTitle = styled.div`
   font-weight: 500;
+  font-size: 0.875rem;
   margin: 0.5rem 0;
 `;
 
