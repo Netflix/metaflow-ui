@@ -25,7 +25,10 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title }) => {
           <div>{title}</div>
           <Icon name="arrowDown" rotate={open ? 180 : 0} />
         </CollapsableHeader>
-        {open && children}
+
+        <ContentContainer>
+          <Content open={open}>{children}</Content>
+        </ContentContainer>
       </HeightAnimatedContainer>
     </CollapseContainer>
   );
@@ -47,6 +50,15 @@ const CollapsableHeader = styled.div`
   line-height: 1.5rem;
   border-bottom: ${(p) => p.theme.border.thinLight};
   cursor: pointer;
+`;
+
+const ContentContainer = styled.div`
+  position: relative;
+`;
+
+const Content = styled.div<{ open: boolean }>`
+  position: ${(p) => (p.open ? 'static' : 'absolute')};
+  width: 100%;
 `;
 
 export default Collapsable;
