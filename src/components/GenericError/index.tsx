@@ -1,9 +1,10 @@
 import { TFunction } from 'i18next';
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { APIError } from '../../types';
 import { getVersionInfo } from '../../VERSION';
+import Collapsable from '../Collapsable';
 import Icon, { IconKeys } from '../Icon';
 import TitledRow from '../TitledRow';
 
@@ -70,13 +71,13 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
   return (
     <APIErrorContainer>
       <GenericError message={msg} {...iconProps} />
+
       {error && <APIErrorDetails error={error} noIcon={icon === false} t={t} />}
     </APIErrorContainer>
   );
 };
 
 export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TFunction }> = ({ error, noIcon, t }) => {
-  const [open, setOpen] = useState(false);
   const version = getVersionInfo();
 
   // TODO: update these later on
@@ -113,56 +114,30 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
     ),
   }; */
 
-  if (!open) {
-    return (
-      <DetailContainer className={!noIcon ? 'noIcon' : ''} data-testid="error-details">
-        {noIcon && (
-          <DetailsTitle>
-            <span className="statusCode" data-testid="error-details-title">
-              {error.status}
-            </span>
-            <p className="statusTitle">{error.title}</p>
-          </DetailsTitle>
-        )}
-        {noIcon && error.detail && (
-          <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>
-        )}
-        <DetailsOpenLink onClick={() => setOpen(true)} data-testid="error-details-seemore">
-          {t('error.show-more-details')}
-          <Icon name="arrowDown" rotate={open ? 180 : 0} padLeft />
-        </DetailsOpenLink>
-      </DetailContainer>
-    );
-  }
-
   return (
     <DetailContainer className={!noIcon ? 'noIcon' : ''} data-testid="error-details">
       {noIcon && (
-        <DetailsTitle className={open && 'open'}>
+        <DetailsTitle>
           <span className="statusCode" data-testid="error-details-title">
             {error.status}
           </span>
           <p className="statusTitle">{error.title}</p>
         </DetailsTitle>
       )}
-
-      {noIcon && error.detail && <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>}
-
-      <TitledRow title={t('error.error-details')} type="table" content={versionsTable} />
-      {/* will be re-enabled when error links data is updated */}
-      {/* <TitledRow title={t('task.links')} type="table" content={linksTable} /> */}
-
-      {error.traceback && (
-        <>
-          <DetailsHeader>{t('error.stack-trace')}</DetailsHeader>
-          <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>
-        </>
-      )}
-
-      <DetailsOpenLink onClick={() => setOpen(false)} data-testid="error-details-seemore">
-        {t('error.hide-more-details')}
-        <Icon name="arrowDown" rotate={open ? 180 : 0} padLeft />
-      </DetailsOpenLink>
+      <Collapsable title={t('error.error-details')}>
+        {error.traceback && (
+          <>
+            <DetailsHeader>{t('error.stack-trace')}</DetailsHeader>
+            <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>
+          </>
+        )}
+        <TitledRow title={t('error.details')} type="table" content={versionsTable} />
+        {/* will be re-enabled when error links data is updated */}
+        {/* <TitledRow title={t('task.links')} type="table" content={linksTable} /> */}
+        {noIcon && error.detail && (
+          <DetailsSubTitle data-testid="error-details-subtitle">{error.detail}</DetailsSubTitle>
+        )}
+      </Collapsable>
     </DetailContainer>
   );
 };
@@ -180,14 +155,6 @@ const DetailContainer = styled.div`
   &.noIcon {
     padding: 0.5rem 0 0;
   }
-`;
-
-const DetailsOpenLink = styled.div`
-  color: ${(p) => p.theme.color.text.blue};
-  cursor: pointer;
-  font-size: 0.875rem;
-  line-height: 1.5rem;
-  text-align: right;
 `;
 
 const DetailsTitle = styled.div`

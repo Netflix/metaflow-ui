@@ -70,6 +70,7 @@ const en = {
     },
 
     run: {
+      'run-details': 'Run details',
       'no-run-data': 'No run data',
       'no-tags': 'No user tags',
       'no-system-tags': 'No system tags',
@@ -127,6 +128,7 @@ const en = {
     },
 
     task: {
+      'task-details': 'Task details',
       loading: 'Loading task data',
       'no-task-selected': 'No task selected',
       'could-not-find-task': 'Could not find the task',
@@ -179,6 +181,7 @@ const en = {
 
     error: {
       'error-details': 'Error details',
+      details: 'Details',
       'show-more-details': 'Show error details',
       'hide-more-details': 'Hide error details',
       'generic-error': 'Error happened',
