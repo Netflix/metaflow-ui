@@ -168,6 +168,7 @@ const en = {
     },
 
     connection: {
+      connected: 'Connected for real-time updates',
       'waiting-for-connection': 'Waiting for connection',
       'data-might-be-stale': 'Reconnected, but data might be stale. Click here to reconnect',
     },
