@@ -8,11 +8,11 @@ const ResultGroupDuration: React.FC<{ run: Run }> = ({ run }) => {
   useEffect(() => {
     let t = 0;
     if (run.status === 'running') {
-      t = setInterval(() => {
+      t = window.setInterval(() => {
         rerender[1]((tick) => tick + 1);
       }, 1000);
     }
-    return () => clearInterval(t);
+    return () => window.clearInterval(t);
   }, [run.status]); // eslint-disable-line
 
   return <>{getRunDuration(run)}</>;

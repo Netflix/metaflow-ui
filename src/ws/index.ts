@@ -74,7 +74,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
   function ping() {
     conn.send('__ping__');
     setLogItem('Websocket ping sent');
-    pingTimer = setTimeout(() => {
+    pingTimer = window.setTimeout(() => {
       conn.reconnect();
     }, 2000);
   }
@@ -94,7 +94,7 @@ export function createWebsocketConnection(url: string): WebSocketConnection {
     // Reset `connectedSinceUnixTime` so that next disconnect timestamp can be recorder
     connectedSinceUnixTime = null;
     // Setup ping sending interval
-    pingInterval = setInterval(ping, 5000);
+    pingInterval = window.setInterval(ping, 5000);
   });
   conn.addEventListener('close', (_e: CloseEvent) => {
     setLogItem('Websocket connection closed');

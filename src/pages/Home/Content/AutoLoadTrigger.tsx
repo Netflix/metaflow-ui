@@ -34,11 +34,11 @@ const AutoLoadTrigger: React.FC<AutoLoadProps> = ({ loadMore, status, resultAmou
     let to: null | number = null;
 
     if (status === 'Ok' && !isUpdatable) {
-      to = setTimeout(() => {
+      to = window.setTimeout(() => {
         setIsUpdatable(true);
       }, 250);
     }
-    return () => (to ? clearTimeout(to) : undefined);
+    return () => (to ? window.clearTimeout(to) : undefined);
   }, [status]); // eslint-disable-line
 
   // Let trigger be disabled for half a second on initial render
@@ -46,7 +46,7 @@ const AutoLoadTrigger: React.FC<AutoLoadProps> = ({ loadMore, status, resultAmou
     const to = setTimeout(() => {
       setIsUpdatable(true);
     }, 500);
-    return () => clearTimeout(to);
+    return () => window.clearTimeout(to);
   }, []);
 
   return (
