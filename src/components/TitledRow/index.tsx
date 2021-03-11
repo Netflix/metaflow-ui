@@ -4,16 +4,16 @@ import { readParameterValue } from '../../utils/parameters';
 
 type Props =
   | {
-      title: string;
+      title?: string;
       type: 'default';
       content: React.ReactNode;
     }
-  | { title: string; type: 'table'; content: { [key: string]: React.ReactNode } };
+  | { title?: string; type: 'table'; content: { [key: string]: React.ReactNode } };
 
 const TitledRow: React.FC<Props> = (props) => {
   return (
     <StyledTitledRow data-testid="titled-row">
-      <TitledRowTitle data-testid="titled-row-title">{props.title}</TitledRowTitle>
+      {props.title && <TitledRowTitle data-testid="titled-row-title">{props.title}</TitledRowTitle>}
       <ContentBackground>
         {props.type === 'table' ? (
           Object.keys(props.content).map((key, index) => (

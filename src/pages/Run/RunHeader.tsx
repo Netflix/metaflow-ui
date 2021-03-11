@@ -21,7 +21,7 @@ import {
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import TagRow from './components/TagRow';
 import TitledRow from '../../components/TitledRow';
-import HeightAnimatedContainer from '../../components/HeightAnimatedContainer';
+
 import Collapsable from '../../components/Collapsable';
 
 //
@@ -76,31 +76,30 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
 
   return (
     <RunHeaderContainer>
-      <HeightAnimatedContainer>
-        <div>
-          <InformationRow spaceless>
-            <PropertyTable scheme="dark" items={[run]} columns={columns} />
-          </InformationRow>
+      <div>
+        <InformationRow spaceless>
+          <PropertyTable scheme="dark" items={[run]} columns={columns} />
+        </InformationRow>
+      </div>
+      <Collapsable title={t('run.parameters')}>
+        <TitledRow
+          {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
+            ? {
+                type: 'default',
+                content:
+                  status === 'Error' && error ? (
+                    <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
+                  ) : (
+                    t('run.no-parameters')
+                  ),
+              }
+            : {
+                type: 'table',
+                content: parameterTableItems,
+              })}
+        />
+      </Collapsable>
 
-          <TitledRow
-            title={t('run.parameters')}
-            {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
-              ? {
-                  type: 'default',
-                  content:
-                    status === 'Error' && error ? (
-                      <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
-                    ) : (
-                      t('run.no-parameters')
-                    ),
-                }
-              : {
-                  type: 'table',
-                  content: parameterTableItems,
-                })}
-          />
-        </div>
-      </HeightAnimatedContainer>
       <Collapsable title={t('run.run-details')}>
         <>
           <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
