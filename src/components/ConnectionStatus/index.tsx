@@ -78,7 +78,7 @@ export default ConnectionStatus;
 
 const Text = styled(SmallText)<{ status: RealtimeStatus }>`
   white-space: 'nowrap';
-  transition: opacity 0.6s;
+  transition: opacity 0.25s;
   opacity: ${(p) => (p.status === 'Connected' ? 0 : 1)};
 `;
 
