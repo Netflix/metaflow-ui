@@ -28,19 +28,18 @@ export function countTaskRowsByStatus(rows: RowDataModel): RowCounts {
       // Iterate all task rows on step
       for (const taskId of Object.keys(stepRow.data)) {
         const taskRow = stepRow.data[taskId];
-        // Map statuses of all attempts on single row and count
-        const allStatuses = taskRow.map((t) => t.status);
 
-        counts.all++;
-        if (allStatuses.indexOf('completed') > -1) {
-          counts.completed++;
-        } else if (allStatuses.indexOf('running') > -1) {
-          counts.running++;
-        }
-        // If there is more than 1 task on one row, there must be multiple attempts which means that some
-        // of them has failed
-        if (allStatuses.indexOf('failed') > -1 || taskRow.length > 1) {
-          counts.failed++;
+        if (taskRow.length > 0) {
+          const task = taskRow[taskRow.length - 1];
+
+          counts.all++;
+          if (task.status === 'completed') {
+            counts.completed++;
+          } else if (task.status === 'running') {
+            counts.running++;
+          } else if (task.status === 'failed') {
+            counts.failed++;
+          }
         }
       }
     }
