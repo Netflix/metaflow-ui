@@ -118,7 +118,7 @@ const RowElement: React.FC<{ item: Row; onOpen: () => void }> = ({ item, childre
 const StyledRow = styled.div`
   display: flex;
   width: 100%;
-  min-height: 28px;
+  min-height: 1.75rem;
   border-bottom: ${(p) => p.theme.border.thinLight};
   transition: background 0.15s;
 
