@@ -1,7 +1,7 @@
 import { Step, Task, TaskStatus } from '../../../types';
 import { countTaskRowsByStatus, getStepStatus, makeTasksForStep, timepointsOfTasks } from '../taskdataUtils';
-import { RowDataModel } from '../useRowData';
-import { createStep, createTask } from './useRowData.test';
+import { RowDataModel } from '../useTaskData';
+import { createStep, createTask } from './useTaskData.test';
 
 function makeRowData(step: Step, data: Record<string, Task[]>) {
   return {

@@ -1,5 +1,5 @@
 import { GraphSortBy, GraphState } from '../../components/Timeline/useGraph';
-import { RowDataModel } from '../../components/Timeline/useRowData';
+import { RowDataModel } from '../../components/Timeline/useTaskData';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import { SearchResultModel } from '../../hooks/useSearchField';
 import { Task } from '../../types';

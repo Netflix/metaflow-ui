@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
 import { GraphHook, GraphState } from './useGraph';
-import { StepRowData, RowDataAction } from './useRowData';
+import { StepRowData, RowDataAction } from './useTaskData';
 import { RowCounts } from './taskdataUtils';
 import { useTranslation } from 'react-i18next';
 import TimelineFooter from './Footer';
