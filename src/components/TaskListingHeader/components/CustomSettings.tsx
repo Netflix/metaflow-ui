@@ -142,12 +142,12 @@ const FiltersSection = styled(ItemRow)`
 
 const StatusLabelContainer = styled.div`
   display: flex;
-  min-width: 134px;
+  min-width: 8.375rem;
 `;
 
 const OrderLabelContainer = styled.div`
   display: flex;
-  min-width: 200px;
+  min-width: 12.5rem;
 
   i {
     margin-left: 0.5rem;
@@ -161,11 +161,11 @@ const OrderLabelValue = styled(ForceNoWrapText)`
 
 const TaskListDropdownContainer = styled.div`
   border: 1px solid ${(p) => p.theme.color.border.normal};
-  border-radius: 4px;
+  border-radius: 0.25rem;
   margin: 0 0.375rem;
 
   button {
-    height: 34px;
+    height: 2.125rem;
     padding-left: 1rem;
     padding-right: 1rem;
   }
@@ -173,7 +173,7 @@ const TaskListDropdownContainer = styled.div`
 
 const DropdownLabelTitle = styled(ForceNoWrapText)`
   font-weight: bold;
-  margin-right: 5px;
+  margin-right: 0.3125rem;
 `;
 
 export default CustomSettings;

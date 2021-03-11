@@ -118,11 +118,10 @@ export function makeVisibleRows(
     }));
 
     if (graph.statusFilter) {
-      rowTasks = rowTasks.filter(
-        (item) =>
-          (graph.statusFilter === 'failed' && item.data.length > 1) ||
-          item.data.find((task) => task.status === graph.statusFilter),
-      );
+      rowTasks = rowTasks.filter((item) => {
+        const lastTask = item.data.slice(-1)[0];
+        return lastTask?.status === graph.statusFilter;
+      });
     }
 
     if (shouldApplySearchFilter(searchResults)) {

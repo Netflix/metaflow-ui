@@ -7,7 +7,7 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
   > .button {
     border-radius: 0;
     margin-left: -1px;
-    min-height: ${(p) => (p.big ? '36px' : '28px')};
+    min-height: ${(p) => (p.big ? '2.25rem' : '1.75rem')};
     font-size: ${(p) => (p.big ? '1rem' : '0.875rem')};
     border-color: #d0d0d0;
 

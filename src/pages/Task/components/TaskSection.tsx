@@ -50,10 +50,9 @@ const TaskSection: React.FC<Props> = ({
 };
 
 const TaskSectionContainer = styled.div<{ last: boolean }>`
-  margin-bottom: ${(p) => (p.last ? '0' : '2rem')};
+  margin-bottom: ${(p) => (p.last ? '0' : '1rem')};
 `;
 const TaskSectionHeader = styled.div`
-  padding: 0 1rem;
   border-bottom: ${(p) => p.theme.border.thinNormal};
   display: flex;
   justify-content: space-between;
@@ -64,7 +63,7 @@ const TaskSectionHeader = styled.div`
   }
 `;
 const TaskSectionContent = styled.div`
-  padding: 15px;
+  padding-top: 1rem;
 `;
 
 export default TaskSection;

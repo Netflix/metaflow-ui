@@ -63,7 +63,11 @@ const ConnectionStatus: React.FC = () => {
       }}
     >
       <Text status={status}>
-        {status === 'Stale' ? t('connection.data-might-be-stale') : t('connection.waiting-for-connection')}
+        {status === 'Stale'
+          ? t('connection.data-might-be-stale')
+          : status === 'Connected'
+          ? t('connection.connected')
+          : t('connection.waiting-for-connection')}
       </Text>
       <StatusColorIndicator status={status} />
     </Wrapper>
@@ -72,23 +76,26 @@ const ConnectionStatus: React.FC = () => {
 
 export default ConnectionStatus;
 
-const Wrapper = styled.div<{ status: RealtimeStatus }>`
-  display: flex;
-  align-items: center;
-  pointer-events: ${(p) => (p.status === 'Stale' ? 'auto' : 'none')};
-  cursor: pointer;
-`;
-
 const Text = styled(SmallText)<{ status: RealtimeStatus }>`
   white-space: 'nowrap';
-  transition: opacity 0.6s;
+  transition: opacity 0.25s;
   opacity: ${(p) => (p.status === 'Connected' ? 0 : 1)};
 `;
 
+const Wrapper = styled.div<{ status: RealtimeStatus }>`
+  display: flex;
+  align-items: center;
+  cursor: ${(p) => (p.status === 'Stale' ? 'pointer' : 'normal')};
+
+  &:hover ${Text} {
+    opacity: 1;
+  }
+`;
+
 const StatusColorIndicator = styled.div<{ status: RealtimeStatus }>`
-  height: 8px;
-  width: 8px;
-  border-radius: 2px;
+  height: 0.5rem;
+  width: 0.5rem;
+  border-radius: 0.125rem;
   transition: background-color 0.15s;
 
   background-color: ${(p) => {

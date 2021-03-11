@@ -62,10 +62,10 @@ describe('GenericError component', () => {
       </TestWrapper>,
     );
 
-    fireEvent.click(getByTestId('error-details-seemore'));
+    fireEvent.click(getByTestId('collapsable-header'));
     expect(getByTestId('titled-row-row-status-0').lastChild?.textContent).toBe('500');
     expect(getByTestId('titled-row-row-detail-2').lastChild?.textContent).toBe('Absolute failure');
     expect(getByTestId('error-details-logs').textContent).toBe('Doing stuff\nERROR!!');
-    fireEvent.click(getByTestId('error-details-seemore'));
+    fireEvent.click(getByTestId('collapsable-header'));
   });
 });

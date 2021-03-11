@@ -54,7 +54,7 @@ const LoggerContainer = styled.div`
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 400px;
+  width: 25rem;
   z-index: 999;
   background: #dd5d54;
   color: #fff;

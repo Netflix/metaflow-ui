@@ -18,7 +18,7 @@ const StyledRow = styled.div<{ spaceless: boolean; scrollOverflow: boolean }>`
   overflow-x: ${(p) => (p.scrollOverflow ? 'auto' : 'hidden')};
   background: ${(p) => p.theme.color.bg.light};
   border-bottom: ${(p) => p.theme.border.mediumWhite};
-  padding: ${(p) => (p.spaceless ? '0px' : '10px')};
+  padding: ${(p) => (p.spaceless ? '0px' : '0.625rem')};
 
   &:first-of-type {
     border-top-left-radius: 0.25rem;
