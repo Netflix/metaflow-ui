@@ -7,6 +7,9 @@ import { APIError, AsyncStatus } from '../../types';
 import { setLogItem } from '../../utils/debugdb';
 import { logWarning } from '../../utils/errorlogger';
 
+//
+// Typedef
+//
 export interface HookConfig<T, U> {
   // URL for fetch request
   url: string;
@@ -25,11 +28,15 @@ export interface HookConfig<T, U> {
   onUpdate?: (item: T, response?: DataModel<T>) => void;
   // Separate update function for websocket messages.
   onWSUpdate?: (item: U, eventType: EventType) => void;
+  // By default we use same parameters for GET and websocket. With this function you can edit websocket params
   socketParamFilter?: (params: Record<string, string>) => Record<string, string>;
-  // ?
+  // Function to trigger after every HTTP GET
   postRequest?: (success: boolean, target: string) => void;
+  // Is fetching funcs paused?
   pause?: boolean;
+  // Return websocket updates in batches instead of real time (1sec interval).
   useBatching?: boolean;
+  // Unique identifier for websocket messaging
   uuid?: string;
 }
 
@@ -64,6 +71,10 @@ export interface Resource<T> {
   status: AsyncStatus;
 }
 
+//
+// Default errors
+//
+
 const defaultError = {
   id: 'generic-error',
   traceback: '',
@@ -81,11 +92,14 @@ const notFoundError = {
 };
 
 //
-// Imperative store for some data. We want to use imperative functions like push when handling real time data
-// in some cases for maximum performance. Using state inside the hooks seemed to be very non optimal performance wise.
+// Imperative store for data if useBatching is on. Meaning that arriving websocket data is stored in this object while waiting to be batched to
+// view. We use this to prevent dozens of renders per second for more intensive runs.
 //
 const updateBatcher: Record<string, any> = {};
 
+//
+// Status handling
+//
 type StatusState = {
   id: number;
   status: AsyncStatus;
@@ -107,6 +121,10 @@ const StatusReducer = (state: StatusState, action: StatusAction): StatusState =>
       return state;
   }
 };
+
+//
+// Hook
+//
 
 export default function useResource<T, U>({
   url,
@@ -145,9 +163,9 @@ export default function useResource<T, U>({
     enabled: subscribeToEvents && !pause,
     onUpdate: (event: Event<any>) => {
       if (pause) return;
-      // ..and update new data to component manually. This way we only send updated value to component instead of whole batch
-      // Optionally we can also batch some amount of messages before sending them to component
+      // If onUpdate or onWSUpdate is given, dont update stateful data object.
       if (onUpdate || onWSUpdate) {
+        // On batching add item to batch object to be sent to view later
         if (useBatching) {
           if (!updateBatcher[target]) {
             updateBatcher[target] = [];
@@ -192,13 +210,16 @@ export default function useResource<T, U>({
             .json()
             .then((result: DataModel<T>) => {
               setLogItem(`GET ${response.status} ${targetUrl} ${JSON.stringify(result)}`);
+              // If onUpdate, dont store data in stateful data object
               if (onUpdate) {
                 onUpdate(result.data as T, result);
-                postRequest && postRequest(true, targetUrl);
               } else {
                 setData(result.data);
                 setResult(result);
               }
+
+              // Trigger postRequest after every request if given.
+              postRequest && postRequest(true, targetUrl);
 
               // If we want all data and we are have next page available we fetch it.
               // Else this fetch is done and we call the callback
