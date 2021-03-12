@@ -27,8 +27,6 @@ export interface HookConfig<T, U> {
   onWSUpdate?: (item: U, eventType: EventType) => void;
   socketParamFilter?: (params: Record<string, string>) => Record<string, string>;
   // ?
-  privateCache?: boolean;
-  // ?
   postRequest?: (success: boolean, target: string) => void;
   pause?: boolean;
   useBatching?: boolean;
@@ -110,7 +108,6 @@ const StatusReducer = (state: StatusState, action: StatusAction): StatusState =>
   }
 };
 
-// TODO: cache map, cache subscriptions, ws connections, cache mutations
 export default function useResource<T, U>({
   url,
   initialData = null,
@@ -167,10 +164,11 @@ export default function useResource<T, U>({
         if (event.type === EventType.INSERT) {
           setData((d) => (Array.isArray(d) ? [event.data].concat(d) : d) as T);
         } else if (event.type === EventType.UPDATE) {
-          // On update we need to use updatePredicate to update items in cache.
           setData(
             (d) =>
-              (Array.isArray(d) ? d.map((item) => (updatePredicate(item, event.data) ? event.data : item)) : d) as T,
+              (Array.isArray(d)
+                ? d.map((item) => (updatePredicate(item, event.data) ? event.data : item))
+                : event.data) as T,
           );
         }
       }
@@ -194,13 +192,8 @@ export default function useResource<T, U>({
             .json()
             .then((result: DataModel<T>) => {
               setLogItem(`GET ${response.status} ${targetUrl} ${JSON.stringify(result)}`);
-              const cacheItem = {
-                result,
-                data: result.data,
-              };
-
               if (onUpdate) {
-                onUpdate(cacheItem.data as T, result);
+                onUpdate(result.data as T, result);
                 postRequest && postRequest(true, targetUrl);
               } else {
                 setData(result.data);
@@ -209,8 +202,8 @@ export default function useResource<T, U>({
 
               // If we want all data and we are have next page available we fetch it.
               // Else this fetch is done and we call the callback
-              if (fetchAllData && cacheItem.result.links.next !== null && cacheItem.result.links.next !== targetUrl) {
-                fetchData(cacheItem.result.links.next || targetUrl, signal, cb, requestid);
+              if (fetchAllData && result.links.next !== null && result.links.next !== targetUrl) {
+                fetchData(result.links.next || targetUrl, signal, cb, requestid);
               } else {
                 cb(true);
               }
