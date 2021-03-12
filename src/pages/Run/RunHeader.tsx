@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
@@ -19,10 +19,11 @@ import {
   getUsername,
   getProjectFieldValue,
 } from '../../utils/run';
-import ShowDetailsButton from '../../components/ShowDetailsButton';
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import TagRow from './components/TagRow';
 import TitledRow from '../../components/TitledRow';
+
+import Collapsable from '../../components/Collapsable';
 
 //
 // Typedef
@@ -43,7 +44,6 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { timezone } = useContext(TimezoneContext);
-  const [expanded, setExpanded] = useState(false);
 
   const parameterTableItems = (parameters ? Object.entries(parameters) : []).reduce((obj, param) => {
     const [param_name, param_props] = param;
@@ -81,9 +81,9 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
         <InformationRow spaceless>
           <PropertyTable scheme="dark" items={[run]} columns={columns} />
         </InformationRow>
-
+      </div>
+      <Collapsable title={t('run.parameters')}>
         <TitledRow
-          title={t('run.parameters')}
           {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
             ? {
                 type: 'default',
@@ -99,27 +99,20 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
                 content: parameterTableItems,
               })}
         />
+      </Collapsable>
 
-        {expanded && (
-          <>
-            <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
+      <Collapsable title={t('run.run-details')}>
+        <>
+          <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
 
-            <TagRow
-              label={t('run.system-tags')}
-              tags={run.system_tags || []}
-              push={history.push}
-              noTagsMsg={t('run.no-system-tags')}
-            />
-          </>
-        )}
-      </div>
-
-      <ShowDetailsButton
-        toggle={() => setExpanded(!expanded)}
-        visible={expanded}
-        showText={t('run.show-run-details')}
-        hideText={t('run.hide-run-details')}
-      />
+          <TagRow
+            label={t('run.system-tags')}
+            tags={run.system_tags || []}
+            push={history.push}
+            noTagsMsg={t('run.no-system-tags')}
+          />
+        </>
+      </Collapsable>
     </RunHeaderContainer>
   );
 };

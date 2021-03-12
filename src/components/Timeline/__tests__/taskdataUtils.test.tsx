@@ -1,7 +1,7 @@
 import { Step, Task, TaskStatus } from '../../../types';
 import { countTaskRowsByStatus, getStepStatus, makeTasksForStep, timepointsOfTasks } from '../taskdataUtils';
-import { RowDataModel } from '../useRowData';
-import { createStep, createTask } from './useRowData.test';
+import { RowDataModel } from '../useTaskData';
+import { createStep, createTask } from './useTaskData.test';
 
 function makeRowData(step: Step, data: Record<string, Task[]>) {
   return {
@@ -61,19 +61,17 @@ describe('taskdataUtils tests', () => {
   it('countTaskRowsByStatus - count completed and failed correctly', () => {
     const DATA: RowDataModel = {
       step: makeRowData(createStep({}), {
-        // If there is even one completed, we will count it as completed. But it will also be visible in failed
-        '1': [createTask({ status: 'failed' }), createTask({ status: 'completed' })],
+        '1': [createTask({ status: 'failed' }), createTask({ status: 'failed' })],
         '2': [createTask({ status: 'completed' })],
-        // If there is multiple tasks, there must have been atleast one fail no matter what.
-        '3': [createTask({ status: 'running' }), createTask({ status: 'running' })],
+        '3': [createTask({ status: 'failed' }), createTask({ status: 'running' })],
       }),
     };
 
     expect(countTaskRowsByStatus(DATA)).toEqual({
       all: 3,
-      completed: 2,
+      completed: 1,
       running: 1,
-      failed: 2,
+      failed: 1,
     });
   });
 

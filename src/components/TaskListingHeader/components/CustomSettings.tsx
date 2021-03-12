@@ -7,6 +7,7 @@ import { RowCounts } from '../../Timeline/taskdataUtils';
 import { GraphSortBy, GraphState } from '../../Timeline/useGraph';
 import StatusLights from './StatusLights';
 import { CheckboxField, DropdownField } from '../../Form';
+import Icon from '../../Icon';
 
 //
 // Typedef
@@ -53,7 +54,7 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
               ['running', t('run.filter-running') + ` (${counts.running})`],
               ['failed', t('run.filter-failed') + ` (${counts.failed})`],
             ]}
-            labelRenderer={(val) => <StatusLabelRenderer val={val} status={graph.statusFilter} />}
+            labelRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} />}
             optionRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} noTitle />}
           />
         </TaskListDropdownContainer>
@@ -70,14 +71,15 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
             }}
             value={`${graph.sortBy},${graph.sortDir}`}
             options={[
-              ['startTime,asc', t('timeline.startTime,asc')],
-              ['startTime,desc', t('timeline.startTime,desc')],
-              ['endTime,asc', t('timeline.endTime,asc')],
-              ['endTime,desc', t('timeline.endTime,asc')],
-              ['duration,asc', t('timeline.duration,asc')],
-              ['duration,desc', t('timeline.duration,asc')],
+              ['startTime,asc', t('timeline.startTime')],
+              ['startTime,desc', t('timeline.startTime')],
+              ['endTime,asc', t('timeline.endTime')],
+              ['endTime,desc', t('timeline.endTime')],
+              ['duration,asc', t('timeline.duration')],
+              ['duration,desc', t('timeline.duration')],
             ]}
-            labelRenderer={(val) => <OrderLabelRenderer val={val} />}
+            labelRenderer={(value) => <OrderLabelRenderer val={value} />}
+            optionRenderer={(value) => <OrderLabelRenderer val={value} noTitle />}
           />
         </TaskListDropdownContainer>
 
@@ -113,12 +115,15 @@ const StatusLabelRenderer: React.FC<{ val: string; status: string | null | undef
   );
 };
 
-const OrderLabelRenderer: React.FC<{ val: string }> = ({ val }) => {
+const OrderLabelRenderer: React.FC<{ val: string; noTitle?: boolean }> = ({ val, noTitle }) => {
   const { t } = useTranslation();
+  const [str, direction] = val.split(',');
   return (
     <OrderLabelContainer>
-      <DropdownLabelTitle>{t('timeline.order-by')}</DropdownLabelTitle>
-      <ForceNoWrapText>{val}</ForceNoWrapText>
+      {!noTitle && <DropdownLabelTitle>{t('timeline.order-by')}</DropdownLabelTitle>}
+      <OrderLabelValue>
+        {t(`timeline.${str}`)} <Icon size="xs" name="arrowPointTop" rotate={direction === 'asc' ? 180 : 0} />
+      </OrderLabelValue>
     </OrderLabelContainer>
   );
 };
@@ -137,21 +142,30 @@ const FiltersSection = styled(ItemRow)`
 
 const StatusLabelContainer = styled.div`
   display: flex;
-  min-width: 134px;
+  min-width: 8.375rem;
 `;
 
 const OrderLabelContainer = styled.div`
   display: flex;
-  min-width: 280px;
+  min-width: 12.5rem;
+
+  i {
+    margin-left: 0.5rem;
+  }
+`;
+
+const OrderLabelValue = styled(ForceNoWrapText)`
+  display: flex;
+  align-items: center;
 `;
 
 const TaskListDropdownContainer = styled.div`
   border: 1px solid ${(p) => p.theme.color.border.normal};
-  border-radius: 4px;
+  border-radius: 0.25rem;
   margin: 0 0.375rem;
 
   button {
-    height: 34px;
+    height: 2.125rem;
     padding-left: 1rem;
     padding-right: 1rem;
   }
@@ -159,7 +173,7 @@ const TaskListDropdownContainer = styled.div`
 
 const DropdownLabelTitle = styled(ForceNoWrapText)`
   font-weight: bold;
-  margin-right: 5px;
+  margin-right: 0.3125rem;
 `;
 
 export default CustomSettings;

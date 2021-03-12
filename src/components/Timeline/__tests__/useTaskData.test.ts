@@ -1,5 +1,5 @@
 import { Task, Step, TaskStatus } from '../../../types';
-import { rowDataReducer } from '../useRowData';
+import { rowDataReducer } from '../useTaskData';
 
 export function createTask(partialTask: Partial<Task>): Task {
   return {

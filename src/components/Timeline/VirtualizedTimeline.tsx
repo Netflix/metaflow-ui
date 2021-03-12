@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 import TimelineRow from './TimelineRow';
 import { GraphHook, GraphState } from './useGraph';
-import { StepRowData, RowDataAction } from './useRowData';
+import { StepRowData, RowDataAction } from './useTaskData';
 import { RowCounts } from './taskdataUtils';
 import { useTranslation } from 'react-i18next';
 import TimelineFooter from './Footer';
@@ -15,8 +15,9 @@ import { TFunction } from 'i18next';
 import TaskListingHeader from '../TaskListingHeader';
 import TimelineNoRows from './TimelineNoRows';
 import { RenderedRows } from 'react-virtualized/dist/es/List';
+import { toRelativeSize } from '../../utils/style';
 
-export const ROW_HEIGHT = 28;
+export const ROW_HEIGHT = toRelativeSize(28);
 export type StepRow = { type: 'step'; data: Step; rowObject: StepRowData };
 export type TaskRow = { type: 'task'; data: Task[] };
 export type Row = StepRow | TaskRow;
@@ -281,7 +282,7 @@ const VirtualizedTimelineSubContainer = styled.div`
 
 const ListContainer = styled.div`
   flex: 1;
-  min-height: 500px;
+  min-height: 31.25rem;
 `;
 
 const FixedListContainer = styled.div<{ sticky?: boolean }>`

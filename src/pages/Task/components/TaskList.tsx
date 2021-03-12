@@ -3,14 +3,15 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { List } from 'react-virtualized';
 import { SearchResultModel } from '../../../hooks/useSearchField';
-import { RowDataAction } from '../../../components/Timeline/useRowData';
+import { RowDataAction } from '../../../components/Timeline/useTaskData';
 import TaskListRow from './TaskListRow';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
 import { HEADER_SIZE_PX } from '../../../constants';
 import { getTaskId } from '../../../utils/task';
 import { AsyncStatus } from '../../../types';
 import Spinner from '../../../components/Spinner';
-import { getStepDuration } from '../../../components/Timeline/TimelineRow';
+import { getStepDuration } from '../../../components/Timeline/TimelineRow/utils';
+import { toRelativeSize } from '../../../utils/style';
 
 //
 // Tasklist
@@ -68,7 +69,7 @@ const TaskList: React.FC<Props> = ({
           <List
             overscanRowCount={5}
             rowCount={rows.length}
-            rowHeight={28}
+            rowHeight={toRelativeSize(28)}
             rowRenderer={({ index, style }) => {
               const item = rows[index];
 
@@ -96,7 +97,7 @@ const TaskList: React.FC<Props> = ({
               );
             }}
             height={listSize}
-            width={245}
+            width={toRelativeSize(245)}
           />
         )}
 
@@ -122,8 +123,8 @@ const TaskList: React.FC<Props> = ({
 };
 
 const TaskListContainer = styled.div`
-  font-size: 12px;
-  width: 244px;
+  font-size: 0.75rem;
+  width: 15.25rem;
   flex-shrink: 0;
 `;
 

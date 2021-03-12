@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import TaskListLabel from '../../../components/Timeline/TaskListLabel';
 import { useTranslation } from 'react-i18next';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
-import { getRowStatus } from '../../../components/Timeline/TimelineRow';
+import { getRowStatus } from '../../../components/Timeline/TimelineRow/utils';
 
 type Props = {
   index: number;

@@ -1,5 +1,5 @@
 import { Step, Task, TaskStatus } from '../../types';
-import { RowDataModel } from './useRowData';
+import { RowDataModel } from './useTaskData';
 
 //
 // Counts rows
@@ -28,19 +28,18 @@ export function countTaskRowsByStatus(rows: RowDataModel): RowCounts {
       // Iterate all task rows on step
       for (const taskId of Object.keys(stepRow.data)) {
         const taskRow = stepRow.data[taskId];
-        // Map statuses of all attempts on single row and count
-        const allStatuses = taskRow.map((t) => t.status);
 
-        counts.all++;
-        if (allStatuses.indexOf('completed') > -1) {
-          counts.completed++;
-        } else if (allStatuses.indexOf('running') > -1) {
-          counts.running++;
-        }
-        // If there is more than 1 task on one row, there must be multiple attempts which means that some
-        // of them has failed
-        if (allStatuses.indexOf('failed') > -1 || taskRow.length > 1) {
-          counts.failed++;
+        if (taskRow.length > 0) {
+          const task = taskRow[taskRow.length - 1];
+
+          counts.all++;
+          if (task.status === 'completed') {
+            counts.completed++;
+          } else if (task.status === 'running') {
+            counts.running++;
+          } else if (task.status === 'failed') {
+            counts.failed++;
+          }
         }
       }
     }
@@ -113,9 +112,11 @@ export function timepointsOfTasks(tasks: Task[]): [number | null, number] {
 export function getStepStatus(stepTaskData: Record<string, Task[]>): TaskStatus {
   for (const data of Object.entries(stepTaskData)) {
     const statuses = data[1].map((item) => item.status);
-    if (statuses.indexOf('running') > -1) {
+    const statusOfLastItem = statuses[statuses.length - 1];
+    if (statusOfLastItem === 'running') {
       return 'running';
-    } else if (statuses.indexOf('failed') > -1) {
+    }
+    if (statusOfLastItem === 'failed') {
       return 'failed';
     }
   }

@@ -132,7 +132,7 @@ export const ButtonCSS = css`
   text-decoration: none;
   border-radius: 0.25rem;
   border: ${(p) => p.theme.border.thinNormal};
-  min-height: 28px;
+  min-height: 1.75rem;
   transition: background 0.15s;
 `;
 

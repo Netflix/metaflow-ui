@@ -27,10 +27,10 @@ const ScrollToTopButton = styled.div<{ show: boolean; fullWidth: number }>`
   bottom: 1rem;
   right: 1rem;
   background: ${(p) => p.theme.color.bg.blue};
-  border-radius: 20px;
+  border-radius: 1.25rem;
   overflow: hidden;
-  height: 40px;
-  width: 40px;
+  height: 2.5rem;
+  width: 2.5rem;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -50,8 +50,8 @@ const ScrollToTopButton = styled.div<{ show: boolean; fullWidth: number }>`
 
 const NewStuffIndicator = styled.div<{ show: boolean }>`
   position: absolute;
-  top: 10px;
-  left: 27px;
+  top: 0.625rem;
+  left: 1.6875rem;
   width: 4px;
   height: 4px;
   border-radius: 50%;

@@ -65,7 +65,7 @@ export const DropdownField: React.FC<
     disabled?: boolean;
     noMinWidth?: boolean;
     maxWidth?: boolean;
-    labelRenderer?: (value: string) => JSX.Element;
+    labelRenderer?: (value: string, label: string) => JSX.Element;
     optionRenderer?: (value: string, label: string) => JSX.Element;
   } & CommonFieldProps<HTMLSelectElement>
 > = ({ label, options, horizontal, noMinWidth, ...rest }) => {
@@ -177,8 +177,8 @@ export const TextInputField = React.forwardRef<
 
 const InputLoader = styled.div<{ visible: boolean }>`
   position: absolute;
-  right: 5px;
-  top: 5px;
+  right: 0.3125rem;
+  top: 0.3125rem;
 
   opacity: ${(p) => (p.visible ? '1' : '0')};
   transition: 0.15s opacity;
@@ -207,7 +207,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   input[type='text'],
   select {
     width: 100%;
-    min-width: ${(p) => (p.noMinWidth ? 'none' : '150px')};
+    min-width: ${(p) => (p.noMinWidth ? 'none' : '9.375rem')};
     border-radius: 0.25rem;
     outline: 0;
     line-height: 1.25rem;

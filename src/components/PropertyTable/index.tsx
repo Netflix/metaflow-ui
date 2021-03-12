@@ -75,7 +75,7 @@ const PropertyTableRow = styled.tr`
 
 const PropertyTableRowItemContent = styled.td<{ scheme: PropertyTableScheme }>`
   padding: 0.75rem 1rem;
-  font-size: 14px;
+  font-size: 0.875rem;
   border-right: ${(p) => p.theme.border.mediumWhite};
   background: ${(p) => (p.scheme === 'bright' ? p.theme.color.bg.white : 'transparent')};
   &:last-child {

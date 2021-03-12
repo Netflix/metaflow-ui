@@ -1,5 +1,6 @@
 import React from 'react';
-import TimelineRow, { BoxGraphicElement } from '../TimelineRow';
+import TimelineRow from '../TimelineRow';
+import LineElement from '../TimelineRow/LineElement';
 import { render } from '@testing-library/react';
 import { createGraphState, createTask, createStep } from '../../../utils/testhelper';
 import TestWrapper from '../../../utils/testing';
@@ -91,7 +92,7 @@ describe('TimelineRow component', () => {
     expect(getByTestId('timeline-row-graphic-container').children.length).toBe(1);
   });
 
-  test('<BoxGraphicElement>', () => {
+  test('<LineElement>', () => {
     const task = createTask({ ts_epoch: 100, started_at: 100, finished_at: 450, duration: 350 });
     const props = {
       graph: createGraphState({}),
@@ -105,7 +106,7 @@ describe('TimelineRow component', () => {
 
     const { getByTestId, rerender } = render(
       <TestWrapper>
-        <BoxGraphicElement {...props} />
+        <LineElement {...props} />
       </TestWrapper>,
     );
     // Values of container and boxgraphic should be weird since we are extending timeline over selected value
@@ -118,7 +119,7 @@ describe('TimelineRow component', () => {
     // rendered quite a lot to the left (translateX -100%)
     rerender(
       <TestWrapper>
-        <BoxGraphicElement {...props} graph={createGraphState({ timelineStart: 300, timelineEnd: 500 })} />
+        <LineElement {...props} graph={createGraphState({ timelineStart: 300, timelineEnd: 500 })} />
       </TestWrapper>,
     );
 
@@ -129,7 +130,7 @@ describe('TimelineRow component', () => {
     // Same as default graph but alignment is from left so every element should start from left
     rerender(
       <TestWrapper>
-        <BoxGraphicElement {...props} graph={createGraphState({ alignment: 'fromLeft' })} />
+        <LineElement {...props} graph={createGraphState({ alignment: 'fromLeft' })} />
       </TestWrapper>,
     );
 
@@ -140,7 +141,7 @@ describe('TimelineRow component', () => {
     // Try with unfinished item. No label since bar takes so wide space
     rerender(
       <TestWrapper>
-        <BoxGraphicElement {...props} graph={createGraphState({})} duration={null} />
+        <LineElement {...props} graph={createGraphState({})} duration={null} />
       </TestWrapper>,
     );
     expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(9.900990099009901%)');

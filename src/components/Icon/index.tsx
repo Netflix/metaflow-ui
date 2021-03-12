@@ -31,6 +31,7 @@ import { ReactComponent as External } from '../../assets/external.svg';
 import { ReactComponent as Copy } from '../../assets/copy.svg';
 import { ReactComponent as Download } from '../../assets/download.svg';
 import { ReactComponent as ToTopArrow } from '../../assets/to_top_arrow.svg';
+import { ReactComponent as ArrowPointTop } from '../../assets/arrow-point-up.svg';
 
 export type SupportedIcons = {
   timeline: FunctionComponent;
@@ -63,6 +64,7 @@ export type SupportedIcons = {
   copy: FunctionComponent;
   download: FunctionComponent;
   toTopArrow: FunctionComponent;
+  arrowPointTop: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -96,6 +98,7 @@ const icons: SupportedIcons = {
   copy: Copy,
   download: Download,
   toTopArrow: ToTopArrow,
+  arrowPointTop: ArrowPointTop,
 };
 
 export type IconKeys = keyof SupportedIcons;

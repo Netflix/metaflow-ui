@@ -15,8 +15,8 @@ const StatusContainer = styled.div`
 `;
 
 export const StatusColorIndicator = styled.div<{ status: string }>`
-  height: 8px;
-  width: 8px;
+  height: 0.5rem;
+  width: 0.5rem;
   border-radius: 2px;
   margin-right: 0.5rem;
   background: ${(p) => {

@@ -70,8 +70,9 @@ const en = {
     },
 
     run: {
+      'run-details': 'Run details',
       'no-run-data': 'No run data',
-      'no-tags': 'No run tags',
+      'no-tags': 'No user tags',
       'no-system-tags': 'No system tags',
       DAG: 'DAG',
       'dag-not-available': 'DAG is currently not available',
@@ -84,7 +85,7 @@ const en = {
       'run-parameters-error': 'Problem loading run parameters.',
       'show-run-details': 'Show run details',
       'hide-run-details': 'Hide run details',
-      tags: 'Tags',
+      tags: 'User tags',
       'system-tags': 'System tags',
       'select-all-tags': 'Select all tags',
       'scroll-to-bottom': 'Scroll to bottom',
@@ -124,22 +125,17 @@ const en = {
       'not-grouped': 'Not grouped',
       asc: 'Ascending',
       desc: 'Descending',
-      'startTime,asc': 'Started at ascending',
-      'startTime,desc': 'Started at descending',
-      'endTime,asc': 'Finished at ascending',
-      'endTime,desc': 'Finished at descending',
-      'duration,asc': 'Duration ascending',
-      'duration,desc': 'Duration descending',
     },
 
     task: {
+      'task-details': 'Task details',
       loading: 'Loading task data',
       'no-task-selected': 'No task selected',
       'could-not-find-task': 'Could not find the task',
       'task-info': 'Task info',
       links: 'Links',
-      'std-out': 'Std out',
-      'std-err': 'Std err',
+      'std-out': 'stdout',
+      'std-err': 'stderr',
       artifacts: 'Artifacts',
       'search-tasks': 'Search: artifact_name=value',
       'no-logs': 'No logs',
@@ -174,6 +170,7 @@ const en = {
     },
 
     connection: {
+      connected: 'Connected for real-time updates',
       'waiting-for-connection': 'Waiting for connection',
       'data-might-be-stale': 'Reconnected, but data might be stale. Click here to reconnect',
     },
@@ -184,6 +181,7 @@ const en = {
 
     error: {
       'error-details': 'Error details',
+      details: 'Details',
       'show-more-details': 'Show error details',
       'hide-more-details': 'Hide error details',
       'generic-error': 'Error happened',

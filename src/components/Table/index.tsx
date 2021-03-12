@@ -89,7 +89,7 @@ export const TR = styled.tr<{ clickable?: boolean; stale?: boolean; active?: boo
 const HeaderColumnWrapper = styled.div`
   display: flex;
   align-items: center;
-  min-height: 20px;
+  min-height: 1.25rem;
 `;
 
 interface HeaderColumnProps {
