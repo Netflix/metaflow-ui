@@ -214,7 +214,6 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
       _order: '+ts_epoch',
       _limit: '1000',
     },
-    fullyDisableCache: true,
   });
 
   // Fetch & subscribe to tasks
@@ -249,7 +248,6 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
           });
       }
     },
-    fullyDisableCache: true,
     useBatching: true,
   });
 

@@ -1,7 +1,7 @@
 import { GraphState } from '../components/Timeline/useGraph';
 import { RowDataModel, StepRowData } from '../components/Timeline/useTaskData';
 import { Row } from '../components/Timeline/VirtualizedTimeline';
-import { createCache, Resource } from '../hooks/useResource';
+import { Resource } from '../hooks/useResource';
 import { Task, Step, Run, Metadata, APIError, TaskStatus } from '../types';
 
 //
@@ -76,8 +76,7 @@ export function createResource<T>(data: T, props: Partial<Resource<T>>): Resourc
     url: '/example-route',
     data,
     error: null,
-    getResult: () => undefined,
-    cache: createCache(),
+    getResult: () => null,
     target: '',
     status: 'Ok',
     ...props,

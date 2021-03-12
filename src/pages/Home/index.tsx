@@ -62,7 +62,6 @@ const Home: React.FC = () => {
     url: `/runs`,
     initialData: [],
     pause: !initialised,
-    fullyDisableCache: true,
     // If we are showing big loader, it means we are replacing all the data in view. In that case
     // we dont want websocket messages until we get the first response.
     subscribeToEvents: !showLoader,
