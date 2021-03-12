@@ -5,7 +5,7 @@ import StatusField from '../../../components/Status';
 import { TD } from '../../../components/Table';
 import { ForceNoBreakText } from '../../../components/Text';
 import { Run } from '../../../types';
-import { getRunEndTime, getRunId, getRunStartTime, getProjectFieldValue, getUsername } from '../../../utils/run';
+import { getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '../../../utils/run';
 import ResultGroupDuration from './ResultGroupDuration';
 import { StatusColorCell } from './ResultGroupStatus';
 import ResultGroupTags from './ResultGroupTags';
@@ -33,14 +33,13 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* STATUS INDICATOR */}
         <StatusColorCell status={r.status} />
         {/* FLOW ID */}
-        {params._group !== 'flow_id' && <TDWithLink link={link}>{r.flow_id}</TDWithLink>}
+        {params._group !== 'flow_id' && <TDWithLink link={link}>{flowFieldString(r)}</TDWithLink>}
         {/* ID */}
         <TDWithLink link={link}>
           <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
         </TDWithLink>
         {/* USER NAME */}
         {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
-        <TD>{getProjectFieldValue(r)}</TD>
         {/* STARTED AT */}
         <TimeCell link={link}>{getRunStartTime(r, timezone)}</TimeCell>
         {/* FINISHED AT */}
@@ -86,6 +85,14 @@ const TDWithLink: React.FC<{ link: string }> = ({ children, link }) => {
     </LinkTD>
   );
 };
+
+function flowFieldString(run: Run) {
+  const project = getTagOfType(run.system_tags, 'project');
+  const projectBranch = getTagOfType(run.system_tags, 'project_branch');
+  const flowid = run.flow_id;
+
+  return `${project ? project + '/' : ''}${projectBranch ? projectBranch + '/' : ''}${flowid}`;
+}
 
 const LinkTD = styled(TD)`
   position: relative;
