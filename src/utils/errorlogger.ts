@@ -1,4 +1,4 @@
-import { getVersionInfo } from '../VERSION';
+import { getVersionInfo } from './VERSION';
 import { analyticsSendException } from './analytics';
 
 export function logWarning(str: string, ...arg: any[]): void {

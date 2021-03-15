@@ -6,7 +6,7 @@ import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
 import { BigButton } from '../Button';
 import TimezoneSelector from './TimezoneSelector';
-import VERSION_INFO from '../../VERSION';
+import VERSION_INFO from '../../utils/VERSION';
 
 type HelpMenuLink = {
   href: string;

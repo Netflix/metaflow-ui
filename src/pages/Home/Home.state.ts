@@ -116,7 +116,7 @@ function mergeTo(
   params: Record<string, string>,
 ): Record<string, Run[]> {
   return runs.reduce((data, item) => {
-    const groupKey = item[params._group] || 'undefined';
+    const groupKey = item[params._group as keyof Run] || 'undefined';
     if (typeof groupKey === 'string') {
       if (data[groupKey]) {
         const index = data[groupKey].findIndex((r) => r.run_number === item.run_number);
@@ -156,7 +156,7 @@ type DataAndNew = {
  */
 function mergeWithSeparatePool(runs: Run[], initialData: DataAndNew, params: Record<string, string>): DataAndNew {
   return runs.reduce((data, item): DataAndNew => {
-    const groupKey = item[params._group] || 'undefined';
+    const groupKey = item[params._group as keyof Run] || 'undefined';
     if (typeof groupKey === 'string') {
       // If we already have same group, we need to check if we can add current item there
       if (data.rungroups[groupKey]) {
