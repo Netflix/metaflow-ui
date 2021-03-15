@@ -3,7 +3,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { APIError } from '../../types';
-import { getVersionInfo } from '../../VERSION';
+import { getVersionInfo } from '../../utils/VERSION';
 import Collapsable from '../Collapsable';
 import Icon, { IconKeys } from '../Icon';
 import TitledRow from '../TitledRow';

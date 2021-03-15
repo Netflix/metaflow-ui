@@ -9,7 +9,7 @@ import { Text } from '../../../components/Text';
 import { RemovableTag } from '../../../components/Tag';
 import FilterInput from '../../../components/FilterInput';
 
-import FEATURE from '../../../FEATURE';
+import FEATURE from '../../../utils/FEATURE';
 import { isDefaultParams, paramList } from '../Home.utils';
 
 type Props = {
