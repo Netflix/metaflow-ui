@@ -3,7 +3,7 @@ import Breadcrumb, { findAdditionalButtons, notEmptyAndEqual, pathFromString } f
 import { render, fireEvent } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
 
-const matchWithParams = (params: any) => ({
+const matchWithParams = (params: Record<string, string>) => ({
   isExact: true,
   path: '/',
   url: '/',
