@@ -240,8 +240,10 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
 
         fetch(urlWithPostProcessing)
           .then((response) => response.json())
-          .then((data: DataModel<Task[]>) => {
-            dispatch({ type: 'fillTasks', data: data.data });
+          .then((response: DataModel<Task[]>) => {
+            if (response?.status === 200) {
+              dispatch({ type: 'fillTasks', data: response.data });
+            }
           })
           .catch((e) => {
             console.log(e);
