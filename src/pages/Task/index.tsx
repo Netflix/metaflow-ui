@@ -113,7 +113,6 @@ const Task: React.FC<TaskViewProps> = ({
     },
     subscribeToEvents: true,
     initialData: [],
-    fullyDisableCache: true,
     useBatching: true,
     pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
@@ -129,7 +128,6 @@ const Task: React.FC<TaskViewProps> = ({
     },
     subscribeToEvents: true,
     initialData: [],
-    fullyDisableCache: true,
     useBatching: true,
     pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
