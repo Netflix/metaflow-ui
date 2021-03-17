@@ -33,7 +33,7 @@ const RunContainer: React.FC = () => {
     subscribeToEvents: true,
     initialData: null,
   });
-  console.log(status, error);
+
   return (
     <div>
       {status === 'Loading' && !run?.run_number && (
