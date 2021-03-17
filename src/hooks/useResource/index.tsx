@@ -203,6 +203,7 @@ export default function useResource<T, U>({
 
   function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, requestid: number) {
     setLogItem(`GET SENT ${targetUrl}`);
+
     fetch(targetUrl, { signal })
       .then((response) => {
         if (response.status === 200) {
@@ -268,6 +269,10 @@ export default function useResource<T, U>({
 
       if (error !== null) {
         setError(null);
+      }
+
+      if (!onUpdate) {
+        setData(initialData);
       }
 
       fetchData(
