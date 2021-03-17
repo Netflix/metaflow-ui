@@ -84,8 +84,8 @@ const TDWithLink: React.FC<{ link: string }> = ({ children, link }) => {
 };
 
 function projectString(run: Run) {
-  const project = getTagOfType(run.tags || [], 'project');
-  const projectBranch = getTagOfType(run.tags || [], 'project_branch');
+  const project = getTagOfType(run.system_tags || [], 'project');
+  const projectBranch = getTagOfType(run.system_tags || [], 'project_branch');
 
   return project ? (
     <ProjectText>
