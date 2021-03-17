@@ -13,7 +13,7 @@ import { APIErrorRenderer } from '../../../components/GenericError';
 
 import { TimezoneContext } from '../../../components/TimezoneProvider';
 import { getTaskId } from '../../../utils/task';
-import FEATURE_FLAGS from '../../../FEATURE';
+import FEATURE_FLAGS from '../../../utils/FEATURE';
 import TitledRow from '../../../components/TitledRow';
 import Collapsable from '../../../components/Collapsable';
 

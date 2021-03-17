@@ -1,8 +1,3 @@
-/*
- * Draft of types from API. We must investigate if models can have some random stuff and figure out
- * how to type those things
- */
-
 export interface MetaDataBaseObject {
   flow_id: string;
   user_name: string;
@@ -20,7 +15,6 @@ export type RunStatus = {
 };
 
 export interface Run extends MetaDataBaseObject {
-  [index: string]: keyof MetaDataBaseObject | keyof RunStatus | string | number | string[] | undefined | null;
   run_number: number;
   run?: string;
   status: keyof RunStatus;

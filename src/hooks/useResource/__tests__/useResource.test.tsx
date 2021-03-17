@@ -1,5 +1,5 @@
 import React from 'react';
-import useResource from '..';
+import useResource, { HookConfig } from '..';
 import { render, waitFor } from '@testing-library/react';
 import WS from 'jest-websocket-mock';
 
@@ -23,7 +23,7 @@ const BasicResponse = {
   query: { _order: '+ts_epoch', _limit: '1000' },
 };
 
-const ResourceListComponent = (useResourceSettings: any) => {
+const ResourceListComponent = (useResourceSettings: Partial<HookConfig<BasicReponseData[], BasicReponseData>>) => {
   const { data } = useResource<BasicReponseData[], BasicReponseData>({
     url: 'string',
     initialData: [],
@@ -37,7 +37,7 @@ const ResourceListComponent = (useResourceSettings: any) => {
   );
 };
 
-const ResourceObjectComponent = (useResourceSettings: any) => {
+const ResourceObjectComponent = (useResourceSettings: Partial<HookConfig<BasicReponseData, BasicReponseData>>) => {
   const { data } = useResource<BasicReponseData, BasicReponseData>({
     url: 'string',
     initialData: null,
@@ -120,7 +120,7 @@ describe('useResource hook', () => {
     const { getByTestId } = render(
       <ResourceListComponent uuid="resourceHookTest" subscribeToEvents={true} onUpdate={mockfn} />,
     );
-    await waitFor(() => expect(getByTestId('container').textContent).toBe('123'));
+    await waitFor(() => expect(getByTestId('container').textContent).toBe(''));
     await server.connected;
 
     server.send({
@@ -130,7 +130,7 @@ describe('useResource hook', () => {
       data: { id: '4', label: '4' },
     });
     // Websocket update should not appear on view...
-    await waitFor(() => expect(getByTestId('container').textContent).toBe('123'));
+    await waitFor(() => expect(getByTestId('container').textContent).toBe(''));
     // ...but onUpdate should have been called with the data
     expect(mockfn).toHaveBeenLastCalledWith([{ id: '4', label: '4' }]);
 
@@ -141,7 +141,7 @@ describe('useResource hook', () => {
       data: { id: '3', label: '500' },
     });
     // Websocket update should not appear on view...
-    await waitFor(() => expect(getByTestId('container').textContent).toBe('123'));
+    await waitFor(() => expect(getByTestId('container').textContent).toBe(''));
     // ...but onUpdate should have been called with the data
     expect(mockfn).toHaveBeenLastCalledWith([{ id: '3', label: '500' }]);
   });
@@ -156,7 +156,14 @@ describe('useResource hook', () => {
     const { getByTestId } = render(
       <ResourceListComponent uuid="resourceHookTest" subscribeToEvents={true} onUpdate={mockfn} useBatching={true} />,
     );
-    await waitFor(() => expect(getByTestId('container').textContent).toBe('123'));
+    await waitFor(() => expect(getByTestId('container').textContent).toBe(''));
+    await waitFor(() =>
+      expect(mockfn).toHaveBeenLastCalledWith([
+        { id: '1', label: '1' },
+        { id: '2', label: '2' },
+        { id: '3', label: '3' },
+      ], BasicResponse),
+    );
     await server.connected;
     // Send few messages in row
     server.send({
@@ -172,7 +179,7 @@ describe('useResource hook', () => {
       data: { id: '5', label: '5' },
     });
     // Websocket update should not appear on view...
-    await waitFor(() => expect(getByTestId('container').textContent).toBe('123'));
+    await waitFor(() => expect(getByTestId('container').textContent).toBe(''));
     jest.advanceTimersByTime(1000);
     // ...but onUpdate should have been called with the all data
     await waitFor(() =>

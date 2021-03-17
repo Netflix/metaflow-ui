@@ -17,7 +17,7 @@ import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row'
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { logWarning } from '../../utils/errorlogger';
 
-import FEATURE from '../../FEATURE';
+import FEATURE from '../../utils/FEATURE';
 import { RunPageParams } from '.';
 import {
   cleanParametersMap,

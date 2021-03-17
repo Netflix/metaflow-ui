@@ -1,4 +1,4 @@
-import { GraphSortBy, GraphState } from '../../components/Timeline/useGraph';
+import { GraphParametersMap, GraphSortBy, GraphState } from '../../components/Timeline/useGraph';
 import { RowDataModel } from '../../components/Timeline/useTaskData';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import { SearchResultModel } from '../../hooks/useSearchField';
@@ -6,8 +6,10 @@ import { Task } from '../../types';
 import { getPath } from '../../utils/routing';
 import { getTaskId } from '../../utils/task';
 
-export function cleanParametersMap(params: any): Record<string, string> {
-  return Object.keys(params).reduce((obj, key) => {
+export function cleanParametersMap(params: GraphParametersMap): Record<string, string> {
+  const keys = Object.keys(params) as (keyof GraphParametersMap)[];
+
+  return keys.reduce((obj, key) => {
     if (params[key]) {
       return { ...obj, [key]: params[key] };
     }

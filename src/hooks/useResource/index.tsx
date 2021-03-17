@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useReducer } from 'react';
+import { useState, useEffect, useReducer } from 'react';
 import { apiHttp } from '../../constants';
 import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
@@ -7,6 +7,9 @@ import { APIError, AsyncStatus } from '../../types';
 import { setLogItem } from '../../utils/debugdb';
 import { logWarning } from '../../utils/errorlogger';
 
+//
+// Typedef
+//
 export interface HookConfig<T, U> {
   // URL for fetch request
   url: string;
@@ -25,14 +28,15 @@ export interface HookConfig<T, U> {
   onUpdate?: (item: T, response?: DataModel<T>) => void;
   // Separate update function for websocket messages.
   onWSUpdate?: (item: U, eventType: EventType) => void;
+  // By default we use same parameters for GET and websocket. With this function you can edit websocket params
   socketParamFilter?: (params: Record<string, string>) => Record<string, string>;
-  // ?
-  privateCache?: boolean;
-  // ?
+  // Function to trigger after every HTTP GET
   postRequest?: (success: boolean, target: string) => void;
+  // Is fetching funcs paused?
   pause?: boolean;
-  fullyDisableCache?: boolean;
+  // Return websocket updates in batches instead of real time (1sec interval).
   useBatching?: boolean;
+  // Unique identifier for websocket messaging
   uuid?: string;
 }
 
@@ -62,61 +66,14 @@ export interface Resource<T> {
   url: string;
   data: T | null;
   error: APIError | null;
-  getResult: () => DataModel<T> | undefined;
-  cache: CacheInterface;
+  getResult: () => DataModel<T> | null;
   target: string;
   status: AsyncStatus;
 }
 
-interface CacheItem<T> {
-  stale?: boolean;
-  result: DataModel<T>;
-  data: T | null;
-}
-
-interface CacheInterface {
-  subscribe: (k: string, f: () => void) => () => void;
-  update: <T>(k: string, f: (prev: CacheItem<T>) => CacheItem<T>, silent: boolean) => void;
-  get: <T>(k: string) => CacheItem<T>;
-  set: <T>(k: string, v: CacheItem<T>) => void;
-  setInBackground: <T>(k: string, v: CacheItem<T>) => void;
-  keys: () => string[];
-}
-
-let uid = 1;
-const createCacheId = () => uid++;
-
-export function createCache(): CacheInterface {
-  const cache: Record<string, CacheItem<any>> = {};
-  const subscribers: Record<string, Record<number, () => void>> = {};
-
-  const update: CacheInterface['update'] = (key, fn, silent) => {
-    cache[key] = fn(cache[key]);
-    !silent && Object.values(subscribers[key]).forEach((f) => f());
-  };
-
-  const subscribe: CacheInterface['subscribe'] = (key, fn) => {
-    if (!subscribers[key]) subscribers[key] = {};
-    const id = createCacheId();
-    subscribers[key][id] = fn;
-    return () => delete subscribers[key][id];
-  };
-
-  const get: CacheInterface['get'] = (key) => cache[key];
-  const set: CacheInterface['set'] = (key, value) => update(key, () => value, false);
-  const setInBackground: CacheInterface['set'] = (key, value) => update(key, () => value, true);
-
-  const keys: CacheInterface['keys'] = () => Object.keys(cache);
-
-  return {
-    subscribe,
-    update,
-    get,
-    set,
-    setInBackground,
-    keys,
-  };
-}
+//
+// Default errors
+//
 
 const defaultError = {
   id: 'generic-error',
@@ -134,14 +91,15 @@ const notFoundError = {
   type: 'error',
 };
 
-// default cache
-const singletonCache = createCache();
 //
-// Imperative store for some data. We want to use imperative functions like push when handling real time data
-// in some cases for maximum performance. Using state inside the hooks seemed to be very non optimal performance wise.
+// Imperative store for data if useBatching is on. Meaning that arriving websocket data is stored in this object while waiting to be batched to
+// view. We use this to prevent dozens of renders per second for more intensive runs.
 //
 const updateBatcher: Record<string, any> = {};
 
+//
+// Status handling
+//
 type StatusState = {
   id: number;
   status: AsyncStatus;
@@ -164,7 +122,10 @@ const StatusReducer = (state: StatusState, action: StatusAction): StatusState =>
   }
 };
 
-// TODO: cache map, cache subscriptions, ws connections, cache mutations
+//
+// Hook
+//
+
 export default function useResource<T, U>({
   url,
   initialData = null,
@@ -176,16 +137,14 @@ export default function useResource<T, U>({
   fetchAllData = false,
   onUpdate,
   onWSUpdate,
-  privateCache = false,
   pause = false,
-  fullyDisableCache = false,
   useBatching = false,
   postRequest,
   uuid,
 }: HookConfig<T, U>): Resource<T> {
-  const cache = useRef(privateCache ? createCache() : singletonCache).current;
   const [error, setError] = useState<APIError | null>(null);
-  const initData = cache.get<T>(url)?.data || initialData;
+  const initData = initialData;
+  const [result, setResult] = useState<DataModel<T> | null>(null);
   const [data, setData] = useState<T | null>(initData);
   const [status, statusDispatch] = useReducer(StatusReducer, { id: 0, status: 'NotAsked' });
   const q = new URLSearchParams(queryParams).toString();
@@ -198,33 +157,15 @@ export default function useResource<T, U>({
     }
   }, 1000);
 
-  useEffect(() => {
-    const unsubCache = cache.subscribe(target, () => {
-      const data = cache.get<T>(target).data;
-      if (data) {
-        setData(data);
-      }
-    });
-
-    return () => {
-      unsubCache();
-    };
-  }, [target, cache]);
-
   useWebsocket<U>({
     url: url,
     queryParams: socketParamFilter ? socketParamFilter(queryParams || {}) : websocketParams || queryParams,
     enabled: subscribeToEvents && !pause,
     onUpdate: (event: Event<any>) => {
       if (pause) return;
-      // TODO: Create cache item if it doesn't exist (How though? We have only partial data available.)
-      const currentCache = cache.get(target);
-      // If we have onUpdate function, lets update cache wihtout triggering update loop...
-      const cacheSet = onUpdate ? cache.setInBackground : cache.set;
-
-      // ..and update new data to component manually. This way we only send updated value to component instead of whole batch
-      // Optionally we can also batch some amount of messages before sending them to component
+      // If onUpdate or onWSUpdate is given, dont update stateful data object.
       if (onUpdate || onWSUpdate) {
+        // On batching add item to batch object to be sent to view later
         if (useBatching) {
           if (!updateBatcher[target]) {
             updateBatcher[target] = [];
@@ -237,23 +178,16 @@ export default function useResource<T, U>({
             onUpdate(Array.isArray(initialData) ? [event.data] : event.data);
           }
         }
-      }
-      // We can skip cache step if we have disabled it
-      if (!fullyDisableCache) {
-        const safeCache = currentCache || { data: initialData };
+      } else {
         if (event.type === EventType.INSERT) {
-          cacheSet(target, {
-            ...safeCache,
-            data: Array.isArray(safeCache.data) ? [event.data].concat(safeCache.data) : (safeCache.data = event.data),
-          });
+          setData((d) => (Array.isArray(d) ? [event.data].concat(d) : d) as T);
         } else if (event.type === EventType.UPDATE) {
-          // On update we need to use updatePredicate to update items in cache.
-          cacheSet(target, {
-            ...safeCache,
-            data: Array.isArray(safeCache.data)
-              ? safeCache.data.map((item) => (updatePredicate(item, event.data) ? event.data : item))
-              : (safeCache.data = event.data),
-          });
+          setData(
+            (d) =>
+              (Array.isArray(d)
+                ? d.map((item) => (updatePredicate(item, event.data) ? event.data : item))
+                : event.data) as T,
+          );
         }
       }
     },
@@ -267,13 +201,7 @@ export default function useResource<T, U>({
     logWarning(`HTTP error id: ${err.id}, url: ${targetUrl}`);
   }
 
-  function fetchData(
-    targetUrl: string,
-    signal: AbortSignal,
-    cb: (isSuccess: boolean) => void,
-    requestid: number,
-    isSilent?: boolean,
-  ) {
+  function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, requestid: number) {
     setLogItem(`GET SENT ${targetUrl}`);
     fetch(targetUrl, { signal })
       .then((response) => {
@@ -282,25 +210,21 @@ export default function useResource<T, U>({
             .json()
             .then((result: DataModel<T>) => {
               setLogItem(`GET ${response.status} ${targetUrl} ${JSON.stringify(result)}`);
-              const cacheItem = {
-                result,
-                data: result.data,
-              };
-              // If silent mode, we dont want cache to trigger update cycle, but we use onUpdate function.
-              if (!fullyDisableCache) {
-                const cacheSet = isSilent ? cache.setInBackground : cache.set;
-                cacheSet(targetUrl, cacheItem);
+              // If onUpdate, dont store data in stateful data object
+              if (onUpdate) {
+                onUpdate(result.data as T, result);
+              } else {
+                setData(result.data);
+                setResult(result);
               }
 
-              if (onUpdate) {
-                onUpdate(cacheItem.data as T, result);
-                postRequest && postRequest(true, targetUrl);
-              }
+              // Trigger postRequest after every request if given.
+              postRequest && postRequest(true, targetUrl);
 
               // If we want all data and we are have next page available we fetch it.
               // Else this fetch is done and we call the callback
-              if (fetchAllData && cacheItem.result.links.next !== null && cacheItem.result.links.next !== targetUrl) {
-                fetchData(cacheItem.result.links.next || targetUrl, signal, cb, requestid, true);
+              if (fetchAllData && result.links.next !== null && result.links.next !== targetUrl) {
+                fetchData(result.links.next || targetUrl, signal, cb, requestid);
               } else {
                 cb(true);
               }
@@ -342,10 +266,6 @@ export default function useResource<T, U>({
       const requestid = Date.now();
       statusDispatch({ type: 'set', id: requestid, status: 'Loading' });
 
-      if (!fullyDisableCache) {
-        setData(cache.get<T>(url)?.data || initialData);
-      }
-
       if (error !== null) {
         setError(null);
       }
@@ -372,5 +292,5 @@ export default function useResource<T, U>({
     };
   }, [target, pause]); // eslint-disable-line
 
-  return { url, target, data, error, getResult: () => cache.get<T>(target)?.result, cache, status: status.status };
+  return { url, target, data, error, getResult: () => result, status: status.status };
 }

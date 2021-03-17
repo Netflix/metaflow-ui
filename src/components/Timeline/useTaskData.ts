@@ -214,7 +214,6 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
       _order: '+ts_epoch',
       _limit: '1000',
     },
-    fullyDisableCache: true,
   });
 
   // Fetch & subscribe to tasks
@@ -241,15 +240,16 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
 
         fetch(urlWithPostProcessing)
           .then((response) => response.json())
-          .then((data: DataModel<Task[]>) => {
-            dispatch({ type: 'fillTasks', data: data.data });
+          .then((response: DataModel<Task[]>) => {
+            if (response?.status === 200) {
+              dispatch({ type: 'fillTasks', data: response.data });
+            }
           })
           .catch((e) => {
             console.log(e);
           });
       }
     },
-    fullyDisableCache: true,
     useBatching: true,
   });
 

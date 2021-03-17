@@ -60,7 +60,7 @@ export function makeWebsocketParameters(
       const lastItem = data[data.length - 1];
       const [dir, key] = parseOrderParam(_order);
       const firstOrderKey = key.split(',')[0];
-      const value = lastItem[firstOrderKey];
+      const value = lastItem[firstOrderKey as keyof Run];
       if (value) {
         newparams = {
           ...newparams,
@@ -128,8 +128,8 @@ const shouldUseTiebreaker = (
 
 // Generic string sorting
 export const strSort = (dir: DirectionText, key: string) => (a: Run, b: Run): number => {
-  const val1 = dir === 'up' ? a[key] : b[key];
-  const val2 = dir === 'up' ? b[key] : a[key];
+  const val1 = dir === 'up' ? a[key as keyof Run] : b[key as keyof Run];
+  const val2 = dir === 'up' ? b[key as keyof Run] : a[key as keyof Run];
 
   // Only use ts_epoch tiebreaker with flow_id or user
   if (shouldUseTiebreaker(val1, val2, key)) {
@@ -149,8 +149,8 @@ export const strSort = (dir: DirectionText, key: string) => (a: Run, b: Run): nu
 
 // Generic number sorting
 export const nmbSort = (dir: DirectionText, key: string) => (a: Run, b: Run): number => {
-  const val1 = dir === 'up' ? a[key] : b[key];
-  const val2 = dir === 'up' ? b[key] : a[key];
+  const val1 = dir === 'up' ? a[key as keyof Run] : b[key as keyof Run];
+  const val2 = dir === 'up' ? b[key as keyof Run] : a[key as keyof Run];
 
   // Only use ts_epoch tiebreaker with flow_id or user
   if (shouldUseTiebreaker(val1, val2, key)) {

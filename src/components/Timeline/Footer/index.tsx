@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { Row, StepRow } from '../VirtualizedTimeline';
 import { getLongestRowDuration, getTaskLineStatus, startAndEndpointsOfRows } from '../../../utils/row';
 import { TaskStatus } from '../../../types';
-import FEATURE_FLAGS from '../../../FEATURE';
+import FEATURE_FLAGS from '../../../utils/FEATURE';
 import MinimapRow from './MinimapRow';
 import MinimapActiveSection from './MinimapActiveSection';
 

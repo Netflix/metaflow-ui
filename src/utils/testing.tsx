@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import { MemoryRouter } from 'react-router-dom';
-import '../i18n';
+import './i18n';
 import theme from '../theme';
 
 export const mockfetch = jest.fn(() =>

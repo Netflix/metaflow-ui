@@ -1,9 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import StatusField from '../../../components/Status';
 import { TD } from '../../../components/Table';
-import { ForceNoBreakText } from '../../../components/Text';
 import { Run } from '../../../types';
 import { getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '../../../utils/run';
 import ResultGroupDuration from './ResultGroupDuration';
@@ -31,7 +29,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
     return (
       <>
         {/* STATUS INDICATOR */}
-        <StatusColorCell status={r.status} />
+        <StatusColorCell status={r.status} title={r.status} />
         {/* FLOW ID */}
         {params._group !== 'flow_id' && (
           <TDWithLink link={link}>
@@ -53,12 +51,6 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         <TimeCell link={link}>
           <ResultGroupDuration run={r} />
         </TimeCell>
-        {/* STATUS */}
-        <TDWithLink link={link}>
-          <ForceNoBreakText>
-            <StatusField status={r.status} />
-          </ForceNoBreakText>
-        </TDWithLink>
         {/* USER TAGS */}
         {(r.tags || []).length > 0 ? (
           <ResultGroupTags tags={r.tags || []} updateListValue={updateListValue} />

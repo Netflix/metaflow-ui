@@ -290,13 +290,15 @@ export function validatedParameter<X extends PossibleParameterValue>(
   return null;
 }
 
-type QueryParameters = {
+export type GraphQueryParameters = {
   group: QueryParamConfig<string | null | undefined, string>;
   order: QueryParamConfig<string | null | undefined, string | null | undefined>;
   direction: QueryParamConfig<string | null | undefined, string | null | undefined>;
   steps: QueryParamConfig<string | null | undefined, string | null | undefined>;
   status: QueryParamConfig<string | null | undefined, string | null | undefined>;
 };
+
+export type GraphParametersMap = DecodedValueMap<GraphQueryParameters>;
 
 //
 // Hook to contain timelines graphical presentation data. We would not have to use hook here but
@@ -305,8 +307,8 @@ type QueryParameters = {
 export type GraphHook = {
   graph: GraphState;
   dispatch: React.Dispatch<GraphAction>;
-  setQueryParam: SetQuery<QueryParameters>;
-  params: DecodedValueMap<QueryParameters>;
+  setQueryParam: SetQuery<GraphQueryParameters>;
+  params: GraphParametersMap;
   setMode: (mode: GraphMode) => void;
 };
 

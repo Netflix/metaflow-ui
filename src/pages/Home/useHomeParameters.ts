@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { SetQuery, StringParam, useQueryParams, withDefault } from 'use-query-params';
+import { DecodedValueMap, SetQuery, StringParam, useQueryParams, withDefault } from 'use-query-params';
 
 export const defaultHomeParameters = {
   _order: '-ts_epoch',
@@ -18,6 +18,8 @@ const ParameterSettings = {
   flow_id: StringParam,
   user: StringParam,
 };
+
+type ParametersMap = DecodedValueMap<typeof ParameterSettings>;
 
 function useHomeParameters(
   onUpdate: (params: Record<string, string>) => void,
@@ -41,16 +43,24 @@ function useHomeParameters(
 //
 // Make sure that params object is type of Record<string, string>
 //
-function cleanParams(qp: any): Record<string, string> {
-  return Object.keys(qp).reduce((obj, key) => {
+function cleanParams(qp: ParametersMap): Record<string, string> {
+  if (typeof qp !== 'object' || !qp) return {};
+
+  const fn = (obj: Record<string, string>, key: keyof ParametersMap): Record<string, string> => {
     // Unfortunately withDefault of use-query-params does not default in case of empty string so we need to
     // assing default value for status here by hand
+
     const value = key === 'status' && qp[key] === '' ? defaultHomeParameters.status : qp[key];
+
     if (value) {
-      return { ...obj, [key]: value };
+      return { ...obj, [key as string]: value } as Record<string, string>;
     }
     return obj;
-  }, {});
+  };
+
+  const keys = Object.keys(qp) as (keyof ParametersMap)[];
+
+  return keys.reduce(fn, {});
 }
 
 export default useHomeParameters;
