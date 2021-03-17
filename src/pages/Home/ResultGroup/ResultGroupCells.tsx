@@ -33,7 +33,12 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* STATUS INDICATOR */}
         <StatusColorCell status={r.status} />
         {/* FLOW ID */}
-        {params._group !== 'flow_id' && <TDWithLink link={link}>{flowFieldString(r)}</TDWithLink>}
+        {params._group !== 'flow_id' && (
+          <TDWithLink link={link}>
+            {projectString(r)}
+            <div>{r.flow_id}</div>
+          </TDWithLink>
+        )}
         {/* ID */}
         <TDWithLink link={link}>
           <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
@@ -86,12 +91,16 @@ const TDWithLink: React.FC<{ link: string }> = ({ children, link }) => {
   );
 };
 
-function flowFieldString(run: Run) {
-  const project = getTagOfType(run.system_tags, 'project');
-  const projectBranch = getTagOfType(run.system_tags, 'project_branch');
-  const flowid = run.flow_id;
+function projectString(run: Run) {
+  const project = getTagOfType(run.tags || [], 'project');
+  const projectBranch = getTagOfType(run.tags || [], 'project_branch');
 
-  return `${project ? project + '/' : ''}${projectBranch ? projectBranch + '/' : ''}${flowid}`;
+  return project ? (
+    <ProjectText>
+      {project ? project + '/' : ''}
+      {projectBranch ? projectBranch : ''}
+    </ProjectText>
+  ) : null;
 }
 
 const LinkTD = styled(TD)`
@@ -114,6 +123,10 @@ const IDFieldContainer = styled.div`
   min-height: 24px;
   display: flex;
   align-items: center;
+`;
+
+const ProjectText = styled.div`
+  font-size: 0.625rem;
 `;
 
 export default ResultGroupCells;
