@@ -36,15 +36,15 @@ const RunContainer: React.FC = () => {
 
   return (
     <div>
-      {status === 'Loading' && !run?.run_number && (
+      {status === 'Loading' && (
         <div style={{ textAlign: 'center', margin: '2rem 0' }}>
           <Spinner md />
         </div>
       )}
 
-      {status === 'Error' && !run?.run_number && <APIErrorRenderer error={error} message={t('timeline.no-run-data')} />}
+      {status === 'Error' && <APIErrorRenderer error={error} message={t('timeline.no-run-data')} />}
 
-      {run?.run_number && <RunPage run={run} params={params} />}
+      {status === 'Ok' && run?.run_number && <RunPage run={run} params={params} />}
     </div>
   );
 };
