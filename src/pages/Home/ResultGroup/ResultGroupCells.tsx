@@ -33,10 +33,11 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* FLOW ID */}
         {params._group !== 'flow_id' && (
           <TDWithLink link={link}>
-            {projectString(r)}
+            <ProjectText>{projectString(r)}</ProjectText>
             <div>{r.flow_id}</div>
           </TDWithLink>
         )}
+        {params._group === 'flow_id' && <TDWithLink link={link}>{projectString(r)}</TDWithLink>}
         {/* ID */}
         <TDWithLink link={link}>
           <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
@@ -87,12 +88,7 @@ function projectString(run: Run) {
   const project = getTagOfType(run.system_tags || [], 'project');
   const projectBranch = getTagOfType(run.system_tags || [], 'project_branch');
 
-  return project ? (
-    <ProjectText>
-      {project ? project + '/' : ''}
-      {projectBranch ? projectBranch : ''}
-    </ProjectText>
-  ) : null;
+  return project ? `${project}${project && projectBranch && '/'}${projectBranch}` : null;
 }
 
 const LinkTD = styled(TD)`
