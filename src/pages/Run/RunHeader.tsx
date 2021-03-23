@@ -10,14 +10,7 @@ import PropertyTable from '../../components/PropertyTable';
 import { Link, useHistory } from 'react-router-dom';
 import { APIErrorRenderer } from '../../components/GenericError';
 
-import {
-  getRunDuration,
-  getRunEndTime,
-  getRunId,
-  getRunStartTime,
-  getRunSystemTag,
-  getUsername,
-} from '../../utils/run';
+import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '../../utils/run';
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import TagRow from './components/TagRow';
 import TitledRow from '../../components/TitledRow';
@@ -61,13 +54,13 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
     },
     {
       label: t('fields.project'),
-      accessor: (item: Run) => getRunSystemTag(item, 'project'),
-      hidden: !getRunSystemTag(run, 'project'),
+      accessor: (item: Run) => <ProjectField run={item} />,
+      hidden: !getTagOfType(run.system_tags, 'project'),
     },
     {
       label: t('fields.language'),
-      accessor: (item: Run) => getRunSystemTag(item, 'language'),
-      hidden: !getRunSystemTag(run, 'language'),
+      accessor: (item: Run) => getTagOfType(item.system_tags, 'language'),
+      hidden: !getTagOfType(run.system_tags, 'language'),
     },
     { label: t('fields.started-at'), accessor: (r: Run) => getRunStartTime(r, timezone) },
     { label: t('fields.finished-at'), accessor: (r: Run) => getRunEndTime(r, timezone) },
@@ -113,6 +106,21 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
         </>
       </Collapsable>
     </RunHeaderContainer>
+  );
+};
+
+const ProjectField: React.FC<{ run: Run }> = ({ run }) => {
+  const project = getTagOfType(run.system_tags, 'project');
+  const projectBranch = getTagOfType(run.system_tags, 'project_branch');
+
+  if (!project) return null;
+
+  return (
+    <div>
+      <StyledLink to={`/?tags=project:${project}`}>{project}</StyledLink>
+      {projectBranch && ' / '}
+      {projectBranch && <StyledLink to={`/?tags=project_branch:${projectBranch}`}>{projectBranch}</StyledLink>}
+    </div>
   );
 };
 

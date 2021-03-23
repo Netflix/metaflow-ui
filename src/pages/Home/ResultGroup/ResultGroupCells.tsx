@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { TD } from '../../../components/Table';
 import { Run } from '../../../types';
-import { getRunEndTime, getRunId, getRunStartTime, getUsername } from '../../../utils/run';
+import { getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '../../../utils/run';
 import ResultGroupDuration from './ResultGroupDuration';
 import { StatusColorCell } from './ResultGroupStatus';
 import ResultGroupTags from './ResultGroupTags';
@@ -31,7 +31,13 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* STATUS INDICATOR */}
         <StatusColorCell status={r.status} title={r.status} />
         {/* FLOW ID */}
-        {params._group !== 'flow_id' && <TDWithLink link={link}>{r.flow_id}</TDWithLink>}
+        {params._group !== 'flow_id' && (
+          <TDWithLink link={link}>
+            <ProjectText>{projectString(r)}</ProjectText>
+            <div>{r.flow_id}</div>
+          </TDWithLink>
+        )}
+        {params._group === 'flow_id' && <TDWithLink link={link}>{projectString(r)}</TDWithLink>}
         {/* ID */}
         <TDWithLink link={link}>
           <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
@@ -78,6 +84,13 @@ const TDWithLink: React.FC<{ link: string }> = ({ children, link }) => {
   );
 };
 
+function projectString(run: Run) {
+  const project = getTagOfType(run.system_tags || [], 'project');
+  const projectBranch = getTagOfType(run.system_tags || [], 'project_branch');
+
+  return project ? `${project}${project && projectBranch ? '/' : ''}${projectBranch || ''}` : '';
+}
+
 const LinkTD = styled(TD)`
   position: relative;
 `;
@@ -98,6 +111,10 @@ const IDFieldContainer = styled.div`
   min-height: 24px;
   display: flex;
   align-items: center;
+`;
+
+const ProjectText = styled.div`
+  font-size: 0.625rem;
 `;
 
 export default ResultGroupCells;

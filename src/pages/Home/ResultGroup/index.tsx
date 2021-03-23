@@ -59,12 +59,31 @@ const ResultGroup: React.FC<Props> = React.memo(
     const { timezone } = useContext(TimezoneContext);
 
     const cols: TableColDefinition[] = [
-      { label: t('fields.flow_id'), key: 'flow_id', sortable: true, hidden: queryParams._group === 'flow_id' },
-      { label: t('fields.id'), key: 'run' },
-      { label: t('fields.user'), sortable: true, key: 'user', hidden: queryParams._group === 'user' },
+      {
+        label: t('fields.flow_id'),
+        key: 'flow_id',
+        sortable: true,
+        hidden: queryParams._group === 'flow_id',
+        maxWidth: '20%',
+      },
+      {
+        label: t('fields.project'),
+        key: 'project',
+        sortable: true,
+        hidden: queryParams._group !== 'flow_id',
+        maxWidth: '12.5%',
+      },
+      { label: t('fields.id'), key: 'run', maxWidth: '15%' },
+      {
+        label: t('fields.user'),
+        sortable: true,
+        key: 'user',
+        hidden: queryParams._group === 'user',
+        maxWidth: '12.5%',
+      },
       { label: t('fields.started-at'), sortable: true, key: 'ts_epoch', maxWidth: '170' },
       { label: t('fields.finished-at'), sortable: true, key: 'finished_at', maxWidth: '170' },
-      { label: t('fields.duration'), key: 'duration', maxWidth: '100' },
+      { label: t('fields.duration'), key: 'duration', maxWidth: '130' },
       { label: t('fields.user-tags'), key: 'tags' },
     ].filter((item) => !item.hidden);
 

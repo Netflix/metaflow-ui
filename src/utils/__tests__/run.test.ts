@@ -1,4 +1,4 @@
-import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getRunSystemTag, getUsername } from '../run';
+import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '../run';
 import { createRun } from '../testhelper';
 
 test('getRunId', () => {
@@ -30,11 +30,11 @@ test('getRunDuration', () => {
   expect(getRunDuration(createRun({ ts_epoch: 0, finished_at: 1000, duration: undefined }))).toBe('1s');
 });
 
-test('getRunSystemTag', () => {
-  expect(getRunSystemTag(createRun({ system_tags: [] }), 'user')).toBe(null);
-  const runWithTags = createRun({ system_tags: ['user:santeri', 'project:metaflow', 'year:2021', 'test:'] });
-  expect(getRunSystemTag(runWithTags, 'user')).toBe('santeri');
-  expect(getRunSystemTag(runWithTags, 'project')).toBe('metaflow');
-  expect(getRunSystemTag(runWithTags, 'year')).toBe('2021');
-  expect(getRunSystemTag(runWithTags, 'test')).toBe('');
+test('getTagOfType', () => {
+  expect(getTagOfType([], 'user')).toBe(null);
+  const tags = ['user:santeri', 'project:metaflow', 'year:2021', 'test:'];
+  expect(getTagOfType(tags, 'user')).toBe('santeri');
+  expect(getTagOfType(tags, 'project')).toBe('metaflow');
+  expect(getTagOfType(tags, 'year')).toBe('2021');
+  expect(getTagOfType(tags, 'test')).toBe('');
 });

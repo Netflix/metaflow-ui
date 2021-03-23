@@ -119,7 +119,14 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({
       onClick={() => (sortable ? onSort(queryKey) : null)}
       {...rest}
       clickable={sortable}
-      style={maxWidth ? { maxWidth: maxWidth + 'px', width: maxWidth + 'px' } : {}}
+      style={
+        maxWidth
+          ? {
+              maxWidth: maxWidth + (maxWidth.indexOf('%') > -1 ? '' : 'px'),
+              width: maxWidth + (maxWidth.indexOf('%') > -1 ? '' : 'px'),
+            }
+          : {}
+      }
     >
       <HeaderColumnWrapper>
         {label}

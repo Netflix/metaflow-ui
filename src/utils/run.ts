@@ -55,7 +55,16 @@ export function getRunDuration(run: Run): string | null {
  * @param run     - Run object
  * @param tagType - Prefix of tag we are trying to get
  */
-export function getRunSystemTag(run: Run, tagType: string): string | null {
-  const tag = (run.system_tags || []).find((tag) => tag.startsWith(`${tagType}:`));
+export function getTagOfType(tags: string[], tagType: string): string | null {
+  const tag = (tags || []).find((tag) => tag.startsWith(`${tagType}:`));
   return tag ? tag.split(`${tagType}:`)[1] : null;
+}
+
+export function getProjectFieldValue(item: Run): string {
+  const project = getTagOfType(item.system_tags || [], 'project');
+  if (project) {
+    const projectbranch = getTagOfType(item.system_tags || [], 'project_branch');
+    return projectbranch ? `${project} (${projectbranch})` : project;
+  }
+  return '';
 }
