@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import useResource from '../../hooks/useResource';
 import useRowData from '../../components/Timeline/useTaskData';
 import { getPath } from '../../utils/routing';
-import { Run as IRun, RunParam } from '../../types';
+import { Run as IRun } from '../../types';
 
 import TaskViewContainer from '../Task';
 import { APIErrorRenderer } from '../../components/GenericError';
@@ -45,14 +44,6 @@ type RunPageProps = {
 
 const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
-  const { data: runParameters, status: runParametersStatus, error: runParameterError } = useResource<
-    RunParam,
-    RunParam
-  >({
-    url: `/flows/${params.flowId}/runs/${run.run_number}/parameters`,
-    subscribeToEvents: true,
-    initialData: {},
-  });
 
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(hasViewTypeParam(params.viewType) ? params.viewType : 'timeline');
@@ -181,7 +172,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   return (
     <RunPageContainer visible={visible}>
       <ErrorBoundary message={t('error.run-header-error')}>
-        <RunHeader run={run} parameters={runParameters} status={runParametersStatus} error={runParameterError} />
+        <RunHeader run={run} />
       </ErrorBoundary>
       <Tabs
         activeTab={tab}

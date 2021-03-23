@@ -18,6 +18,7 @@ type ResultGroupCellsProps = {
   link: string;
   updateListValue: (key: string, value: string) => void;
   timezone: string;
+  infoOpen?: boolean;
 };
 
 //
@@ -25,11 +26,11 @@ type ResultGroupCellsProps = {
 //
 
 const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
-  ({ r, params, updateListValue, link, timezone }) => {
+  ({ r, params, updateListValue, link, timezone, infoOpen }) => {
     return (
       <>
         {/* STATUS INDICATOR */}
-        <StatusColorCell status={r.status} title={r.status} />
+        <StatusColorCell status={r.status} title={r.status} hideBorderBottom={infoOpen} />
         {/* FLOW ID */}
         {params._group !== 'flow_id' && (
           <TDWithLink link={link}>
@@ -66,7 +67,8 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
       previous.link === next.link &&
       previous.timezone === next.timezone &&
       previous.r.status === next.r.status &&
-      previous.r.finished_at === next.r.finished_at
+      previous.r.finished_at === next.r.finished_at &&
+      previous.infoOpen === next.infoOpen
     );
   },
 );

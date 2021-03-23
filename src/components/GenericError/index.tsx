@@ -234,9 +234,9 @@ const DetailsLog = styled.div`
   background: ${(p) => p.theme.color.bg.light};
   border: ${(p) => p.theme.border.thinNormal};
   border-radius: 0.1875rem;
-  color: ${(p) => p.theme.color.text.light};
+  color: ${(p) => p.theme.color.text.dark};
   font-family: monospace;
-  font-size: 0.75rem;
+  font-size: 1rem;
   line-height: 1.2rem;
   margin: 0.5rem 0;
   max-height: 25rem;

@@ -6,12 +6,12 @@ import useComponentSize from '@rehooks/component-size';
 // Component
 //
 
-const HeightAnimatedContainer: React.FC = ({ children }) => {
+const HeightAnimatedContainer: React.FC<{ active?: boolean }> = ({ children, active = true }) => {
   const _innerElement = useRef<HTMLDivElement>(null);
   const { height } = useComponentSize(_innerElement);
 
   return (
-    <OuterContainer maxHeight={height}>
+    <OuterContainer style={!active ? undefined : { height: height + 'px' }}>
       <InnerContainer ref={_innerElement}>{children}</InnerContainer>
     </OuterContainer>
   );
@@ -21,10 +21,8 @@ const HeightAnimatedContainer: React.FC = ({ children }) => {
 // Style
 //
 
-const OuterContainer = styled.div<{ maxHeight: number }>`
+const OuterContainer = styled.div`
   overflow: hidden;
-
-  height: ${(p) => p.maxHeight}px;
   transition: height 0.25s;
 `;
 const InnerContainer = styled.div`

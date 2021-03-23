@@ -54,27 +54,20 @@ export const TD = styled.td`
   }
 `;
 
-export const TR = styled.tr<{ clickable?: boolean; stale?: boolean; active?: boolean }>`
-  cursor: ${(p) => (p.clickable ? 'pointer' : 'auto')};
-  transition: background 0.15s, opacity 0.15s;
-  &:hover ${TD} {
+const TRHoverStyle = css`
+  ${TD} {
     background: ${(p) => p.theme.color.bg.blueLight};
     color: ${(p) => p.theme.color.text.blue};
   }
+`;
 
-  ${(p) =>
-    p.active
-      ? css`
-          td {
-            font-weight: 500;
-            background: #eaeaea;
-          }
-
-          td.timeline-link {
-            font-weight: 400;
-          }
-        `
-      : ''}
+export const TR = styled.tr<{ clickable?: boolean; stale?: boolean; active?: boolean }>`
+  cursor: ${(p) => (p.clickable ? 'pointer' : 'auto')};
+  transition: background 0.15s, opacity 0.15s;
+  &:hover {
+    ${TRHoverStyle}
+  }
+  ${(p) => (p.active ? TRHoverStyle : '')}
 
   ${(p) =>
     p.stale

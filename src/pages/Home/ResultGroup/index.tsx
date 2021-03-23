@@ -108,17 +108,18 @@ const ResultGroup: React.FC<Props> = React.memo(
         <Table cellPadding="0" cellSpacing="0" ref={tableRef} style={{ position: 'relative', zIndex: 1 }}>
           {isInViewport ? <StickyHeader tableRef={tableRef}>{tableHeader}</StickyHeader> : <thead>{tableHeader}</thead>}
           <tbody>
-            {rowsToRender.map((r, i) => {
+            {rowsToRender.map((r) => {
               // Run is seen as stale if it doesnt match status filters anymore after its status changed
               const isStale = !!(queryParams.status && queryParams.status.indexOf(r.status) === -1);
               return (
                 <ResultGroupRow
-                  key={i}
+                  key={r.flow_id + r.run_number}
                   run={r}
                   isStale={isStale}
                   queryParams={queryParams}
                   updateListValue={updateListValue}
                   timezone={timezone}
+                  cols={cols}
                 />
               );
             })}

@@ -40,7 +40,7 @@ const ResultGroupHeader: React.FC<ResultGroupHeaderProps> = React.memo(
           />
         ))}
 
-        <th></th>
+        <th style={{ width: '2.5rem' }}></th>
       </TR>
     </>
   ),

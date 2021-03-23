@@ -2,20 +2,19 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { Run, RunParam, APIError, AsyncStatus } from '../../types';
+import { Run } from '../../types';
 
 import StatusField from '../../components/Status';
 import InformationRow from '../../components/InformationRow';
 import PropertyTable from '../../components/PropertyTable';
 import { Link, useHistory } from 'react-router-dom';
-import { APIErrorRenderer } from '../../components/GenericError';
 
 import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '../../utils/run';
 import { TimezoneContext } from '../../components/TimezoneProvider';
 import TagRow from './components/TagRow';
-import TitledRow from '../../components/TitledRow';
 
 import Collapsable from '../../components/Collapsable';
+import RunParameterTable from './RunParameterTable';
 
 //
 // Typedef
@@ -23,24 +22,16 @@ import Collapsable from '../../components/Collapsable';
 
 type Props = {
   run: Run;
-  parameters: RunParam | null;
-  status: AsyncStatus;
-  error: APIError | null;
 };
 
 //
 // Component
 //
 
-const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
+const RunHeader: React.FC<Props> = ({ run }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { timezone } = useContext(TimezoneContext);
-
-  const parameterTableItems = (parameters ? Object.entries(parameters) : []).reduce((obj, param) => {
-    const [param_name, param_props] = param;
-    return { ...obj, [param_name]: param_props.value };
-  }, {});
 
   const columns = [
     { label: t('fields.run-id'), accessor: (item: Run) => getRunId(item) },
@@ -74,24 +65,7 @@ const RunHeader: React.FC<Props> = ({ run, parameters, status, error }) => {
           <PropertyTable scheme="dark" items={[run]} columns={columns} />
         </InformationRow>
       </div>
-      <Collapsable title={t('run.parameters')}>
-        <TitledRow
-          {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
-            ? {
-                type: 'default',
-                content:
-                  status === 'Error' && error ? (
-                    <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
-                  ) : (
-                    t('run.no-parameters')
-                  ),
-              }
-            : {
-                type: 'table',
-                content: parameterTableItems,
-              })}
-        />
-      </Collapsable>
+      <RunParameterTable run={run} />
 
       <Collapsable title={t('run.run-details')}>
         <>

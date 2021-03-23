@@ -17,9 +17,15 @@ const statusCellCSS = css`
   padding: 1px;
 `;
 
-export const StatusColorCell = styled(TD)<{ status: keyof RunStatus }>`
+export const StatusColorCell = styled(TD)<{
+  status: keyof RunStatus;
+  hideBorderTop?: boolean;
+  hideBorderBottom?: boolean;
+}>`
   background: ${(p) => p.theme.color.bg[statusColors[p.status]] || 'transparent'} !important;
   ${statusCellCSS};
+  ${(p) => (p.hideBorderTop ? 'border-top: none;' : null)};
+  ${(p) => (p.hideBorderBottom ? 'border-bottom: none;' : null)};
 `;
 
 export const StatusColorHeaderCell = styled(TH)`
