@@ -1,22 +1,34 @@
 import React, { useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
+import useAutoComplete, { AutoCompleteSettings } from '../../hooks/useAutoComplete';
 import Icon from '../Icon';
+import AutoComplete from '../AutoComplete';
 import { ForceNoWrapText } from '../Text';
 
 //
 // Typedef
 //
 
-type FilterInputProps = { onSubmit: (k: string) => void; sectionLabel: string };
+type FilterInputProps = {
+  onSubmit: (k: string) => void;
+  sectionLabel: string;
+  autoCompleteSettings: AutoCompleteSettings<any>;
+};
 
 //
 // Component
 //
 
-const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel }) => {
+const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel, autoCompleteSettings }) => {
   const [hasFocus, setHasFocus] = useState(false);
   const [val, setVal] = useState('');
+  const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
+
+  const autoCompleteResult = useAutoComplete<string>({
+    ...autoCompleteSettings,
+    input: val,
+  });
 
   return (
     <FilterInputWrapper
@@ -26,15 +38,20 @@ const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel }) => 
       }}
     >
       {sectionLabel && <LabelTitle active={hasFocus || val !== ''}>{sectionLabel}</LabelTitle>}
-      <FitlerInputContainer>
+      <FilterInputContainer>
         <input
           data-testid="filter-input-field"
           ref={inputEl}
           value={val}
           onKeyPress={(e) => {
             if (e.charCode === 13 && e.currentTarget.value) {
-              onSubmit(e.currentTarget.value);
+              if (activeAutoCompleteOption) {
+                onSubmit(activeAutoCompleteOption);
+              } else {
+                onSubmit(e.currentTarget.value);
+              }
               setVal('');
+              setActiveOption(null);
               // Currently it feels more natural to keep the focus on the input when adding tags
               // Enable these if user feedback suggets that more conventional behaviour is wanted
               // setHasFocus(false);
@@ -67,7 +84,21 @@ const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel }) => 
         >
           <Icon name={hasFocus ? 'enter' : 'plus'} size="xs" />
         </SubmitIconHolder>
-      </FitlerInputContainer>
+      </FilterInputContainer>
+      {autoCompleteResult.data.length > 0 && val !== '' && (
+        <AutoComplete
+          result={autoCompleteResult.data}
+          setActiveOption={(active) => {
+            setActiveOption(active);
+          }}
+          onSelect={(selected) => {
+            onSubmit(selected);
+            setVal('');
+            setHasFocus(false);
+            setActiveOption(null);
+          }}
+        />
+      )}
     </FilterInputWrapper>
   );
 };
@@ -111,7 +142,7 @@ const FilterInputWrapper = styled.section<{ active: boolean }>`
   }
 `;
 
-const FitlerInputContainer = styled.div`
+const FilterInputContainer = styled.div`
   position: relative;
   width: 100%;
 `;

@@ -10,6 +10,10 @@ import { TextInputField } from '../Form';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
 import { ItemRow } from '../Structure';
+import useAutoComplete from '../../hooks/useAutoComplete';
+import { takeLastSplitFromURL } from '../../utils/url';
+import { AutoCompleteLine } from '../AutoComplete';
+import HeightAnimatedContainer from '../HeightAnimatedContainer';
 
 //
 // Component
@@ -23,29 +27,69 @@ const Breadcrumb: React.FC = () => {
   const routeMatch = getRouteMatch(location.pathname);
   const buttonList = findAdditionalButtons(routeMatch, location.search);
   const currentBreadcrumbPath = buttonList.map((item) => item.label).join('/');
+  const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
 
   const [edit, setEdit] = useState(false);
   const [str, setStr] = useState(currentBreadcrumbPath.replace(/\s/g, ''));
   const [warning, setWarning] = useState('');
 
+  const autoCompleteResult = useAutoComplete<string>({
+    url: urlFromString(str),
+    preFetch: true,
+    finder: (item, input) => {
+      const last = takeLastSplitFromURL(item.label);
+      return !input ? true : last !== input && last.includes(input);
+    },
+    input: takeLastSplitFromURL(str),
+  });
+
   //
   // Handlers
   //
 
+  const tryMove = (str: string) => {
+    const path = pathFromString(str);
+
+    if (path) {
+      history.push(path);
+      closeUp();
+    } else {
+      setWarning(t('breadcrumb.no-match'));
+      closeUp();
+    }
+  };
+
   const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.charCode === 13) {
-      // If user presses enter without changing value, lets hide popup
-      if (notEmptyAndEqual(e.currentTarget.value, currentBreadcrumbPath)) {
+      if (activeAutoCompleteOption) {
+        const item = autoCompleteResult.data.find((r) => r.value === activeAutoCompleteOption);
+        if (item) {
+          setStr((s) => mergeWithString(s, item.value) + '/');
+        }
+        setActiveOption(null);
+      } // If user presses enter without changing value, lets hide popup
+      else if (notEmptyAndEqual(e.currentTarget.value, currentBreadcrumbPath)) {
         closeUp();
       } else {
-        const path = pathFromString(e.currentTarget.value);
+        tryMove(e.currentTarget.value);
+      }
+    }
+  };
 
-        if (path) {
-          history.push(path);
-        } else {
-          setWarning(t('breadcrumb.no-match'));
-          closeUp();
-        }
+  const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (autoCompleteResult.data.length === 0) {
+        return;
+      }
+
+      const index = autoCompleteResult.data.findIndex((item) => item.value === activeAutoCompleteOption);
+      const newIndex = e.key === 'ArrowDown' ? index + 1 : index - 1;
+
+      if (newIndex < 0 || newIndex > Math.min(3, autoCompleteResult.data.length)) {
+        setActiveOption(null);
+      } else {
+        setActiveOption(autoCompleteResult.data[newIndex].value);
       }
     }
   };
@@ -140,6 +184,7 @@ const Breadcrumb: React.FC = () => {
                   placeholder={t('breadcrumb.goto')}
                   value={str}
                   onKeyPress={onKeyPress}
+                  onKeyDown={onKeyDown}
                   onChange={(e) => {
                     setStr(e?.target.value?.replace(/\s/g, '') || '');
                   }}
@@ -149,17 +194,38 @@ const Breadcrumb: React.FC = () => {
                   <Icon name="times" size="md" />
                 </GotoClose>
               </ItemRow>
-              <BreadcrumbInfo>
-                {warning && <BreadcrumbWarning>{warning}</BreadcrumbWarning>}
-                <BreadcrumbKeyValueList
-                  items={[
-                    { key: t('items.flow'), value: t('breadcrumb.example-flow') },
-                    { key: t('items.run'), value: t('breadcrumb.example-run') },
-                    { key: t('items.step'), value: t('breadcrumb.example-step') },
-                    { key: t('items.task'), value: t('breadcrumb.example-task') },
-                  ]}
-                />
-              </BreadcrumbInfo>
+              <HeightAnimatedContainer>
+                {autoCompleteResult.status === 'Ok' && autoCompleteResult.data.length > 0 && str !== '' ? (
+                  <BreadcrumbInfo>
+                    {autoCompleteResult.data.slice(0, 4).map((item) => (
+                      <AutoCompleteLine
+                        active={item.value === activeAutoCompleteOption}
+                        key={item.value}
+                        onClick={() => {
+                          const value = mergeWithString(str, item.value);
+                          setStr(value);
+                          tryMove(value);
+                          closeUp();
+                        }}
+                      >
+                        {takeLastSplitFromURL(item.label)}
+                      </AutoCompleteLine>
+                    ))}
+                  </BreadcrumbInfo>
+                ) : (
+                  <BreadcrumbInfo>
+                    {warning && <BreadcrumbWarning>{warning}</BreadcrumbWarning>}
+                    <BreadcrumbKeyValueList
+                      items={[
+                        { key: t('items.flow'), value: t('breadcrumb.example-flow') },
+                        { key: t('items.run'), value: t('breadcrumb.example-run') },
+                        { key: t('items.step'), value: t('breadcrumb.example-step') },
+                        { key: t('items.task'), value: t('breadcrumb.example-task') },
+                      ]}
+                    />
+                  </BreadcrumbInfo>
+                )}
+              </HeightAnimatedContainer>
             </GoToContainer>
           </GoToHolder>
 
@@ -203,6 +269,28 @@ export function pathFromString(str: string): string | null {
     return getPath.task(parts[0], parts[1], parts[2], parts[3]);
   }
   return null;
+}
+
+function urlFromString(str: string): string {
+  const parts = str.split('/');
+  if (parts.length < 2) {
+    return '/flows/autocomplete';
+  } else if (parts.length === 2) {
+    return `/flows/${parts[0]}/runs/autocomplete`;
+  } else if (parts.length === 3) {
+    return `/flows/${parts[0]}/runs/${parts[1]}/steps/autocomplete`;
+  } else if (parts.length === 4) {
+    return `/not-implemented`;
+  }
+  return '/flows/autocomplete';
+}
+
+function mergeWithString(str: string, toAdd: string): string {
+  return str
+    .split('/')
+    .slice(0, str.split('/').length - 1)
+    .concat([toAdd])
+    .join('/');
 }
 
 type BreadcrumbButtons = { label: string; path: string };

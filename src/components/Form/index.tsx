@@ -18,6 +18,8 @@ export type CommonFieldProps<T> = {
   onClick?: (e?: React.MouseEvent<T>) => void;
   onChange?: (e?: React.ChangeEvent<T>) => void;
   onKeyPress?: (e: React.KeyboardEvent<T>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<T>) => void;
+  onKeyUp?: (e: React.KeyboardEvent<T>) => void;
   'data-testid'?: string;
 };
 
@@ -144,7 +146,7 @@ export const TextInputField = React.forwardRef<
     ref,
   ) => {
     const [id] = useState(uuid());
-    const testid = rest['data-testid'];
+    const { 'data-testid': testid, ...props } = rest;
     const valueProps = defaultValue ? { defaultValue } : { value };
 
     return (
@@ -166,6 +168,7 @@ export const TextInputField = React.forwardRef<
           onKeyPress={onKeyPress}
           autoFocus={autoFocus}
           disabled={disabled}
+          {...props}
         />
       </Field>
     );

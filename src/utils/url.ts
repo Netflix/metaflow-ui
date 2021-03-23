@@ -14,3 +14,8 @@ export const swapDirection = (param: string): string => {
   const [dir, prop] = parseOrderParam(param);
   return `${directionFromText(dir === 'down' ? 'up' : 'down')}${prop}`;
 };
+
+export const takeLastSplitFromURL = (str: string): string => {
+  const s = str.split('/');
+  return s[s.length - 1];
+};

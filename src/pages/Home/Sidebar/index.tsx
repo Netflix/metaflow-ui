@@ -76,12 +76,29 @@ const HomeSidebar: React.FC<Props> = ({
       </Section>
 
       <ParametersWrapper>
-        <FilterInput onSubmit={(v) => updateListValue('flow_id', v)} sectionLabel={t('fields.flow')} />
+        <FilterInput
+          onSubmit={(v) => updateListValue('flow_id', v)}
+          sectionLabel={t('fields.flow')}
+          autoCompleteSettings={{
+            url: '/flows/autocomplete',
+            preFetch: true,
+            parser: (str: string) => ({ label: str, value: str }),
+          }}
+        />
         <TagParameterList paramKey="flow_id" updateList={updateListValue} value={params.flow_id} />
       </ParametersWrapper>
 
       <ParametersWrapper>
-        <FilterInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} sectionLabel={t('fields.project')} />
+        <FilterInput
+          onSubmit={(v) => updateListValue('_tags', `project:${v}`)}
+          sectionLabel={t('fields.project')}
+          autoCompleteSettings={{
+            url: '/tags/autocomplete',
+            preFetch: true,
+            parser: (str: string) => ({ label: str, value: str }),
+            finder: (item, input) => !!item.value.match(`^project:.*${input}.*`),
+          }}
+        />
         <TagParameterList
           paramKey="_tags"
           mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
@@ -92,7 +109,16 @@ const HomeSidebar: React.FC<Props> = ({
       </ParametersWrapper>
 
       <ParametersWrapper>
-        <FilterInput onSubmit={(v) => updateListValue('user', v)} sectionLabel={t('fields.user')} />
+        <FilterInput
+          onSubmit={(v) => updateListValue('user', omitFromString('user', v))}
+          sectionLabel={t('fields.user')}
+          autoCompleteSettings={{
+            url: '/tags/autocomplete',
+            preFetch: true,
+            parser: (str: string) => ({ label: str, value: str }),
+            finder: (item, input) => !!item.value.match(`^user:.*${input}.*`),
+          }}
+        />
         <TagParameterList
           paramKey="user"
           updateList={updateListValue}
@@ -101,7 +127,15 @@ const HomeSidebar: React.FC<Props> = ({
       </ParametersWrapper>
 
       <ParametersWrapper>
-        <FilterInput onSubmit={(v) => updateListValue('_tags', v)} sectionLabel={t('fields.tag')} />
+        <FilterInput
+          onSubmit={(v) => updateListValue('_tags', v)}
+          sectionLabel={t('fields.tag')}
+          autoCompleteSettings={{
+            url: '/tags/autocomplete',
+            preFetch: true,
+            parser: (str: string) => ({ label: str, value: str }),
+          }}
+        />
         <TagParameterList
           paramKey="_tags"
           mapList={(xs) => xs.filter((x) => !/^project:/.test(x))}
@@ -120,6 +154,10 @@ const HomeSidebar: React.FC<Props> = ({
     </Sidebar>
   );
 };
+
+function omitFromString(partToOmit: string, str: string): string {
+  return str.startsWith(partToOmit + ':') ? str.split(':').slice(1, str.split(':').length).join('') : str;
+}
 
 const ButtonResetAll = styled(Button)`
   width: 100%;

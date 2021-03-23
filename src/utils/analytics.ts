@@ -6,7 +6,7 @@ import ReactGA from 'react-ga';
 
 let trackingEnabled = false;
 export function initializeGA(trackingId: string | null = null): void {
-  if (trackingId) {
+  if (trackingId && trackingId !== 'none') {
     trackingEnabled = true;
     ReactGA.initialize(trackingId);
   }
