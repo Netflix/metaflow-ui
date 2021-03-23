@@ -142,12 +142,12 @@ const FiltersSection = styled(ItemRow)`
 
 const StatusLabelContainer = styled.div`
   display: flex;
-  min-width: 8.375rem;
+  min-width: 8.5rem;
 `;
 
 const OrderLabelContainer = styled.div`
   display: flex;
-  min-width: 12.5rem;
+  min-width: 8.5rem;
 
   i {
     margin-left: 0.5rem;
@@ -160,20 +160,28 @@ const OrderLabelValue = styled(ForceNoWrapText)`
 `;
 
 const TaskListDropdownContainer = styled.div`
-  border: 1px solid ${(p) => p.theme.color.border.normal};
-  border-radius: 0.25rem;
   margin: 0 0.375rem;
 
   button {
-    height: 2.125rem;
     padding-left: 1rem;
     padding-right: 1rem;
+
+    &:hover {
+      background: transparent;
+      border-color: #333;
+    }
   }
 `;
 
 const DropdownLabelTitle = styled(ForceNoWrapText)`
+  background: #fff;
+  font-size: 0.625rem;
   font-weight: bold;
+  left: 0.75rem;
   margin-right: 0.3125rem;
+  padding: 0 0.25rem;
+  position: absolute;
+  top: -0.5rem;
 `;
 
 export default CustomSettings;

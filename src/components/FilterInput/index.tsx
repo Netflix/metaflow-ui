@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import Icon from '../Icon';
-import { SectionHeader } from '../Structure';
+import { ForceNoWrapText } from '../Text';
 
 //
 // Typedef
@@ -25,17 +25,20 @@ const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel }) => 
         inputEl.current?.focus();
       }}
     >
+      {sectionLabel && <LabelTitle active={hasFocus || val !== ''}>{sectionLabel}</LabelTitle>}
       <FitlerInputContainer>
         <input
           data-testid="filter-input-field"
           ref={inputEl}
-          placeholder={sectionLabel}
           value={val}
           onKeyPress={(e) => {
             if (e.charCode === 13 && e.currentTarget.value) {
               onSubmit(e.currentTarget.value);
               setVal('');
-              setHasFocus(false);
+              // Currently it feels more natural to keep the focus on the input when adding tags
+              // Enable these if user feedback suggets that more conventional behaviour is wanted
+              // setHasFocus(false);
+              // e.currentTarget.blur();
             }
           }}
           onChange={(e) => {
@@ -55,7 +58,10 @@ const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel }) => 
             if (inputEl?.current?.value) {
               onSubmit(inputEl.current.value);
               setVal('');
-              setHasFocus(false);
+              // Currently it feels more natural to keep the focus on the input when adding tags
+              // Enable these if user feedback suggets that more conventional behaviour is wanted
+              // setHasFocus(false);
+              // inputEl.current.blur();
             }
           }}
         >
@@ -70,12 +76,16 @@ const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel }) => 
 // Styles
 //
 
-const FilterInputWrapper = styled(SectionHeader)<{ active: boolean }>`
-  padding-bottom: 0.375rem;
-  transition: border 0.15s;
+const FilterInputWrapper = styled.section<{ active: boolean }>`
+  align-items: center;
+  border: ${(p) => p.theme.border.thinLight};
+  border-radius: 0.25rem;
   color: #333;
-
-  ${(p) => (p.active ? `border-bottom-color: ${p.theme.color.text.blue};` : '')}
+  display: flex;
+  height: 2.5rem;
+  padding: 0.5rem 1rem;
+  position: relative;
+  transition: border 0.15s;
 
   input {
     width: 100%;
@@ -90,13 +100,14 @@ const FilterInputWrapper = styled(SectionHeader)<{ active: boolean }>`
 
     &::placeholder {
       color: #333;
+      font-weight: 500;
       opacity: 1;
     }
   }
   cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
 
   &:hover {
-    background-color: ${(p) => (p.active ? 'transparent' : p.theme.color.bg.light)};
+    border-color: ${(p) => (p.active ? p.theme.color.text.blue : '#333')};
   }
 `;
 
@@ -128,6 +139,25 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
           `}} 
 
   }
+`;
+
+const LabelTitle = styled(ForceNoWrapText)<{ active: boolean }>`
+  background: #fff;
+  font-size: 0.875rem;
+  font-weight: bold;
+  padding: 0 0.25rem;
+  position: absolute;
+  top: 0;
+  transition: all 125ms linear;
+
+  ${(p) =>
+    p.active
+      ? css`
+          transform: scale(0.75) translate(-0.625rem, -0.75rem);
+        `
+      : css`
+          transform: scale(1) translate(-0.25rem, 0.75rem);
+        `}
 `;
 
 export default FilterInput;

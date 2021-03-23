@@ -28,6 +28,7 @@ export const SectionHeader = styled.header<{ noPadding?: boolean }>`
   margin: 0 -${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.sm}rem;
   border-bottom: ${(p) => p.theme.border.thinNormal};
   color: ${(p) => p.theme.color.text.dark};
+  height: 2rem;
 `;
 
 type FlexAlignments = {

@@ -109,7 +109,7 @@ const en = {
       relative: 'Relative',
       absolute: 'Absolute',
       'group-by-step': 'Group by step',
-      'order-by': 'Order tasks by',
+      'order-by': 'Order by',
       'started-at': 'Started at',
       startTime: 'Started at',
       'finished-at': 'Finished at',

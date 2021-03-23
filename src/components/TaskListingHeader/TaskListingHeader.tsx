@@ -155,7 +155,7 @@ const SettingsRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0;
+  padding: 1rem 0;
   width: 100%;
 `;
 
@@ -164,8 +164,8 @@ const SettingsRowLeft = styled.div`
 `;
 
 const ExpandButton = styled(Button)`
-  height: 2.25rem;
-  width: 2.25rem;
+  height: 2.5rem;
+  width: 2.5rem;
 
   i {
     margin: 0 auto;

@@ -37,21 +37,20 @@ const HomeSidebar: React.FC<Props> = ({
   return (
     <Sidebar className="sidebar">
       {FEATURE.RUN_GROUPS && (
-        <Section>
-          <GroupSectionHeader noPadding>
-            <DropdownField
-              horizontal
-              noMinWidth
-              value={params._group || ''}
-              onChange={(e) => e && handleParamChange('_group', e.target.value)}
-              options={[
-                ['', t('fields.group.none')],
-                ['flow_id', t('fields.group.flow')],
-                ['user', t('fields.group.user')],
-              ]}
-            />
-          </GroupSectionHeader>
-        </Section>
+        <DropdownWrapper>
+          <DropdownField
+            horizontal
+            label={t('filters.group-by')}
+            noMinWidth
+            value={params._group || ''}
+            onChange={(e) => e && handleParamChange('_group', e.target.value)}
+            options={[
+              ['', t('fields.group.none')],
+              ['flow_id', t('fields.group.flow')],
+              ['user', t('fields.group.user')],
+            ]}
+          />
+        </DropdownWrapper>
       )}
 
       <Section>
@@ -76,15 +75,13 @@ const HomeSidebar: React.FC<Props> = ({
         />
       </Section>
 
-      <Section>
+      <ParametersWrapper>
         <FilterInput onSubmit={(v) => updateListValue('flow_id', v)} sectionLabel={t('fields.flow')} />
-
         <TagParameterList paramKey="flow_id" updateList={updateListValue} value={params.flow_id} />
-      </Section>
+      </ParametersWrapper>
 
-      <Section>
+      <ParametersWrapper>
         <FilterInput onSubmit={(v) => updateListValue('_tags', `project:${v}`)} sectionLabel={t('fields.project')} />
-
         <TagParameterList
           paramKey="_tags"
           mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
@@ -92,28 +89,26 @@ const HomeSidebar: React.FC<Props> = ({
           updateList={updateListValue}
           value={params._tags}
         />
-      </Section>
+      </ParametersWrapper>
 
-      <Section>
+      <ParametersWrapper>
         <FilterInput onSubmit={(v) => updateListValue('user', v)} sectionLabel={t('fields.user')} />
-
         <TagParameterList
           paramKey="user"
           updateList={updateListValue}
           value={params.user ? params.user.replace('null', 'None') : ''}
         />
-      </Section>
+      </ParametersWrapper>
 
-      <Section>
+      <ParametersWrapper>
         <FilterInput onSubmit={(v) => updateListValue('_tags', v)} sectionLabel={t('fields.tag')} />
-
         <TagParameterList
           paramKey="_tags"
           mapList={(xs) => xs.filter((x) => !/^project:/.test(x))}
           updateList={updateListValue}
           value={params._tags}
         />
-      </Section>
+      </ParametersWrapper>
 
       {!defaultFiltersActive && (
         <div>
@@ -136,9 +131,11 @@ const ButtonResetAll = styled(Button)`
 `;
 
 const StyledRemovableTag = styled(RemovableTag)`
+  align-items: center;
+  min-height 2rem;
+  margin-right: ${(p) => p.theme.spacer.sm}rem;
+  margin-top: ${(p) => p.theme.spacer.sm}rem;
   word-break: break-all;
-  margin-right: ${(p) => p.theme.spacer.xs}rem;
-  margin-bottom: ${(p) => p.theme.spacer.xs}rem;
 `;
 
 const Sidebar = styled.div`
@@ -149,11 +146,12 @@ const Sidebar = styled.div`
   padding-top: 6px;
 `;
 
-const GroupSectionHeader = styled(SectionHeader)`
-  button {
-    padding: 0.3125rem 0.3125rem 0.3125rem 0.5rem;
-    border-radius 0px;
-  }
+const DropdownWrapper = styled.div`
+  margin: 0 0 1rem;
+`;
+
+const ParametersWrapper = styled.div`
+  margin: 0 0 1rem;
 `;
 
 export default HomeSidebar;

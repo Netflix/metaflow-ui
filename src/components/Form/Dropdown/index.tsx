@@ -116,8 +116,17 @@ const DropdownWrapper = styled.div`
 `;
 
 const DropdownButton = styled(Button)`
+  border: 1px solid ${(p) => p.theme.color.border.normal};
+  border-radius: 0.25rem;
+  height: 2.5rem;
+  line-height: 1rem;
+  padding: 0.5rem 0.75rem 0.5rem 1rem;
   width: 100%;
-  line-height: 1.5rem;
+
+  &:hover {
+    background: transparent;
+    border: 1px solid #333;
+  }
 `;
 
 const DropdownOptions = styled.div`

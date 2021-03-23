@@ -7,7 +7,8 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
   > .button {
     border-radius: 0;
     margin-left: -1px;
-    min-height: ${(p) => (p.big ? '2.25rem' : '1.75rem')};
+    min-height: ${(p) => (p.big ? '2.5rem' : '1.75rem')};
+    min-width: ${(p) => (p.big ? '2.5rem' : '1.75rem')};
     font-size: ${(p) => (p.big ? '1rem' : '0.875rem')};
     border-color: #d0d0d0;
 
@@ -30,6 +31,10 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
     &:last-of-type {
       border-top-right-radius: 0.25rem;
       border-bottom-right-radius: 0.25rem;
+    }
+
+    i {
+      margin: 0 auto;
     }
   }
 

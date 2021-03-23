@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 import Icon from '../Icon';
 import Spinner from '../Spinner';
 import Dropdown from './Dropdown';
+import { ForceNoWrapText } from '../Text';
 
 //
 // Base field
@@ -74,7 +75,7 @@ export const DropdownField: React.FC<
 
   return (
     <Field horizontal={horizontal} type="select" data-testid={testid} noMinWidth={noMinWidth}>
-      {label && <label htmlFor={id}>{label}</label>}
+      {label && <DropdownLabelTitle>{label}</DropdownLabelTitle>}
       <Dropdown id={id} options={options} {...rest} />
     </Field>
   );
@@ -268,4 +269,16 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   select {
     border: 0;
   }
+`;
+
+const DropdownLabelTitle = styled(ForceNoWrapText)`
+  background: #fff;
+  font-size: 0.625rem;
+  font-weight: bold;
+  left: 0.75rem;
+  margin-right: 0.3125rem;
+  padding: 0 0.25rem;
+  position: absolute;
+  top: -0.375rem;
+  z-index: 1;
 `;
