@@ -6,6 +6,7 @@ import { NotificationType, useNotifications } from '../Notifications';
 import { ItemRow } from '../Structure';
 import copy from 'copy-to-clipboard';
 import Icon from '../Icon';
+import { downloadString } from '../../utils/file';
 
 //
 // Typedef
@@ -63,23 +64,4 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, name, data }
   );
 };
 
-//
-// Utils
-//
-
-export function downloadString(text: string, fileType: string, fileName: string): void {
-  const blob = new Blob([text], { type: fileType });
-
-  const a = document.createElement('a');
-  a.download = fileName;
-  a.href = URL.createObjectURL(blob);
-  a.dataset.downloadurl = [fileType, a.download, a.href].join(':');
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(function () {
-    URL.revokeObjectURL(a.href);
-  }, 1500);
-}
 export default LogActionBar;

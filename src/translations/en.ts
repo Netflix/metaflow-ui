@@ -191,6 +191,9 @@ const en = {
       'no-tasks': 'No tasks found',
       'not-found': 'Not available',
       'stack-trace': 'Stack trace',
+      'copy-stack-trace': 'Copy error stack trace',
+      'stack-trace-copied': 'Stack trace copied',
+      'download-stack-trace': 'Download stack trace',
 
       'failed-to-load-dag': 'Failed to load DAG.',
       's3-access-denied': 'Access denied. There was a problem with AWS credentials.',
