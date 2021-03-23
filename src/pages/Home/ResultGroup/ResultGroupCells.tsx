@@ -88,7 +88,7 @@ function projectString(run: Run) {
   const project = getTagOfType(run.system_tags || [], 'project');
   const projectBranch = getTagOfType(run.system_tags || [], 'project_branch');
 
-  return project ? `${project}${project && projectBranch && '/'}${projectBranch}` : null;
+  return project ? `${project}${project && projectBranch ? '/' : ''}${projectBranch || ''}` : '';
 }
 
 const LinkTD = styled(TD)`
