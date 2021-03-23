@@ -3,10 +3,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { APIError } from '../../types';
+import { downloadString } from '../../utils/file';
 import { getVersionInfo } from '../../utils/VERSION';
+import Button from '../Button';
 import Collapsable from '../Collapsable';
 import Icon, { IconKeys } from '../Icon';
 import TitledRow from '../TitledRow';
+import copy from 'copy-to-clipboard';
+import { NotificationType, useNotifications } from '../Notifications';
 
 type Props = {
   message: string;
@@ -79,6 +83,7 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
 
 export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TFunction }> = ({ error, noIcon, t }) => {
   const version = getVersionInfo();
+  const { addNotification } = useNotifications();
 
   // TODO: update these later on
   // noIcon option can probably be cleaned away later on
@@ -127,7 +132,34 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
       <Collapsable title={t('error.error-details')}>
         {error.traceback && (
           <>
-            <DetailsHeader>{t('error.stack-trace')}</DetailsHeader>
+            <DetailsHeader>
+              <div>{t('error.stack-trace')}</div>
+              <StackButtonsContainer>
+                <Button
+                  title={t('error.copy-stack-trace')}
+                  iconOnly
+                  onClick={() => {
+                    copy(error.traceback || '');
+                    addNotification({
+                      type: NotificationType.Info,
+                      message: t('error.stack-trace-copied'),
+                    });
+                  }}
+                >
+                  <Icon name="copy" />
+                </Button>
+
+                <Button
+                  title={t('error.download-stack-trace')}
+                  iconOnly
+                  onClick={() => {
+                    downloadString(error.traceback || '', 'text/plain', `stack-trace-${error.id}.txt`);
+                  }}
+                >
+                  <Icon name="download" />
+                </Button>
+              </StackButtonsContainer>
+            </DetailsHeader>
             <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>
           </>
         )}
@@ -186,6 +218,16 @@ const DetailsSubTitle = styled.div`
 const DetailsHeader = styled.div`
   font-weight: 500;
   margin: 1rem 0 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const StackButtonsContainer = styled.div`
+  display: flex;
+  > * {
+    margin-left: 0.5rem;
+  }
 `;
 
 const DetailsLog = styled.div`

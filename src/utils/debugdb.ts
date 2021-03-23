@@ -1,6 +1,6 @@
 // Open the indexedDB.
 import { openDB, DBSchema, IDBPDatabase, deleteDB } from 'idb';
-import { downloadString } from '../components/LogList/LogActionBar';
+import { downloadString } from './file';
 
 let db: IDBPDatabase<MyDB> | null;
 
