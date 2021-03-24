@@ -2,7 +2,8 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import spacetime from 'spacetime';
 import styled from 'styled-components';
-import Dropdown, { DropdownOption } from '../Form/Dropdown';
+import { DropdownOption } from '../Form/Dropdown';
+import { DropdownField } from '../Form';
 import { TimezoneContext, TIMEZONES } from '../TimezoneProvider';
 
 const userTimezone = TIMEZONES.find((tz) => tz.offset === getCurrentTimeZoneOffset());
@@ -15,16 +16,11 @@ const TimezoneSelector: React.FC = () => {
   return (
     <div>
       <TimezoneRow>
-        <div>{t('help.timezone')}</div>
-
-        <Dropdown
+        <DropdownField
+          label={t('help.timezone')}
           options={ZONES.map((o) => [o[0], o[1]])}
           value={(timezone || 0).toString()}
-          onChange={(e) => {
-            if (e && e.currentTarget) {
-              updateTimezone(e.currentTarget.value);
-            }
-          }}
+          onChange={(e) => e && updateTimezone(e.currentTarget.value)}
         >
           {userTimezone && (
             <>
@@ -55,7 +51,7 @@ const TimezoneSelector: React.FC = () => {
               {o[1]}
             </TimezoneOption>
           ))}
-        </Dropdown>
+        </DropdownField>
       </TimezoneRow>
     </div>
   );
@@ -86,10 +82,16 @@ const TimezoneRow = styled.div`
   color: #666;
 
   .field {
+    color: #333;
+    margin: 0.5rem 0;
     width: 100%;
-    border: none;
-    border-radius: 0.1875rem;
-    margin-left: 0.5rem;
+  }
+  label {
+    margin: 0.5rem 0;
+
+    &:first-of-type {
+      margin: 0 0 0.5rem;
+    }
   }
 `;
 

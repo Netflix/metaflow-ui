@@ -91,12 +91,13 @@ const PopoverContainer = styled(PopoverWrapper)`
 `;
 
 const HelpMenuTitle = styled.div`
-  justify-content: space-between;
-  padding: 0.25rem 0.5rem 0.75rem 1rem;
+  align-items: center;
+  border-bottom: ${(p) => p.theme.border.thinLight};
   display: flex;
-  margin: 0 -0.5rem 0.25rem;
+  justify-content: space-between;
+  margin: 0 -0.5rem 0.5rem;
+  padding: 0.25rem 0.5rem 0.75rem 1rem;
   width: 21.875rem;
-  border-bottom: ${(p) => p.theme.border.thinNormal};
 
   span {
     font-weight: 500;

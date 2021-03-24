@@ -151,9 +151,14 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
   position: absolute;
   right: 0;
   top: 0;
-  line-height: 1.625rem;
+  line-height: 1.125rem;
   cursor: pointer;
   z-index: 10;
+
+  i {
+    margin: -0.125rem 0 0;
+    vertical-align: middle;
+  }
 
   &:hover {
     ${(p) =>
@@ -187,7 +192,7 @@ const LabelTitle = styled(ForceNoWrapText)<{ active: boolean }>`
           transform: scale(0.75) translate(-0.625rem, -0.75rem);
         `
       : css`
-          transform: scale(1) translate(-0.25rem, 0.75rem);
+          transform: scale(1) translate(-0.25rem, 0.6875rem);
         `}
 `;
 
