@@ -25,46 +25,52 @@ type Props = {
   cols: TableColDefinition[];
 };
 
+enum RowState {
+  Closed,
+  Opening,
+  Open,
+  Closing,
+}
+
 //
 // Row component that will lock it's state when hovered or set active
 //
 const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue, run, timezone, cols }) => {
   const [runToRender, setRunToRender] = useState(run);
   const [isHovering, setIsHovering] = useState(false);
-  // Show extra information bar
-  const [showInfo, setShowInfo] = useState(false);
-  // Track closing state since we need to animate row away
-  const [closing, setClosing] = useState(false);
+  const [rowState, setRowState] = useState<RowState>(RowState.Closed);
 
   useEffect(() => {
-    if (!isHovering && !showInfo) {
+    if (!isHovering && !isVisible(rowState)) {
       setRunToRender(run);
     }
-  }, [isHovering, showInfo]); // eslint-disable-line
+  }, [isHovering, isVisible(rowState)]); // eslint-disable-line
 
   useEffect(() => {
-    if ((!isHovering && !showInfo) || run.run_number === runToRender.run_number) {
+    if ((!isHovering && !isVisible(rowState)) || run.run_number === runToRender.run_number) {
       setRunToRender(run);
     }
   }, [run]); // eslint-disable-line
 
-  // Remove row from dom after 250ms
+  // Update state after 250 of closing or opening
   useEffect(() => {
-    let t: number | undefined = undefined;
-    if (closing) {
-      t = setTimeout(() => {
-        setClosing(false);
+    let t1: number | undefined = undefined;
+    if (isTransitioning(rowState)) {
+      t1 = setTimeout(() => {
+        setRowState((rs) => (rs === RowState.Opening ? RowState.Open : RowState.Closing ? RowState.Closed : rs));
       }, 250);
     }
-    return () => clearTimeout(t);
-  }, [closing]);
+    return () => {
+      clearTimeout(t1);
+    };
+  }, [rowState]);
 
   return (
     <>
       <StyledTR
         clickable
         stale={isStale}
-        active={showInfo}
+        active={isVisible(rowState)}
         onMouseOver={() => {
           setIsHovering(true);
         }}
@@ -78,27 +84,28 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
           updateListValue={updateListValue}
           link={getPath.run(runToRender.flow_id, getRunId(runToRender))}
           timezone={timezone}
-          infoOpen={showInfo}
+          infoOpen={isVisible(rowState)}
         />
         <td>
           <VerticalToggle
-            visible={showInfo || isHovering}
-            active={showInfo}
+            visible={isVisible(rowState) || isHovering}
+            active={rowState === RowState.Opening || rowState === RowState.Open}
             onClick={() => {
-              setShowInfo((b) => !b);
-              if (showInfo) {
-                setClosing(true);
+              if (rowState === RowState.Opening || rowState === RowState.Open) {
+                setRowState(RowState.Closing);
+              } else {
+                setRowState(RowState.Opening);
               }
             }}
           />
         </td>
       </StyledTR>
-      {(showInfo || closing) && (
+      {isVisible(rowState) && (
         <tr>
           <StatusColorCell status={runToRender.status} title={runToRender.status} hideBorderTop={true} />
           <StyledTD colSpan={cols.length}>
-            <HeightAnimatedContainer>
-              <StyledSection closing={closing}>
+            <HeightAnimatedContainer active={isTransitioning(rowState)}>
+              <StyledSection closing={rowState === RowState.Closing}>
                 <RunParameterTable run={runToRender} initialState={false} />
               </StyledSection>
             </HeightAnimatedContainer>
@@ -109,6 +116,18 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
     </>
   );
 };
+
+//
+// Utils
+//
+
+function isVisible(rs: RowState) {
+  return rs !== RowState.Closed;
+}
+
+function isTransitioning(rs: RowState) {
+  return rs === RowState.Closing || rs === RowState.Opening;
+}
 
 //
 // Styles
