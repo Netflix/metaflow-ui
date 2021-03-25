@@ -37,7 +37,16 @@ function format_pr() {
         do
             local prid=$(echo $merge | egrep -o '#[[:digit:]]+')
             local commit=$(echo $merge | awk '{print $1}')
-            local body=$(git log $commit -1 --pretty='format:%b')
+            # Take message from commit message body BUT take only first line of commit body. Github squash by default
+            # adds all the commits to the message and that doesn't looks so good here. Also remove '* ' that is in squashed messages
+            # by default
+            local body=$(git log $commit -1 --pretty='format:%b' | head -n 1 | sed 's/* //')
+            # If merge commit body is empty, use subject instead.
+            if [ -z "$body" ]
+            then
+                local body=$(git log $commit -1 --pretty='format:%s')
+            fi
+
             echo "https://github.com/Netflix/metaflow-ui/pull/${prid:1} - $body"
         done <<< "$1"
     fi
@@ -45,11 +54,11 @@ function format_pr() {
 
 RELEASE_DATE=$(date)
 
-MERGES=$(git log --merges --pretty='format:%h %s' ${PREVIOUS_VERSION}..${VERSION})
-PR=$(echo "${MERGES}" | grep "Merge pull request")
-PR_FEATURES=$(echo "${PR}" | grep -E 'feat/')
-PR_BUGS=$(echo "${PR}" | grep -E 'bug/|hotfix/')
-PR_IMPROVEMENTS=$(echo "${PR}" | awk '!/feat\// && !/bug\// && !/hotfix\//')
+MERGES=$(git log --first-parent --pretty='format:%h %s' ${PREVIOUS_VERSION}..${VERSION})
+PR=$(echo "${MERGES}" | grep "#[[:digit:]]")
+PR_FEATURES=$(echo "${PR}" | grep -E 'feat/|feat:|Feat/')
+PR_BUGS=$(echo "${PR}" | grep -E 'bug/|bug:|hotfix/|hotfix:|bugfix/|bugfix:')
+PR_IMPROVEMENTS=$(echo "${PR}" | awk '!/feat\/|feat:|Feat\// && !/bug\/|bug:/ && !/hotfix\/|hotfix:/ && !/bugfix\/|bugfix:/')
 
 RELEASE_NOTES="\
 **What’s new in version** \`${VERSION}\`
