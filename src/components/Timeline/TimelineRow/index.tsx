@@ -67,7 +67,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             t={t}
           />
         )}
-        <RowElement item={item} onOpen={onOpen}>
+        <RowElement item={item} paramsString={paramsString} onOpen={onOpen}>
           {item.type === 'step' ? (
             <LineElement
               graph={graph}
@@ -87,6 +87,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
                 duration={getTaskDuration(task)}
                 startTimeOfFirstAttempt={graph.sortBy === 'duration' ? item.data[0].started_at || 0 : undefined}
                 dragging={dragging}
+                paramsString={paramsString}
               />
             ))
           )}
@@ -96,10 +97,18 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   );
 };
 
-const RowElement: React.FC<{ item: Row; onOpen: () => void }> = ({ item, children, onOpen }) => {
+const RowElement: React.FC<{ item: Row; onOpen: () => void; paramsString?: string }> = ({
+  item,
+  children,
+  onOpen,
+  paramsString,
+}) => {
   if (item.type === 'task') {
     return (
-      <RowGraphLinkContainer to={getPathFor.task(item.data[0])} data-testid="timeline-row-graphic-container">
+      <RowGraphLinkContainer
+        to={`${getPathFor.task(item.data[0])}?${paramsString}`}
+        data-testid="timeline-row-graphic-container"
+      >
         {children}
       </RowGraphLinkContainer>
     );

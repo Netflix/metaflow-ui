@@ -28,6 +28,10 @@ export const getPath = {
 export const getPathFor = {
   task: (item: Task): string =>
     `/${item.flow_id}/${item.run_id || item.run_number}/${item.step_name}/${item.task_name || item.task_id}`,
+  attempt: (item: Task): string =>
+    `/${item.flow_id}/${item.run_id || item.run_number}/${item.step_name}/${item.task_name || item.task_id}?attempt=${
+      item.attempt_id
+    }`,
 };
 
 export type KnownURLParams = {

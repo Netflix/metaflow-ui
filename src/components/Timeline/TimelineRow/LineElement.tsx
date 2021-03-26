@@ -6,6 +6,8 @@ import { GraphState } from '../useGraph';
 import { lineColor, getRowStatus, getLengthLabelPosition } from './utils';
 import { formatDuration } from '../../../utils/format';
 import { lighten } from 'polished';
+import { useHistory } from 'react-router';
+import { getPathFor } from '../../../utils/routing';
 
 //
 // Typedef
@@ -19,6 +21,7 @@ type LineElementProps = {
   duration: number | null;
   startTimeOfFirstAttempt?: number;
   dragging: boolean;
+  paramsString?: string;
 };
 
 export type LabelPosition = 'left' | 'right' | 'none';
@@ -35,7 +38,9 @@ const LineElement: React.FC<LineElementProps> = ({
   duration,
   startTimeOfFirstAttempt,
   dragging,
+  paramsString,
 }) => {
+  const { push } = useHistory();
   const status = getRowStatus(row);
   // Extend visible area little bit to prevent lines seem like going out of bounds. Happens
   // in some cases with short end task
@@ -73,6 +78,13 @@ const LineElement: React.FC<LineElementProps> = ({
         data-testid="boxgraphic"
         dragging={dragging}
         title={formatDuration(duration)}
+        onClick={(e) => {
+          if (row.type === 'task') {
+            e.stopPropagation();
+            e.preventDefault();
+            push(`${getPathFor.attempt(row.data)}&${paramsString}`);
+          }
+        }}
       >
         {(isLastAttempt || status === 'running') && (
           <RowMetricLabel duration={duration} labelPosition={labelPosition} data-testid="boxgraphic-label" />
