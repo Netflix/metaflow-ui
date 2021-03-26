@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { AsyncStatus } from '../../types';
 import { apiHttp } from '../../constants';
+import { useDebounce } from 'use-debounce/lib';
 
 //
 // Typedef
@@ -9,10 +10,14 @@ export type AutoCompleteItem = { value: string; label: string };
 
 export type AutoCompleteSettings<T> = {
   url: string;
+  params?: Record<string, string>;
   // Parse incoming data to autocomplete items;
   parser?: (item: T) => AutoCompleteItem;
   finder?: (item: AutoCompleteItem, input: string) => boolean;
   preFetch?: boolean;
+  // Flag if we should send request with empty input
+  searchEmpty?: boolean;
+  enabled?: boolean;
 };
 
 export type AutoCompleteParameters<T> = {
@@ -34,14 +39,33 @@ const DataStore: Record<string, AutoCompleteResult> = {};
 // Let's refetch every 20 seconds for now
 const TIME_TO_REFETCH = 20000;
 
-function useAutoComplete<T>({ preFetch, url, input, parser, finder }: AutoCompleteParameters<T>): AutoCompleteResult {
+const DEFAULT_PARAMS = {
+  _limit: '5',
+};
+
+function useAutoComplete<T>({
+  preFetch,
+  url: rawUrl,
+  params = {},
+  input,
+  parser,
+  finder,
+  searchEmpty = false,
+  enabled = true,
+}: AutoCompleteParameters<T>): AutoCompleteResult {
+  const qparams = new URLSearchParams({ ...DEFAULT_PARAMS, ...params }).toString();
+  const requestUrl = apiHttp(`${rawUrl}${qparams ? '?' + qparams : ''}`);
+
+  const [url] = useDebounce(requestUrl, preFetch ? 0 : 300);
+
   const [result, setResult] = useState<AutoCompleteResult>(
     DataStore[url] ? DataStore[url] : { status: 'NotAsked', data: [], timestamp: 0 },
   );
+  const parseResult = parser || ((item: T) => ({ label: item, value: item }));
 
   function updateResult() {
     const newResults = DataStore[url].data.filter((item) =>
-      finder ? finder(item, input) : item.value.includes(input),
+      finder ? finder(item, input) : item.value.toLocaleLowerCase().includes(input.toLowerCase()),
     );
     setResult({
       status: DataStore[url]?.status || 'NotAsked',
@@ -52,28 +76,35 @@ function useAutoComplete<T>({ preFetch, url, input, parser, finder }: AutoComple
 
   // Initialise caching
   useEffect(() => {
-    if (!DataStore[url]) {
+    if (!DataStore[url] && preFetch) {
       DataStore[url] = { status: 'NotAsked', data: [], timestamp: 0 };
     }
-  }, [url]); // eslint-disable-line
+  }, [url, preFetch]); // eslint-disable-line
+
+  // Update results when input changes on prefetch
+  useEffect(() => {
+    if (input && preFetch) {
+      updateResult();
+    }
+  }, [preFetch, input]); //eslint-disable-line
 
   useEffect(() => {
+    if ((!searchEmpty && !input) || !enabled) return;
+
     if (preFetch) {
       if (DataStore[url]?.status !== 'NotAsked' && Date.now() - DataStore[url]?.timestamp < TIME_TO_REFETCH) {
         updateResult();
       } else {
         DataStore[url] = { status: 'Loading', data: [], timestamp: Date.now() };
         // fetch
-        fetch(apiHttp(url))
+        fetch(url)
           .then((resp) => resp.json())
           .then((response) => {
             if (Array.isArray(response) || Array.isArray(response.data)) {
               DataStore[url] = {
                 status: 'Ok',
                 timestamp: Date.now(),
-                data: (Array.isArray(response) ? response : response.data).map(
-                  parser || ((item: T) => ({ label: item, value: item })),
-                ),
+                data: (Array.isArray(response) ? response : response.data).map(parseResult),
               };
             } else {
               DataStore[url] = { status: 'Error', data: [], timestamp: Date.now() };
@@ -85,18 +116,25 @@ function useAutoComplete<T>({ preFetch, url, input, parser, finder }: AutoComple
           });
       }
     } else {
-      // NOTE: This cannot work without some kind of debouncing
       fetch(url)
         .then((resp) => resp.json())
         .then((response) => {
           if (response.status === 200 && Array.isArray(response.data)) {
-            setResult({ status: 'Ok', data: response.data.map(parser), timestamp: Date.now() });
+            const data: AutoCompleteItem[] = response.data.map(parseResult);
+            setResult({
+              status: 'Ok',
+              data: finder ? data.filter((item) => finder(item, input)) : data,
+              timestamp: Date.now(),
+            });
           } else {
             setResult({ status: 'Error', data: [], timestamp: Date.now() });
           }
+        })
+        .catch(() => {
+          setResult({ status: 'Error', data: [], timestamp: Date.now() });
         });
     }
-  }, [input, url, preFetch]); // eslint-disable-line
+  }, [url, preFetch, searchEmpty]); // eslint-disable-line
 
   return result;
 }

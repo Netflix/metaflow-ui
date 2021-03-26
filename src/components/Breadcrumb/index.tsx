@@ -34,13 +34,13 @@ const Breadcrumb: React.FC = () => {
   const [warning, setWarning] = useState('');
 
   const autoCompleteResult = useAutoComplete<string>({
-    url: urlFromString(str),
-    preFetch: true,
+    ...urlFromString(str),
     finder: (item, input) => {
       const last = takeLastSplitFromURL(item.label);
-      return !input ? true : last !== input && last.includes(input);
+      return !input ? true : last.toLowerCase().includes(input.toLowerCase());
     },
     input: takeLastSplitFromURL(str),
+    searchEmpty: str.split('/').length > 1,
   });
 
   //
@@ -271,18 +271,18 @@ export function pathFromString(str: string): string | null {
   return null;
 }
 
-function urlFromString(str: string): string {
+function urlFromString(str: string): { url: string; params: Record<string, string> } {
   const parts = str.split('/');
+  const lastSplit = takeLastSplitFromURL(str);
+
   if (parts.length < 2) {
-    return '/flows/autocomplete';
+    return { url: '/flows/autocomplete', params: { 'flow_id:co': lastSplit } };
   } else if (parts.length === 2) {
-    return `/flows/${parts[0]}/runs/autocomplete`;
+    return { url: `/flows/${parts[0]}/runs/autocomplete`, params: { 'run:co': lastSplit } };
   } else if (parts.length === 3) {
-    return `/flows/${parts[0]}/runs/${parts[1]}/steps/autocomplete`;
-  } else if (parts.length === 4) {
-    return `/not-implemented`;
+    return { url: `/flows/${parts[0]}/runs/${parts[1]}/steps/autocomplete`, params: { 'step_name:co': lastSplit } };
   }
-  return '/flows/autocomplete';
+  return { url: 'not-implemented', params: {} };
 }
 
 function mergeWithString(str: string, toAdd: string): string {

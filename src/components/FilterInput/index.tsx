@@ -1,6 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import useAutoComplete, { AutoCompleteSettings } from '../../hooks/useAutoComplete';
+import useAutoComplete, { AutoCompleteItem } from '../../hooks/useAutoComplete';
 import Icon from '../Icon';
 import AutoComplete from '../AutoComplete';
 import { ForceNoWrapText } from '../Text';
@@ -12,7 +12,12 @@ import { ForceNoWrapText } from '../Text';
 type FilterInputProps = {
   onSubmit: (k: string) => void;
   sectionLabel: string;
-  autoCompleteSettings: AutoCompleteSettings<any>;
+  autoCompleteSettings?: {
+    url: string;
+    finder?: (item: AutoCompleteItem, input: string) => boolean;
+    params?: (input: string) => Record<string, string>;
+    preFetch?: boolean;
+  };
 };
 
 //
@@ -22,13 +27,34 @@ type FilterInputProps = {
 const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel, autoCompleteSettings }) => {
   const [hasFocus, setHasFocus] = useState(false);
   const [val, setVal] = useState('');
+  const [autoCompleteOpen, setAutoCompleteOpen] = useState(false);
   const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
 
-  const autoCompleteResult = useAutoComplete<string>({
-    ...autoCompleteSettings,
-    input: val,
-  });
+  const autoCompleteResult = useAutoComplete<string>(
+    autoCompleteSettings
+      ? {
+          ...autoCompleteSettings,
+          params: autoCompleteSettings.params ? autoCompleteSettings.params(val) : {},
+          input: val,
+        }
+      : { url: '', input: '', enabled: false },
+  );
+  useEffect(() => {
+    let t: number | undefined = undefined;
+
+    if (hasFocus && !autoCompleteOpen) {
+      t = setTimeout(() => {
+        setAutoCompleteOpen(true);
+      }, 150);
+    } else if (!hasFocus && autoCompleteOpen) {
+      t = setTimeout(() => {
+        setAutoCompleteOpen(false);
+      }, 150);
+    }
+
+    return () => clearTimeout(t);
+  }, [hasFocus, autoCompleteOpen]);
 
   return (
     <FilterInputWrapper
@@ -85,7 +111,7 @@ const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel, autoC
           <Icon name={hasFocus ? 'enter' : 'plus'} size="xs" />
         </SubmitIconHolder>
       </FilterInputContainer>
-      {autoCompleteResult.data.length > 0 && val !== '' && (
+      {autoCompleteOpen && autoCompleteResult.data.length > 0 && val !== '' && (
         <AutoComplete
           result={autoCompleteResult.data}
           setActiveOption={(active) => {

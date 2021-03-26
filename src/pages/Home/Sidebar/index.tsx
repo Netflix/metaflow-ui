@@ -81,8 +81,7 @@ const HomeSidebar: React.FC<Props> = ({
           sectionLabel={t('fields.flow')}
           autoCompleteSettings={{
             url: '/flows/autocomplete',
-            preFetch: true,
-            parser: (str: string) => ({ label: str, value: str }),
+            params: (str) => ({ 'flow_id:co': str }),
           }}
         />
         <TagParameterList paramKey="flow_id" updateList={updateListValue} value={params.flow_id} />
@@ -94,9 +93,7 @@ const HomeSidebar: React.FC<Props> = ({
           sectionLabel={t('fields.project')}
           autoCompleteSettings={{
             url: '/tags/autocomplete',
-            preFetch: true,
-            parser: (str: string) => ({ label: str, value: str }),
-            finder: (item, input) => !!item.value.match(`^project:.*${input}.*`),
+            params: (input: string) => ({ 'tag:li': `project:%${input}%` }),
           }}
         />
         <TagParameterList
@@ -114,9 +111,7 @@ const HomeSidebar: React.FC<Props> = ({
           sectionLabel={t('fields.user')}
           autoCompleteSettings={{
             url: '/tags/autocomplete',
-            preFetch: true,
-            parser: (str: string) => ({ label: str, value: str }),
-            finder: (item, input) => !!item.value.match(`^user:.*${input}.*`),
+            params: (input: string) => ({ 'tag:li': `user:%${input}%` }),
           }}
         />
         <TagParameterList
@@ -132,8 +127,7 @@ const HomeSidebar: React.FC<Props> = ({
           sectionLabel={t('fields.tag')}
           autoCompleteSettings={{
             url: '/tags/autocomplete',
-            preFetch: true,
-            parser: (str: string) => ({ label: str, value: str }),
+            params: (input: string) => ({ 'tag:co': input }),
           }}
         />
         <TagParameterList
