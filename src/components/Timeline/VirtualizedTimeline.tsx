@@ -1,8 +1,8 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { List } from 'react-virtualized';
+import React, { useEffect, useState } from 'react';
+import { AutoSizer, List } from 'react-virtualized';
 import { Step, Task, AsyncStatus } from '../../types';
 import styled from 'styled-components';
-import useComponentSize from '@rehooks/component-size';
+
 import TimelineRow from './TimelineRow';
 import { GraphHook, GraphState } from './useGraph';
 import { StepRowData, RowDataAction } from './useTaskData';
@@ -40,6 +40,7 @@ type TimelineProps = {
 // Component
 //
 
+const SPACE_UNDER_TIMELINE = toRelativeSize(80);
 export const ROW_HEIGHT = toRelativeSize(28);
 
 const VirtualizedTimeline: React.FC<TimelineProps> = ({
@@ -53,9 +54,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   isAnyGroupOpen,
 }) => {
   const { t } = useTranslation();
-  // Use component size to determine size of virtualised list. It needs fixed size to be able to virtualise.
-  const _listContainer = useRef<HTMLDivElement>(null);
-  const listContainer = useComponentSize(_listContainer);
 
   // Position of each step in timeline. Used to track if we should use sticky header (move to rowDataState?)
   const [stepPositions, setStepPositions] = useState<StepIndex[]>([]);
@@ -112,13 +110,6 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
     }
   };
 
-  const getContainerHeight = () => {
-    return (
-      (listContainer.height - 69 > rows.length * ROW_HEIGHT ? rows.length * ROW_HEIGHT : listContainer.height - 69) +
-      'px'
-    );
-  };
-
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
@@ -136,51 +127,54 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
           resetSteps={() => setQueryParam({ steps: null })}
         />
         {rows.length > 0 && (
-          <ListContainer ref={_listContainer}>
-            <FixedListContainer
-              sticky={!!stickyHeader && graph.group}
-              style={{
-                height: getContainerHeight(),
-                width: listContainer.width + 'px',
-              }}
-            >
-              <List
-                overscanRowCount={10}
-                rowCount={rows.length}
-                onRowsRendered={onRowsRendered}
-                rowHeight={ROW_HEIGHT}
-                rowRenderer={createRowRenderer({
-                  rows,
-                  graph,
-                  dispatch: rowDataDispatch,
-                  isGrouped: graph.group,
-                  paramsString,
-                  t: t,
-                  dragging: dragging,
-                })}
-                height={listContainer.height - (stickyHeader ? ROW_HEIGHT : 0) - 69}
-                width={listContainer.width}
-              />
+          <ListContainer>
+            <AutoSizer>
+              {({ width, height }) => (
+                <>
+                  <List
+                    overscanRowCount={10}
+                    rowCount={rows.length}
+                    onRowsRendered={onRowsRendered}
+                    rowHeight={ROW_HEIGHT}
+                    rowRenderer={createRowRenderer({
+                      rows,
+                      graph,
+                      dispatch: rowDataDispatch,
+                      isGrouped: graph.group,
+                      paramsString,
+                      t: t,
+                      dragging: dragging,
+                    })}
+                    height={
+                      height - SPACE_UNDER_TIMELINE > rows.length * ROW_HEIGHT
+                        ? rows.length * ROW_HEIGHT
+                        : height - SPACE_UNDER_TIMELINE
+                    }
+                    width={width}
+                  />
+                  {stickyHeader && graph.group && (
+                    <StickyHeader
+                      stickyStep={stickyHeader}
+                      items={rows}
+                      graph={graph}
+                      onToggle={() => rowDataDispatch({ type: 'close', id: stickyHeader })}
+                      t={t}
+                      dragging={dragging}
+                    />
+                  )}
 
-              {stickyHeader && graph.group && (
-                <StickyHeader
-                  stickyStep={stickyHeader}
-                  items={rows}
-                  graph={graph}
-                  onToggle={() => rowDataDispatch({ type: 'close', id: stickyHeader })}
-                  t={t}
-                  dragging={dragging}
-                />
+                  <div style={{ width: width + 'px' }}>
+                    <TimelineFooter
+                      graph={graph}
+                      rows={rows}
+                      move={(value) => graphDispatch({ type: 'move', value: value })}
+                      updateHandle={footerHandleUpdate}
+                      updateDragging={setDragging}
+                    />
+                  </div>
+                </>
               )}
-            </FixedListContainer>
-
-            <TimelineFooter
-              graph={graph}
-              rows={rows}
-              move={(value) => graphDispatch({ type: 'move', value: value })}
-              updateHandle={footerHandleUpdate}
-              updateDragging={setDragging}
-            />
+            </AutoSizer>
           </ListContainer>
         )}
 
@@ -306,13 +300,8 @@ const VirtualizedTimelineSubContainer = styled.div`
 const ListContainer = styled.div`
   flex: 1;
   min-height: 31.25rem;
-`;
-
-const FixedListContainer = styled.div<{ sticky?: boolean }>`
+  max-width: 100%;
   position: relative;
-  padding-top: ${(p) => (p.sticky ? ROW_HEIGHT : 0)}px;
-  transition: 0.5s height;
-  overflow: hidden;
 `;
 
 export default VirtualizedTimeline;
