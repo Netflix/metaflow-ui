@@ -34,12 +34,12 @@ export const TIMEZONES = [
 ];
 
 export const TimezoneContext = React.createContext<TimezoneContextProps>({
-  timezone: '+00:00',
+  timezone: '+00:00|197', // +00:00 Reykjavik
   updateTimezone: () => null,
 });
 
 export const TimezoneProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [timezone, setTimezone] = useState(localStorage.getItem('selected-timezone') || '+00:00');
+  const [timezone, setTimezone] = useState(localStorage.getItem('selected-timezone') || '+00:00|197');
 
   const updateTimezone = (zone: string) => {
     setTimezone(zone);

@@ -23,6 +23,8 @@ const en = {
       'quick-links': 'Quick links',
       timezone: 'Timezone',
       'local-time': 'Local time',
+      'local-timezone': 'Local timezone',
+      'selected-time': 'Selected timezone',
       timezones: 'Timezones',
       documentation: 'Documentation',
       help: 'Help',
