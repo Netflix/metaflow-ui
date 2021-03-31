@@ -1,7 +1,7 @@
 import { TFunction } from 'i18next';
 import React from 'react';
 import { APIError } from '../../../types';
-import { APIErrorRenderer, knownErrorIds } from '../../GenericError';
+import { APIErrorRenderer } from '../../GenericError';
 import Icon from '../../Icon';
 
 //
@@ -18,20 +18,5 @@ const DAGError: React.FC<DAGErrorProps> = ({ error }) => (
     <APIErrorRenderer error={error} icon={<Icon name="noDag" customSize={5} />} />
   </div>
 );
-
-//
-// Figure out correct error message for a situation
-//
-
-export function DAGErrorMessage(t: TFunction, error: APIError | null): string {
-  if (error && knownErrorIds.indexOf(error.id) > -1) {
-    if (error.id === 'dag-processing-error' || error.id === 'dag-unsupported-flow-language') {
-      return t('error.' + error.id);
-    }
-
-    return t(`error.failed-to-load-dag`) + ' ' + t(`error.${error.id}`);
-  }
-  return t('error.failed-to-load-dag');
-}
 
 export default DAGError;

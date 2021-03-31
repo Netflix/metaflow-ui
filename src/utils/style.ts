@@ -27,6 +27,9 @@ export function toRelativeSize(normalsize: number): number {
   return normalsize * multiplier;
 }
 
+/**
+ * Default colors for different statuses
+ */
 export function colorByStatus(theme: DefaultTheme, status: string): string {
   switch (status) {
     case 'completed':

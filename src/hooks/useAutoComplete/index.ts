@@ -13,7 +13,9 @@ export type AutoCompleteSettings<T> = {
   params?: Record<string, string>;
   // Parse incoming data to autocomplete items;
   parser?: (item: T) => AutoCompleteItem;
+  // Custom function to find results from dataset
   finder?: (item: AutoCompleteItem, input: string) => boolean;
+  // preFetch = true sets mode so we use cache and send only single query. This might be slower initially but after that request autocomplete works really fast.
   preFetch?: boolean;
   // Flag if we should send request with empty input
   searchEmpty?: boolean;

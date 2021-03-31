@@ -2,6 +2,10 @@ import React from 'react';
 import styled from 'styled-components';
 import { readParameterValue } from '../../utils/parameters';
 
+//
+// Typedef
+//
+
 type Props =
   | {
       title?: string;
@@ -9,6 +13,12 @@ type Props =
       content: React.ReactNode;
     }
   | { title?: string; type: 'table'; content: { [key: string]: React.ReactNode } };
+
+//
+// Component
+// TitledRow has 2 modes, table and default. Table modes has default handling for content where as default just render what
+// ever is given as content prop
+//
 
 const TitledRow: React.FC<Props> = (props) => {
   return (
@@ -36,6 +46,11 @@ const TitledRow: React.FC<Props> = (props) => {
 // Utils
 //
 
+/**
+ * Turn any value to renderable ReactChild. Also make sure that some values like boolean or
+ * JSON objects looks better thatn by default stringify
+ * @param value Pretty much any value
+ */
 export function valueToRenderableType(value: React.ReactNode): React.ReactChild {
   if (React.isValidElement(value)) return value;
 

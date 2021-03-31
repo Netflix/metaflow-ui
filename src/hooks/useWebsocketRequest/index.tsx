@@ -41,15 +41,12 @@ export default function useWebsocketRequest<T>({
     let conn: ReconnectingWebSocket;
 
     const _onOpen = (e: OpenEvent) => {
-      // console.debug('Websocket connection open');
       onOpen && onOpen(e);
     };
     const _onClose = (e: CloseEvent) => {
-      // console.debug('Websocket connection closed');
       onClose && onClose(e);
     };
     const _onMessage = (e: MessageEvent) => {
-      // console.debug('Websocket message', e);
       if (e.data) {
         try {
           const event = JSON.parse(e.data) as Event<T>;

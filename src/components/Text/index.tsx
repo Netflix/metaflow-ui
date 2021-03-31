@@ -14,8 +14,6 @@ export const SmallText = styled.small`
   font-size: 0.875rem;
 `;
 
-export const Paragraph = styled.p``;
-
 export const ForceBreakText = styled.span`
   word-break: break-all;
 `;

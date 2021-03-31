@@ -1,92 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
 import { ThemeProvider } from 'styled-components';
+import { useTranslation } from 'react-i18next';
 
 import Root from './pages/Root';
-
-import { Page } from './components/Structure';
-import AppBar from './components/AppBar';
 
 import GlobalStyle from './GlobalStyle';
 import './theme/font/roboto.css';
 import theme from './theme';
 
+import { Page } from './components/Structure';
+import AppBar from './components/AppBar';
 import { NotificationsProvider, Notifications } from './components/Notifications';
 import ErrorBoundary from './components/GeneralErrorBoundary';
-import { useTranslation } from 'react-i18next';
 import { TimezoneProvider } from './components/TimezoneProvider';
-import { getRouteMatch } from './utils/routing';
-import { apiHttp } from './constants';
-import { setServiceVersion } from './utils/VERSION';
-import Logger from './components/Logger';
-import FEATURE_FLAGS, { FeatureFlags } from './utils/FEATURE';
 import FeatureFlagLoader from './components/FeatureLoader';
-import { initializeGA } from './utils/analytics';
-import { logWarning } from './utils/errorlogger';
+import Logger from './components/Logger';
+import AutoScrollTop from './utils/AutoScrollTop';
 
-function ScrollToTop() {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    const match = getRouteMatch(pathname);
-    // Don't use up feature when on task page, there is some scroll handling
-    if (match && match.params.taskId) {
-      return;
-    } else {
-      window.scrollTo(0, 0);
-    }
-  }, [pathname]);
-
-  return null;
-}
+import { fetchServiceVersion } from './utils/VERSION';
+import { fetchFeaturesConfig } from './utils/FEATURE';
+import { fetchConfigurations } from './utils/config';
 
 const App: React.FC = () => {
   const { t } = useTranslation();
+  // Features list must be fetched before we render application so we don't render things that
+  // are disabled by backend service.
   const [flagsReceived, setFlagsReceived] = useState(false);
 
   useEffect(() => {
-    // Get info about servers versions
-    fetch(apiHttp('/version'))
-      .then((response) => (response.status === 200 ? response.text() : Promise.resolve('')))
-      .then((value) => {
-        if (value) {
-          setServiceVersion(value);
-        }
-      });
+    // Get info about backend versions.
+    fetchServiceVersion();
     // Get info about features that are enabled by server
-    fetch(apiHttp('/features'))
-      .then((response) => (response.status === 200 ? response.json() : Promise.resolve(null)))
-      .then((values: Record<keyof FeatureFlags, boolean>) => {
-        const featureKeys = Object.keys(FEATURE_FLAGS);
-        if (values) {
-          Object.keys(values).forEach((key) => {
-            const fixedKey = key.split('_').slice(1, key.split('_').length).join('_');
-            if (featureKeys.indexOf(fixedKey) > -1) {
-              FEATURE_FLAGS[fixedKey as keyof FeatureFlags] = values[key as keyof FeatureFlags];
-            }
-          });
-        }
-        setFlagsReceived(true);
-      })
-      .catch(() => {
-        setFlagsReceived(true);
-      });
-    // Get configurations
-    fetch(apiHttp('/config'))
-      .then((response) => (response.status === 200 ? response.json() : Promise.resolve(null)))
-      .then((values: Record<string, string> | null) => {
-        if (values) {
-          if (values.GA_TRACKING_ID) {
-            initializeGA(values.GA_TRACKING_ID);
-          }
-        } else {
-          logWarning('Failed to fetch configurations');
-        }
-      })
-      .catch(() => {
-        logWarning('Failed to fetch configurations');
-      });
+    fetchFeaturesConfig(() => setFlagsReceived(true));
+    // Get other configurations
+    fetchConfigurations();
   }, []);
 
   return (
@@ -96,7 +45,7 @@ const App: React.FC = () => {
           <TimezoneProvider>
             <GlobalStyle />
             <Router>
-              <ScrollToTop />
+              <AutoScrollTop />
               <QueryParamProvider ReactRouterRoute={Route}>
                 {flagsReceived ? (
                   <>

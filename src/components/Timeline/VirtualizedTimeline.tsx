@@ -17,16 +17,14 @@ import TimelineNoRows from './TimelineNoRows';
 import { RenderedRows } from 'react-virtualized/dist/es/List';
 import { toRelativeSize } from '../../utils/style';
 
-export const ROW_HEIGHT = toRelativeSize(28);
+//
+// Typedef
+//
+
 export type StepRow = { type: 'step'; data: Step; rowObject: StepRowData };
 export type TaskRow = { type: 'task'; data: Task[] };
 export type Row = StepRow | TaskRow;
 type StepIndex = { name: string; index: number };
-
-//
-// Self containing component for rendering everything related to timeline. Component fetched (and subscribes for live events) steps and tasks from different
-// endpoints. View is supposed to be full page (and full page only) since component itself will use virtualised scrolling.
-//
 type TimelineProps = {
   rows: Row[];
   rowDataDispatch: React.Dispatch<RowDataAction>;
@@ -37,6 +35,12 @@ type TimelineProps = {
   paramsString: string;
   isAnyGroupOpen: boolean;
 };
+
+//
+// Component
+//
+
+export const ROW_HEIGHT = toRelativeSize(28);
 
 const VirtualizedTimeline: React.FC<TimelineProps> = ({
   graph: graphHook,
@@ -194,6 +198,10 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   );
 };
 
+//
+// Utils
+//
+
 type RowRendererProps = {
   rows: Row[];
   graph: GraphState;
@@ -239,6 +247,17 @@ function createRowRenderer({ rows, graph, dispatch, paramsString = '', isGrouped
   };
 }
 
+function timelineNeedStickyHeader(stepPositions: StepIndex[], currentIndex: number) {
+  return stepPositions.find((item, index) => {
+    const isLast = index + 1 === stepPositions.length;
+
+    if (item.index < currentIndex && (isLast || stepPositions[index + 1].index > currentIndex + 1)) {
+      return true;
+    }
+    return false;
+  });
+}
+
 const StickyHeader: React.FC<{
   stickyStep: string;
   items: Row[];
@@ -264,6 +283,10 @@ const StickyHeader: React.FC<{
     />
   );
 };
+
+//
+// Style
+//
 
 const VirtualizedTimelineContainer = styled.div`
   display: flex;
@@ -291,20 +314,5 @@ const FixedListContainer = styled.div<{ sticky?: boolean }>`
   transition: 0.5s height;
   overflow: hidden;
 `;
-
-//
-// Utils
-//
-
-function timelineNeedStickyHeader(stepPositions: StepIndex[], currentIndex: number) {
-  return stepPositions.find((item, index) => {
-    const isLast = index + 1 === stepPositions.length;
-
-    if (item.index < currentIndex && (isLast || stepPositions[index + 1].index > currentIndex + 1)) {
-      return true;
-    }
-    return false;
-  });
-}
 
 export default VirtualizedTimeline;

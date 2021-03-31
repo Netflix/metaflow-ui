@@ -35,15 +35,22 @@ export type StepRowData = {
 //
 
 export type RowDataAction =
+  // Add steps to the store
   | { type: 'fillStep'; data: Step[] }
+  // Add single step to store
   | { type: 'add'; id: string; data: StepRowData }
+  // Fill bunch of tasks to the corresponding step
   | { type: 'fillTasks'; data: Task[] }
+  // Toggle step row expanded or collapsed
   | { type: 'toggle'; id: string }
+  // Expand step row
   | { type: 'open'; id: string }
+  // Collapse step row
   | { type: 'close'; id: string }
+  // Expand all steps
   | { type: 'openAll' }
+  // Collapse all steps
   | { type: 'closeAll' }
-  | { type: 'sort'; ids: string[] }
   | { type: 'reset' };
 
 export type RowDataModel = { [key: string]: StepRowData };

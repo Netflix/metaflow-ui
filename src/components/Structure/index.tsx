@@ -31,23 +31,6 @@ export const SectionHeader = styled.header<{ noPadding?: boolean }>`
   height: 2rem;
 `;
 
-type FlexAlignments = {
-  left: string;
-  center: string;
-  right: string;
-};
-
-const alignmentToFlex: FlexAlignments = {
-  left: 'flex-start',
-  center: 'center',
-  right: 'flex-end',
-};
-
-export const SectionHeaderContent = styled.div<{ align: keyof FlexAlignments }>`
-  justify-content: ${(p) => alignmentToFlex[p.align]};
-  align-items: center;
-`;
-
 export const FixedContent = styled.div`
   height: calc(100vh - ${(p) => p.theme.layout.appbarHeight + 2}rem);
   display: flex;

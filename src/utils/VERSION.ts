@@ -3,6 +3,8 @@
 // Version is also available from browser console in window.APPLICATION_VERSION.
 //
 
+import { apiHttp } from '../constants';
+
 declare global {
   interface Window {
     APPLICATION_VERSION: { commit: string; release_version: string; env: string };
@@ -29,6 +31,19 @@ export function setServiceVersion(serviceVersion: string): void {
 
 export function getVersionInfo(): VersionInfo {
   return VERSION_INFO;
+}
+
+/**
+ * Fetch version of backend service.
+ */
+export function fetchServiceVersion(): void {
+  fetch(apiHttp('/version'))
+    .then((response) => (response.status === 200 ? response.text() : Promise.resolve('')))
+    .then((value) => {
+      if (value) {
+        setServiceVersion(value);
+      }
+    });
 }
 
 window.APPLICATION_VERSION = VERSION_INFO;

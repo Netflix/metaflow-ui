@@ -138,7 +138,7 @@ const TimelineFooter: React.FC<TimelineFooterProps> = ({ graph, move, updateHand
           {FEATURE_FLAGS.TIMELINE_MINIMAP &&
             lines.map((step, index) => (
               <MinimapRow
-                key={index + step.start}
+                key={index + step.start + step.end}
                 graph={graph}
                 started={step.start}
                 finished={step.end}

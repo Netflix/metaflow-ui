@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { StringParam, useQueryParams } from 'use-query-params';
 import useSearchRequest, { SearchResult, TaskMatch } from '../useSearchRequest';
 
+//
+// Typedef
+//
+
 export type SearchResultModel = {
   result: TaskMatch[];
   status: 'NotAsked' | 'Loading' | 'Ok' | 'Error';
@@ -14,6 +18,11 @@ export type SearchFieldReturnType = {
   fieldProps: SearchFieldProps;
 };
 
+//
+// Datastore
+// Cache search state since we might use same search field in multiple fields.
+//
+
 const cache: { id: string; text: string; results: SearchResultModel } = {
   id: '',
   text: '',
@@ -23,6 +32,14 @@ const cache: { id: string; text: string; results: SearchResultModel } = {
 function isCached(flowId: string, runNumber: string) {
   return flowId + runNumber === cache.id;
 }
+
+//
+// Hook
+// Search hook will send artifact search requests with websocket. Every time user changes query we resubscribe to search
+// websocket and backend will initiate search. These queries might take a while.
+//
+// Search query will return list of tasks that matched to query.
+//
 
 export default function useSeachField(flowID: string, runNumber: string): SearchFieldReturnType {
   const [qp, setQp] = useQueryParams({ q: StringParam });

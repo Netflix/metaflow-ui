@@ -1,3 +1,6 @@
+/**
+ * Parse string to see if it is object and return it in formatted state.
+ */
 export function readParameterValue(str: string): string {
   let val;
   try {

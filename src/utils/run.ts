@@ -2,6 +2,10 @@ import { Run } from '../types';
 import { getISOString } from './date';
 import { formatDuration } from './format';
 
+/**
+ * Run id might be one of 3 fields. run, run_id, run_number. run should be field that has been combined from run_id and run_number but
+ * let's have same fallbacks just in case.
+ */
 export function getRunId(run: Run): string {
   return run.run || run.run_id || (run.run_number || 0).toString();
 }
@@ -58,13 +62,4 @@ export function getRunDuration(run: Run): string | null {
 export function getTagOfType(tags: string[], tagType: string): string | null {
   const tag = (tags || []).find((tag) => tag.startsWith(`${tagType}:`));
   return tag ? tag.split(`${tagType}:`)[1] : null;
-}
-
-export function getProjectFieldValue(item: Run): string {
-  const project = getTagOfType(item.system_tags || [], 'project');
-  if (project) {
-    const projectbranch = getTagOfType(item.system_tags || [], 'project_branch');
-    return projectbranch ? `${project} (${projectbranch})` : project;
-  }
-  return '';
 }

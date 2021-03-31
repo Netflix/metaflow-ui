@@ -9,6 +9,10 @@ import { colorByStatus } from '../../utils/style';
 import { getTaskDuration, getTaskId } from '../../utils/task';
 import Icon from '../Icon';
 
+//
+// Typedef
+//
+
 type BaseProps = {
   open: boolean;
   grouped: boolean;
@@ -20,6 +24,10 @@ type BaseProps = {
 type TaskRow = { type: 'task'; item: Task } & BaseProps;
 type StepRow = { type: 'step'; item: Step; toggle: () => void } & BaseProps;
 type Props = TaskRow | StepRow;
+
+//
+// Component
+//
 
 const TaskListLabel: React.FC<Props> = (props) => {
   const { open, grouped } = props;
@@ -80,6 +88,10 @@ function getTaskLabel(item: Task): string {
 }
 
 export default TaskListLabel;
+
+//
+// Style
+//
 
 const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: boolean; status: string }>`
   flex: 0 0 15.3125rem;

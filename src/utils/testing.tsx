@@ -11,6 +11,10 @@ export const mockfetch = jest.fn(() =>
   }),
 );
 
+/**
+ * Wrapper for testing component that depends on theming and routing. Also accepts route as param if
+ * component depends on certain routes.
+ */
 const TestWrapper: React.FC<{ route?: string }> = ({ children, route = '/' }) => {
   return (
     <ThemeProvider theme={theme}>

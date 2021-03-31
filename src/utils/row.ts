@@ -6,6 +6,9 @@ const takeSmallest = (a: Row): number | null => (a.type === 'task' ? a.data[0].s
 const takeBiggest = (a: Row): number =>
   (a.type === 'task' ? a.data[a.data.length - 1].finished_at : a.data.finished_at) || 0;
 
+/**
+ * Sort rows by smallest value
+ */
 const sortSmallest = (a: Row, b: Row) => {
   const aval = takeSmallest(a);
   const bval = takeSmallest(b);
@@ -21,6 +24,9 @@ const sortSmallest = (a: Row, b: Row) => {
   return aval - bval;
 };
 
+/**
+ * Find smallest and biggest time value from rows
+ */
 export const startAndEndpointsOfRows = (rows: Row[]): { start: number; end: number } => {
   const start = rows.sort(sortSmallest)[0];
   const end = rows.sort((a, b) => takeBiggest(b) - takeBiggest(a))[0];
@@ -31,6 +37,9 @@ export const startAndEndpointsOfRows = (rows: Row[]): { start: number; end: numb
   };
 };
 
+/**
+ * Find longest duration from rows
+ */
 export const getLongestRowDuration = (rows: Row[]): number => {
   return rows.reduce((val, item) => {
     if (item.type === 'task') {
@@ -42,6 +51,9 @@ export const getLongestRowDuration = (rows: Row[]): number => {
   }, 0);
 };
 
+/**
+ * Get status for group of rows.
+ */
 export const getTaskLineStatus = (rows: Row[]): TaskStatus => {
   const statuses = rows.map((row) => {
     if (row.type === 'task') {

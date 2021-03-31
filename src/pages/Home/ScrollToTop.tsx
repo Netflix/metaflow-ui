@@ -3,7 +3,17 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import Icon from '../../components/Icon';
 
-const ScrollToTop: React.FC<{ show: boolean; newRunsAvailable: boolean }> = ({ show, newRunsAvailable }) => {
+//
+// Typedef
+//
+
+type Props = { show: boolean; newRunsAvailable: boolean };
+
+//
+// Component
+//
+
+const ScrollToTop: React.FC<Props> = ({ show, newRunsAvailable }) => {
   const { t } = useTranslation();
   const textContent = newRunsAvailable ? t('home.new-run-available') : t('home.scroll-to-top');
   return (
@@ -19,6 +29,10 @@ const ScrollToTop: React.FC<{ show: boolean; newRunsAvailable: boolean }> = ({ s
     </ScrollToTopButton>
   );
 };
+
+//
+// Style
+//
 
 const ScrollToTopButton = styled.div<{ show: boolean; fullWidth: number }>`
   cursor: pointer;
