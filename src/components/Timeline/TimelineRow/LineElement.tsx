@@ -2,7 +2,7 @@ import React from 'react';
 import styled, { DefaultTheme, keyframes, css } from 'styled-components';
 import { Step, Task } from '../../../types';
 import { StepRowData } from '../useTaskData';
-import { GraphState } from '../useGraph';
+import { GraphAlignment } from '../useGraph';
 import { lineColor, getRowStatus, getLengthLabelPosition } from './utils';
 import { formatDuration } from '../../../utils/format';
 import { lighten } from 'polished';
@@ -15,7 +15,12 @@ import { getPathFor } from '../../../utils/routing';
 
 type LineElementProps = {
   row: { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task };
-  graph: GraphState;
+  timeline: {
+    startTime: number;
+    visibleEndTime: number;
+    visibleStartTime: number;
+    alignment: GraphAlignment;
+  };
   grayed?: boolean;
   isLastAttempt: boolean;
   duration: number | null;
@@ -32,7 +37,7 @@ export type LabelPosition = 'left' | 'right' | 'none';
 
 const LineElement: React.FC<LineElementProps> = ({
   row,
-  graph,
+  timeline,
   grayed,
   isLastAttempt,
   duration,
@@ -44,8 +49,8 @@ const LineElement: React.FC<LineElementProps> = ({
   const status = getRowStatus(row);
   // Extend visible area little bit to prevent lines seem like going out of bounds. Happens
   // in some cases with short end task
-  const extendAmount = (graph.timelineEnd - graph.timelineStart) * 0.01;
-  const visibleDuration = graph.timelineEnd - graph.timelineStart + extendAmount;
+  const extendAmount = (timeline.visibleEndTime - timeline.visibleStartTime) * 0.01;
+  const visibleDuration = timeline.visibleEndTime - timeline.visibleStartTime + extendAmount;
   const boxStartTime = row.type === 'step' ? row.data.ts_epoch : row.data.started_at;
 
   if (!boxStartTime) {
@@ -54,11 +59,13 @@ const LineElement: React.FC<LineElementProps> = ({
 
   // Calculate have much box needs to be pushed from (or to) left
   const valueFromLeft =
-    graph.alignment === 'fromLeft'
-      ? ((graph.min - graph.timelineStart + (startTimeOfFirstAttempt ? boxStartTime - startTimeOfFirstAttempt : 0)) /
+    timeline.alignment === 'fromLeft'
+      ? ((timeline.startTime -
+          timeline.visibleStartTime +
+          (startTimeOfFirstAttempt ? boxStartTime - startTimeOfFirstAttempt : 0)) /
           visibleDuration) *
         100
-      : ((boxStartTime - graph.timelineStart) / visibleDuration) * 100;
+      : ((boxStartTime - timeline.visibleStartTime) / visibleDuration) * 100;
 
   const width = duration && status !== 'running' ? (duration / visibleDuration) * 100 : 100 - valueFromLeft;
 

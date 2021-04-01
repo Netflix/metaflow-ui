@@ -132,6 +132,7 @@ const RowStepName = styled.span<{ bigName: boolean }>`
   min-width: ${(p) => (p.bigName ? '45%' : 'max-content')};
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const RowDuration = styled.span`

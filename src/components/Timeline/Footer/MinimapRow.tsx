@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import { TaskStatus } from '../../../types';
+import { TimelineMetrics } from '../Timeline';
 import { lineColor } from '../TimelineRow/utils';
-import { GraphState } from '../useGraph';
 
 //
 // Typedef
@@ -12,17 +12,17 @@ type MinimapRowProps = {
   started: number;
   finished: number;
   status: TaskStatus;
-  graph: GraphState;
+  timeline: TimelineMetrics;
 };
 
 //
 // Component
 //
-const MinimapRow: React.FC<MinimapRowProps> = ({ started, finished, status, graph }) => {
-  const extendAmount = (graph.max - graph.min) * 0.01;
-  const visibleDuration = graph.max - graph.min + extendAmount;
+const MinimapRow: React.FC<MinimapRowProps> = ({ started, finished, status, timeline }) => {
+  const extendAmount = (timeline.endTime - timeline.startTime) * 0.01;
+  const visibleDuration = timeline.endTime - timeline.startTime + extendAmount;
   const width = ((finished - started) / visibleDuration) * 100;
-  const left = graph.sortBy === 'duration' ? 0 : ((started - graph.min) / visibleDuration) * 100;
+  const left = timeline.sortBy === 'duration' ? 0 : ((started - timeline.startTime) / visibleDuration) * 100;
 
   return (
     <MinimapLine

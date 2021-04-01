@@ -2,7 +2,7 @@ import React from 'react';
 import TimelineRow from '../TimelineRow';
 import LineElement from '../TimelineRow/LineElement';
 import { render } from '@testing-library/react';
-import { createGraphState, createTask, createStep } from '../../../utils/testhelper';
+import { createGraphState, createTask, createStep, createTimelineMetrics } from '../../../utils/testhelper';
 import TestWrapper from '../../../utils/testing';
 import { TaskStatus } from '../../../types';
 
@@ -13,10 +13,9 @@ describe('TimelineRow component', () => {
     render(
       <TestWrapper>
         <TimelineRow
-          graph={createGraphState({})}
+          timeline={createTimelineMetrics({})}
           onOpen={jest.fn()}
           item={{ type: 'task', data: [createTask({})] }}
-          isGrouped={true}
           dragging={false}
           t={MockT}
         />
@@ -29,9 +28,8 @@ describe('TimelineRow component', () => {
     const { getByTestId } = render(
       <TestWrapper>
         <TimelineRow
-          graph={createGraphState({})}
+          timeline={createTimelineMetrics({})}
           onOpen={jest.fn()}
-          isGrouped={true}
           item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
           dragging={false}
           t={MockT}
@@ -46,9 +44,8 @@ describe('TimelineRow component', () => {
     const { getByTestId } = render(
       <TestWrapper>
         <TimelineRow
-          graph={createGraphState({})}
+          timeline={createTimelineMetrics({})}
           onOpen={jest.fn()}
-          isGrouped={true}
           item={{
             type: 'task',
             data: [createTask({ started_at: 10 }), createTask({ started_at: 1000, finished_at: 9999999999 })],
@@ -64,7 +61,7 @@ describe('TimelineRow component', () => {
 
   test('<TimelineRow> - step row', () => {
     const props = {
-      graph: createGraphState({}),
+      timeline: createTimelineMetrics({}),
       onOpen: () => null,
       item: {
         type: 'step' as const,
@@ -85,7 +82,7 @@ describe('TimelineRow component', () => {
 
     const { getByTestId } = render(
       <TestWrapper>
-        <TimelineRow {...props} isGrouped={true} />
+        <TimelineRow {...props} />
       </TestWrapper>,
     );
     // Should have only one line graphic
@@ -95,11 +92,10 @@ describe('TimelineRow component', () => {
   test('<LineElement>', () => {
     const task = createTask({ ts_epoch: 100, started_at: 100, finished_at: 450, duration: 350 });
     const props = {
-      graph: createGraphState({}),
+      timeline: createTimelineMetrics({}),
       row: { type: 'task' as const, data: task },
       finishedAt: task.finished_at,
       duration: 350,
-      labelDuration: 350,
       isLastAttempt: true,
       dragging: false,
     };
@@ -119,7 +115,7 @@ describe('TimelineRow component', () => {
     // rendered quite a lot to the left (translateX -100%)
     rerender(
       <TestWrapper>
-        <LineElement {...props} graph={createGraphState({ timelineStart: 300, timelineEnd: 500 })} />
+        <LineElement {...props} timeline={createTimelineMetrics({ visibleStartTime: 300, visibleEndTime: 500 })} />
       </TestWrapper>,
     );
 
@@ -130,7 +126,7 @@ describe('TimelineRow component', () => {
     // Same as default graph but alignment is from left so every element should start from left
     rerender(
       <TestWrapper>
-        <LineElement {...props} graph={createGraphState({ alignment: 'fromLeft' })} />
+        <LineElement {...props} timeline={createTimelineMetrics({ alignment: 'fromLeft' })} />
       </TestWrapper>,
     );
 
@@ -141,7 +137,7 @@ describe('TimelineRow component', () => {
     // Try with unfinished item. No label since bar takes so wide space
     rerender(
       <TestWrapper>
-        <LineElement {...props} graph={createGraphState({})} duration={null} />
+        <LineElement {...props} timeline={createTimelineMetrics({})} duration={null} />
       </TestWrapper>,
     );
     expect(getByTestId('boxgraphic-container').style.transform).toBe('translateX(9.900990099009901%)');

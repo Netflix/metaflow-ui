@@ -1,7 +1,8 @@
 import { Row } from '../components/Timeline/VirtualizedTimeline';
 import { TaskStatus } from '../types';
 
-const takeSmallest = (a: Row): number | null => (a.type === 'task' ? a.data[0].started_at || null : a.data.ts_epoch);
+const takeSmallest = (a: Row): number | null =>
+  a.type === 'task' ? a.data[0].started_at || Number.MAX_VALUE : a.data.ts_epoch;
 
 const takeBiggest = (a: Row): number =>
   (a.type === 'task' ? a.data[a.data.length - 1].finished_at : a.data.finished_at) || 0;
@@ -28,8 +29,16 @@ const sortSmallest = (a: Row, b: Row) => {
  * Find smallest and biggest time value from rows
  */
 export const startAndEndpointsOfRows = (rows: Row[]): { start: number; end: number } => {
-  const start = rows.sort(sortSmallest)[0];
-  const end = rows.sort((a, b) => takeBiggest(b) - takeBiggest(a))[0];
+  const start = [...rows]
+    // Filter out those tasks that doesn't have started_at. Those cannot provide as correct data
+    .filter((item) => (item.type === 'task' ? !!(item.data[0] && item.data[0].started_at) : true))
+    .sort(sortSmallest)[0];
+  const end = [...rows]
+    // Filter out those tasks that doesn't have finished_at. Those cannot provide as correct data
+    .filter((item) =>
+      item.type === 'task' ? !!(item.data.length > 0 && item.data[item.data.length - 1].finished_at) : true,
+    )
+    .sort((a, b) => takeBiggest(b) - takeBiggest(a))[0];
 
   return {
     start: start ? takeSmallest(start) || 0 : 0,

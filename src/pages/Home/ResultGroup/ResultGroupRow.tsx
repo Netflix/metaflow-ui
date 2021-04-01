@@ -7,6 +7,7 @@ import { Run } from '../../../types';
 import { getPath } from '../../../utils/routing';
 import { getRunId } from '../../../utils/run';
 import RunParameterTable from '../../Run/RunParameterTable';
+import TimelinePreview from './TimelinePreview';
 import ResultGroupCells from './ResultGroupCells';
 import { StatusColorCell } from './ResultGroupStatus';
 import { TableColDefinition } from './';
@@ -107,6 +108,7 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
             <HeightAnimatedContainer active={isTransitioning(rowState)}>
               <StyledSection closing={rowState === RowState.Closing}>
                 <RunParameterTable run={runToRender} initialState={false} />
+                <TimelinePreview flowid={runToRender.flow_id} runid={getRunId(runToRender)} />
               </StyledSection>
             </HeightAnimatedContainer>
           </StyledTD>

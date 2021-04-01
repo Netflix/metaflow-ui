@@ -1,3 +1,4 @@
+import { TimelineMetrics } from '../components/Timeline/Timeline';
 import { GraphState } from '../components/Timeline/useGraph';
 import { RowDataModel, StepRowData } from '../components/Timeline/useTaskData';
 import { Row } from '../components/Timeline/VirtualizedTimeline';
@@ -150,4 +151,17 @@ export function createStepRowData(
 
 export function createRowDataModel(data: Record<string, StepRowData>): RowDataModel {
   return { start: createStepRowData({}, {}, {}), ...data };
+}
+
+export function createTimelineMetrics(data: Partial<TimelineMetrics>): TimelineMetrics {
+  return {
+    startTime: 0,
+    endTime: 1000,
+    visibleStartTime: 0,
+    visibleEndTime: 1000,
+    sortBy: 'startTime',
+    alignment: 'fromStartTime',
+    groupingEnabled: true,
+    ...data,
+  };
 }

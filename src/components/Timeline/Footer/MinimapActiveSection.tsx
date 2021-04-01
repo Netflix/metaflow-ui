@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { formatDuration } from '../../../utils/format';
-import { GraphState } from '../useGraph';
+import { TimelineMetrics } from '../Timeline';
 import MinimapHandle from './MinimapHandle';
 
 //
@@ -9,7 +9,7 @@ import MinimapHandle from './MinimapHandle';
 //
 
 type ActiveSectionProps = {
-  graph: GraphState;
+  timeline: TimelineMetrics;
   dragging: boolean;
   startMove: (value: number) => void;
   startHandleMove: (which: 'left' | 'right') => void;
@@ -19,9 +19,9 @@ type ActiveSectionProps = {
 // Component
 //
 
-const MinimapActiveSection: React.FC<ActiveSectionProps> = ({ graph, dragging, startMove, startHandleMove }) => {
-  const width = ((graph.timelineEnd - graph.timelineStart) / (graph.max - graph.min)) * 100;
-  const left = ((graph.timelineStart - graph.min) / (graph.max - graph.min)) * 100;
+const MinimapActiveSection: React.FC<ActiveSectionProps> = ({ timeline, dragging, startMove, startHandleMove }) => {
+  const width = ((timeline.visibleEndTime - timeline.visibleStartTime) / (timeline.endTime - timeline.startTime)) * 100;
+  const left = ((timeline.visibleStartTime - timeline.startTime) / (timeline.endTime - timeline.startTime)) * 100;
 
   return (
     <MiniTimelineActiveSection
@@ -36,14 +36,18 @@ const MinimapActiveSection: React.FC<ActiveSectionProps> = ({ graph, dragging, s
       <MinimapHandle
         which="left"
         isZoomed={width < 20}
-        label={graph.timelineStart <= graph.min ? '0.0s' : formatDuration(graph.timelineStart - graph.min)}
+        label={
+          timeline.visibleStartTime <= timeline.startTime
+            ? '0.0s'
+            : formatDuration(timeline.visibleStartTime - timeline.startTime)
+        }
         onDragStart={() => startHandleMove('left')}
       />
       <MinimapHandle
         which="right"
         isZoomed={width < 20}
         stackText={width + left > 90}
-        label={formatDuration(graph.timelineEnd - graph.min)}
+        label={formatDuration(timeline.visibleEndTime - timeline.startTime)}
         onDragStart={() => startHandleMove('right')}
       />
     </MiniTimelineActiveSection>

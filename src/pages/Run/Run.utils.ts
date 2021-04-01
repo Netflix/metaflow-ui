@@ -1,4 +1,4 @@
-import { GraphParametersMap, GraphSortBy, GraphState } from '../../components/Timeline/useGraph';
+import { GraphParametersMap, GraphSortBy } from '../../components/Timeline/useGraph';
 import { RowDataModel } from '../../components/Timeline/useTaskData';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import { SearchResultModel } from '../../hooks/useSearchField';
@@ -102,12 +102,10 @@ export function getTaskFromList(
  */
 export function makeVisibleRows(
   rowDataState: RowDataModel,
-  graph: GraphState,
+  settings: { statusFilter?: string | null; group: boolean; sortBy: GraphSortBy; sortDir: 'asc' | 'desc' },
   visibleSteps: string[],
-  searchResults: SearchResultModel,
+  searchResults?: SearchResultModel,
 ): Row[] {
-  const matchIds = searchResults.result.map((item) => item.task_id);
-
   return visibleSteps.reduce((arr: Row[], currentStepName: string): Row[] => {
     const rowData = rowDataState[currentStepName];
 
@@ -119,24 +117,24 @@ export function makeVisibleRows(
       data: rowData.data[item],
     }));
 
-    if (graph.statusFilter) {
+    if (settings.statusFilter) {
       rowTasks = rowTasks.filter((item) => {
         const lastTask = item.data.slice(-1)[0];
-        return lastTask?.status === graph.statusFilter;
+        return lastTask?.status === settings.statusFilter;
       });
     }
 
-    if (shouldApplySearchFilter(searchResults)) {
+    if (searchResults && shouldApplySearchFilter(searchResults)) {
+      const matchIds = searchResults.result.map((item) => item.task_id);
       rowTasks = rowTasks.filter((item) => matchIds.indexOf(item.data[0]?.task_id?.toString()) > -1);
     }
-
     return rowTasks.length === 0
       ? arr
       : arr.concat(
-          graph.group && rowData.step ? [{ type: 'step' as const, data: rowData.step, rowObject: rowData }] : [],
-          rowData.isOpen || !graph.group
-            ? graph.group
-              ? rowTasks.sort(sortRows(graph.sortBy, graph.sortDir))
+          settings.group && rowData.step ? [{ type: 'step' as const, data: rowData.step, rowObject: rowData }] : [],
+          rowData.isOpen || !settings.group
+            ? settings.group
+              ? rowTasks.sort(sortRows(settings.sortBy, settings.sortDir))
               : rowTasks
             : [],
         );

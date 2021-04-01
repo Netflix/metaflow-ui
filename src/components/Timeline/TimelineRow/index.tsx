@@ -1,7 +1,6 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { Row } from '../VirtualizedTimeline';
-import { GraphState } from '../useGraph';
 import { Link } from 'react-router-dom';
 import { getPathFor } from '../../../utils/routing';
 import { TFunction } from 'i18next';
@@ -10,14 +9,14 @@ import LineElement, { BoxGraphicValue } from './LineElement';
 
 import { getTaskDuration } from '../../../utils/task';
 import { getRowStatus, getStepDuration } from './utils';
+import { TimelineMetrics } from '../Timeline';
 
 type TimelineRowProps = {
   // Row type and data
   item?: Row;
-  // Overall graph state (used to calculate dimensions)
-  graph: GraphState;
+  // Overall timeline state (used to calculate dimensions)
+  timeline: TimelineMetrics;
   onOpen: () => void;
-  isGrouped: boolean;
   isOpen?: boolean;
   // Flag row as sticky for some absolute stylings
   sticky?: boolean;
@@ -29,10 +28,9 @@ type TimelineRowProps = {
 
 const TimelineRow: React.FC<TimelineRowProps> = ({
   item,
-  graph,
+  timeline,
   onOpen,
   isOpen = true,
-  isGrouped,
   paramsString,
   sticky,
   t,
@@ -40,6 +38,8 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
 }) => {
   if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
+
+  const { sortBy, groupingEnabled, ...lineElementMetrics } = timeline;
 
   return (
     <>
@@ -50,7 +50,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             item={item.data}
             toggle={onOpen}
             open={isOpen}
-            grouped={isGrouped}
+            grouped={groupingEnabled}
             t={t}
             duration={getStepDuration(item.data, item.rowObject.status, item.rowObject.duration)}
             status={getRowStatus(item)}
@@ -61,7 +61,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             item={item.data[item.data.length - 1]}
             open={isOpen}
             duration={item.data[item.data.length - 1].duration || null}
-            grouped={isGrouped}
+            grouped={groupingEnabled}
             paramsString={paramsString}
             status={getRowStatus({ type: 'task', data: item.data[item.data.length - 1] })}
             t={t}
@@ -70,7 +70,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
         <RowElement item={item} paramsString={paramsString} onOpen={onOpen}>
           {item.type === 'step' ? (
             <LineElement
-              graph={graph}
+              timeline={lineElementMetrics}
               row={item}
               grayed={isOpen}
               duration={getStepDuration(item.data, item.rowObject.status, item.rowObject.duration)}
@@ -81,11 +81,11 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             item.data.map((task, index) => (
               <LineElement
                 key={task.finished_at}
-                graph={graph}
+                timeline={lineElementMetrics}
                 row={{ type: 'task', data: task }}
                 isLastAttempt={index === item.data.length - 1}
                 duration={getTaskDuration(task)}
-                startTimeOfFirstAttempt={graph.sortBy === 'duration' ? item.data[0].started_at || 0 : undefined}
+                startTimeOfFirstAttempt={timeline.sortBy === 'duration' ? item.data[0].started_at || 0 : undefined}
                 dragging={dragging}
                 paramsString={paramsString}
               />
