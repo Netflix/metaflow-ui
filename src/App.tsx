@@ -22,6 +22,7 @@ import AutoScrollTop from './utils/AutoScrollTop';
 import { fetchServiceVersion } from './utils/VERSION';
 import { fetchFeaturesConfig } from './utils/FEATURE';
 import { fetchConfigurations } from './utils/config';
+import Announcements from './components/Announcement';
 
 const App: React.FC = () => {
   const { t } = useTranslation();
@@ -50,6 +51,7 @@ const App: React.FC = () => {
                 {flagsReceived ? (
                   <>
                     <Notifications />
+                    <Announcements />
                     <AppBar />
                     <Page>
                       <Root />

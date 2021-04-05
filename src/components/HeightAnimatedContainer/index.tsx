@@ -23,6 +23,7 @@ const HeightAnimatedContainer: React.FC<{ active?: boolean }> = ({ children, act
 
 const OuterContainer = styled.div`
   overflow: hidden;
+  position: relative;
   transition: height 0.25s;
 `;
 const InnerContainer = styled.div`
