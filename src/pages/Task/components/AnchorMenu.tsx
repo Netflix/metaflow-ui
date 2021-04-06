@@ -19,14 +19,12 @@ type AnchorMenuProps = {
 };
 
 const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSection }) => {
-  const trigger = useState(0);
   const [active, setActive] = useState<string | undefined>(activeSection || items[0]?.key);
   const [initialised, setInitialised] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const listener = () => {
-      trigger[1](window.scrollY);
       const current = [...items]
         .reverse()
         .find((item) => item.position && item.position < window.scrollY + HEADER_SIZE_PX + 20);
@@ -44,7 +42,7 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSectio
       const s = items.find((item) => item.key === activeSection);
 
       if (s && s.position && !initialised) {
-        window.scroll({ top: s.position - HEADER_SIZE_PX + 2 });
+        window.scrollTo({ top: s.position - HEADER_SIZE_PX + 2, behavior: 'smooth' });
         setInitialised(true);
       }
     } else {
@@ -52,16 +50,9 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSectio
     }
   }, [items, activeSection, initialised]);
 
-  const isScrolledOver = ref && ref.current && window.scrollY + HEADER_SIZE_PX > ref.current.offsetTop;
-
   return (
     <AnchorMenuContainer ref={ref}>
-      <div
-        style={
-          // Adding header height here manually. We need to think it makes sense to have sticky header
-          isScrolledOver ? { position: 'fixed', top: HEADER_SIZE_PX + 'px' } : {}
-        }
-      >
+      <div style={{ position: 'sticky', top: HEADER_SIZE_PX + 'px' }}>
         {items.map(({ key, label, position }) => (
           <AnchorMenuItem
             key={key}
@@ -85,6 +76,7 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSectio
 const AnchorMenuContainer = styled.div`
   width: 165px;
   flex-shrink: 0;
+  position: relative;
 `;
 
 const AnchorMenuItem = styled.div<{ active?: boolean }>`

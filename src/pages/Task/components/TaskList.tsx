@@ -54,17 +54,9 @@ const TaskList: React.FC<Props> = ({
       (viewScrollTop + 25 > ref.current.offsetTop ? HEADER_SIZE_PX + 25 : ref.current.offsetTop - viewScrollTop + 25)
     : 0;
 
-  const isScrolledOver = ref && ref.current && viewScrollTop + HEADER_SIZE_PX > ref.current.offsetTop;
-
   return (
     <TaskListContainer ref={ref}>
-      <div
-        style={
-          isScrolledOver
-            ? { position: 'fixed', top: HEADER_SIZE_PX + 'px', paddingRight: '0.5rem' }
-            : { paddingRight: '0.5rem' }
-        }
-      >
+      <FixedList style={{ position: 'sticky', top: HEADER_SIZE_PX + 'px' }}>
         {rows.length > 0 && (
           <List
             overscanRowCount={5}
@@ -117,7 +109,7 @@ const TaskList: React.FC<Props> = ({
         )}
         {/* Search failed */}
         {results.status === 'Error' && <div>{t('search.error')}</div>}
-      </div>
+      </FixedList>
     </TaskListContainer>
   );
 };
@@ -126,6 +118,10 @@ const TaskListContainer = styled.div`
   font-size: 0.75rem;
   width: 15.25rem;
   flex-shrink: 0;
+`;
+
+const FixedList = styled.div`
+  padding-right: 0.5rem;
 `;
 
 export default TaskList;
