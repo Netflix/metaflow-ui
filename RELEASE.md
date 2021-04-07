@@ -14,10 +14,10 @@ Additional labels for pre-release and build metadata are available as extensions
 
 Release process is mostly automated via Github Actions, however few manual steps are required:
 
-- [ ] Make sure `package.json` version is up to date on `master` branch (e.g. `"version": "1.0.0"`)
+- [ ] [Edit `package.json`](https://github.com/Netflix/metaflow-ui/edit/master/package.json) version in `master` branch (e.g. `"version": "1.0.0"`)
 - [ ] Create new tag from `master` branch (e.g. `git tag v1.0.0`, note the `v` -prefix)
 - [ ] Push tag to remote (e.g. `git push origin v1.0.0`)
-- [ ] [Package job](https://github.com/Netflix/metaflow-ui/actions/workflows/package.yml) is triggered
+- [ ] [Package job](https://github.com/Netflix/metaflow-ui/actions/workflows/package.yml) is triggered, wait for it to finish
 - [ ] New [release draft](https://github.com/Netflix/metaflow-ui/releases) is automatically created via Github Actions
 - [ ] Edit release draft
   - [ ] Make sure current and previous version are correct
