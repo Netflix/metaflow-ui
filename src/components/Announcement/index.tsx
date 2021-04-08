@@ -1,5 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { apiHttp } from '../../constants';
+import { DataModel } from '../../hooks/useResource';
+import { logWarning } from '../../utils/errorlogger';
 import HeightAnimatedContainer from '../HeightAnimatedContainer';
 import Icon from '../Icon';
 import { NotificationType } from '../Notifications';
@@ -41,47 +44,46 @@ function getSeenAnnouncements(): string[] {
 }
 
 const Announcements: React.FC = () => {
-  const seen = getSeenAnnouncements();
-  const announcements: Announcement[] = [
-    {
-      id: '53255',
-      type: NotificationType.Default,
-      message: 'ATTENTION! Service will be unavailable 4.24.2021 at 6:00 AM (Mountain time) for updates.',
-    },
-    {
-      id: '342',
-      type: NotificationType.Info,
-      message: 'Upcoming service maintenance 07.04.2021. Starting at 07.00 GMT+03:00. Maintenance details',
-    },
-    {
-      id: '34298798',
-      type: NotificationType.Danger,
-      message: 'Upcoming service maintenance 07.04.2021. Starting at 07.00 GMT+03:00. Maintenance details',
-    },
-    {
-      id: '3429dsad8798',
-      type: NotificationType.Warning,
-      message: 'Upcoming service maintenance 07.04.2021. Starting at 07.00 GMT+03:00. Maintenance details',
-    },
-    {
-      id: '3429dsad879118',
-      type: NotificationType.Success,
-      message: 'Upcoming service maintenance 07.04.2021. Starting at 07.00 GMT+03:00. Maintenance details',
-    },
-  ];
+  const [seen, setSeen] = useState<string[]>(getSeenAnnouncements());
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+
+  useEffect(() => {
+    fetch(apiHttp('announcements'))
+      .then((response) => response.json())
+      .then((response: DataModel<Announcement[]>) => {
+        if (response.status === 200) {
+          setAnnouncements(response.data);
+        } else {
+          logWarning('Failed to fetch announcements.');
+        }
+      })
+      .catch(() => {
+        logWarning('Failed to fetch announcements.');
+      });
+  }, []);
 
   return (
     <AnnouncementsContainer>
       {announcements
-        .filter((item) => seen.indexOf(item.id) === -1 || true)
+        .filter((item) => seen.indexOf(item.id) === -1)
+        .slice(0, 3)
         .map((item, index) => (
-          <AnnouncementItem key={item.id} item={item} last={index === announcements.length - 1} />
+          <AnnouncementItem
+            key={item.id}
+            item={item}
+            last={index === announcements.length - 1}
+            onClose={() => setSeen(getSeenAnnouncements())}
+          />
         ))}
     </AnnouncementsContainer>
   );
 };
 
-const AnnouncementItem: React.FC<{ item: Announcement; last: boolean }> = ({ item, last }) => {
+const AnnouncementItem: React.FC<{ item: Announcement; last: boolean; onClose: () => void }> = ({
+  item,
+  last,
+  onClose,
+}) => {
   const [open, setOpen] = useState(true);
 
   return (
@@ -96,6 +98,9 @@ const AnnouncementItem: React.FC<{ item: Announcement; last: boolean }> = ({ ite
           onClick={() => {
             setOpen(false);
             addToSeenList(item.id);
+            setTimeout(() => {
+              onClose();
+            }, 250);
           }}
         >
           <Icon name="times" size="md" />
