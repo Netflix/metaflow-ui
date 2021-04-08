@@ -18,6 +18,7 @@
     "copy-to-clipboard": "^3.3.1",
     "i18next": "^19.5.2",
     "idb": "^5.0.8",
+    "markdown-to-jsx": "^7.1.2",
     "mock-socket": "^9.0.3",
     "polished": "^3.6.4",
     "prettier": "^2.0.5",

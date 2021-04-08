@@ -1,3 +1,4 @@
+import Markdown from 'markdown-to-jsx';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { apiHttp } from '../../constants';
@@ -92,7 +93,9 @@ const AnnouncementItem: React.FC<{ item: Announcement; last: boolean; onClose: (
         <AnnouncementIcon>
           <Icon name="info" size="md" />
         </AnnouncementIcon>
-        <AnnouncementText>{item.message}</AnnouncementText>
+        <AnnouncementText>
+          <Markdown>{item.message}</Markdown>
+        </AnnouncementText>
         <AnnouncementIcon
           clickable
           onClick={() => {
@@ -138,6 +141,15 @@ const AnnouncementItemContainer = styled.div<{ type: NotificationType; open: boo
   font-weight: 500;
   display: flex;
   align-items: center;
+
+  a {
+    color: ${({ theme, type }) => theme.notification[type].fg};
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 200px;
+  }
 `;
 
 const AnnouncementIcon = styled.div<{ clickable?: boolean }>`
