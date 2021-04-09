@@ -12,8 +12,19 @@ export const Dropdown: React.FC<
     useNativeComponent?: boolean;
     labelRenderer?: (value: string, label: string) => JSX.Element;
     optionRenderer?: (value: string, label: string) => JSX.Element;
+    onClose?: () => void;
   } & CommonFieldProps<HTMLSelectElement>
-> = ({ options, useNativeComponent = false, onChange, value, labelRenderer, optionRenderer, children, ...rest }) => {
+> = ({
+  options,
+  useNativeComponent = false,
+  onChange,
+  value,
+  labelRenderer,
+  optionRenderer,
+  children,
+  onClose,
+  ...rest
+}) => {
   const selectEl = useRef<HTMLSelectElement>(null);
   const [open, setOpen] = useState(false);
   const activeOption = getActiveOption(options, value);
@@ -22,6 +33,12 @@ export const Dropdown: React.FC<
   useEffect(() => {
     setOpen(false);
   }, [acitveOptionId]);
+
+  useEffect(() => {
+    if (!open && onClose) {
+      onClose();
+    }
+  }, [open, onClose]);
 
   return (
     <DropdownWrapper>

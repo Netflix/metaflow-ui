@@ -70,6 +70,7 @@ export const DropdownField: React.FC<
     maxWidth?: boolean;
     labelRenderer?: (value: string, label: string) => JSX.Element;
     optionRenderer?: (value: string, label: string) => JSX.Element;
+    onClose?: () => void;
   } & CommonFieldProps<HTMLSelectElement>
 > = ({ label, options, horizontal, noMinWidth, ...rest }) => {
   const [id] = useState(uuid());

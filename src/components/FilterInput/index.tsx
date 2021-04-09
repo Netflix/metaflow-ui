@@ -12,19 +12,29 @@ import { ForceNoWrapText } from '../Text';
 type FilterInputProps = {
   onSubmit: (k: string) => void;
   sectionLabel: string;
+  onChange?: (k: string) => void;
   autoCompleteSettings?: {
     url: string;
     finder?: (item: AutoCompleteItem, input: string) => boolean;
     params?: (input: string) => Record<string, string>;
     preFetch?: boolean;
   };
+  autoFocus?: boolean;
+  noIcon?: boolean;
 };
 
 //
 // Component
 //
 
-const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel, autoCompleteSettings }) => {
+const FilterInput: React.FC<FilterInputProps> = ({
+  onSubmit,
+  onChange,
+  sectionLabel,
+  autoCompleteSettings,
+  autoFocus = false,
+  noIcon = false,
+}) => {
   const [hasFocus, setHasFocus] = useState(false);
   const [val, setVal] = useState('');
   const [autoCompleteOpen, setAutoCompleteOpen] = useState(false);
@@ -69,6 +79,7 @@ const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel, autoC
           data-testid="filter-input-field"
           ref={inputEl}
           value={val}
+          autoFocus={autoFocus}
           onKeyPress={(e) => {
             if (e.charCode === 13 && e.currentTarget.value) {
               if (activeAutoCompleteOption) {
@@ -86,6 +97,7 @@ const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel, autoC
           }}
           onChange={(e) => {
             setVal(e.currentTarget.value);
+            onChange && onChange(e.currentTarget.value);
           }}
           onFocus={() => {
             setHasFocus(true);
@@ -108,7 +120,7 @@ const FilterInput: React.FC<FilterInputProps> = ({ onSubmit, sectionLabel, autoC
             }
           }}
         >
-          <Icon name={hasFocus ? 'enter' : 'plus'} size="xs" />
+          {!noIcon && <Icon name={hasFocus ? 'enter' : 'plus'} size="xs" />}
         </SubmitIconHolder>
       </FilterInputContainer>
       {autoCompleteOpen && autoCompleteResult.data.length > 0 && val !== '' && (

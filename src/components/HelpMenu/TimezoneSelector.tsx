@@ -1,15 +1,17 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import spacetime from 'spacetime';
 import styled from 'styled-components';
 import { DropdownOption } from '../Form/Dropdown';
 import { DropdownField } from '../Form';
 import { TimezoneContext } from '../TimezoneProvider';
+import FilterInput from '../FilterInput';
 
 const timezoneData = Object.entries(spacetime().timezones)
   .filter((key) => !key[0].includes('etc') && !key[0].includes('utc'))
   .sort((a, b) => (a[1].offset === b[1].offset ? a[0].localeCompare(b[0]) : a[1].offset - b[1].offset));
 
+// [string, string] = [value, label]
 const tZones: [string, string][] = [];
 timezoneData.forEach(([key, value], index) => {
   const parseHour = (value: number) => {
@@ -42,6 +44,7 @@ const localTimeZone = tZones.find(
 );
 
 const TimezoneSelector: React.FC = () => {
+  const [filter, setFilter] = useState<string>('');
   const { timezone, updateTimezone } = useContext(TimezoneContext);
   const { t } = useTranslation();
   // used for displaying the users selected timezone
@@ -55,7 +58,29 @@ const TimezoneSelector: React.FC = () => {
           options={tZones.map((o) => [o[0], o[1]])}
           value={(timezone || 0).toString()}
           onChange={(e) => e && updateTimezone(e.currentTarget.value)}
+          onClose={() => setFilter('')}
         >
+          <div style={{ marginBottom: '1rem' }}>
+            <FilterInput
+              autoFocus
+              noIcon
+              sectionLabel="Search"
+              onSubmit={(e) => {
+                if (e) {
+                  setFilter(e);
+                } else {
+                  setFilter('');
+                }
+              }}
+              onChange={(e) => {
+                if (e) {
+                  setFilter(e);
+                } else {
+                  setFilter('');
+                }
+              }}
+            />
+          </div>
           {localTimeZone && (
             <>
               <label>{t('help.local-timezone')}</label>
@@ -87,19 +112,21 @@ const TimezoneSelector: React.FC = () => {
             </>
           )}
           <label>{t('help.timezones')}</label>
-          {tZones.map((o, index) => (
-            <TimezoneOption
-              key={o[0] + index}
-              textOnly
-              variant={timezone === o[0] ? 'primaryText' : 'text'}
-              size="sm"
-              onClick={() => {
-                updateTimezone(o[0]);
-              }}
-            >
-              {o[1]}
-            </TimezoneOption>
-          ))}
+          {(filter !== '' ? tZones.filter((item) => item[1].toLowerCase().includes(filter.toLowerCase())) : tZones).map(
+            (o, index) => (
+              <TimezoneOption
+                key={o[0] + index}
+                textOnly
+                variant={timezone === o[0] ? 'primaryText' : 'text'}
+                size="sm"
+                onClick={() => {
+                  updateTimezone(o[0]);
+                }}
+              >
+                {o[1]}
+              </TimezoneOption>
+            ),
+          )}
         </DropdownField>
       </TimezoneRow>
     </div>
