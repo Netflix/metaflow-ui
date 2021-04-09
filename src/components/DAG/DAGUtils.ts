@@ -36,6 +36,8 @@ export type DAGModelItem = {
   box_next: boolean;
   // Next step(s)
   next: string[];
+  // docstring from step
+  doc?: string;
 };
 
 export type DAGModel = Record<string, DAGModelItem>;
