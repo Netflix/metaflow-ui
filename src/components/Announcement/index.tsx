@@ -2,7 +2,6 @@ import Markdown from 'markdown-to-jsx';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { apiHttp } from '../../constants';
-import { DataModel } from '../../hooks/useResource';
 import { logWarning } from '../../utils/errorlogger';
 import HeightAnimatedContainer from '../HeightAnimatedContainer';
 import Icon from '../Icon';
@@ -49,17 +48,24 @@ const Announcements: React.FC = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
   useEffect(() => {
-    fetch(apiHttp('announcements'))
-      .then((response) => response.json())
-      .then((response: DataModel<Announcement[]>) => {
+    fetch(apiHttp('/announcements'), {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
         if (response.status === 200) {
-          setAnnouncements(response.data);
-        } else {
-          logWarning('Failed to fetch announcements.');
+          return response.json().then((data) => {
+            if (Array.isArray(data)) {
+              setAnnouncements(data);
+            } else {
+              logWarning('Failed to fetch announcements.');
+            }
+          });
         }
       })
-      .catch(() => {
-        logWarning('Failed to fetch announcements.');
+      .catch((e) => {
+        logWarning('Failed to fetch announcements.', e);
       });
   }, []);
 
