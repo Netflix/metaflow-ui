@@ -29,6 +29,7 @@
     "react-i18next": "^11.7.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.4",
+    "react-tooltip": "^4.2.17",
     "react-virtualized": "^9.21.2",
     "reconnecting-websocket": "^4.4.0",
     "spacetime": "^6.10.1",

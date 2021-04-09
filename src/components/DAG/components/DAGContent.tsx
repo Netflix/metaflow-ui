@@ -7,6 +7,9 @@ import { DAGStructureTree, DAGTreeNode, StepTree } from '../DAGUtils';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../../utils/routing';
 import { StepLineData } from '../../Timeline/taskdataUtils';
+import Icon from '../../Icon';
+import { useTranslation } from 'react-i18next';
+import Tooltip, { TooltipTitle } from '../../Tooltip';
 //
 // DAG Content section for when we have dag data
 //
@@ -103,6 +106,7 @@ export const RenderStep: React.FC<{
           }}
         >
           {item.step_name}
+          {item.original?.doc && <DocstringTooltip stepName={item.step_name} docs={item.original.doc} />}
         </NormalItem>
         {item.children && item.children.length > 0 && (
           <NormalItemChildContainer data-testid="dag-normalitem-children">
@@ -164,6 +168,28 @@ export function stateOfStep(item: StepTree, [stepIds, failedIds]: [string[], str
   return 'unknown';
 }
 
+const DocstringTooltip: React.FC<{ stepName: string; docs: string }> = ({ stepName, docs }) => {
+  const { t } = useTranslation();
+  return (
+    <>
+      <StepInfoMarker
+        data-tip
+        data-for={stepName}
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+        }}
+      >
+        <Icon name="infoSmall" size="xs" />
+        <Tooltip id={stepName}>
+          <TooltipTitle>{t('run.developer-comment')}</TooltipTitle>
+          {docs}
+        </Tooltip>
+      </StepInfoMarker>
+    </>
+  );
+};
+
 //
 // Style
 //
@@ -171,8 +197,9 @@ export function stateOfStep(item: StepTree, [stepIds, failedIds]: [string[], str
 const DAGRenderingContainer = styled.div<{ showFullscreen: boolean }>`
   margin: ${(p) => (p.showFullscreen ? '0' : '0 -2.875px')};
   overflow-x: ${(p) => (p.showFullscreen ? 'visible' : 'auto')};
-  font-family: monospace;
-  font-size: 0.875rem;
+  overflow-y: visible;
+  height: 100%;
+  font-size: 0.75rem;
 `;
 
 const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; isLast?: boolean }>`
@@ -249,4 +276,18 @@ const ForeachItem = styled.div`
   margin: 0;
   transform: translateX(0.3125rem) translateY(0.3125rem);
   flex: 1;
+`;
+
+const StepInfoMarker = styled.div`
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+
+  path {
+    fill: #717171;
+  }
+
+  &:hover path {
+    fill: #333;
+  }
 `;

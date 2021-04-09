@@ -81,6 +81,7 @@ const en = {
       'dag-only-available-AWS': 'DAG is only available when flow is executed on AWS.',
       'dag-data-not-available':
         "DAG structure data doesn't exists. Data is only available when flow is executed on AWS",
+      'developer-comment': 'Developer comment',
       timeline: 'Timeline',
       parameters: 'Parameters',
       'no-parameters': 'No run parameters.',

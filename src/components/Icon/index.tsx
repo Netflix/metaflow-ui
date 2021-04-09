@@ -26,6 +26,7 @@ import { ReactComponent as SearchNotFound } from '../../assets/search-not-found.
 import { ReactComponent as Danger } from '../../assets/danger.svg';
 import { ReactComponent as Success } from '../../assets/success.svg';
 import { ReactComponent as Info } from '../../assets/info.svg';
+import { ReactComponent as InfoSmall } from '../../assets/info-small.svg';
 import { ReactComponent as Warning } from '../../assets/warning.svg';
 import { ReactComponent as External } from '../../assets/external.svg';
 import { ReactComponent as Copy } from '../../assets/copy.svg';
@@ -59,6 +60,7 @@ export type SupportedIcons = {
   danger: FunctionComponent;
   success: FunctionComponent;
   info: FunctionComponent;
+  infoSmall: FunctionComponent;
   warning: FunctionComponent;
   external: FunctionComponent;
   copy: FunctionComponent;
@@ -93,6 +95,7 @@ const icons: SupportedIcons = {
   danger: Danger,
   success: Success,
   info: Info,
+  infoSmall: InfoSmall,
   warning: Warning,
   external: External,
   copy: Copy,
