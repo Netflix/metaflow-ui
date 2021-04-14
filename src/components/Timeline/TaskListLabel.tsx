@@ -20,6 +20,8 @@ type BaseProps = {
   duration: number | null;
   paramsString?: string;
   status: string;
+  tasksTotal?: number;
+  tasksVisible?: number;
 };
 type TaskRow = { type: 'task'; item: Task } & BaseProps;
 type StepRow = { type: 'step'; item: Step; toggle: () => void } & BaseProps;
@@ -30,7 +32,7 @@ type Props = TaskRow | StepRow;
 //
 
 const TaskListLabel: React.FC<Props> = (props) => {
-  const { open, grouped } = props;
+  const { open, grouped, tasksTotal, tasksVisible } = props;
 
   return (
     <RowLabel type={props.type} isOpen={open} group={grouped} status={props.status}>
@@ -74,6 +76,12 @@ const TaskListLabel: React.FC<Props> = (props) => {
               title={props.item.step_name}
             >
               {props.item.step_name}
+              {tasksTotal && (
+                <>
+                  {' '}
+                  <StepCount>({tasksTotal === tasksVisible ? tasksTotal : `${tasksVisible}/${tasksTotal}`})</StepCount>
+                </>
+              )}
             </RowStepName>
             <RowDuration data-testid="tasklistlabel-duration">{formatDuration(props.duration, 1)}</RowDuration>
           </RowLabelContent>
@@ -138,6 +146,10 @@ const RowStepName = styled.span<{ bigName: boolean }>`
 const RowDuration = styled.span`
   padding: 0 0.25rem 0 0.5rem;
   white-space: nowrap;
+`;
+
+const StepCount = styled.span`
+  font-weight: normal;
 `;
 
 const RowLabelContent = styled.div<{ type?: 'step' }>`

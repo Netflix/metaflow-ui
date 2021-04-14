@@ -42,6 +42,8 @@ const TaskListRow: React.FC<Props> = ({
             grouped={grouped}
             status={getRowStatus(item)}
             t={t}
+            tasksTotal={item.rowObject.tasksTotal}
+            tasksVisible={item.rowObject.tasksVisible}
           />
         ) : null
       ) : (

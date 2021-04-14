@@ -54,6 +54,8 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             t={t}
             duration={getStepDuration(item.data, item.rowObject.status, item.rowObject.duration)}
             status={getRowStatus(item)}
+            tasksTotal={item.rowObject.tasksTotal}
+            tasksVisible={item.rowObject.tasksVisible}
           />
         ) : (
           <TaskListLabel
