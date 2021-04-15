@@ -1,3 +1,4 @@
+import { StepRow } from '../../../components/Timeline/VirtualizedTimeline';
 import {
   createGraphState,
   createRowDataModel,
@@ -139,8 +140,13 @@ describe('Run utils - Row making test set', () => {
     };
 
     const rows = makeVisibleRows(model, graph, visibleSteps, searchResult);
-    // Expected result is 2 since search result includes item from start tasks -> Return step and task
-    expect(rows.length).toBe(2);
+    // Expected result is 3 since search result includes item from start tasks -> Return two steps (one having no tasks) and a task
+    expect(rows.length).toBe(3);
+    expect((rows[0] as StepRow).rowObject.tasksTotal).toBe(1);
+    expect((rows[0] as StepRow).rowObject.tasksVisible).toBe(1);
+    expect(rows[1].type).toBe('task');
+    expect((rows[2] as StepRow).rowObject.tasksTotal).toBe(1);
+    expect((rows[2] as StepRow).rowObject.tasksVisible).toBe(0);
   });
 
   test('makeVisibleRows - status filter, no results', () => {
@@ -150,8 +156,10 @@ describe('Run utils - Row making test set', () => {
     const searchResult = { status: 'NotAsked' as const, result: [] };
 
     const rows = makeVisibleRows(model, graph, visibleSteps, searchResult);
-    // Expected result is 0 since there is no running tasks
-    expect(rows.length).toBe(0);
+    // Expected result is 1 since there's single step but no visible tasks due to filter. Returning one step with no tasks
+    expect(rows.length).toBe(1);
+    expect((rows[0] as StepRow).rowObject.tasksTotal).toBe(1);
+    expect((rows[0] as StepRow).rowObject.tasksVisible).toBe(0);
   });
 
   test('makeVisibleRows - status filter, has results', () => {
@@ -167,8 +175,13 @@ describe('Run utils - Row making test set', () => {
     const searchResult = { status: 'NotAsked' as const, result: [] };
 
     const rows = makeVisibleRows(model, graph, visibleSteps, searchResult);
-    // Expected result is 2 since there is task with running status. Returning step and task row
-    expect(rows.length).toBe(2);
+    // Expected result is 3 since there are two steps but only one of them has visible task. Returning two steps and one task
+    expect(rows.length).toBe(3);
+    expect((rows[0] as StepRow).rowObject.tasksTotal).toBe(1);
+    expect((rows[0] as StepRow).rowObject.tasksVisible).toBe(0);
+    expect((rows[1] as StepRow).rowObject.tasksTotal).toBe(1);
+    expect((rows[1] as StepRow).rowObject.tasksVisible).toBe(1);
+    expect(rows[2].type).toBe('task');
   });
 
   test('shouldApplySearchFilter', () => {

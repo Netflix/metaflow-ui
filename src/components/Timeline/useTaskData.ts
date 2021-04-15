@@ -28,6 +28,8 @@ export type StepRowData = {
   step?: Step;
   // Tasks for this step
   data: Record<string, Task[]>;
+  tasksTotal?: number;
+  tasksVisible?: number;
 };
 
 //

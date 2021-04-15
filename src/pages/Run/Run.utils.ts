@@ -128,16 +128,19 @@ export function makeVisibleRows(
       const matchIds = searchResults.result.map((item) => item.task_id);
       rowTasks = rowTasks.filter((item) => matchIds.indexOf(item.data[0]?.task_id?.toString()) > -1);
     }
-    return rowTasks.length === 0
-      ? arr
-      : arr.concat(
-          settings.group && rowData.step ? [{ type: 'step' as const, data: rowData.step, rowObject: rowData }] : [],
-          rowData.isOpen || !settings.group
-            ? settings.group
-              ? rowTasks.sort(sortRows(settings.sortBy, settings.sortDir))
-              : rowTasks
-            : [],
-        );
+
+    // Count visible tasks once all filters have been applied
+    rowData.tasksTotal = Object.keys(rowData.data).length;
+    rowData.tasksVisible = rowTasks.length;
+
+    return arr.concat(
+      settings.group && rowData.step ? [{ type: 'step' as const, data: rowData.step, rowObject: rowData }] : [],
+      rowData.isOpen || !settings.group
+        ? settings.group
+          ? rowTasks.sort(sortRows(settings.sortBy, settings.sortDir))
+          : rowTasks
+        : [],
+    );
   }, []);
 }
 
