@@ -48,7 +48,8 @@ const Announcements: React.FC = () => {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
 
   useEffect(() => {
-    fetch(apiHttp('/announcements'), {
+    const now = Date.now();
+    fetch(apiHttp(`/notifications?start:le=${now}&end:ge=${now}`), {
       headers: {
         'Content-Type': 'application/json',
       },
