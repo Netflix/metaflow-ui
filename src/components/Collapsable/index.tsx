@@ -74,6 +74,10 @@ const CollapsableHeader = styled.div`
   line-height: 1.5rem;
   border-bottom: ${(p) => p.theme.border.thinLight};
   cursor: pointer;
+
+  svg path {
+    fill: #fff;
+  }
 `;
 
 const ContentContainer = styled.div`

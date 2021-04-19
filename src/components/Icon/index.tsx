@@ -27,7 +27,9 @@ import { ReactComponent as Danger } from '../../assets/danger.svg';
 import { ReactComponent as Success } from '../../assets/success.svg';
 import { ReactComponent as Info } from '../../assets/info.svg';
 import { ReactComponent as InfoSmall } from '../../assets/info-small.svg';
+import { ReactComponent as InfoThick } from '../../assets/info_thick.svg';
 import { ReactComponent as Warning } from '../../assets/warning.svg';
+import { ReactComponent as WarningThick } from '../../assets/warning_thick.svg';
 import { ReactComponent as External } from '../../assets/external.svg';
 import { ReactComponent as Copy } from '../../assets/copy.svg';
 import { ReactComponent as Download } from '../../assets/download.svg';
@@ -61,7 +63,9 @@ export type SupportedIcons = {
   success: FunctionComponent;
   info: FunctionComponent;
   infoSmall: FunctionComponent;
+  infoThick: FunctionComponent;
   warning: FunctionComponent;
+  warningThick: FunctionComponent;
   external: FunctionComponent;
   copy: FunctionComponent;
   download: FunctionComponent;
@@ -96,7 +100,9 @@ const icons: SupportedIcons = {
   success: Success,
   info: Info,
   infoSmall: InfoSmall,
+  infoThick: InfoThick,
   warning: Warning,
+  warningThick: WarningThick,
   external: External,
   copy: Copy,
   download: Download,
@@ -161,8 +167,11 @@ const Wrapper = styled.i<{
 
   svg {
     height: ${(p) => p.customSize || sizeTable[p.size]}rem;
-    width: auto;
     transform: ${(p) => (p.rotate ? `rotate(${p.rotate}deg)` : 'none')};
+    width: auto;
+  }
+  svg path {
+    fill: currentColor;
   }
 `;
 

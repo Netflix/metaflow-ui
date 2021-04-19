@@ -5,13 +5,10 @@ import { apiHttp } from '../../constants';
 import { logWarning } from '../../utils/errorlogger';
 import HeightAnimatedContainer from '../HeightAnimatedContainer';
 import Icon from '../Icon';
-import { NotificationType } from '../Notifications';
+import LaunchIconWhite from '../../assets/launch_white.svg';
 
-type Announcement = {
-  id: string;
-  type: NotificationType;
-  message: string;
-};
+import { NotificationType } from '../Notifications';
+import { Announcement as IAnnouncement } from '../../types';
 
 /**
  * Add announcement item to seen list. Do we want to do this?
@@ -45,7 +42,7 @@ function getSeenAnnouncements(): string[] {
 
 const Announcements: React.FC = () => {
   const [seen, setSeen] = useState<string[]>(getSeenAnnouncements());
-  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [announcements, setAnnouncements] = useState<IAnnouncement[]>([]);
 
   useEffect(() => {
     const now = Date.now();
@@ -87,7 +84,7 @@ const Announcements: React.FC = () => {
   );
 };
 
-const AnnouncementItem: React.FC<{ item: Announcement; last: boolean; onClose: () => void }> = ({
+const AnnouncementItem: React.FC<{ item: IAnnouncement; last: boolean; onClose: () => void }> = ({
   item,
   last,
   onClose,
@@ -98,10 +95,10 @@ const AnnouncementItem: React.FC<{ item: Announcement; last: boolean; onClose: (
     <HeightAnimatedContainer>
       <AnnouncementItemContainer type={item.type} open={open} last={last}>
         <AnnouncementIcon>
-          <Icon name="info" size="md" />
+          <Icon name="warningThick" size="md" />
         </AnnouncementIcon>
         <AnnouncementText>
-          <Markdown>{item.message}</Markdown>
+          <MessageRender item={item} />
         </AnnouncementText>
         <AnnouncementIcon
           clickable
@@ -120,6 +117,42 @@ const AnnouncementItem: React.FC<{ item: Announcement; last: boolean; onClose: (
   );
 };
 
+export const MessageRender: React.FC<{ item: IAnnouncement }> = ({ item }) => {
+  return (
+    <>
+      {item.contentType === 'markdown' && (
+        <Markdown
+          className="markdown"
+          options={{
+            overrides: {
+              a: {
+                component: MessageUrl,
+                props: {
+                  target: '_blank',
+                },
+              },
+            },
+          }}
+        >
+          {item.message}
+        </Markdown>
+      )}
+      {item.contentType === 'text' && (
+        <Message>
+          <>
+            {item.message}
+            {item.url && (
+              <MessageUrl href={item.url} target="_blank">
+                {item.urlText || item.url}
+              </MessageUrl>
+            )}
+          </>
+        </Message>
+      )}
+    </>
+  );
+};
+
 const AnnouncementsContainer = styled.div`
   position: fixed;
   bottom: 0;
@@ -131,7 +164,7 @@ const AnnouncementsContainer = styled.div`
   z-index: 1000;
 `;
 
-const AnnouncementItemContainer = styled.div<{ type: NotificationType; open: boolean; last: boolean }>`
+const AnnouncementItemContainer = styled.div<{ type: NotificationType | string; open: boolean; last: boolean }>`
   position: ${(p) => (p.open ? 'relative' : 'absolute')};
   opacity: ${(p) => (p.open ? '1' : '0')};
   padding: 1rem 0;
@@ -160,15 +193,35 @@ const AnnouncementItemContainer = styled.div<{ type: NotificationType; open: boo
 `;
 
 const AnnouncementIcon = styled.div<{ clickable?: boolean }>`
-  width: 4rem;
-  display: flex;
   align-items: center;
-  justify-content: center;
+  color: #fff;
   cursor: ${(p) => (p.clickable ? 'pointer' : 'normal')};
+  display: flex;
+  justify-content: center;
+  width: 4rem;
 `;
 
 const AnnouncementText = styled.div`
   flex: 1;
+`;
+
+const Message = styled.div`
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 2rem;
+`;
+
+const MessageUrl = styled.a`
+  color: inherit;
+  margin: 0 0 0 0.25rem;
+
+  &::after {
+    content: url(${LaunchIconWhite});
+    display: inline-block;
+    margin: 0 0 0 0.25rem;
+    position: relative;
+    top: 0.25rem;
+  }
 `;
 
 export default Announcements;

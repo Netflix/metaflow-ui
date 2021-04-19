@@ -3,6 +3,7 @@ import { Route, Switch, useLocation } from 'react-router-dom';
 import NotFound from '../NotFound';
 import HomePage from '../Home';
 import RunPage from '../Run';
+import NotificationsPage from '../Notifications';
 import { SHORT_PATHS } from '../../utils/routing';
 import { analyticsSendPageView } from '../../utils/analytics';
 
@@ -34,6 +35,10 @@ const RootPage: React.FC = () => {
 
         <Route exact path={SHORT_PATHS.run}>
           <RunPage />
+        </Route>
+
+        <Route exact path={SHORT_PATHS.notifications}>
+          <NotificationsPage />
         </Route>
 
         <Route>

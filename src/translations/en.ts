@@ -26,6 +26,7 @@ const en = {
       'local-timezone': 'Local timezone',
       'selected-time': 'Selected timezone',
       timezones: 'Timezones',
+      notifications: 'Notifications',
       documentation: 'Documentation',
       help: 'Help',
     },
@@ -224,6 +225,13 @@ const en = {
         'Timeline encountered an unexpected error. This should not happen and might be caused by unexpected data.',
       'task-error':
         'Task page encountered an unexpected error. This should not happen and might be caused by unexpected data.',
+    },
+
+    notifications: {
+      dateMissing: 'Date missing',
+      header: 'Notifications',
+      published: 'Published',
+      unsorted: 'Unsorted',
     },
 
     component: {

@@ -6,6 +6,7 @@ export const SHORT_PATHS = {
   task: `/:flowId/:runNumber/:stepName/:taskId`,
   step: '/:flowId/:runNumber/:stepName',
   run: '/:flowId/:runNumber',
+  notifications: '/notifications',
   home: '/',
 };
 
@@ -22,6 +23,7 @@ export const getPath = {
   task: (flowId: PathValue, runNumber: PathValue, stepName: PathValue, taskId: PathValue): string =>
     `/${flowId}/${runNumber}/${stepName}/${taskId}`,
   run: (flowId: PathValue, runNumber: PathValue): string => `/${flowId}/${runNumber}`,
+  notifications: (): string => '/notifications',
   home: (): string => '/',
 };
 

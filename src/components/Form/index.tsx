@@ -229,6 +229,7 @@ const FieldWrapper = styled.div<FieldBaseProps>`
   }
 
   span.checkbox {
+    color: #fff;
     width: 1.25rem;
     height: 1.25rem;
     line-height: 1.25rem;
@@ -237,6 +238,10 @@ const FieldWrapper = styled.div<FieldBaseProps>`
     text-align: center;
     background: ${(p) => p.theme.color.bg.light};
     border: ${(p) => p.theme.border.thinNormal};
+  }
+
+  span.checkbox svg path {
+    fill: #fff;
   }
 
   &.field-checkbox {

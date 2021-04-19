@@ -198,6 +198,10 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
     vertical-align: middle;
   }
 
+  .icon-enter svg {
+    color: #fff;
+  }
+
   &:hover {
     ${(p) =>
       p.focus

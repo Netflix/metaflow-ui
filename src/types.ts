@@ -1,3 +1,5 @@
+import { NotificationType } from './components/Notifications';
+
 export interface MetaDataBaseObject {
   flow_id: string;
   user_name: string;
@@ -80,6 +82,24 @@ export interface RunParam {
 export interface Log {
   row: number;
   line: string;
+}
+
+export interface Announcement {
+  contentType: 'text' | 'markdown';
+  created?: number;
+  end: number;
+  id: string;
+  message: string;
+  start: number;
+  type: NotificationType | string;
+  url?: string;
+  urlText?: string;
+}
+
+export interface AnnouncementHeader {
+  id: string;
+  message: string;
+  type: string;
 }
 
 export type QueryParam = string | null;

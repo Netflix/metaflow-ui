@@ -188,4 +188,8 @@ const StepLabel = styled.div`
   > div {
     padding-left: 0.625rem;
   }
+
+  svg path {
+    fill: #fff;
+  }
 `;

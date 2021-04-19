@@ -144,6 +144,10 @@ const DropdownButton = styled(Button)`
     background: transparent;
     border: 1px solid #333;
   }
+
+  svg path {
+    fill: #fff;
+  }
 `;
 
 const DropdownOptions = styled.div`

@@ -60,6 +60,10 @@ const ScrollToTopButton = styled.div<{ show: boolean; fullWidth: number }>`
   &:hover {
     width: ${(p) => `${p.fullWidth}px`};
   }
+
+  svg path {
+    fill: #fff;
+  }
 `;
 
 const NewStuffIndicator = styled.div<{ show: boolean }>`

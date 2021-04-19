@@ -7,11 +7,14 @@ import { PopoverWrapper } from '../Popover';
 import { BigButton } from '../Button';
 import TimezoneSelector from './TimezoneSelector';
 import VERSION_INFO from '../../utils/VERSION';
+import { Link } from 'react-router-dom';
 
 type HelpMenuLink = {
   href: string;
   label: string;
 };
+
+const INTERNAL_LINKS: HelpMenuLink[] = [{ href: '/notifications', label: 'help.notifications' }];
 
 const DEFAULT_LINKS = [
   { href: 'https://docs.metaflow.org/', label: 'Documentation' },
@@ -55,6 +58,19 @@ const HelpMenu: React.FC = () => {
         </HelpMenuTitle>
 
         <TimezoneSelector />
+
+        {INTERNAL_LINKS.map((link) => (
+          <Link
+            key={link.href + link.label}
+            to={link.href}
+            onClick={() => {
+              setOpen(false);
+            }}
+            style={{ textDecoration: 'none' }}
+          >
+            <HelpMenuLink data-testid="helpmenu-link-notifications">{t(link.label)}</HelpMenuLink>
+          </Link>
+        ))}
 
         {links.map((link) => (
           <HelpMenuLink key={link.href + link.label} href={link.href} target="_blank" data-testid="helpmenu-link">

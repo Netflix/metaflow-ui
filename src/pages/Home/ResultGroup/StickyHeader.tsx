@@ -60,7 +60,7 @@ const StickyHeaderTHead = styled.thead`
   }
 
   .result-group-columns th {
-    top: 10.5rem;
+    top: 10.3125rem;
 `;
 
 export default StickyHeader;
