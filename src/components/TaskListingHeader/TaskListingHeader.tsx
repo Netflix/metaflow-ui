@@ -1,5 +1,4 @@
 import React from 'react';
-import { GraphState, GraphHook, GraphMode } from '../Timeline/useGraph';
 import { ItemRow } from '../Structure';
 import ButtonGroup from '../ButtonGroup';
 import Button from '../Button';
@@ -12,23 +11,25 @@ import CollapseButton from './components/CollapseButton';
 import { RowCounts } from '../Timeline/taskdataUtils';
 import CustomSettings from './components/CustomSettings';
 import ModeSelector from './components/ModeSelector';
+import { SetQuery } from 'use-query-params';
+import { TaskListMode, TaskSettingsQueryParameters, TaskSettingsState } from '../Timeline/useTaskListSettings';
 
 //
 // Typedef
 //
 
 export type TaskListingProps = {
-  expandAll: () => void;
-  collapseAll: () => void;
-  setFullscreen?: () => void;
+  onToggleCollapse: (type: 'expand' | 'collapse') => void;
+  onModeSelect: (mode: TaskListMode) => void;
+  onSetFullscreen?: () => void;
+  onZoom?: (type: 'in' | 'out' | 'reset') => void;
   isFullscreen?: boolean;
-  enableZoomControl?: boolean;
-  graph: GraphHook;
+  userZoomed?: boolean;
+  settings: TaskSettingsState;
+  setQueryParam: SetQuery<TaskSettingsQueryParameters>;
   searchField: SearchFieldReturnType;
   counts: RowCounts;
   isAnyGroupOpen: boolean;
-  hasStepFilter?: boolean;
-  resetSteps?: () => void;
 };
 
 //
@@ -36,32 +37,31 @@ export type TaskListingProps = {
 //
 
 const TaskListingHeader: React.FC<TaskListingProps> = ({
-  graph: graphHook,
-  expandAll,
-  collapseAll,
+  onModeSelect,
+  onToggleCollapse,
+  onSetFullscreen,
+  onZoom,
+  settings,
+  setQueryParam,
   isFullscreen,
-  setFullscreen,
-  // searchField,
   counts,
-  enableZoomControl = false,
+  userZoomed = false,
   isAnyGroupOpen,
-  // hasStepFilter,
-  // resetSteps,
+  // searchField,
 }) => {
   const { t } = useTranslation();
-  const { graph, setQueryParam } = graphHook;
-  const activeMode = getMode(graph);
+  const activeMode = getMode(settings);
 
   return (
     <TaskListingContainer>
-      <ModeSelector activeMode={activeMode} select={(newMode) => graphHook.setMode(newMode)} />
+      <ModeSelector activeMode={activeMode} select={(newMode) => onModeSelect(newMode)} />
 
       <SettingsRow>
         <SettingsRowLeft>
           <CollapseButton
-            disabled={!graph.group}
-            expand={() => expandAll()}
-            collapse={() => collapseAll()}
+            disabled={!settings.group}
+            expand={() => onToggleCollapse('expand')}
+            collapse={() => onToggleCollapse('collapse')}
             isAnyGroupOpen={isAnyGroupOpen}
           />
           {/* 
@@ -75,39 +75,35 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
             updateSort={(order, direction) => setQueryParam({ order, direction }, 'replaceIn')}
             updateStatusFilter={(status: null | string) => setQueryParam({ status })}
             updateGroupBy={(group) => setQueryParam({ group: group ? 'true' : 'false' }, 'replaceIn')}
-            graph={graph}
+            sort={settings.sort}
+            statusFilter={settings.statusFilter}
+            group={settings.group}
             counts={counts}
           />
         </SettingsRowLeft>
         <div>
-          {enableZoomControl && setFullscreen && (
+          {(onZoom || onSetFullscreen) && (
             <ItemRow noWidth>
-              <ButtonGroup big>
-                <Button
-                  size="sm"
-                  onClick={() => graphHook.dispatch({ type: 'resetZoom' })}
-                  active={!graph.controlled}
-                  data-testid="timeline-header-zoom-fit"
-                >
-                  <span style={{ fontSize: '0.875rem' }}>{t('timeline.fit-to-screen')}</span>
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => graphHook.dispatch({ type: 'zoomOut' })}
-                  data-testid="timeline-header-zoom-out"
-                >
-                  <Icon name="minus" />
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => graphHook.dispatch({ type: 'zoomIn' })}
-                  data-testid="timeline-header-zoom-in"
-                >
-                  <Icon name="plus" />
-                </Button>
-              </ButtonGroup>
-              {!isFullscreen && (
-                <ExpandButton onClick={() => setFullscreen()} iconOnly>
+              {onZoom && (
+                <ButtonGroup big>
+                  <Button
+                    size="sm"
+                    onClick={() => onZoom('reset')}
+                    active={!userZoomed}
+                    data-testid="timeline-header-zoom-fit"
+                  >
+                    <span style={{ fontSize: '0.875rem' }}>{t('timeline.fit-to-screen')}</span>
+                  </Button>
+                  <Button size="sm" onClick={() => onZoom('out')} data-testid="timeline-header-zoom-out">
+                    <Icon name="minus" />
+                  </Button>
+                  <Button size="sm" onClick={() => onZoom('in')} data-testid="timeline-header-zoom-in">
+                    <Icon name="plus" />
+                  </Button>
+                </ButtonGroup>
+              )}
+              {!isFullscreen && onSetFullscreen && (
+                <ExpandButton onClick={() => onSetFullscreen()} iconOnly>
                   <Icon name="maximize" />
                 </ExpandButton>
               )}
@@ -123,18 +119,28 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
 // Utils
 //
 
-export function getMode(graph: GraphState): GraphMode {
-  if (graph.isCustomEnabled) {
+export function getMode(settings: TaskSettingsState): TaskListMode {
+  if (settings.isCustomEnabled) {
     return 'custom';
-  } else if (graph.group === true && !graph.statusFilter && graph.sortBy === 'startTime' && graph.sortDir === 'asc') {
+  } else if (
+    settings.group === true &&
+    !settings.statusFilter &&
+    settings.sort[0] === 'startTime' &&
+    settings.sort[1] === 'asc'
+  ) {
     return 'overview';
-  } else if (graph.group === false && !graph.statusFilter && graph.sortBy === 'startTime' && graph.sortDir === 'desc') {
+  } else if (
+    settings.group === false &&
+    !settings.statusFilter &&
+    settings.sort[0] === 'startTime' &&
+    settings.sort[1] === 'desc'
+  ) {
     return 'monitoring';
   } else if (
-    graph.group === true &&
-    graph.statusFilter === 'failed' &&
-    graph.sortBy === 'startTime' &&
-    graph.sortDir === 'asc'
+    settings.group === true &&
+    settings.statusFilter === 'failed' &&
+    settings.sort[0] === 'startTime' &&
+    settings.sort[1] === 'asc'
   ) {
     return 'error-tracker';
   }

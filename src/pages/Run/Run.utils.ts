@@ -1,13 +1,14 @@
-import { GraphParametersMap, GraphSortBy } from '../../components/Timeline/useGraph';
+import { DecodedValueMap } from 'serialize-query-params';
 import { RowDataModel } from '../../components/Timeline/useTaskData';
+import { TaskListSort, TaskSettingsQueryParameters, TasksSortBy } from '../../components/Timeline/useTaskListSettings';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
 import { SearchResultModel } from '../../hooks/useSearchField';
 import { Task } from '../../types';
 import { getPath } from '../../utils/routing';
 import { getTaskId } from '../../utils/task';
 
-export function cleanParametersMap(params: GraphParametersMap): Record<string, string> {
-  const keys = Object.keys(params) as (keyof GraphParametersMap)[];
+export function cleanParametersMap(params: DecodedValueMap<TaskSettingsQueryParameters>): Record<string, string> {
+  const keys = Object.keys(params) as (keyof TaskSettingsQueryParameters)[];
 
   return keys.reduce((obj, key) => {
     if (params[key]) {
@@ -102,7 +103,7 @@ export function getTaskFromList(
  */
 export function makeVisibleRows(
   rowDataState: RowDataModel,
-  settings: { statusFilter?: string | null; group: boolean; sortBy: GraphSortBy; sortDir: 'asc' | 'desc' },
+  settings: { statusFilter?: string | null; group: boolean; sort: TaskListSort },
   visibleSteps: string[],
   searchResults?: SearchResultModel,
 ): Row[] {
@@ -137,7 +138,7 @@ export function makeVisibleRows(
       settings.group && rowData.step ? [{ type: 'step' as const, data: rowData.step, rowObject: rowData }] : [],
       rowData.isOpen || !settings.group
         ? settings.group
-          ? rowTasks.sort(sortRows(settings.sortBy, settings.sortDir))
+          ? rowTasks.sort(sortRows(settings.sort[0], settings.sort[1]))
           : rowTasks
         : [],
     );
@@ -192,7 +193,7 @@ export function taskDuration(a: Row): number {
  * @param sortBy
  * @param sortDir
  */
-export function sortRows(sortBy: GraphSortBy, sortDir: 'asc' | 'desc'): (a: Row, b: Row) => number {
+export function sortRows(sortBy: TasksSortBy, sortDir: 'asc' | 'desc'): (a: Row, b: Row) => number {
   return (a: Row, b: Row) => {
     const fst = sortDir === 'asc' ? a : b;
     const snd = sortDir === 'asc' ? b : a;

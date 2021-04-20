@@ -4,20 +4,22 @@ import { useTranslation } from 'react-i18next';
 import { ItemRow } from '../../Structure';
 import { ForceNoWrapText } from '../../Text';
 import { RowCounts } from '../../Timeline/taskdataUtils';
-import { GraphSortBy, GraphState } from '../../Timeline/useGraph';
 import StatusLights from './StatusLights';
 import { CheckboxField, DropdownField } from '../../Form';
 import Icon from '../../Icon';
+import { TaskListSort, TasksSortBy } from '../../Timeline/useTaskListSettings';
 
 //
 // Typedef
 //
 
 export type CustomSettingsProps = {
-  updateSort: (order: GraphSortBy, direction: string) => void;
+  updateSort: (order: TasksSortBy, direction: string) => void;
   updateStatusFilter: (status: null | string) => void;
   updateGroupBy: (group: boolean) => void;
-  graph: GraphState;
+  sort: TaskListSort;
+  statusFilter?: string | null;
+  group: boolean;
   counts: RowCounts;
 };
 
@@ -29,7 +31,9 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
   updateStatusFilter,
   updateSort,
   updateGroupBy,
-  graph,
+  sort,
+  statusFilter,
+  group,
   counts,
 }) => {
   const { t } = useTranslation();
@@ -47,7 +51,7 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
                 updateStatusFilter(e?.target.value || null);
               }
             }}
-            value={graph.statusFilter || 'all'}
+            value={statusFilter || 'all'}
             options={[
               ['all', t('run.filter-all') + ` (${counts.all})`],
               ['completed', t('run.filter-completed') + ` (${counts.completed})`],
@@ -66,10 +70,10 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
               const val = e?.target.value;
               if (val) {
                 const [order, direction] = val.split(',');
-                updateSort(order as GraphSortBy, direction);
+                updateSort(order as TasksSortBy, direction);
               }
             }}
-            value={`${graph.sortBy},${graph.sortDir}`}
+            value={`${sort[0]},${sort[1]}`}
             options={[
               ['startTime,asc', t('timeline.startTime')],
               ['startTime,desc', t('timeline.startTime')],
@@ -86,8 +90,8 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
         <FiltersSection pad="sm">
           <CheckboxField
             label={t('timeline.group-by-step')}
-            checked={graph.group}
-            onChange={() => updateGroupBy(!graph.group)}
+            checked={group}
+            onChange={() => updateGroupBy(!group)}
             data-testid="timeline-header-groupby-step"
           />
         </FiltersSection>

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
-import { Step, Task, AsyncStatus } from '../../types';
+import { Step, Task, AsyncStatus, Run } from '../../types';
 import styled from 'styled-components';
-
-import { GraphHook } from './useGraph';
 import { StepRowData, RowDataAction } from './useTaskData';
 import { RowCounts } from './taskdataUtils';
 import FullPageContainer from '../FullPageContainer';
@@ -10,6 +8,9 @@ import { SearchFieldReturnType } from '../../hooks/useSearchField';
 import TaskListingHeader from '../TaskListingHeader';
 import TimelineNoRows from './TimelineNoRows';
 import Timeline from './Timeline';
+import useTimelineControls from './useTimelineControls';
+import { TaskListMode, TaskSettingsQueryParameters, TaskSettingsState } from './useTaskListSettings';
+import { SetQuery } from 'use-query-params';
 
 //
 // Typedef
@@ -19,14 +20,17 @@ export type StepRow = { type: 'step'; data: Step; rowObject: StepRowData };
 export type TaskRow = { type: 'task'; data: Task[] };
 export type Row = StepRow | TaskRow;
 type TimelineProps = {
+  run: Run;
   rows: Row[];
   rowDataDispatch: React.Dispatch<RowDataAction>;
-  status: AsyncStatus;
+  taskStatus: AsyncStatus;
   counts: RowCounts;
-  graph: GraphHook;
+  settings: TaskSettingsState;
   searchField: SearchFieldReturnType;
   paramsString: string;
+  setQueryParam: SetQuery<TaskSettingsQueryParameters>;
   isAnyGroupOpen: boolean;
+  onModeSelect: (mode: TaskListMode) => void;
 };
 
 //
@@ -34,17 +38,24 @@ type TimelineProps = {
 //
 
 const VirtualizedTimeline: React.FC<TimelineProps> = ({
-  graph: graphHook,
+  run,
+  settings,
   rows,
   rowDataDispatch,
-  status,
+  taskStatus: status,
   counts,
   searchField,
   paramsString,
+  setQueryParam,
   isAnyGroupOpen,
+  onModeSelect,
 }) => {
   const [showFullscreen, setFullscreen] = useState(false);
-  const { graph, dispatch: graphDispatch, setQueryParam } = graphHook;
+  const { timelineControls, dispatch: timelineControlDispatch } = useTimelineControls(
+    run,
+    rows,
+    settings.sort[0] === 'duration' ? 'left' : 'startTime',
+  );
 
   //
   // Event handling
@@ -52,17 +63,37 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
 
   const footerHandleUpdate = (which: 'left' | 'right', to: number) => {
     if (which === 'left') {
-      graphDispatch({
+      timelineControlDispatch({
         type: 'setZoom',
-        start: to < graph.min ? graph.min : to > graph.timelineEnd - 500 ? graph.timelineStart : to,
-        end: graph.timelineEnd,
+        start:
+          to < timelineControls.min
+            ? timelineControls.min
+            : to > timelineControls.timelineEnd - 500
+            ? timelineControls.timelineStart
+            : to,
+        end: timelineControls.timelineEnd,
       });
     } else {
-      graphDispatch({
+      timelineControlDispatch({
         type: 'setZoom',
-        start: graph.timelineStart,
-        end: to > graph.max ? graph.max : to < graph.timelineStart + 500 ? graph.timelineEnd : to,
+        start: timelineControls.timelineStart,
+        end:
+          to > timelineControls.max
+            ? timelineControls.max
+            : to < timelineControls.timelineStart + 500
+            ? timelineControls.timelineEnd
+            : to,
       });
+    }
+  };
+
+  const zoom = (type: 'in' | 'out' | 'reset') => {
+    if (type === 'in') {
+      timelineControlDispatch({ type: 'zoomIn' });
+    } else if (type === 'out') {
+      timelineControlDispatch({ type: 'zoomOut' });
+    } else if (type === 'reset') {
+      timelineControlDispatch({ type: 'resetZoom' });
     }
   };
 
@@ -70,33 +101,34 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
         <TaskListingHeader
-          graph={graphHook}
-          expandAll={() => rowDataDispatch({ type: 'openAll' })}
-          collapseAll={() => rowDataDispatch({ type: 'closeAll' })}
-          setFullscreen={() => setFullscreen(true)}
+          settings={settings}
           isFullscreen={showFullscreen}
           searchField={searchField}
           counts={counts}
-          enableZoomControl
           isAnyGroupOpen={isAnyGroupOpen}
-          hasStepFilter={graph.stepFilter.length > 0}
-          resetSteps={() => setQueryParam({ steps: null })}
+          setQueryParam={setQueryParam}
+          onModeSelect={onModeSelect}
+          onSetFullscreen={() => setFullscreen(true)}
+          onZoom={zoom}
+          userZoomed={timelineControls.controlled}
+          onToggleCollapse={(type: 'expand' | 'collapse') =>
+            rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' })
+          }
         />
         {rows.length > 0 && (
           <Timeline
             rows={rows}
             timeline={{
-              startTime: graph.min,
-              endTime: graph.max,
-              visibleStartTime: graph.timelineStart,
-              visibleEndTime: graph.timelineEnd,
-              alignment: graph.alignment,
-              sortBy: graph.sortBy,
-              groupingEnabled: graph.group,
+              startTime: timelineControls.min,
+              endTime: timelineControls.max,
+              visibleStartTime: timelineControls.timelineStart,
+              visibleEndTime: timelineControls.timelineEnd,
+              sortBy: settings.sort[0],
+              groupingEnabled: settings.group,
             }}
             paramsString={paramsString}
             onHandleMove={footerHandleUpdate}
-            onMove={(value) => graphDispatch({ type: 'move', value: value })}
+            onMove={(value) => timelineControlDispatch({ type: 'move', value: value })}
             onStepRowClick={(stepid) => rowDataDispatch({ type: 'toggle', id: stepid })}
           />
         )}

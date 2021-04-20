@@ -1,10 +1,10 @@
 import { StepRow } from '../../../components/Timeline/VirtualizedTimeline';
 import {
-  createGraphState,
   createRowDataModel,
   createStepRow,
   createStepRowData,
   createTask,
+  createTaskListSettings,
   createTaskRow,
 } from '../../../utils/testhelper';
 import {
@@ -56,7 +56,7 @@ describe('Run utils test set', () => {
 describe('Run utils - Row making test set', () => {
   test('makeVisibleRows - Most basic settings', () => {
     const model = createRowDataModel({});
-    const graph = createGraphState({});
+    const graph = createTaskListSettings({});
     const visibleSteps = ['start'];
     const searchResult = { status: 'NotAsked' as const, result: [] };
 
@@ -67,7 +67,7 @@ describe('Run utils - Row making test set', () => {
 
   test('makeVisibleRows - Step filtered by visibleSteps', () => {
     const model = createRowDataModel({ end: createStepRowData({}, { step_name: 'end' }, {}) });
-    const graph = createGraphState({});
+    const graph = createTaskListSettings({});
     const visibleSteps = ['start'];
     const searchResult = { status: 'NotAsked' as const, result: [] };
 
@@ -78,7 +78,7 @@ describe('Run utils - Row making test set', () => {
 
   test('makeVisibleRows - Multiple steps', () => {
     const model = createRowDataModel({ end: createStepRowData({}, { step_name: 'end' }, {}) });
-    const graph = createGraphState({});
+    const graph = createTaskListSettings({});
     const visibleSteps = ['start', 'end'];
     const searchResult = { status: 'NotAsked' as const, result: [] };
 
@@ -89,7 +89,7 @@ describe('Run utils - Row making test set', () => {
 
   test('makeVisibleRows - Multiple steps with one step closed', () => {
     const model = createRowDataModel({ end: createStepRowData({ isOpen: false }, { step_name: 'end' }, {}) });
-    const graph = createGraphState({});
+    const graph = createTaskListSettings({});
     const visibleSteps = ['start', 'end'];
     const searchResult = { status: 'NotAsked' as const, result: [] };
 
@@ -100,7 +100,7 @@ describe('Run utils - Row making test set', () => {
 
   test('makeVisibleRows - With grouping off', () => {
     const model = createRowDataModel({ end: createStepRowData({}, { step_name: 'end' }, {}) });
-    const graph = createGraphState({ group: false });
+    const graph = createTaskListSettings({ group: false });
     const visibleSteps = ['start', 'end'];
     const searchResult = { status: 'NotAsked' as const, result: [] };
 
@@ -111,7 +111,7 @@ describe('Run utils - Row making test set', () => {
 
   test('makeVisibleRows - With search results loading', () => {
     const model = createRowDataModel({});
-    const graph = createGraphState({ group: false });
+    const graph = createTaskListSettings({ group: false });
     const visibleSteps = ['start', 'end'];
     const searchResult = { status: 'Loading' as const, result: [] };
 
@@ -124,7 +124,7 @@ describe('Run utils - Row making test set', () => {
     const model = createRowDataModel({
       end: createStepRowData({ data: { 2: [createTask({ task_id: 2 })] } }, { step_name: 'end' }, {}),
     });
-    const graph = createGraphState({});
+    const graph = createTaskListSettings({});
     const visibleSteps = ['start', 'end'];
     const searchResult = {
       status: 'Ok' as const,
@@ -151,7 +151,7 @@ describe('Run utils - Row making test set', () => {
 
   test('makeVisibleRows - status filter, no results', () => {
     const model = createRowDataModel({});
-    const graph = createGraphState({ statusFilter: 'running' });
+    const graph = createTaskListSettings({ statusFilter: 'running' });
     const visibleSteps = ['start'];
     const searchResult = { status: 'NotAsked' as const, result: [] };
 
@@ -170,7 +170,7 @@ describe('Run utils - Row making test set', () => {
         {},
       ),
     });
-    const graph = createGraphState({ statusFilter: 'running' });
+    const graph = createTaskListSettings({ statusFilter: 'running' });
     const visibleSteps = ['start', 'end'];
     const searchResult = { status: 'NotAsked' as const, result: [] };
 

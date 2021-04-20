@@ -2,17 +2,16 @@ import React from 'react';
 import TaskListingHeader, { getMode } from '../TaskListingHeader';
 import { render, fireEvent } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
-import useGraph from '../../Timeline/useGraph';
 import useSeachField from '../../../hooks/useSearchField';
 import CollapseButton from '../components/CollapseButton';
-import { createGraphState } from '../../../utils/testhelper';
+import { createTaskListSettings } from '../../../utils/testhelper';
 
 const headerFunctionProps = {
-  expandAll: () => null,
-  collapseAll: () => null,
+  onToggleCollapse: () => null,
+  onModeSelect: () => null,
+  setQueryParam: () => null,
   setFullscreen: () => null,
   isFullscreen: false,
-  setMode: () => null,
   enableZoomControl: true,
   isAnyGroupOpen: true,
   counts: {
@@ -26,11 +25,10 @@ const headerFunctionProps = {
 describe('TaskListingHeader component', () => {
   test('<TaskListingHeader> - should render', () => {
     const Component = () => {
-      const graph = useGraph(0, 100, false);
       const searchField = useSeachField('a', 'b');
       return (
         <TestWrapper>
-          <TaskListingHeader graph={graph} searchField={searchField} {...headerFunctionProps} />
+          <TaskListingHeader settings={createTaskListSettings({})} searchField={searchField} {...headerFunctionProps} />
         </TestWrapper>
       );
     };
@@ -38,49 +36,45 @@ describe('TaskListingHeader component', () => {
   });
 
   test('getMode', () => {
-    const graph = createGraphState({ isCustomEnabled: true });
+    const settings = createTaskListSettings({ isCustomEnabled: true });
 
-    expect(getMode(graph)).toBe('custom');
+    expect(getMode(settings)).toBe('custom');
     // Predefined modes
     expect(
       getMode({
-        ...graph,
+        ...settings,
         isCustomEnabled: false,
         group: true,
         statusFilter: null,
-        sortBy: 'startTime',
-        sortDir: 'asc',
+        sort: ['startTime', 'asc']
       }),
     ).toBe('overview');
     expect(
       getMode({
-        ...graph,
+        ...settings,
         isCustomEnabled: false,
         group: false,
         statusFilter: null,
-        sortBy: 'startTime',
-        sortDir: 'desc',
+        sort: ['startTime', 'desc']
       }),
     ).toBe('monitoring');
     expect(
       getMode({
-        ...graph,
+        ...settings,
         isCustomEnabled: false,
         group: true,
         statusFilter: 'failed',
-        sortBy: 'startTime',
-        sortDir: 'asc',
+        sort: ['startTime', 'asc']
       }),
     ).toBe('error-tracker');
     // Random settings -> custom
     expect(
       getMode({
-        ...graph,
+        ...settings,
         isCustomEnabled: false,
         group: false,
         statusFilter: 'running',
-        sortBy: 'endTime',
-        sortDir: 'asc',
+        sort: ['endTime', 'asc']
       }),
     ).toBe('custom');
   });

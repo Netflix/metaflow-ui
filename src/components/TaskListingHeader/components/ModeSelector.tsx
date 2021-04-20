@@ -1,14 +1,14 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { GraphMode } from '../../Timeline/useGraph';
 import { TabsHeading, TabsHeadingItem } from '../../Tabs';
+import { TaskListMode } from '../../Timeline/useTaskListSettings';
 
 //
 // Typedef
 //
 type Props = {
-  activeMode: GraphMode;
-  select: (mode: GraphMode) => void;
+  activeMode: TaskListMode;
+  select: (mode: TaskListMode) => void;
 };
 
 //

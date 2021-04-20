@@ -2,12 +2,12 @@ import React from 'react';
 import styled, { DefaultTheme, keyframes, css } from 'styled-components';
 import { Step, Task } from '../../../types';
 import { StepRowData } from '../useTaskData';
-import { GraphAlignment } from '../useGraph';
 import { lineColor, getRowStatus, getLengthLabelPosition } from './utils';
 import { formatDuration } from '../../../utils/format';
 import { lighten } from 'polished';
 import { useHistory } from 'react-router';
 import { getPathFor } from '../../../utils/routing';
+import { TasksSortBy } from '../useTaskListSettings';
 
 //
 // Typedef
@@ -19,7 +19,7 @@ type LineElementProps = {
     startTime: number;
     visibleEndTime: number;
     visibleStartTime: number;
-    alignment: GraphAlignment;
+    sortBy: TasksSortBy;
   };
   grayed?: boolean;
   isLastAttempt: boolean;
@@ -59,7 +59,7 @@ const LineElement: React.FC<LineElementProps> = ({
 
   // Calculate have much box needs to be pushed from (or to) left
   const valueFromLeft =
-    timeline.alignment === 'fromLeft'
+    timeline.sortBy === 'duration'
       ? ((timeline.startTime -
           timeline.visibleStartTime +
           (startTimeOfFirstAttempt ? boxStartTime - startTimeOfFirstAttempt : 0)) /

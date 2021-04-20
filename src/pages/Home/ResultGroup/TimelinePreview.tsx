@@ -27,7 +27,7 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ flowid, runid }) => {
 
   useEffect(() => {
     const stepNames = steps.map((s) => s.step_name);
-    const visiblerows = makeVisibleRows(rows, { group: true, sortBy: 'startTime', sortDir: 'asc' }, stepNames);
+    const visiblerows = makeVisibleRows(rows, { group: true, sort: ['startTime', 'asc'] }, stepNames);
     const { start, end } = startAndEndpointsOfRows(visiblerows);
     setPreview((state) => ({ start, end: state ? Math.max(end, state.end) : end, visiblerows }));
   }, [rows, steps]);
@@ -43,7 +43,6 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ flowid, runid }) => {
               endTime: preview.end,
               visibleEndTime: preview.end,
               visibleStartTime: preview.start,
-              alignment: 'fromStartTime',
               sortBy: 'startTime',
               groupingEnabled: false,
             }}

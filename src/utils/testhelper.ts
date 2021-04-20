@@ -1,6 +1,6 @@
 import { TimelineMetrics } from '../components/Timeline/Timeline';
-import { GraphState } from '../components/Timeline/useGraph';
 import { RowDataModel, StepRowData } from '../components/Timeline/useTaskData';
+import { TaskSettingsState } from '../components/Timeline/useTaskListSettings';
 import { Row } from '../components/Timeline/VirtualizedTimeline';
 import { Resource } from '../hooks/useResource';
 import { Task, Step, Run, Metadata, APIError, TaskStatus } from '../types';
@@ -8,21 +8,13 @@ import { Task, Step, Run, Metadata, APIError, TaskStatus } from '../types';
 //
 // LOT OF TESTS DEPEND ON THESE VALUES AS DEFAULTS SO DONT CHANGE THESE!!!
 //
-export function createGraphState(partialGraph: Partial<GraphState>): GraphState {
+export function createTaskListSettings(partialGraph: Partial<TaskSettingsState>): TaskSettingsState {
   return {
-    alignment: 'fromStartTime',
-    sortBy: 'startTime',
-    sortDir: 'asc',
-    min: 0,
-    max: 1000,
-    timelineStart: 0,
-    timelineEnd: 1000,
-    controlled: false,
+    sort: ['startTime', 'asc'],
     stepFilter: [],
     statusFilter: null,
     group: true,
     isCustomEnabled: false,
-    resetToFullview: false,
     ...partialGraph,
   };
 }
@@ -160,7 +152,6 @@ export function createTimelineMetrics(data: Partial<TimelineMetrics>): TimelineM
     visibleStartTime: 0,
     visibleEndTime: 1000,
     sortBy: 'startTime',
-    alignment: 'fromStartTime',
     groupingEnabled: true,
     ...data,
   };

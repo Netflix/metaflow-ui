@@ -4,8 +4,8 @@ import { render } from '@testing-library/react';
 import TestWrapper, { mockfetch } from '../../../utils/testing';
 import { Run } from '../../../types';
 import WS from 'jest-websocket-mock';
-import useGraph from '../../../components/Timeline/useGraph';
 import useSeachField from '../../../hooks/useSearchField';
+import useTaskListSettings from '../../../components/Timeline/useTaskListSettings';
 
 const run: Run = {
   flow_id: 'string',
@@ -27,7 +27,7 @@ describe('Task page', () => {
     const server = new WS('ws://localhost/api/ws', { jsonProtocol: true });
 
     const Component = () => {
-      const graph = useGraph(0, 1000, false);
+      const { settings, setQueryParam, setMode } = useTaskListSettings();
       const searchField = useSeachField('asd', '0');
       return (
         <TestWrapper>
@@ -37,13 +37,15 @@ describe('Task page', () => {
             taskId="test"
             rows={[]}
             rowDataDispatch={(_action) => null}
-            graph={graph}
+            settings={settings}
             searchField={searchField}
             taskFromList={null}
             taskStatus="Ok"
             paramsString=""
             isAnyGroupOpen={true}
             counts={{ all: 0, completed: 0, failed: 0, running: 0 }}
+            onModeSelect={setMode}
+            setQueryParam={setQueryParam}
           />
         </TestWrapper>
       );

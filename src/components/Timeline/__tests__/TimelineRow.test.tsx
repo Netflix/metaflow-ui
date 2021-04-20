@@ -2,7 +2,7 @@ import React from 'react';
 import TimelineRow from '../TimelineRow';
 import LineElement from '../TimelineRow/LineElement';
 import { render } from '@testing-library/react';
-import { createGraphState, createTask, createStep, createTimelineMetrics } from '../../../utils/testhelper';
+import { createTask, createStep, createTimelineMetrics } from '../../../utils/testhelper';
 import TestWrapper from '../../../utils/testing';
 import { TaskStatus } from '../../../types';
 
@@ -126,7 +126,7 @@ describe('TimelineRow component', () => {
     // Same as default graph but alignment is from left so every element should start from left
     rerender(
       <TestWrapper>
-        <LineElement {...props} timeline={createTimelineMetrics({ alignment: 'fromLeft' })} />
+        <LineElement {...props} timeline={createTimelineMetrics({ sortBy: 'duration' })} />
       </TestWrapper>,
     );
 

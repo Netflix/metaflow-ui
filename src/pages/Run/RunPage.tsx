@@ -11,8 +11,6 @@ import RunHeader from './RunHeader';
 import DAG from '../../components/DAG';
 import Timeline, { Row } from '../../components/Timeline/VirtualizedTimeline';
 import useSeachField from '../../hooks/useSearchField';
-import useGraph from '../../components/Timeline/useGraph';
-import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { logWarning } from '../../utils/errorlogger';
 
@@ -28,6 +26,7 @@ import {
 } from './Run.utils';
 import styled from 'styled-components';
 import { FixedContent } from '../../components/Structure';
+import useTaskListSettings from '../../components/Timeline/useTaskListSettings';
 
 //
 // Typedef
@@ -84,20 +83,21 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Listing settings and graph measurements
   //
 
-  const graph = useGraph(run.ts_epoch, run.finished_at || Date.now(), run.status === 'running');
-  const urlParams = new URLSearchParams(cleanParametersMap(graph.params)).toString();
+  const { settings, params: listParams, setQueryParam, setMode } = useTaskListSettings();
+
+  const urlParams = new URLSearchParams(cleanParametersMap(listParams)).toString();
 
   useEffect(() => {
     setPreviousStepName(params.stepName || undefined);
     setPreviousTaskId(params.taskId || undefined);
     // If there is no previous settings, lets default to some of modes.
-    if (!graph.params.direction && !graph.params.order && !graph.params.status) {
+    if (!listParams.direction && !listParams.order && !listParams.status) {
       if (run.status === 'completed') {
-        graph.setMode('overview');
+        setMode('overview');
       } else if (run.status === 'running') {
-        graph.setMode('monitoring');
+        setMode('monitoring');
       } else if (run.status === 'failed') {
-        graph.setMode('error-tracker');
+        setMode('error-tracker');
       }
     }
   }, [params.runNumber]); // eslint-disable-line
@@ -121,31 +121,15 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       const visibleSteps: string[] = Object.keys(rows).filter(
         (step_name) =>
           // Check if step filter is active. Show only selected steps
-          (graph.graph.stepFilter.length === 0 || graph.graph.stepFilter.indexOf(step_name) > -1) &&
+          (settings.stepFilter.length === 0 || settings.stepFilter.indexOf(step_name) > -1) &&
           // Filter out steps starting with _ since they are not interesting to user
           !step_name.startsWith('_'),
       );
 
       // Make list of rows. Note that in list steps and tasks are equal rows, they are just rendered a bit differently
-      const newRows: Row[] = makeVisibleRows(rows, graph.graph, visibleSteps, searchField.results);
+      const newRows: Row[] = makeVisibleRows(rows, settings, visibleSteps, searchField.results);
       // If no grouping, sort tasks here.
-      const rowsToUpdate = !graph.graph.group
-        ? newRows.sort(sortRows(graph.graph.sortBy, graph.graph.sortDir))
-        : newRows;
-
-      // Figure out new timings to timeline view
-      // TODO: Move this to somewhere else
-      const timings = startAndEndpointsOfRows([...rowsToUpdate]);
-      const endTime =
-        graph.graph.sortBy === 'duration' ? run.ts_epoch + getLongestRowDuration(rowsToUpdate) : timings.end;
-
-      if (timings.start !== 0 && endTime !== 0) {
-        graph.dispatch({
-          type: 'init',
-          start: run.ts_epoch,
-          end: endTime,
-        });
-      }
+      const rowsToUpdate = !settings.group ? newRows.sort(sortRows(settings.sort[0], settings.sort[1])) : newRows;
       setVisibleRows(rowsToUpdate);
     } catch (e) {
       logWarning('Unexpected error while contructing task rows: ', e);
@@ -153,11 +137,10 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     /* eslint-disable */
   }, [
     rows,
-    graph.graph.stepFilter,
-    graph.graph.sortBy,
-    graph.graph.sortDir,
-    graph.graph.statusFilter,
-    graph.graph.group,
+    settings.stepFilter,
+    settings.sort,
+    settings.statusFilter,
+    settings.group,
     searchField.results,
   ]);
 
@@ -168,6 +151,20 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       setVisible(true);
     }, 1);
   }, []);
+
+  const sharedProps = {
+    run,
+    rows: visibleRows,
+    rowDataDispatch: dispatch,
+    taskStatus,
+    counts: counts,
+    searchField,
+    settings,
+    paramsString: urlParams,
+    isAnyGroupOpen,
+    setQueryParam,
+    onModeSelect: setMode,
+  }
 
   return (
     <RunPageContainer visible={visible}>
@@ -200,16 +197,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 {(taskError || stepError) && visibleRows.length === 0 ? (
                   <APIErrorRenderer error={taskError || stepError} />
                 ) : (
-                  <Timeline
-                    rows={visibleRows}
-                    rowDataDispatch={dispatch}
-                    status={taskStatus}
-                    counts={counts}
-                    graph={graph}
-                    searchField={searchField}
-                    paramsString={urlParams}
-                    isAnyGroupOpen={isAnyGroupOpen}
-                  />
+                  <Timeline {...sharedProps} />
                 )}
               </ErrorBoundary>
             ),
@@ -224,18 +212,10 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                   <APIErrorRenderer error={taskError || stepError} />
                 ) : (
                   <TaskViewContainer
-                    run={run}
+                    {...sharedProps}
                     taskFromList={getTaskFromList(rows, params.stepName, params.taskId)}
                     stepName={previousStepName || 'not-selected'}
                     taskId={previousTaskId || 'not-selected'}
-                    rows={visibleRows}
-                    taskStatus={taskStatus}
-                    rowDataDispatch={dispatch}
-                    searchField={searchField}
-                    graph={graph}
-                    counts={counts}
-                    paramsString={urlParams}
-                    isAnyGroupOpen={isAnyGroupOpen}
                   />
                 )}
               </ErrorBoundary>

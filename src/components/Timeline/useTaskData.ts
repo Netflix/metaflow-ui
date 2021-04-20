@@ -39,8 +39,6 @@ export type StepRowData = {
 export type RowDataAction =
   // Add steps to the store
   | { type: 'fillStep'; data: Step[] }
-  // Add single step to store
-  | { type: 'add'; id: string; data: StepRowData }
   // Fill bunch of tasks to the corresponding step
   | { type: 'fillTasks'; data: Task[] }
   // Toggle step row expanded or collapsed
@@ -102,8 +100,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
         .reduce((obj, key) => {
           return { ...obj, [key]: steprows[key] };
         }, {});
-    case 'add':
-      return { ...state, [action.id]: action.data };
+
     case 'fillTasks': {
       // Group incoming tasks by step
       const grouped: Record<string, Task[]> = {};

@@ -3,13 +3,13 @@ import { AutoSizer, List } from 'react-virtualized';
 import styled from 'styled-components';
 
 import TimelineRow from './TimelineRow';
-import { GraphAlignment, GraphSortBy } from './useGraph';
 import { useTranslation } from 'react-i18next';
 import TimelineFooter from './Footer';
 import { TFunction } from 'i18next';
 import { RenderedRows } from 'react-virtualized/dist/es/List';
 import { toRelativeSize } from '../../utils/style';
 import { Row } from './VirtualizedTimeline';
+import { TasksSortBy } from './useTaskListSettings';
 
 //
 // Typedef
@@ -31,8 +31,7 @@ export type TimelineMetrics = {
   endTime: number;
   visibleEndTime: number;
   visibleStartTime: number;
-  alignment: GraphAlignment;
-  sortBy: GraphSortBy;
+  sortBy: TasksSortBy;
   groupingEnabled: boolean;
 };
 
@@ -117,6 +116,7 @@ const Timeline: React.FC<TimelineProps> = ({
                   : height - SPACE_UNDER_TIMELINE(footerType)
               }
               width={width}
+              style={{ transition: 'height 0.25s' }}
             />
             {stickyHeader && timeline.groupingEnabled && (
               <StickyHeader

@@ -39,7 +39,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   if (!item || !item.data) return null;
   const Element = sticky ? StickyStyledRow : StyledRow;
 
-  const { sortBy, groupingEnabled, ...lineElementMetrics } = timeline;
+  const { groupingEnabled, ...lineElementMetrics } = timeline;
 
   return (
     <>

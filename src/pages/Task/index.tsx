@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { StringParam, useQueryParams } from 'use-query-params';
+import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
 import { Run as IRun, Task as ITask, Log, Metadata, AsyncStatus } from '../../types';
 import useResource from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 
 import Spinner from '../../components/Spinner';
-import { GraphHook } from '../../components/Timeline/useGraph';
 import LogList from '../../components/LogList';
 import LogActionBar from '../../components/LogList/LogActionBar';
 import FullPageContainer from '../../components/FullPageContainer';
@@ -22,6 +21,11 @@ import SectionLoader from './components/SectionLoader';
 import TaskDetails from './components/TaskDetails';
 import AttemptSelector from './components/AttemptSelector';
 import { getTaskId } from '../../utils/task';
+import {
+  TaskListMode,
+  TaskSettingsQueryParameters,
+  TaskSettingsState,
+} from '../../components/Timeline/useTaskListSettings';
 
 //
 // Typedef
@@ -35,11 +39,13 @@ type TaskViewProps = {
   rows: Row[];
   rowDataDispatch: (action: RowDataAction) => void;
   taskStatus: AsyncStatus;
-  graph: GraphHook;
+  settings: TaskSettingsState;
   searchField: SearchFieldReturnType;
   counts: RowCounts;
   paramsString: string;
   isAnyGroupOpen: boolean;
+  setQueryParam: SetQuery<TaskSettingsQueryParameters>;
+  onModeSelect: (mode: TaskListMode) => void;
 };
 
 //
@@ -54,11 +60,13 @@ const Task: React.FC<TaskViewProps> = ({
   rows,
   rowDataDispatch,
   taskStatus,
-  graph,
+  settings,
   searchField,
   counts,
   paramsString,
   isAnyGroupOpen,
+  setQueryParam,
+  onModeSelect,
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
@@ -148,12 +156,15 @@ const Task: React.FC<TaskViewProps> = ({
   return (
     <TaskContainer>
       <TaskListingHeader
-        graph={graph}
-        expandAll={() => rowDataDispatch({ type: 'openAll' })}
-        collapseAll={() => rowDataDispatch({ type: 'closeAll' })}
+        settings={settings}
+        onToggleCollapse={(type: 'expand' | 'collapse') =>
+          rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' })
+        }
         searchField={searchField}
         counts={counts}
         isAnyGroupOpen={isAnyGroupOpen}
+        onModeSelect={onModeSelect}
+        setQueryParam={setQueryParam}
       />
 
       <div style={{ display: 'flex' }}>
@@ -163,7 +174,7 @@ const Task: React.FC<TaskViewProps> = ({
           taskStatus={taskStatus}
           activeTaskId={taskId}
           results={searchField.results}
-          grouped={graph.graph.group}
+          grouped={settings.group}
           paramsString={paramsString}
         />
 
