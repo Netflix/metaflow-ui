@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { AsyncStatus } from '../../types';
-import { TextInputField } from '../Form';
+import FilterInput from '../FilterInput';
+import { Spinner } from '../Spinner';
 
 type SearchFieldProps = {
   initialValue?: string;
@@ -24,23 +26,39 @@ const SearchField: React.FC<SearchFieldProps> = ({ initialValue, onUpdate, statu
   }, [debouncedTerm]); // eslint-disable-line
 
   return (
-    <TextInputField
-      defaultValue={initialValue}
-      placeholder={t('task.search-tasks')}
-      onChange={(e) => e && setSearchTerm(e.currentTarget.value)}
-      onKeyPress={(e) => {
-        if (e.charCode === 13) {
-          const val = e.currentTarget.value;
-          if (val) {
-            onUpdate(val, true);
-          }
-        }
-      }}
-      loading={status === 'Loading'}
-      horizontal
-      async
-    />
+    <SearchFieldContainer title={t('task.search-tasks-tip')}>
+      <FilterInput
+        sectionLabel={t('search.search')}
+        initialValue={initialValue}
+        onChange={(e) => setSearchTerm(e)}
+        onSubmit={(str) => {
+          onUpdate(str, true);
+        }}
+        noIcon
+        noClear
+      />
+      <SearchLoader>
+        <Spinner visible={status === 'Loading'} />
+      </SearchLoader>
+    </SearchFieldContainer>
   );
 };
+
+//
+// Style
+//
+
+const SearchFieldContainer = styled.div`
+  width: 18rem;
+  margin: 0 0.375rem;
+  position: relative;
+`;
+
+const SearchLoader = styled.div`
+  position: absolute;
+  right: 0.5rem;
+  top: 0.675rem;
+  pointer-events: none;
+`;
 
 export default SearchField;

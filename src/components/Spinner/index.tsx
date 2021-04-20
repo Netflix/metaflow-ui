@@ -29,7 +29,7 @@ const getSize = (p: {
 
 type Props = { size?: number; borderWidth?: number; sm?: boolean; md?: boolean; lg?: boolean };
 
-const Spinner = styled.div<Props & { visible: boolean }>`
+export const Spinner = styled.div<Props & { visible: boolean }>`
   display: inline-block;
   box-sizing: border-box;
   -moz-box-sizing: border-box;

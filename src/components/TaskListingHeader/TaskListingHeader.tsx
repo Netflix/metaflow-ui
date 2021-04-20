@@ -6,11 +6,12 @@ import styled from 'styled-components';
 import Icon from '../Icon';
 import { useTranslation } from 'react-i18next';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
-// import SearchField from '../SearchField';
+import SearchField from '../SearchField';
 import CollapseButton from './components/CollapseButton';
 import { RowCounts } from '../Timeline/taskdataUtils';
 import CustomSettings from './components/CustomSettings';
 import ModeSelector from './components/ModeSelector';
+import FEATURE_FLAGS from '../../utils/FEATURE';
 import { SetQuery } from 'use-query-params';
 import { TaskListMode, TaskSettingsQueryParameters, TaskSettingsState } from '../Timeline/useTaskListSettings';
 
@@ -44,10 +45,10 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
   settings,
   setQueryParam,
   isFullscreen,
+  searchField,
   counts,
   userZoomed = false,
   isAnyGroupOpen,
-  // searchField,
 }) => {
   const { t } = useTranslation();
   const activeMode = getMode(settings);
@@ -64,12 +65,13 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
             collapse={() => onToggleCollapse('collapse')}
             isAnyGroupOpen={isAnyGroupOpen}
           />
-          {/* 
+          {FEATURE_FLAGS.ARTIFACT_SEARCH && (
             <SearchField
               initialValue={searchField.fieldProps.text}
               onUpdate={searchField.fieldProps.setText}
               status={searchField.results.status}
-            /> */}
+            />
+          )}
 
           <CustomSettings
             updateSort={(order, direction) => setQueryParam({ order, direction }, 'replaceIn')}

@@ -141,7 +141,7 @@ const en = {
       'std-out': 'stdout',
       'std-err': 'stderr',
       artifacts: 'Artifacts',
-      'search-tasks': 'Search: artifact_name=value',
+      'search-tasks-tip': 'Search: artifact_name=value',
       'no-logs': 'No logs',
       'logs-only-available-AWS': 'Logs were not found from AWS.',
       attempt: 'Attempt',
@@ -169,6 +169,7 @@ const en = {
     },
 
     search: {
+      search: 'Search',
       'no-results': 'No search results',
       'no-tasks': 'No tasks with selected settings',
     },

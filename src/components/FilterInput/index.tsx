@@ -19,8 +19,10 @@ type FilterInputProps = {
     params?: (input: string) => Record<string, string>;
     preFetch?: boolean;
   };
+  initialValue?: string;
   autoFocus?: boolean;
   noIcon?: boolean;
+  noClear?: boolean;
 };
 
 //
@@ -32,11 +34,13 @@ const FilterInput: React.FC<FilterInputProps> = ({
   onChange,
   sectionLabel,
   autoCompleteSettings,
+  initialValue = '',
   autoFocus = false,
   noIcon = false,
+  noClear = false,
 }) => {
   const [hasFocus, setHasFocus] = useState(false);
-  const [val, setVal] = useState('');
+  const [val, setVal] = useState(initialValue);
   const [autoCompleteOpen, setAutoCompleteOpen] = useState(false);
   const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
@@ -87,7 +91,9 @@ const FilterInput: React.FC<FilterInputProps> = ({
               } else {
                 onSubmit(e.currentTarget.value);
               }
-              setVal('');
+              if (!noClear) {
+                setVal('');
+              }
               setActiveOption(null);
               // Currently it feels more natural to keep the focus on the input when adding tags
               // Enable these if user feedback suggets that more conventional behaviour is wanted
