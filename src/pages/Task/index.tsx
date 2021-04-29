@@ -156,6 +156,7 @@ const Task: React.FC<TaskViewProps> = ({
   return (
     <TaskContainer>
       <TaskListingHeader
+        run={run}
         settings={settings}
         onToggleCollapse={(type: 'expand' | 'collapse') =>
           rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' })

@@ -14,12 +14,14 @@ import ModeSelector from './components/ModeSelector';
 import FEATURE_FLAGS from '../../utils/FEATURE';
 import { SetQuery } from 'use-query-params';
 import { TaskListMode, TaskSettingsQueryParameters, TaskSettingsState } from '../Timeline/useTaskListSettings';
+import { Run } from '../../types';
 
 //
 // Typedef
 //
 
 export type TaskListingProps = {
+  run: Run;
   onToggleCollapse: (type: 'expand' | 'collapse') => void;
   onModeSelect: (mode: TaskListMode) => void;
   onSetFullscreen?: () => void;
@@ -38,6 +40,7 @@ export type TaskListingProps = {
 //
 
 const TaskListingHeader: React.FC<TaskListingProps> = ({
+  run,
   onModeSelect,
   onToggleCollapse,
   onSetFullscreen,
@@ -70,6 +73,13 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
               initialValue={searchField.fieldProps.text}
               onUpdate={searchField.fieldProps.setText}
               status={searchField.results.status}
+              autoCompleteSettings={{
+                url: `/flows/${run.flow_id}/runs/${run.run_number || run.run_id}/artifacts/autocomplete`,
+                params: (input) => ({
+                  'name:co': input,
+                }),
+              }}
+              autoCompleteEnabled={(str) => str.indexOf(':') === -1}
             />
           )}
 

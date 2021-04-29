@@ -3,20 +3,28 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'use-debounce';
 import { AsyncStatus } from '../../types';
-import FilterInput from '../FilterInput';
+import FilterInput, { InputAutocompleteSettings } from '../FilterInput';
 import { Spinner } from '../Spinner';
 
 type SearchFieldProps = {
   initialValue?: string;
   onUpdate: (str: string, forceUpdate?: boolean) => void;
   status: AsyncStatus;
+  autoCompleteSettings?: InputAutocompleteSettings;
+  autoCompleteEnabled?: (str: string) => boolean;
 };
 
 //
 // Makes debounced search field, send updates to parent only every 300ms
 //
 
-const SearchField: React.FC<SearchFieldProps> = ({ initialValue, onUpdate, status }) => {
+const SearchField: React.FC<SearchFieldProps> = ({
+  initialValue,
+  onUpdate,
+  status,
+  autoCompleteSettings,
+  autoCompleteEnabled,
+}) => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState<string>(initialValue || '');
   const [debouncedTerm] = useDebounce(searchTerm, 300);
@@ -30,12 +38,17 @@ const SearchField: React.FC<SearchFieldProps> = ({ initialValue, onUpdate, statu
       <FilterInput
         sectionLabel={t('search.search')}
         initialValue={initialValue}
-        onChange={(e) => setSearchTerm(e)}
+        onChange={(e) => {
+          setSearchTerm(e);
+        }}
         onSubmit={(str) => {
+          setSearchTerm(str);
           onUpdate(str, true);
         }}
         noIcon
         noClear
+        autoCompleteSettings={autoCompleteSettings}
+        autoCompleteEnabled={autoCompleteEnabled}
       />
       <SearchLoader>
         <Spinner visible={status === 'Loading'} />

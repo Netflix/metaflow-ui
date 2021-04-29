@@ -9,16 +9,19 @@ import { ForceNoWrapText } from '../Text';
 // Typedef
 //
 
+export type InputAutocompleteSettings = {
+  url: string;
+  finder?: (item: AutoCompleteItem, input: string) => boolean;
+  params?: (input: string) => Record<string, string>;
+  preFetch?: boolean;
+};
+
 type FilterInputProps = {
   onSubmit: (k: string) => void;
   sectionLabel: string;
   onChange?: (k: string) => void;
-  autoCompleteSettings?: {
-    url: string;
-    finder?: (item: AutoCompleteItem, input: string) => boolean;
-    params?: (input: string) => Record<string, string>;
-    preFetch?: boolean;
-  };
+  autoCompleteSettings?: InputAutocompleteSettings;
+  autoCompleteEnabled?: (str: string) => boolean;
   initialValue?: string;
   autoFocus?: boolean;
   noIcon?: boolean;
@@ -34,6 +37,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
   onChange,
   sectionLabel,
   autoCompleteSettings,
+  autoCompleteEnabled,
   initialValue = '',
   autoFocus = false,
   noIcon = false,
@@ -44,6 +48,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
   const [autoCompleteOpen, setAutoCompleteOpen] = useState(false);
   const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
+  const autoCEnabled = autoCompleteSettings ? (autoCompleteEnabled ? autoCompleteEnabled(val) : true) : false;
 
   const autoCompleteResult = useAutoComplete<string>(
     autoCompleteSettings
@@ -51,6 +56,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
           ...autoCompleteSettings,
           params: autoCompleteSettings.params ? autoCompleteSettings.params(val) : {},
           input: val,
+          enabled: autoCEnabled,
         }
       : { url: '', input: '', enabled: false },
   );
@@ -93,6 +99,8 @@ const FilterInput: React.FC<FilterInputProps> = ({
               }
               if (!noClear) {
                 setVal('');
+              } else {
+                setVal(activeAutoCompleteOption || e.currentTarget.value);
               }
               setActiveOption(null);
               // Currently it feels more natural to keep the focus on the input when adding tags
@@ -129,7 +137,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
           {!noIcon && <Icon name={hasFocus ? 'enter' : 'plus'} size="xs" />}
         </SubmitIconHolder>
       </FilterInputContainer>
-      {autoCompleteOpen && autoCompleteResult.data.length > 0 && val !== '' && (
+      {autoCompleteOpen && autoCompleteResult.data.length > 0 && val !== '' && autoCEnabled && (
         <AutoComplete
           result={autoCompleteResult.data}
           setActiveOption={(active) => {
@@ -137,8 +145,12 @@ const FilterInput: React.FC<FilterInputProps> = ({
           }}
           onSelect={(selected) => {
             onSubmit(selected);
-            setVal('');
-            setHasFocus(false);
+            if (!noClear) {
+              setVal('');
+              setHasFocus(false);
+            } else {
+              setVal(selected);
+            }
             setActiveOption(null);
           }}
         />
