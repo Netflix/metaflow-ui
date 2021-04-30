@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import useAutoComplete, { AutoCompleteItem } from '../../hooks/useAutoComplete';
-import Icon from '../Icon';
+import Icon, { IconKeys, IconSizes } from '../Icon';
 import AutoComplete from '../AutoComplete';
 import { ForceNoWrapText } from '../Text';
 
@@ -24,6 +24,7 @@ type FilterInputProps = {
   autoCompleteEnabled?: (str: string) => boolean;
   initialValue?: string;
   autoFocus?: boolean;
+  customIcon?: [IconKeys, IconSizes];
   noIcon?: boolean;
   noClear?: boolean;
 };
@@ -41,6 +42,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
   initialValue = '',
   autoFocus = false,
   noIcon = false,
+  customIcon,
   noClear = false,
 }) => {
   const [hasFocus, setHasFocus] = useState(false);
@@ -126,7 +128,9 @@ const FilterInput: React.FC<FilterInputProps> = ({
           onMouseDown={() => {
             if (inputEl?.current?.value) {
               onSubmit(inputEl.current.value);
-              setVal('');
+              if (!noClear) {
+                setVal('');
+              }
               // Currently it feels more natural to keep the focus on the input when adding tags
               // Enable these if user feedback suggets that more conventional behaviour is wanted
               // setHasFocus(false);
@@ -134,7 +138,12 @@ const FilterInput: React.FC<FilterInputProps> = ({
             }
           }}
         >
-          {!noIcon && <Icon name={hasFocus ? 'enter' : 'plus'} size="xs" />}
+          {!noIcon && (
+            <Icon
+              name={hasFocus ? 'enter' : customIcon ? customIcon[0] : 'search'}
+              size={hasFocus || !customIcon ? 'xs' : customIcon[1]}
+            />
+          )}
         </SubmitIconHolder>
       </FilterInputContainer>
       {autoCompleteOpen && autoCompleteResult.data.length > 0 && val !== '' && autoCEnabled && (

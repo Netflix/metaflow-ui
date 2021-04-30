@@ -127,7 +127,15 @@ export function makeVisibleRows(
 
     if (searchResults && shouldApplySearchFilter(searchResults)) {
       const matchIds = searchResults.result.map((item) => item.task_id);
-      rowTasks = rowTasks.filter((item) => matchIds.indexOf(item.data[0]?.task_id?.toString()) > -1);
+      const inList = (val: string) => matchIds.indexOf(val) > -1;
+      rowTasks = rowTasks.filter((item) => {
+        const task = item.data[0];
+        if (!task) return false;
+
+        return task.task_name
+          ? inList(task.task_name) || inList(task.task_id.toString())
+          : inList(task.task_id.toString());
+      });
     }
 
     // Count visible tasks once all filters have been applied

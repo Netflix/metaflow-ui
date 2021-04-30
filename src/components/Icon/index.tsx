@@ -1,5 +1,5 @@
 import React, { FunctionComponent } from 'react';
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 import { ReactComponent as Timeline } from '../../assets/timeline.svg';
 import { ReactComponent as ArrowDown } from '../../assets/arrow_down.svg';
@@ -35,6 +35,7 @@ import { ReactComponent as Copy } from '../../assets/copy.svg';
 import { ReactComponent as Download } from '../../assets/download.svg';
 import { ReactComponent as ToTopArrow } from '../../assets/to_top_arrow.svg';
 import { ReactComponent as ArrowPointTop } from '../../assets/arrow-point-up.svg';
+import { ReactComponent as RowLoader } from '../../assets/row-loader.svg';
 
 export type SupportedIcons = {
   timeline: FunctionComponent;
@@ -71,6 +72,7 @@ export type SupportedIcons = {
   download: FunctionComponent;
   toTopArrow: FunctionComponent;
   arrowPointTop: FunctionComponent;
+  rowLoader: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -108,6 +110,7 @@ const icons: SupportedIcons = {
   download: Download,
   toTopArrow: ToTopArrow,
   arrowPointTop: ArrowPointTop,
+  rowLoader: RowLoader,
 };
 
 export type IconKeys = keyof SupportedIcons;
@@ -120,6 +123,8 @@ type SupportedSizes = {
   hg: number;
 };
 
+export type IconSizes = keyof SupportedSizes;
+
 const sizeTable: SupportedSizes = {
   xs: 0.75,
   sm: 1,
@@ -127,7 +132,6 @@ const sizeTable: SupportedSizes = {
   lg: 2,
   hg: 2.5,
 };
-
 interface IconProps {
   name: keyof SupportedIcons;
   size?: keyof SupportedSizes;
@@ -136,6 +140,7 @@ interface IconProps {
   className?: string;
   padLeft?: boolean;
   padRight?: boolean;
+  spin?: boolean;
   onClick?: () => void;
 }
 
@@ -154,6 +159,7 @@ const Wrapper = styled.i<{
   size: keyof SupportedSizes;
   customSize?: number;
   rotate?: number;
+  spin?: boolean;
   padLeft?: boolean;
   padRight?: boolean;
 }>`
@@ -165,6 +171,13 @@ const Wrapper = styled.i<{
   padding-left: ${(p) => (p.padLeft ? p.theme.spacer.sm : 0)}rem;
   padding-right: ${(p) => (p.padRight ? p.theme.spacer.sm : 0)}rem;
 
+  ${(p) =>
+    p.spin
+      ? css`
+          animation: ${SpinKeyframes} 1.2s linear infinite;
+        `
+      : null}
+
   svg {
     height: ${(p) => p.customSize || sizeTable[p.size]}rem;
     transform: ${(p) => (p.rotate ? `rotate(${p.rotate}deg)` : 'none')};
@@ -173,6 +186,11 @@ const Wrapper = styled.i<{
   svg path {
     fill: currentColor;
   }
+`;
+
+const SpinKeyframes = keyframes`
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
 `;
 
 type SortIconProps = Omit<IconProps, 'name'> & { direction: 'up' | 'down'; active?: boolean };

@@ -128,6 +128,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
               groupingEnabled: settings.group,
             }}
             paramsString={paramsString}
+            searchStatus={searchField.results.status}
             onHandleMove={footerHandleUpdate}
             onMove={(value) => timelineControlDispatch({ type: 'move', value: value })}
             onStepRowClick={(stepid) => rowDataDispatch({ type: 'toggle', id: stepid })}
