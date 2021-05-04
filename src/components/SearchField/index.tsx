@@ -44,7 +44,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
         autoCompleteEnabled={autoCompleteEnabled}
         tip="key:value"
         status={results.status}
-        errorMsg={(results.status === 'Error' && results.error.message) || undefined}
+        errorMsg={(results.status === 'Error' && results.errorMsg) || undefined}
       />
     </SearchFieldContainer>
   );

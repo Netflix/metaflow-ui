@@ -1,9 +1,17 @@
 import useWebsocketRequest, { OnOpen, OnUpdate, OnClose, OnError } from '../useWebsocketRequest';
 
-export interface SearchResult {
-  progress?: string;
-  matches?: Match[];
-}
+export type SearchResult =
+  | {
+      progress?: string;
+      matches?: Match[];
+      type: 'result';
+    }
+  | {
+      type: 'error';
+      message: string;
+      traceback?: string;
+      id: string;
+    };
 
 interface Match {
   flow_id: string;
