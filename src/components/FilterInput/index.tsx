@@ -153,7 +153,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
         >
           {!noIcon && (
             <Icon
-              name={hasFocus ? 'enter' : status === 'Error' ? 'danger' : customIcon ? customIcon[0] : 'search'}
+              name={hasFocus ? 'enter' : status === 'Error' ? 'danger' : customIcon ? customIcon[0] : 'plus'}
               size={hasFocus || !customIcon ? 'xs' : customIcon[1]}
             />
           )}
