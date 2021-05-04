@@ -71,7 +71,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
         <StepLabel
           onClick={() => props.toggle()}
           data-testid="tasklistlabel-step-container"
-          loading={props.searchStatus === 'Loading'}
+          isLoading={props.searchStatus === 'Loading'}
         >
           {props.searchStatus === 'Loading' ? (
             <Icon name="rowLoader" size="xs" spin data-testid="tasklistlabel-open-icon" />
@@ -179,7 +179,7 @@ const RowTaskName = styled.div`
   text-overflow: ellipsis;
 `;
 
-const StepLabel = styled.div<{ loading: boolean }>`
+const StepLabel = styled.div<{ isLoading: boolean }>`
   display: flex;
   align-items: center;
   user-select: text;
@@ -199,6 +199,6 @@ const StepLabel = styled.div<{ loading: boolean }>`
   }
 
   svg path {
-    fill: ${(p) => (p.loading ? '#717171' : '#fff')};
+    fill: ${(p) => (p.isLoading ? '#717171' : '#fff')};
   }
 `;
