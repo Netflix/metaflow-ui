@@ -1,9 +1,17 @@
 import useWebsocketRequest, { OnOpen, OnUpdate, OnClose, OnError } from '../useWebsocketRequest';
 
-export interface SearchResult {
-  progress?: string;
-  matches?: Match[];
-}
+export type SearchResult =
+  | {
+      progress?: string;
+      matches?: Match[];
+      type: 'result';
+    }
+  | {
+      type: 'error';
+      message: string;
+      traceback?: string;
+      id: string;
+    };
 
 interface Match {
   flow_id: string;
@@ -28,16 +36,17 @@ export interface HookConfig {
 
 interface SearchKeyValuePair {
   key: string;
-  value: string;
+  value?: string;
 }
 
 const parseSearchValue = (searchValue: string): SearchKeyValuePair | null => {
   const components = (searchValue || '').trim().split(/\s+/).filter(Boolean);
   if (components.length > 0) {
-    const condition = components[0].split('=');
-    if (condition.length === 2 && condition[0] && condition[1]) {
+    const condition = components[0].split(':');
+    if (condition[1]) {
       return { key: condition[0], value: condition[1] };
     }
+    return { key: condition[0] };
   }
   return null;
 };
@@ -55,7 +64,7 @@ export default function useSearchRequest({
   const searchKv = parseSearchValue(searchValue);
   useWebsocketRequest<SearchResult>({
     url,
-    queryParams: searchKv !== null ? { key: searchKv.key, value: searchKv.value } : {},
+    queryParams: searchKv !== null ? ((searchKv as unknown) as Record<string, string>) : {},
     enabled: searchKv !== null && enabled,
     onConnecting,
     onUpdate,

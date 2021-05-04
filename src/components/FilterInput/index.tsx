@@ -1,28 +1,36 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
 import useAutoComplete, { AutoCompleteItem } from '../../hooks/useAutoComplete';
-import Icon from '../Icon';
+import Icon, { IconKeys, IconSizes } from '../Icon';
 import AutoComplete from '../AutoComplete';
 import { ForceNoWrapText } from '../Text';
+import { AsyncStatus } from '../../types';
 
 //
 // Typedef
 //
 
+export type InputAutocompleteSettings = {
+  url: string;
+  finder?: (item: AutoCompleteItem, input: string) => boolean;
+  params?: (input: string) => Record<string, string>;
+  preFetch?: boolean;
+};
+
 type FilterInputProps = {
   onSubmit: (k: string) => void;
   sectionLabel: string;
   onChange?: (k: string) => void;
-  autoCompleteSettings?: {
-    url: string;
-    finder?: (item: AutoCompleteItem, input: string) => boolean;
-    params?: (input: string) => Record<string, string>;
-    preFetch?: boolean;
-  };
+  autoCompleteSettings?: InputAutocompleteSettings;
+  autoCompleteEnabled?: (str: string) => boolean;
   initialValue?: string;
   autoFocus?: boolean;
+  customIcon?: [IconKeys, IconSizes];
   noIcon?: boolean;
   noClear?: boolean;
+  status?: AsyncStatus;
+  tip?: string;
+  errorMsg?: string;
 };
 
 //
@@ -34,16 +42,22 @@ const FilterInput: React.FC<FilterInputProps> = ({
   onChange,
   sectionLabel,
   autoCompleteSettings,
+  autoCompleteEnabled,
   initialValue = '',
   autoFocus = false,
   noIcon = false,
+  customIcon,
   noClear = false,
+  status = 'Ok',
+  tip,
+  errorMsg,
 }) => {
   const [hasFocus, setHasFocus] = useState(false);
   const [val, setVal] = useState(initialValue);
   const [autoCompleteOpen, setAutoCompleteOpen] = useState(false);
   const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
+  const autoCEnabled = autoCompleteSettings ? (autoCompleteEnabled ? autoCompleteEnabled(val) : true) : false;
 
   const autoCompleteResult = useAutoComplete<string>(
     autoCompleteSettings
@@ -51,6 +65,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
           ...autoCompleteSettings,
           params: autoCompleteSettings.params ? autoCompleteSettings.params(val) : {},
           input: val,
+          enabled: autoCEnabled,
         }
       : { url: '', input: '', enabled: false },
   );
@@ -72,12 +87,17 @@ const FilterInput: React.FC<FilterInputProps> = ({
 
   return (
     <FilterInputWrapper
+      status={status}
       active={hasFocus}
       onClick={() => {
         inputEl.current?.focus();
       }}
     >
-      {sectionLabel && <LabelTitle active={hasFocus || val !== ''}>{sectionLabel}</LabelTitle>}
+      {sectionLabel && (
+        <LabelTitle active={hasFocus || val !== ''} status={status}>
+          {sectionLabel}
+        </LabelTitle>
+      )}
       <FilterInputContainer>
         <input
           data-testid="filter-input-field"
@@ -93,6 +113,8 @@ const FilterInput: React.FC<FilterInputProps> = ({
               }
               if (!noClear) {
                 setVal('');
+              } else {
+                setVal(activeAutoCompleteOption || e.currentTarget.value);
               }
               setActiveOption(null);
               // Currently it feels more natural to keep the focus on the input when adding tags
@@ -114,11 +136,14 @@ const FilterInput: React.FC<FilterInputProps> = ({
         />
         <SubmitIconHolder
           data-testid="filter-input-submit-button"
+          status={status}
           focus={hasFocus}
           onMouseDown={() => {
             if (inputEl?.current?.value) {
               onSubmit(inputEl.current.value);
-              setVal('');
+              if (!noClear) {
+                setVal('');
+              }
               // Currently it feels more natural to keep the focus on the input when adding tags
               // Enable these if user feedback suggets that more conventional behaviour is wanted
               // setHasFocus(false);
@@ -126,10 +151,17 @@ const FilterInput: React.FC<FilterInputProps> = ({
             }
           }}
         >
-          {!noIcon && <Icon name={hasFocus ? 'enter' : 'plus'} size="xs" />}
+          {!noIcon && (
+            <Icon
+              name={hasFocus ? 'enter' : status === 'Error' ? 'danger' : customIcon ? customIcon[0] : 'plus'}
+              size={hasFocus || !customIcon ? 'xs' : customIcon[1]}
+            />
+          )}
         </SubmitIconHolder>
+
+        {tip && <Tip visible={hasFocus && val === ''}>{tip}</Tip>}
       </FilterInputContainer>
-      {autoCompleteOpen && autoCompleteResult.data.length > 0 && val !== '' && (
+      {autoCompleteOpen && autoCompleteResult.data.length > 0 && val !== '' && autoCEnabled && (
         <AutoComplete
           result={autoCompleteResult.data}
           setActiveOption={(active) => {
@@ -137,12 +169,18 @@ const FilterInput: React.FC<FilterInputProps> = ({
           }}
           onSelect={(selected) => {
             onSubmit(selected);
-            setVal('');
-            setHasFocus(false);
+            if (!noClear) {
+              setVal('');
+              setHasFocus(false);
+            } else {
+              setVal(selected);
+            }
             setActiveOption(null);
           }}
         />
       )}
+
+      {status === 'Error' && errorMsg && <ErrorMsgContainer title={errorMsg}>{errorMsg}</ErrorMsgContainer>}
     </FilterInputWrapper>
   );
 };
@@ -151,9 +189,9 @@ const FilterInput: React.FC<FilterInputProps> = ({
 // Styles
 //
 
-const FilterInputWrapper = styled.section<{ active: boolean }>`
+const FilterInputWrapper = styled.section<{ active: boolean; status: AsyncStatus }>`
   align-items: center;
-  border: ${(p) => p.theme.border.thinLight};
+  border: ${(p) => (p.status === 'Error' ? '1px solid ' + p.theme.color.bg.red : p.theme.border.thinLight)};
   border-radius: 0.25rem;
   color: #333;
   display: flex;
@@ -167,6 +205,7 @@ const FilterInputWrapper = styled.section<{ active: boolean }>`
     border: none;
     cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
     background-color: transparent;
+    padding-right: 1.5rem;
 
     &:focus {
       outline: none;
@@ -182,7 +221,7 @@ const FilterInputWrapper = styled.section<{ active: boolean }>`
   cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
 
   &:hover {
-    border-color: ${(p) => (p.active ? p.theme.color.text.blue : '#333')};
+    border-color: ${(p) => (p.status === 'Error' ? p.theme.color.bg.red : p.active ? p.theme.color.text.blue : '#333')};
   }
 `;
 
@@ -191,7 +230,7 @@ const FilterInputContainer = styled.div`
   width: 100%;
 `;
 
-const SubmitIconHolder = styled.div<{ focus: boolean }>`
+const SubmitIconHolder = styled.div<{ focus: boolean; status: AsyncStatus }>`
   position: absolute;
   right: 0;
   top: 0;
@@ -207,6 +246,15 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
   .icon-enter svg {
     color: #fff;
   }
+
+  ${(p) =>
+    p.status === 'Error' &&
+    css`
+      svg,
+      svg path {
+        stroke: ${(p) => p.theme.color.bg.red};
+      }
+    `}
 
   &:hover {
     ${(p) =>
@@ -225,7 +273,7 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
   }
 `;
 
-const LabelTitle = styled(ForceNoWrapText)<{ active: boolean }>`
+const LabelTitle = styled(ForceNoWrapText)<{ active: boolean; status: AsyncStatus }>`
   background: #fff;
   font-size: 0.875rem;
   font-weight: bold;
@@ -233,6 +281,8 @@ const LabelTitle = styled(ForceNoWrapText)<{ active: boolean }>`
   position: absolute;
   top: 0;
   transition: all 125ms linear;
+
+  color: ${(p) => (p.status === 'Error' ? p.theme.color.bg.red : 'inherit')};
 
   ${(p) =>
     p.active
@@ -242,6 +292,30 @@ const LabelTitle = styled(ForceNoWrapText)<{ active: boolean }>`
       : css`
           transform: scale(1) translate(-0.25rem, 0.6875rem);
         `}
+`;
+
+const Tip = styled.div<{ visible: boolean }>`
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: ${(p) => (p.visible ? '1' : '0')};
+  color: #aaa;
+  transition: 0.25s opacity;
+`;
+
+const ErrorMsgContainer = styled.div`
+  position: absolute;
+  top: 100%;
+  font-size: 0.75rem;
+  color: ${(p) => p.theme.color.bg.red};
+  padding-top: 0.25rem;
+  width: 100%;
+  left: 0;
+  padding-left: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 export default FilterInput;

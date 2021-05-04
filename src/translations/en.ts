@@ -170,6 +170,7 @@ const en = {
 
     search: {
       search: 'Search',
+      artifact: 'Artifact',
       'no-results': 'No search results',
       'no-tasks': 'No tasks with selected settings',
     },

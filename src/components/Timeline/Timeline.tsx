@@ -10,6 +10,7 @@ import { RenderedRows } from 'react-virtualized/dist/es/List';
 import { toRelativeSize } from '../../utils/style';
 import { Row } from './VirtualizedTimeline';
 import { TasksSortBy } from './useTaskListSettings';
+import { AsyncStatus } from '../../types';
 
 //
 // Typedef
@@ -18,6 +19,7 @@ type StepIndex = { name: string; index: number };
 type TimelineProps = {
   rows: Row[];
   timeline: TimelineMetrics;
+  searchStatus?: AsyncStatus;
   footerType?: 'minimal' | 'minimap';
   paramsString?: string;
   customMinimumHeight?: number;
@@ -46,6 +48,7 @@ export const ROW_HEIGHT = toRelativeSize(28);
 const Timeline: React.FC<TimelineProps> = ({
   rows,
   timeline,
+  searchStatus,
   footerType = 'minimap',
   paramsString = '',
   customMinimumHeight = 31.25,
@@ -105,6 +108,7 @@ const Timeline: React.FC<TimelineProps> = ({
               rowRenderer={createRowRenderer({
                 rows,
                 timeline,
+                searchStatus,
                 onStepRowClick,
                 paramsString,
                 t: t,
@@ -166,6 +170,7 @@ const Timeline: React.FC<TimelineProps> = ({
 type RowRendererProps = {
   rows: Row[];
   timeline: TimelineMetrics;
+  searchStatus?: AsyncStatus;
   onStepRowClick: (steid: string) => void;
   paramsString: string;
   t: TFunction;
@@ -181,7 +186,15 @@ function getUniqueKey(index: number, row: Row) {
   }
 }
 
-function createRowRenderer({ rows, timeline, onStepRowClick, paramsString = '', t, dragging }: RowRendererProps) {
+function createRowRenderer({
+  rows,
+  timeline,
+  searchStatus,
+  onStepRowClick,
+  paramsString = '',
+  t,
+  dragging,
+}: RowRendererProps) {
   return ({ index, style }: { index: number; style: React.CSSProperties }) => {
     const row = rows[index];
     return (
@@ -189,6 +202,7 @@ function createRowRenderer({ rows, timeline, onStepRowClick, paramsString = '', 
         <TimelineRow
           item={row}
           timeline={timeline}
+          searchStatus={searchStatus}
           isOpen={row.type === 'step' && row.rowObject.isOpen}
           onOpen={() => row.type === 'step' && onStepRowClick(row.data.step_name)}
           paramsString={paramsString}

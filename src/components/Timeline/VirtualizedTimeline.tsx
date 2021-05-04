@@ -101,6 +101,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
         <TaskListingHeader
+          run={run}
           settings={settings}
           isFullscreen={showFullscreen}
           searchField={searchField}
@@ -127,6 +128,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
               groupingEnabled: settings.group,
             }}
             paramsString={paramsString}
+            searchStatus={searchField.results.status}
             onHandleMove={footerHandleUpdate}
             onMove={(value) => timelineControlDispatch({ type: 'move', value: value })}
             onStepRowClick={(stepid) => rowDataDispatch({ type: 'toggle', id: stepid })}

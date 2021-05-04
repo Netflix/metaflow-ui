@@ -10,6 +10,7 @@ import LineElement, { BoxGraphicValue } from './LineElement';
 import { getTaskDuration } from '../../../utils/task';
 import { getRowStatus, getStepDuration } from './utils';
 import { TimelineMetrics } from '../Timeline';
+import { AsyncStatus } from '../../../types';
 
 type TimelineRowProps = {
   // Row type and data
@@ -17,6 +18,7 @@ type TimelineRowProps = {
   // Overall timeline state (used to calculate dimensions)
   timeline: TimelineMetrics;
   onOpen: () => void;
+  searchStatus?: AsyncStatus;
   isOpen?: boolean;
   // Flag row as sticky for some absolute stylings
   sticky?: boolean;
@@ -29,6 +31,7 @@ type TimelineRowProps = {
 const TimelineRow: React.FC<TimelineRowProps> = ({
   item,
   timeline,
+  searchStatus,
   onOpen,
   isOpen = true,
   paramsString,
@@ -54,6 +57,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
             t={t}
             duration={getStepDuration(item.data, item.rowObject.status, item.rowObject.duration)}
             status={getRowStatus(item)}
+            searchStatus={searchStatus}
             tasksTotal={item.rowObject.tasksTotal}
             tasksVisible={item.rowObject.tasksVisible}
           />

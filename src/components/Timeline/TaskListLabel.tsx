@@ -2,7 +2,7 @@ import { TFunction } from 'i18next';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { Step, Task } from '../../types';
+import { AsyncStatus, Step, Task } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { getPath } from '../../utils/routing';
 import { colorByStatus } from '../../utils/style';
@@ -20,6 +20,7 @@ type BaseProps = {
   duration: number | null;
   paramsString?: string;
   status: string;
+  searchStatus?: AsyncStatus;
   tasksTotal?: number;
   tasksVisible?: number;
 };
@@ -67,8 +68,16 @@ const TaskListLabel: React.FC<Props> = (props) => {
           </RowLabelContent>
         </Link>
       ) : (
-        <StepLabel onClick={() => props.toggle()} data-testid="tasklistlabel-step-container">
-          <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="tasklistlabel-open-icon" />
+        <StepLabel
+          onClick={() => props.toggle()}
+          data-testid="tasklistlabel-step-container"
+          isLoading={props.searchStatus === 'Loading'}
+        >
+          {props.searchStatus === 'Loading' ? (
+            <Icon name="rowLoader" size="xs" spin data-testid="tasklistlabel-open-icon" />
+          ) : (
+            <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="tasklistlabel-open-icon" />
+          )}
           <RowLabelContent type="step">
             <RowStepName
               data-testid="tasklistlabel-text"
@@ -170,7 +179,7 @@ const RowTaskName = styled.div`
   text-overflow: ellipsis;
 `;
 
-const StepLabel = styled.div`
+const StepLabel = styled.div<{ isLoading: boolean }>`
   display: flex;
   align-items: center;
   user-select: text;
@@ -190,6 +199,6 @@ const StepLabel = styled.div`
   }
 
   svg path {
-    fill: #fff;
+    fill: ${(p) => (p.isLoading ? '#717171' : '#fff')};
   }
 `;
