@@ -25,6 +25,7 @@ const OuterContainer = styled.div`
   overflow: hidden;
   position: relative;
   transition: height 0.25s;
+  transform: translate3d(0, 0, 0);
 `;
 const InnerContainer = styled.div`
   display: flex;
