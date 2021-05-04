@@ -89,7 +89,7 @@ const HomeSidebar: React.FC<Props> = ({
 
       <ParametersWrapper>
         <FilterInput
-          onSubmit={(v) => updateListValue('_tags', `project:${v}`)}
+          onSubmit={(v) => updateListValue('_tags', v.startsWith('project:') ? v : `project:${v}`)}
           sectionLabel={t('fields.project')}
           autoCompleteSettings={{
             url: '/tags/autocomplete',
