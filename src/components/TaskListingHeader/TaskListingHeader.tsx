@@ -72,7 +72,7 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
             <SearchField
               initialValue={searchField.fieldProps.text}
               onUpdate={searchField.fieldProps.setText}
-              status={searchField.results.status}
+              results={searchField.results}
               autoCompleteSettings={{
                 url: `/flows/${run.flow_id}/runs/${run.run_number || run.run_id}/artifacts/autocomplete`,
                 params: (input) => ({

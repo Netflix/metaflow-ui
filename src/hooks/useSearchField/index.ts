@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { ErrorEvent } from 'reconnecting-websocket';
 import { StringParam, useQueryParams } from 'use-query-params';
 import useSearchRequest, { SearchResult, TaskMatch } from '../useSearchRequest';
 
@@ -6,10 +7,16 @@ import useSearchRequest, { SearchResult, TaskMatch } from '../useSearchRequest';
 // Typedef
 //
 
-export type SearchResultModel = {
-  result: TaskMatch[];
-  status: 'NotAsked' | 'Loading' | 'Ok' | 'Error';
-};
+export type SearchResultModel =
+  | {
+      result: TaskMatch[];
+      status: 'NotAsked' | 'Loading' | 'Ok';
+    }
+  | {
+      result: TaskMatch[];
+      status: 'Error';
+      error: ErrorEvent;
+    };
 
 export type SearchFieldProps = { text: string; setText: (str: string, forceUpdate?: boolean) => void };
 
@@ -85,8 +92,8 @@ export default function useSeachField(flowID: string, runNumber: string): Search
     onConnecting: () => {
       updateSearchResults({ ...searchResults, status: 'Loading' });
     },
-    onError: () => {
-      updateSearchResults({ result: [], status: 'Error' });
+    onError: (error) => {
+      updateSearchResults({ result: [], status: 'Error', error });
     },
     enabled: enabled,
   });
