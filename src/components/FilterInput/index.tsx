@@ -191,7 +191,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
 
 const FilterInputWrapper = styled.section<{ active: boolean; status: AsyncStatus }>`
   align-items: center;
-  border: ${(p) => (p.status === 'Error' ? '1px solid red' : p.theme.border.thinLight)};
+  border: ${(p) => (p.status === 'Error' ? '1px solid ' + p.theme.color.bg.red : p.theme.border.thinLight)};
   border-radius: 0.25rem;
   color: #333;
   display: flex;
@@ -221,7 +221,7 @@ const FilterInputWrapper = styled.section<{ active: boolean; status: AsyncStatus
   cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
 
   &:hover {
-    border-color: ${(p) => (p.status === 'Error' ? 'red' : p.active ? p.theme.color.text.blue : '#333')};
+    border-color: ${(p) => (p.status === 'Error' ? p.theme.color.bg.red : p.active ? p.theme.color.text.blue : '#333')};
   }
 `;
 
@@ -252,7 +252,7 @@ const SubmitIconHolder = styled.div<{ focus: boolean; status: AsyncStatus }>`
     css`
       svg,
       svg path {
-        stroke: red;
+        stroke: ${(p) => p.theme.color.bg.red};
       }
     `}
 
@@ -282,7 +282,7 @@ const LabelTitle = styled(ForceNoWrapText)<{ active: boolean; status: AsyncStatu
   top: 0;
   transition: all 125ms linear;
 
-  color: ${(p) => (p.status === 'Error' ? 'red' : 'inherit')};
+  color: ${(p) => (p.status === 'Error' ? p.theme.color.bg.red : 'inherit')};
 
   ${(p) =>
     p.active
@@ -308,7 +308,7 @@ const ErrorMsgContainer = styled.div`
   position: absolute;
   top: 100%;
   font-size: 0.75rem;
-  color: red;
+  color: ${(p) => p.theme.color.bg.red};
   padding-top: 0.25rem;
   width: 100%;
   left: 0;
