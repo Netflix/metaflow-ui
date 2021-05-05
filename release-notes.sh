@@ -4,10 +4,14 @@
 #   ./release-notes.sh
 #   ./release-notes.sh [current-release]
 #   ./release-notes.sh [current-release] [previous-release]
+#   GITHUB_TOKEN=ghp_hJe... ./release-notes.sh
+#
 # Example:
 #   ./release-notes.sh
 #   ./release-notes.sh v1.0.1
 #   ./release-notes.sh v1.0.1 v1.0.0
+
+SERVICE_BRANCH="ui"
 
 VERSION=${1:-$(git rev-parse --short HEAD)}
 PREVIOUS_VERSION=${2:-$(git describe --abbrev=0 ${VERSION}^ --tags)}
@@ -20,6 +24,28 @@ if ! git describe ${PREVIOUS_VERSION} --tags &> /dev/null; then
     echo "Invalid previous release: ${PREVIOUS_VERSION}"
     exit 1
 fi
+
+# Call Github API and use GITHUB_TOKEN from env if available
+# 
+# Example (Get latest release from repository)
+#   gh_api /repos/Netflix/metaflow-service/releases/latest
+gh_api() {
+    if [ -z "$GITHUB_TOKEN" ]
+    then
+        curl -s https://api.github.com$1
+    else
+        curl -s -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com$1
+    fi
+}    
+
+# Extract value of key from JSON input
+# 
+# Example (key value of key 'foo'):
+#   get_json_value '{"foo": "bar"}' foo
+get_json_value() {
+    json_value=$(echo $1 | sed -n "s|.*\"$2\": \"\([^\"]*\)\".*|\1|p")
+    echo "${json_value}"
+}
 
 # Format list of PR merge commits
 # 
@@ -52,6 +78,13 @@ function format_pr() {
     fi
 }
 
+GH_RELEASE=$(gh_api /repos/Netflix/metaflow-service/releases/latest)
+GH_BRANCH_REF=$(gh_api /repos/Netflix/metaflow-service/git/refs/heads/${SERVICE_BRANCH})
+SERVICE_RELEASE=$(get_json_value "$GH_RELEASE" tag_name)
+SERVICE_REF=$(get_json_value "$GH_BRANCH_REF" sha)
+SERVICE_RELEASE=${SERVICE_RELEASE:-2.0.10}
+SERVICE_REF=${SERVICE_REF:-ea55caf22b38d6c4a9faa255216be2df35aa988a}
+
 RELEASE_DATE=$(date)
 
 MERGES=$(git log --first-parent --pretty='format:%h %s' ${PREVIOUS_VERSION}..${VERSION})
@@ -67,9 +100,9 @@ RELEASE_NOTES="\
 
 ## Compatibility
 
-| Service version | 2.0.4 | [ui][service-branch] | Netflix/metaflow-service@ea55caf22b38d6c4a9faa255216be2df35aa988a |
-| --------------- | ----- | -------------------- | ----------------------------------------------------------------- |
-| Compatibility   | ?     | ✓                    | ✓                                                                 |
+| Service version | ${SERVICE_RELEASE} | [ui][service-branch] | Netflix/metaflow-service@${SERVICE_REF} |
+| --------------- | ------------------ | -------------------- | --------------------------------------- |
+| Compatibility   | ?                  | ✓                    | ✓                                       |
 
 - \`✓\` Fully supported version
 - \`?\` Unknown compatibility
