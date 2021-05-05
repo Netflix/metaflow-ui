@@ -100,14 +100,14 @@ RELEASE_NOTES="\
 
 ## Compatibility
 
-| Service version | ${SERVICE_RELEASE} | [ui][service-branch] | Netflix/metaflow-service@${SERVICE_REF} |
+| Service version | ${SERVICE_RELEASE} | [${SERVICE_BRANCH}][service-branch] | Netflix/metaflow-service@${SERVICE_REF} |
 | --------------- | ------------------ | -------------------- | --------------------------------------- |
 | Compatibility   | ?                  | ✓                    | ✓                                       |
 
 - \`✓\` Fully supported version
 - \`?\` Unknown compatibility
 
-[service-branch]: https://github.com/Netflix/metaflow-service/tree/ui
+[service-branch]: https://github.com/Netflix/metaflow-service/tree/${SERVICE_BRANCH}
 
 ## Changelog
 
