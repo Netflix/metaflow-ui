@@ -302,6 +302,7 @@ const Tip = styled.div<{ visible: boolean }>`
   opacity: ${(p) => (p.visible ? '1' : '0')};
   color: #aaa;
   transition: 0.25s opacity;
+  padding-left: 0.25rem;
 `;
 
 const ErrorMsgContainer = styled.div`

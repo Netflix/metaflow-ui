@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { StringParam, useQueryParams } from 'use-query-params';
 import useSearchRequest, { SearchResult, TaskMatch } from '../useSearchRequest';
 
@@ -48,6 +49,7 @@ function isCached(flowId: string, runNumber: string) {
 //
 
 export default function useSeachField(flowID: string, runNumber: string): SearchFieldReturnType {
+  const { t } = useTranslation();
   const [qp, setQp] = useQueryParams({ q: StringParam });
   const [searchValue, setSearchValue] = useState(qp.q ? qp.q : isCached(flowID, runNumber) ? cache.text : '');
   const [searchResults, setSearchResults] = useState<SearchResultModel>(
@@ -94,7 +96,7 @@ export default function useSeachField(flowID: string, runNumber: string): Search
       updateSearchResults({ ...searchResults, status: 'Loading' });
     },
     onError: () => {
-      updateSearchResults({ result: [], status: 'Error', errorMsg: 'Failed to search' });
+      updateSearchResults({ result: [], status: 'Error', errorMsg: t('search.failed-to-search') });
     },
     enabled: enabled,
   });
