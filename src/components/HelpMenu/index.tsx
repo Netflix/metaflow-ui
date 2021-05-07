@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { apiHttp } from '../../constants';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Icon from '../Icon';
 import { PopoverWrapper } from '../Popover';
 import { BigButton } from '../Button';
@@ -68,7 +68,7 @@ const HelpMenu: React.FC = () => {
             }}
             style={{ textDecoration: 'none' }}
           >
-            <HelpMenuLink data-testid="helpmenu-link-notifications">{t(link.label)}</HelpMenuLink>
+            <HelpMenuItem data-testid="helpmenu-link-notifications">{t(link.label)}</HelpMenuItem>
           </Link>
         ))}
 
@@ -124,7 +124,7 @@ const HelpMenuTitle = styled.div`
   }
 `;
 
-const HelpMenuLink = styled.a`
+const HelpMenuItemStyles = css`
   display: flex;
   padding: 0.5rem 0.5rem;
   color: ${(p) => p.theme.color.text.mid};
@@ -132,6 +132,14 @@ const HelpMenuLink = styled.a`
   &:hover {
     color: ${(p) => p.theme.color.text.blue};
   }
+`;
+
+const HelpMenuLink = styled.a`
+  ${HelpMenuItemStyles}
+`;
+
+const HelpMenuItem = styled.div`
+  ${HelpMenuItemStyles}
 `;
 
 const HelpMenuClickOverlay = styled.div`
