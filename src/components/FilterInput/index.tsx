@@ -59,7 +59,9 @@ const FilterInput: React.FC<FilterInputProps> = ({
   const inputEl = useRef<HTMLInputElement>(null);
   const autoCEnabled = autoCompleteSettings ? (autoCompleteEnabled ? autoCompleteEnabled(val) : true) : false;
 
-  const autoCompleteResult = useAutoComplete<string>(
+  const { result: autoCompleteResult, reset: resetAutocomplete, refetch: refetchAutocomplete } = useAutoComplete<
+    string
+  >(
     autoCompleteSettings
       ? {
           ...autoCompleteSettings,
@@ -69,6 +71,8 @@ const FilterInput: React.FC<FilterInputProps> = ({
         }
       : { url: '', input: '', enabled: false },
   );
+
+  // Open or close autocomplete list with slight delay so click events gets registered
   useEffect(() => {
     let t: number | undefined = undefined;
 
@@ -79,11 +83,12 @@ const FilterInput: React.FC<FilterInputProps> = ({
     } else if (!hasFocus && autoCompleteOpen) {
       t = setTimeout(() => {
         setAutoCompleteOpen(false);
+        resetAutocomplete();
       }, 150);
     }
 
     return () => clearTimeout(t);
-  }, [hasFocus, autoCompleteOpen]);
+  }, [hasFocus, autoCompleteOpen, resetAutocomplete]);
 
   return (
     <FilterInputWrapper
@@ -117,6 +122,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
                 setVal(activeAutoCompleteOption || e.currentTarget.value);
               }
               setActiveOption(null);
+              resetAutocomplete();
               // Currently it feels more natural to keep the focus on the input when adding tags
               // Enable these if user feedback suggets that more conventional behaviour is wanted
               // setHasFocus(false);
@@ -126,9 +132,15 @@ const FilterInput: React.FC<FilterInputProps> = ({
           onChange={(e) => {
             setVal(e.currentTarget.value);
             onChange && onChange(e.currentTarget.value);
+            if (!e.currentTarget.value || e.currentTarget.value === '') {
+              resetAutocomplete();
+            }
           }}
           onFocus={() => {
             setHasFocus(true);
+            if (val) {
+              refetchAutocomplete();
+            }
           }}
           onBlur={() => {
             setHasFocus(false);
@@ -169,6 +181,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
           }}
           onSelect={(selected) => {
             onSubmit(selected);
+            resetAutocomplete();
             if (!noClear) {
               setVal('');
               setHasFocus(false);

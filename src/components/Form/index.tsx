@@ -20,6 +20,7 @@ export type CommonFieldProps<T> = {
   onKeyPress?: (e: React.KeyboardEvent<T>) => void;
   onKeyDown?: (e: React.KeyboardEvent<T>) => void;
   onKeyUp?: (e: React.KeyboardEvent<T>) => void;
+  onBlur?: () => void;
   'data-testid'?: string;
 };
 

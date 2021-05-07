@@ -33,7 +33,7 @@ const Breadcrumb: React.FC = () => {
   const [str, setStr] = useState(currentBreadcrumbPath.replace(/\s/g, ''));
   const [warning, setWarning] = useState('');
 
-  const autoCompleteResult = useAutoComplete<string>({
+  const { result: autoCompleteResult, reset: resetAutocomplete } = useAutoComplete<string>({
     ...urlFromString(str),
     finder: (item, input) => {
       const last = takeLastSplitFromURL(item.label);
@@ -187,6 +187,12 @@ const Breadcrumb: React.FC = () => {
                   onKeyDown={onKeyDown}
                   onChange={(e) => {
                     setStr(e?.target.value?.replace(/\s/g, '') || '');
+                    if (!e?.target.value?.replace(/\s/g, '')) {
+                      resetAutocomplete();
+                    }
+                  }}
+                  onBlur={() => {
+                    resetAutocomplete();
                   }}
                   autoFocus={true}
                 />

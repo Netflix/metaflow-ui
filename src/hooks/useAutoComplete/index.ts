@@ -54,10 +54,11 @@ function useAutoComplete<T>({
   finder,
   searchEmpty = false,
   enabled = true,
-}: AutoCompleteParameters<T>): AutoCompleteResult {
+}: AutoCompleteParameters<T>): { result: AutoCompleteResult; reset: () => void; refetch: () => void } {
   const qparams = new URLSearchParams({ ...DEFAULT_PARAMS, ...params }).toString();
   const requestUrl = apiHttp(`${rawUrl}${qparams ? '?' + qparams : ''}`);
 
+  const [refetcher, setRefetcher] = useState(0);
   const [url] = useDebounce(requestUrl, preFetch ? 0 : 300);
 
   const [result, setResult] = useState<AutoCompleteResult>(
@@ -143,13 +144,20 @@ function useAutoComplete<T>({
           setResult({ status: 'Error', data: [], timestamp: Date.now() });
         });
     }
-
     return () => {
       abortCtrl.abort();
     };
-  }, [url, preFetch, searchEmpty]); // eslint-disable-line
+  }, [url, preFetch, searchEmpty, refetcher]); // eslint-disable-line
 
-  return result;
+  return {
+    result,
+    reset() {
+      setResult({ status: 'NotAsked', data: [], timestamp: 0 });
+    },
+    refetch() {
+      setRefetcher((num) => num + 1);
+    },
+  };
 }
 
 export default useAutoComplete;
