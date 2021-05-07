@@ -79,10 +79,14 @@ const HelpMenu: React.FC = () => {
         ))}
         {VERSION_INFO.release_version && (
           <VersionContainer>
-            <HelpMenuRow>
-              Application version: {VERSION_INFO.release_version} - {VERSION_INFO.commit}
+            <HelpMenuRow title={`${VERSION_INFO.release_version} - ${VERSION_INFO.commit}`}>
+              {t('help.application-version')}: {VERSION_INFO.release_version}
             </HelpMenuRow>
-            {VERSION_INFO.service_version && <HelpMenuRow>Service version: {VERSION_INFO.service_version}</HelpMenuRow>}
+            {VERSION_INFO.service_version && (
+              <HelpMenuRow>
+                {t('help.service-version')}: {VERSION_INFO.service_version}
+              </HelpMenuRow>
+            )}
           </VersionContainer>
         )}
       </PopoverContainer>

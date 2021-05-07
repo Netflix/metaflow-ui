@@ -29,6 +29,8 @@ const en = {
       notifications: 'Notifications',
       documentation: 'Documentation',
       help: 'Help',
+      'application-version': 'Application version',
+      'service-version': 'Service version',
     },
 
     fields: {
