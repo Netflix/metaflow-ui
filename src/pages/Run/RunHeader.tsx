@@ -91,9 +91,9 @@ const ProjectField: React.FC<{ run: Run }> = ({ run }) => {
 
   return (
     <div>
-      <StyledLink to={`/?tags=project:${project}`}>{project}</StyledLink>
+      <StyledLink to={`/?_tags=project:${project}`}>{project}</StyledLink>
       {projectBranch && ' / '}
-      {projectBranch && <StyledLink to={`/?tags=project_branch:${projectBranch}`}>{projectBranch}</StyledLink>}
+      {projectBranch && <StyledLink to={`/?_tags=project_branch:${projectBranch}`}>{projectBranch}</StyledLink>}
     </div>
   );
 };
