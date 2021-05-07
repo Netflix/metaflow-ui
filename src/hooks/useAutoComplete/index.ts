@@ -90,6 +90,12 @@ function useAutoComplete<T>({
     }
   }, [preFetch, input]); //eslint-disable-line
 
+  const abortCtrl = new AbortController();
+
+  useEffect(() => {
+    abortCtrl.abort();
+  }, [requestUrl]); //eslint-disable-line
+
   useEffect(() => {
     if ((!searchEmpty && !input) || !enabled) return;
 
@@ -98,8 +104,9 @@ function useAutoComplete<T>({
         updateResult();
       } else {
         DataStore[url] = { status: 'Loading', data: [], timestamp: Date.now() };
+
         // fetch
-        fetch(url)
+        fetch(url, { signal: abortCtrl.signal })
           .then((resp) => resp.json())
           .then((response) => {
             if (Array.isArray(response) || Array.isArray(response.data)) {
@@ -118,7 +125,7 @@ function useAutoComplete<T>({
           });
       }
     } else {
-      fetch(url)
+      fetch(url, { signal: abortCtrl.signal })
         .then((resp) => resp.json())
         .then((response) => {
           if (response.status === 200 && Array.isArray(response.data)) {
@@ -136,6 +143,10 @@ function useAutoComplete<T>({
           setResult({ status: 'Error', data: [], timestamp: Date.now() });
         });
     }
+
+    return () => {
+      abortCtrl.abort();
+    };
   }, [url, preFetch, searchEmpty]); // eslint-disable-line
 
   return result;
