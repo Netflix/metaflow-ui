@@ -8,7 +8,7 @@ import Icon from '../Icon';
 //
 
 type CollapsableProps = {
-  title: string;
+  title: string | JSX.Element;
   animated?: boolean;
   initialState?: boolean;
 };

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import InformationRow from '../../../components/InformationRow';
 
@@ -16,6 +16,9 @@ import { getTaskId } from '../../../utils/task';
 import FEATURE_FLAGS from '../../../utils/FEATURE';
 import TitledRow from '../../../components/TitledRow';
 import Collapsable from '../../../components/Collapsable';
+import Icon from '../../../components/Icon';
+import styled from 'styled-components';
+import RenderMetadata from '../../../components/RenderMetadata';
 
 type Props = {
   task: ITask;
@@ -26,11 +29,13 @@ const TaskDetails: React.FC<Props> = ({ task, metadata }) => {
   const { t } = useTranslation();
   const { timezone } = useContext(TimezoneContext);
 
-  const metadataParams: Record<string, string> = useMemo(() => {
-    return (metadata.data || []).reduce((obj, val) => {
+  const metadataParams: Record<string, string> = (metadata.data || [])
+    .filter((md) => !md.field_name.startsWith('ui-content'))
+    .reduce((obj, val) => {
       return { ...obj, [val.field_name]: val.value };
     }, {});
-  }, [metadata.data]);
+
+  const uiContent = metadata?.data?.filter((md) => md.field_name.startsWith('ui-content')) || [];
 
   return (
     <>
@@ -85,6 +90,19 @@ const TaskDetails: React.FC<Props> = ({ task, metadata }) => {
           />
         </Collapsable>
       )}
+
+      {uiContent.length > 0 && (
+        <Collapsable
+          title={
+            <PluginHeader>
+              <Icon name="plugin" />
+              {t('task.ui-content')}
+            </PluginHeader>
+          }
+        >
+          <RenderMetadata metadata={uiContent} />
+        </Collapsable>
+      )}
     </>
   );
 };
@@ -95,5 +113,15 @@ export function getAttemptDuration(task: ITask): string {
   }
   return task.duration ? formatDuration(task.duration) : '';
 }
+
+const PluginHeader = styled.div`
+  i {
+    margin-right: 0.375rem;
+  }
+
+  svg path {
+    fill: #333;
+  }
+`;
 
 export default TaskDetails;

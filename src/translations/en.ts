@@ -158,6 +158,7 @@ const en = {
       'metadata-not-loaded': 'Metadata not loaded',
       'show-task-metadata': 'Show task metadata',
       'hide-task-metadata': 'Hide task metadata',
+      'ui-content': 'UI Content',
     },
 
     breadcrumb: {

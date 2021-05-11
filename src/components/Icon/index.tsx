@@ -36,6 +36,7 @@ import { ReactComponent as Download } from '../../assets/download.svg';
 import { ReactComponent as ToTopArrow } from '../../assets/to_top_arrow.svg';
 import { ReactComponent as ArrowPointTop } from '../../assets/arrow-point-up.svg';
 import { ReactComponent as RowLoader } from '../../assets/row-loader.svg';
+import { ReactComponent as Plugin } from '../../assets/plugin.svg';
 
 export type SupportedIcons = {
   timeline: FunctionComponent;
@@ -73,6 +74,7 @@ export type SupportedIcons = {
   toTopArrow: FunctionComponent;
   arrowPointTop: FunctionComponent;
   rowLoader: FunctionComponent;
+  plugin: FunctionComponent;
 };
 
 const icons: SupportedIcons = {
@@ -111,6 +113,7 @@ const icons: SupportedIcons = {
   toTopArrow: ToTopArrow,
   arrowPointTop: ArrowPointTop,
   rowLoader: RowLoader,
+  plugin: Plugin,
 };
 
 export type IconKeys = keyof SupportedIcons;
