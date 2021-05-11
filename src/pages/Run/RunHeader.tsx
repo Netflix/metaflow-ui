@@ -15,6 +15,7 @@ import TagRow from './components/TagRow';
 
 import Collapsable from '../../components/Collapsable';
 import RunParameterTable from './RunParameterTable';
+import AutoUpdating from '../../components/AutoUpdating';
 
 //
 // Typedef
@@ -55,7 +56,10 @@ const RunHeader: React.FC<Props> = ({ run }) => {
     },
     { label: t('fields.started-at'), accessor: (r: Run) => getRunStartTime(r, timezone) },
     { label: t('fields.finished-at'), accessor: (r: Run) => getRunEndTime(r, timezone) },
-    { label: t('fields.duration'), accessor: getRunDuration },
+    {
+      label: t('fields.duration'),
+      accessor: (r: Run) => <AutoUpdating enabled={r.status === 'running'} content={() => getRunDuration(r)} />,
+    },
   ].filter((col) => !col.hidden);
 
   return (

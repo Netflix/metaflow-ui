@@ -1,10 +1,17 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import AutoUpdating from '../../../components/AutoUpdating';
 import { TD } from '../../../components/Table';
 import { Run } from '../../../types';
-import { getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '../../../utils/run';
-import ResultGroupDuration from './ResultGroupDuration';
+import {
+  getRunDuration,
+  getRunEndTime,
+  getRunId,
+  getRunStartTime,
+  getTagOfType,
+  getUsername,
+} from '../../../utils/run';
 import { StatusColorCell } from './ResultGroupStatus';
 import ResultGroupTags from './ResultGroupTags';
 
@@ -51,7 +58,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         <TimeCell link={link}>{getRunEndTime(r, timezone)}</TimeCell>
         {/* DURATION */}
         <TimeCell link={link}>
-          <ResultGroupDuration run={r} />
+          <AutoUpdating enabled={r.status === 'running'} content={() => getRunDuration(r)} />
         </TimeCell>
         {/* USER TAGS */}
         {(r.tags || []).length > 0 ? (
