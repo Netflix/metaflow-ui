@@ -13,6 +13,7 @@ import { logWarning } from '../../utils/errorlogger';
 export interface HookConfig<T, U> {
   // URL for fetch request
   url: string;
+  wsUrl?: string | ((result: T) => string);
   // Parameters for url
   queryParams?: Record<string, string>;
   websocketParams?: Record<string, string>;
@@ -128,6 +129,7 @@ const StatusReducer = (state: StatusState, action: StatusAction): StatusState =>
 
 export default function useResource<T, U>({
   url,
+  wsUrl,
   initialData = null,
   subscribeToEvents = false,
   queryParams = {},
@@ -157,10 +159,12 @@ export default function useResource<T, U>({
     }
   }, 1000);
 
+  const websocketUrl = getWebsocketUrl(url, data, wsUrl);
+
   useWebsocket<U>({
-    url: url,
+    url: websocketUrl,
     queryParams: socketParamFilter ? socketParamFilter(queryParams || {}) : websocketParams || queryParams,
-    enabled: subscribeToEvents && !pause,
+    enabled: subscribeToEvents && !pause && !!websocketUrl,
     onUpdate: (event: Event<any>) => {
       if (pause) return;
       // If onUpdate or onWSUpdate is given, dont update stateful data object.
@@ -298,4 +302,14 @@ export default function useResource<T, U>({
   }, [target, pause]); // eslint-disable-line
 
   return { url, target, data, error, getResult: () => result, status: status.status };
+}
+
+function getWebsocketUrl<T>(url: string, data: T | null, wsUrl?: string | ((result: T) => string)): string {
+  if (wsUrl) {
+    if (typeof wsUrl === 'function') {
+      return data ? wsUrl(data) : '';
+    }
+    return wsUrl;
+  }
+  return url;
 }

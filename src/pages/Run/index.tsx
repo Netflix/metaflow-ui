@@ -30,6 +30,10 @@ const RunContainer: React.FC = () => {
 
   const { data: run, status, error } = useResource<IRun, IRun>({
     url: `/flows/${params.flowId}/runs/${params.runNumber}`,
+    // Make sure that we subsribe to websocket with actual run_number. In some cases we dont have number in url but run id
+    wsUrl: parseInt(params.runNumber)
+      ? `/flows/${params.flowId}/runs/${params.runNumber}`
+      : (result: IRun) => `/flows/${params.flowId}/runs/${result.run_number}`,
     subscribeToEvents: true,
     initialData: null,
   });
