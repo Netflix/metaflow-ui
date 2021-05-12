@@ -1,7 +1,7 @@
-import Markdown from 'markdown-to-jsx';
 import React from 'react';
 import styled from 'styled-components';
 import { Metadata } from '../../types';
+import MarkdownRenderer from '../MarkdownRenderer';
 
 type Props = {
   metadata: Metadata[];
@@ -12,7 +12,7 @@ const RenderMetadata: React.FC<Props> = ({ metadata }) => {
     <div>
       {metadata.map((uc, index) => (
         <TemplateSlot key={index}>
-          <Markdown>{uc.value}</Markdown>
+          <MarkdownRenderer content={uc.value} />
         </TemplateSlot>
       ))}
     </div>
