@@ -107,6 +107,26 @@ const HomeSidebar: React.FC<Props> = ({
 
       <ParametersWrapper>
         <FilterInput
+          onSubmit={(v) => updateListValue('_tags', v.startsWith('project_branch:') ? v : `project_branch:${v}`)}
+          sectionLabel={t('fields.branch')}
+          autoCompleteSettings={{
+            url: '/tags/autocomplete',
+            params: (input: string) => ({ 'tag:li': `project_branch:%${input}%` }),
+          }}
+        />
+        <TagParameterList
+          paramKey="_tags"
+          mapList={(xs) =>
+            xs.filter((x) => x.startsWith('project_branch:')).map((x) => x.substr('project_branch:'.length))
+          }
+          mapValue={(x) => `project_branch:${x}`}
+          updateList={updateListValue}
+          value={params._tags}
+        />
+      </ParametersWrapper>
+
+      <ParametersWrapper>
+        <FilterInput
           onSubmit={(v) => updateListValue('user', omitFromString('user', v))}
           sectionLabel={t('fields.user')}
           autoCompleteSettings={{
@@ -132,7 +152,7 @@ const HomeSidebar: React.FC<Props> = ({
         />
         <TagParameterList
           paramKey="_tags"
-          mapList={(xs) => xs.filter((x) => !/^project:/.test(x))}
+          mapList={(xs) => xs.filter((x) => !/^project:|project_branch:/.test(x))}
           updateList={updateListValue}
           value={params._tags}
         />

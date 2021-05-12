@@ -44,6 +44,7 @@ const en = {
       user: 'User',
       tag: 'Tag',
       project: 'Project',
+      branch: 'Branch',
       'user-tags': 'User tags',
       tasks: 'Tasks',
 
