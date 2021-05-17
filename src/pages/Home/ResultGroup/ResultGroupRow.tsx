@@ -108,8 +108,8 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
           <StyledTD colSpan={cols.length}>
             <HeightAnimatedContainer active={isTransitioning(rowState)}>
               <StyledSection closing={rowState === RowState.Closing}>
+                <TimelinePreview run={runToRender} />
                 <RunParameterTable run={runToRender} initialState={false} />
-                <TimelinePreview flowid={runToRender.flow_id} runid={getRunId(runToRender)} />
               </StyledSection>
             </HeightAnimatedContainer>
           </StyledTD>

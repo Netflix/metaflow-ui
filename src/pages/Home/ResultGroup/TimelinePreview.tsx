@@ -7,22 +7,22 @@ import { makeVisibleRows } from '../../Run/Run.utils';
 import { startAndEndpointsOfRows } from '../../../utils/row';
 import styled from 'styled-components';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
+import { Run } from '../../../types';
 
 //
 // Typedef
 //
 
 type TimelinePreviewProps = {
-  flowid: string;
-  runid: string;
+  run: Run;
 };
 
 //
 // Component
 //
 
-const TimelinePreview: React.FC<TimelinePreviewProps> = ({ flowid, runid }) => {
-  const { rows, steps, dispatch, taskStatus } = useTaskData(flowid, runid);
+const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
+  const { rows, steps, dispatch, taskStatus } = useTaskData(run.flow_id, run.run_number.toString());
   const [preview, setPreview] = useState<{ start: number; end: number; visiblerows: Row[] } | null>(null);
 
   useEffect(() => {
@@ -33,16 +33,16 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ flowid, runid }) => {
   }, [rows, steps]);
 
   return (
-    <Collapsable title="Timeline">
+    <Collapsable title="Timeline" initialState={true}>
       <TimelinePreviewContainer>
         {preview && preview.visiblerows.length > 0 && (
           <Timeline
             rows={preview.visiblerows}
             timeline={{
-              startTime: preview.start,
-              endTime: preview.end,
-              visibleEndTime: preview.end,
-              visibleStartTime: preview.start,
+              startTime: run.ts_epoch,
+              endTime: run.finished_at || preview.end,
+              visibleEndTime: run.finished_at || preview.end,
+              visibleStartTime: run.ts_epoch,
               sortBy: 'startTime',
               groupingEnabled: false,
             }}
