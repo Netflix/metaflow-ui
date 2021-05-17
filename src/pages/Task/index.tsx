@@ -108,6 +108,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   const metadata = useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/metadata`,
+    fetchAllData: true,
     subscribeToEvents: true,
     initialData: [],
     pause: !isCurrentTaskFinished,
