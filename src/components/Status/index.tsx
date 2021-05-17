@@ -27,6 +27,8 @@ export const StatusColorIndicator = styled.div<{ status: string }>`
         return p.theme.color.bg.red;
       case 'running':
         return p.theme.color.bg.yellow;
+      case 'unknown':
+        return p.theme.color.bg.dark;
       default:
         return p.theme.color.bg.dark;
     }

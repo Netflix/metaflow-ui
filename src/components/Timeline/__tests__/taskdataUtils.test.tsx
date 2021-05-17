@@ -33,6 +33,7 @@ describe('taskdataUtils tests', () => {
       completed: 1,
       running: 1,
       failed: 1,
+      unknown: 0,
     });
   });
 
@@ -55,6 +56,7 @@ describe('taskdataUtils tests', () => {
       completed: 2,
       running: 2,
       failed: 2,
+      unknown: 0,
     });
   });
 
@@ -72,6 +74,7 @@ describe('taskdataUtils tests', () => {
       completed: 1,
       running: 1,
       failed: 1,
+      unknown: 0,
     });
   });
 

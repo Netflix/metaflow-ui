@@ -101,6 +101,7 @@ const en = {
       'filter-completed': 'Completed',
       'filter-running': 'Running',
       'filter-failed': 'Failed',
+      'filter-unknown': 'Unknown',
       overview: 'Workflow',
       monitoring: 'New tasks',
       'error-tracker': 'Failed tasks',
@@ -160,6 +161,7 @@ const en = {
       'show-task-metadata': 'Show task metadata',
       'hide-task-metadata': 'Hide task metadata',
       'ui-content': 'UI Content',
+      'unable-to-find-status': 'Unable to find status for this task',
     },
 
     breadcrumb: {

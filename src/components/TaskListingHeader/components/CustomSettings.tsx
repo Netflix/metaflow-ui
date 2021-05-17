@@ -57,6 +57,9 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
               ['completed', t('run.filter-completed') + ` (${counts.completed})`],
               ['running', t('run.filter-running') + ` (${counts.running})`],
               ['failed', t('run.filter-failed') + ` (${counts.failed})`],
+              ...(counts.unknown > 0
+                ? ([['unknown', t('run.filter-unknown') + ` (${counts.unknown})`]] as [string, string][])
+                : []),
             ]}
             labelRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} />}
             optionRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} noTitle />}

@@ -57,7 +57,7 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
         )}
         {(!preview || (preview && preview.visiblerows.length === 0)) && (
           <TimelineNoRows
-            counts={{ all: 0, failed: 0, running: 0, completed: 0 }}
+            counts={{ all: 0, failed: 0, running: 0, completed: 0, unknown: 0 }}
             searchStatus="NotAsked"
             tasksStatus={taskStatus}
           />

@@ -10,6 +10,7 @@ export type RowCounts = {
   completed: number;
   running: number;
   failed: number;
+  unknown: number;
 };
 
 export function countTaskRowsByStatus(rows: RowDataModel): RowCounts {
@@ -18,6 +19,7 @@ export function countTaskRowsByStatus(rows: RowDataModel): RowCounts {
     completed: 0,
     running: 0,
     failed: 0,
+    unknown: 0,
   };
 
   // Iterate steps
@@ -39,6 +41,8 @@ export function countTaskRowsByStatus(rows: RowDataModel): RowCounts {
             counts.running++;
           } else if (task.status === 'failed') {
             counts.failed++;
+          } else if (task.status === 'unknown') {
+            counts.unknown++;
           }
         }
       }

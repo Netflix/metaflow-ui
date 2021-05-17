@@ -238,7 +238,10 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     },
     fetchAllData: true,
     onUpdate: (items) => {
-      dispatch({ type: 'fillTasks', data: items });
+      dispatch({
+        type: 'fillTasks',
+        data: items.map((item) => ({ ...item, status: item.status === 'unknown' ? 'pending' : item.status })),
+      });
     },
     postRequest: (success, target) => {
       if (success) {
@@ -262,7 +265,7 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
   //
   // Counts & steps data
   //
-  const [counts, setCounts] = useState<RowCounts>({ all: 0, completed: 0, running: 0, failed: 0 });
+  const [counts, setCounts] = useState<RowCounts>({ all: 0, completed: 0, running: 0, failed: 0, unknown: 0 });
   const [steps, setStepLines] = useState<StepLineData[]>([]);
   const [anyOpen, setAnyOpen] = useState<boolean>(true);
 

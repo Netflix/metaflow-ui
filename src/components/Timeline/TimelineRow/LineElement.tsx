@@ -8,6 +8,7 @@ import { lighten } from 'polished';
 import { useHistory } from 'react-router';
 import { getPathFor } from '../../../utils/routing';
 import { TasksSortBy } from '../useTaskListSettings';
+import { useTranslation } from 'react-i18next';
 
 //
 // Typedef
@@ -45,6 +46,7 @@ const LineElement: React.FC<LineElementProps> = ({
   dragging,
   paramsString,
 }) => {
+  const { t } = useTranslation();
   const { push } = useHistory();
   const status = getRowStatus(row);
   // Extend visible area little bit to prevent lines seem like going out of bounds. Happens
@@ -84,7 +86,7 @@ const LineElement: React.FC<LineElementProps> = ({
         }}
         data-testid="boxgraphic"
         dragging={dragging}
-        title={formatDuration(duration)}
+        title={formatDuration(duration) + `${status === 'unknown' ? ` (${t('task.unable-to-find-status')})` : ''}`}
         onClick={(e) => {
           if (row.type === 'task') {
             e.stopPropagation();
@@ -180,7 +182,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
   overflow: hidden;
 
   ${(p) =>
-    p.state === 'unknown' &&
+    p.state === 'pending' &&
     css`
       animation: 5s ${UnkownAnimation(p.theme)} infinite;
       &::after {
