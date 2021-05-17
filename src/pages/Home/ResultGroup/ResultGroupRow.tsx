@@ -40,15 +40,16 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
   const [runToRender, setRunToRender] = useState(run);
   const [isHovering, setIsHovering] = useState(false);
   const [rowState, setRowState] = useState<RowState>(RowState.Closed);
+  const visible = isVisible(rowState);
 
   useEffect(() => {
-    if (!isHovering && !isVisible(rowState)) {
+    if (!isHovering && !visible && run.run_number !== runToRender.run_number) {
       setRunToRender(run);
     }
-  }, [isHovering, isVisible(rowState)]); // eslint-disable-line
+  }, [isHovering, visible]); // eslint-disable-line
 
   useEffect(() => {
-    if ((!isHovering && !isVisible(rowState)) || run.run_number === runToRender.run_number) {
+    if ((!isHovering && !visible) || run.run_number === runToRender.run_number) {
       setRunToRender(run);
     }
   }, [run]); // eslint-disable-line
@@ -71,8 +72,8 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
       <StyledTR
         clickable
         stale={isStale}
-        active={isVisible(rowState)}
-        onMouseOver={() => {
+        active={visible}
+        onMouseEnter={() => {
           setIsHovering(true);
         }}
         onMouseLeave={() => {
@@ -85,11 +86,11 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
           updateListValue={updateListValue}
           link={getPath.run(runToRender.flow_id, getRunId(runToRender))}
           timezone={timezone}
-          infoOpen={isVisible(rowState)}
+          infoOpen={visible}
         />
         <td>
           <VerticalToggle
-            visible={isVisible(rowState) || isHovering}
+            visible={visible || isHovering}
             active={rowState === RowState.Opening || rowState === RowState.Open}
             onClick={() => {
               if (rowState === RowState.Opening || rowState === RowState.Open) {
@@ -101,7 +102,7 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
           />
         </td>
       </StyledTR>
-      {isVisible(rowState) && (
+      {visible && (
         <tr>
           <StatusColorCell status={runToRender.status} title={runToRender.status} hideBorderTop={true} />
           <StyledTD colSpan={cols.length}>

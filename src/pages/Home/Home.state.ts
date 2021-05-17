@@ -35,7 +35,6 @@ type HomeAction =
   | { type: 'data'; data: Run[]; replace: boolean; isLastPage?: boolean }
   | { type: 'realtimeData'; data: Run[] }
   | { type: 'setParams'; params: Record<string, string> }
-  | { type: 'postRequest' }
   | { type: 'groupReset' }
   | { type: 'setScroll'; isScrolledFromTop: boolean };
 
@@ -69,6 +68,7 @@ const HomeReducer = (state: HomeState, action: HomeAction): HomeState => {
         // If we have replace parameters, it means that old websocket updates are not relevant anymore so
         // we can clear new runs here.
         newRuns: action.replace ? [] : state.newRuns,
+        showLoader: false,
       };
 
     case 'realtimeData': {
@@ -83,9 +83,6 @@ const HomeReducer = (state: HomeState, action: HomeAction): HomeState => {
         rungroups: mergeTo(action.data, state.rungroups, state.params),
       };
     }
-
-    case 'postRequest':
-      return { ...state, showLoader: false };
 
     case 'groupReset':
       return { ...state, rungroups: {}, newRuns: [], showLoader: true, page: 1 };

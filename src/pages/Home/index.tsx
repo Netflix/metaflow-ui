@@ -72,7 +72,6 @@ const Home: React.FC = () => {
       const replaceOld = page === 1 || !!placeHolderParameters;
       // Check if we just got last page so we can disable auto loader
       const lastPage = typeof result?.pages?.next !== 'number';
-
       dispatch({ type: 'data', data: items, replace: replaceOld, isLastPage: lastPage });
     },
     //
@@ -88,7 +87,6 @@ const Home: React.FC = () => {
       if (!success && (page === 1 || placeHolderParameters)) {
         dispatch({ type: 'data', data: [], replace: true });
       }
-      dispatch({ type: 'postRequest' });
     },
   });
 
@@ -129,6 +127,7 @@ const Home: React.FC = () => {
               .filter((str) => !str.startsWith('user:'))
               .join(',')
           : '';
+
         setQp({ _tags: newtags, user: param });
       }
     }
@@ -167,12 +166,16 @@ const Home: React.FC = () => {
   //
   useEffect(() => {
     const listener = () => {
-      dispatch({ type: 'setScroll', isScrolledFromTop: window.scrollY > 100 });
+      if (window.scrollY > 100 && !isScrolledFromTop) {
+        dispatch({ type: 'setScroll', isScrolledFromTop: true });
+      } else if (window.scrollY <= 100 && isScrolledFromTop) {
+        dispatch({ type: 'setScroll', isScrolledFromTop: false });
+      }
     };
 
     window.addEventListener('scroll', listener);
     return () => window.removeEventListener('scroll', listener);
-  }, []);
+  }, [isScrolledFromTop]);
 
   return (
     <div style={{ display: 'flex', flex: 1 }}>
