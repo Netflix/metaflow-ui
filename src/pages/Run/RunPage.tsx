@@ -135,14 +135,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       logWarning('Unexpected error while contructing task rows: ', e);
     }
     /* eslint-disable */
-  }, [
-    rows,
-    settings.stepFilter,
-    settings.sort,
-    settings.statusFilter,
-    settings.group,
-    searchField.results,
-  ]);
+  }, [rows, settings.stepFilter, settings.sort, settings.statusFilter, settings.group, searchField.results]);
 
   const [visible, setVisible] = useState(false);
 
@@ -164,7 +157,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     isAnyGroupOpen,
     setQueryParam,
     onModeSelect: setMode,
-  }
+  };
 
   return (
     <RunPageContainer visible={visible}>

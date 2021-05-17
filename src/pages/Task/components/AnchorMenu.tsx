@@ -29,13 +29,15 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSectio
         .reverse()
         .find((item) => item.position && item.position < window.scrollY + HEADER_SIZE_PX + 20);
       setActive((current && current.key) || items[0]?.key);
-      setSection((current && current.key) || null);
+      const newKey = (current && current.key) || null;
+      if (activeSection !== newKey) {
+        setSection(newKey);
+      }
     };
 
     window.addEventListener('scroll', listener);
-
     return () => window.removeEventListener('scroll', listener);
-  }, [items, setSection]); // eslint-disable-line
+  }, [items, setSection, activeSection]); // eslint-disable-line
 
   useEffect(() => {
     if (activeSection) {

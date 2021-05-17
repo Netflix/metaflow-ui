@@ -219,8 +219,7 @@ export default function useTimelineControls(
   useEffect(() => {
     const timings = startAndEndpointsOfRows([...rows]);
     const endTime = mode === 'left' ? run.ts_epoch + getLongestRowDuration(rows) : timings.end;
-
-    if (timings.start !== 0 && endTime !== 0) {
+    if (timings.start !== 0 && endTime !== 0 && endTime !== timelineControls.max) {
       dispatch({
         type: 'update',
         start: run.ts_epoch,
@@ -228,7 +227,7 @@ export default function useTimelineControls(
         mode: mode,
       });
     }
-  }, [rows, run.ts_epoch, mode]);
+  }, [rows, run.ts_epoch, mode]); // eslint-disable-line
 
   useEffect(() => {
     const tm = setInterval(() => {
