@@ -10,6 +10,7 @@ import { StepLineData } from '../../Timeline/taskdataUtils';
 import Icon from '../../Icon';
 import { useTranslation } from 'react-i18next';
 import Tooltip, { TooltipTitle } from '../../Tooltip';
+import { mix } from 'polished';
 //
 // DAG Content section for when we have dag data
 //
@@ -213,6 +214,7 @@ const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; is
 
   padding-top: ${(p) => (p.isFirst ? '0' : '1rem')};
   padding-bottom: ${(p) => (p.isLast ? '0' : '1rem')};
+  width: 100%;
 
   &::before {
     content: '';
@@ -226,7 +228,7 @@ const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; is
   }
 `;
 
-const NormalItem = styled.div<{ state: StepBoxStatus }>`
+const StatusColorStyles = css<{ state: StepBoxStatus }>`
   border: 1px solid
     ${(p) =>
       p.state === 'ok'
@@ -236,12 +238,23 @@ const NormalItem = styled.div<{ state: StepBoxStatus }>`
         : p.state === 'warning'
         ? p.theme.notification.danger.text
         : p.theme.color.border.mid};
+  background: ${(p) =>
+    p.state === 'ok'
+      ? mix(0.05, p.theme.notification.success.text, '#fff')
+      : p.state === 'running'
+      ? mix(0.05, p.theme.notification.warning.text, '#fff')
+      : p.state === 'warning'
+      ? mix(0.05, p.theme.notification.danger.text, '#fff')
+      : '#fff'};
+`;
+
+const NormalItem = styled.div<{ state: StepBoxStatus }>`
+  ${StatusColorStyles}
   padding: 0.75rem 1.5rem;
 
   position: relative;
   border-radius: 0.25rem;
   transition: 0.15s border;
-  background: ${(p) => p.theme.color.bg.white};
   cursor: pointer;
 `;
 
@@ -254,7 +267,7 @@ const BaseContainerStyle = css`
   background: #f6f6f6;
   display: flex;
   margin: 1rem;
-  border-radius: 0.25rem;
+  border-radius: 0.5rem;
   position: relative;
   z-index: 1;
 `;
@@ -266,15 +279,25 @@ const ContainerItem = styled.div`
 const ForeachContainer = styled.div`
   ${BaseContainerStyle}
   background: rgba(192, 192, 192, 0.3);
-  transform: translateX(-0.3125rem) translateY(-0.3125rem);
+  transform: translateX(-0.275rem) translateY(-0.275rem);
   margin-top: 1.1875rem;
+  &::before {
+    content: '';
+    z-index: -1;
+    position: absolute;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: #d0d0d0;
+    left: 50%;
+  }
 `;
 
 const ForeachItem = styled.div`
   ${BaseContainerStyle}
   background: #f6f6f6;
   margin: 0;
-  transform: translateX(0.3125rem) translateY(0.3125rem);
+  transform: translateX(0.275rem) translateY(0.275rem);
   flex: 1;
 `;
 
