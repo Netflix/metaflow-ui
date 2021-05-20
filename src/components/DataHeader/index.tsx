@@ -16,7 +16,9 @@ const DataHeader: React.FC<Props> = ({ items, wide = false }) => {
   return (
     <DataHeaderContainer isWide={wide}>
       <DataHeaderContent>
-        {items.map((item) => (!item.hidden ? <DataHeaderItem label={item.label} value={item.value} /> : null))}
+        {items.map((item) =>
+          !item.hidden ? <DataHeaderItem key={item.label} label={item.label} value={item.value} /> : null,
+        )}
       </DataHeaderContent>
     </DataHeaderContainer>
   );
