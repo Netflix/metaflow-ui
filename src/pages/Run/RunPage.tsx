@@ -160,63 +160,72 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   };
 
   return (
-    <RunPageContainer visible={visible}>
-      <ErrorBoundary message={t('error.run-header-error')}>
-        <RunHeader run={run} />
-      </ErrorBoundary>
-      <Tabs
-        activeTab={tab}
-        tabs={[
-          ...(FEATURE.DAG
-            ? [
-                {
-                  key: 'dag',
-                  label: t('run.DAG'),
-                  linkTo: getPath.dag(params.flowId, params.runNumber) + '?' + urlParams,
-                  component: (
-                    <ErrorBoundary message={t('error.dag-error')}>
-                      <DAG run={run} steps={steps} />
-                    </ErrorBoundary>
-                  ),
-                },
-              ]
-            : []),
-          {
-            key: 'timeline',
-            label: t('run.timeline'),
-            linkTo: getPath.timeline(params.flowId, params.runNumber) + '?' + urlParams,
-            component: (
-              <ErrorBoundary message={t('error.timeline-error')}>
-                {(taskError || stepError) && visibleRows.length === 0 ? (
-                  <APIErrorRenderer error={taskError || stepError} />
-                ) : (
-                  <Timeline {...sharedProps} />
-                )}
-              </ErrorBoundary>
-            ),
-          },
-          {
-            key: 'task',
-            label: previousTaskId ? `${t('items.task')}: ${previousTaskId}` : `${t('items.task')}`,
-            linkTo: getTaskPageLink(params.flowId, params.runNumber, previousStepName, previousTaskId, urlParams, rows),
-            component: (
-              <ErrorBoundary message={t('error.task-error')}>
-                {taskError || stepError ? (
-                  <APIErrorRenderer error={taskError || stepError} />
-                ) : (
-                  <TaskViewContainer
-                    {...sharedProps}
-                    taskFromList={getTaskFromList(rows, params.stepName, params.taskId)}
-                    stepName={previousStepName || 'not-selected'}
-                    taskId={previousTaskId || 'not-selected'}
-                  />
-                )}
-              </ErrorBoundary>
-            ),
-          },
-        ]}
-      />
-    </RunPageContainer>
+    <>
+      <RunPageContainer visible={visible}>
+        <ErrorBoundary message={t('error.run-header-error')}>
+          <RunHeader run={run} />
+        </ErrorBoundary>
+        <Tabs
+          activeTab={tab}
+          tabs={[
+            ...(FEATURE.DAG
+              ? [
+                  {
+                    key: 'dag',
+                    label: t('run.DAG'),
+                    linkTo: getPath.dag(params.flowId, params.runNumber) + '?' + urlParams,
+                    component: (
+                      <ErrorBoundary message={t('error.dag-error')}>
+                        <DAG run={run} steps={steps} />
+                      </ErrorBoundary>
+                    ),
+                  },
+                ]
+              : []),
+            {
+              key: 'timeline',
+              label: t('run.timeline'),
+              linkTo: getPath.timeline(params.flowId, params.runNumber) + '?' + urlParams,
+              component: (
+                <ErrorBoundary message={t('error.timeline-error')}>
+                  {(taskError || stepError) && visibleRows.length === 0 ? (
+                    <APIErrorRenderer error={taskError || stepError} />
+                  ) : (
+                    <Timeline {...sharedProps} />
+                  )}
+                </ErrorBoundary>
+              ),
+            },
+            {
+              key: 'task',
+              label: previousTaskId ? `${t('items.task')}: ${previousTaskId}` : `${t('items.task')}`,
+              linkTo: getTaskPageLink(
+                params.flowId,
+                params.runNumber,
+                previousStepName,
+                previousTaskId,
+                urlParams,
+                rows,
+              ),
+              component: (
+                <ErrorBoundary message={t('error.task-error')}>
+                  {taskError || stepError ? (
+                    <APIErrorRenderer error={taskError || stepError} />
+                  ) : (
+                    <TaskViewContainer
+                      {...sharedProps}
+                      taskFromList={getTaskFromList(rows, params.stepName, params.taskId)}
+                      stepName={previousStepName || 'not-selected'}
+                      taskId={previousTaskId || 'not-selected'}
+                    />
+                  )}
+                </ErrorBoundary>
+              ),
+            },
+          ]}
+        />
+      </RunPageContainer>
+    </>
   );
 };
 

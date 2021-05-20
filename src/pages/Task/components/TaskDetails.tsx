@@ -1,8 +1,5 @@
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import InformationRow from '../../../components/InformationRow';
-
-import PropertyTable from '../../../components/PropertyTable';
 import StatusField from '../../../components/Status';
 import { ForceBreakText } from '../../../components/Text';
 import { Metadata, Task as ITask } from '../../../types';
@@ -19,6 +16,7 @@ import Collapsable from '../../../components/Collapsable';
 import Icon from '../../../components/Icon';
 import styled from 'styled-components';
 import RenderMetadata from '../../../components/RenderMetadata';
+import DataHeader from '../../../components/DataHeader';
 
 type Props = {
   task: ITask;
@@ -37,37 +35,35 @@ const TaskDetails: React.FC<Props> = ({ task, metadata }) => {
 
   const uiContent = metadata?.data?.filter((md) => md.field_name.startsWith('ui-content')) || [];
 
+  const headerItems = [
+    {
+      label: t('fields.task-id'),
+      value: <ForceBreakText>{getTaskId(task)}</ForceBreakText>,
+    },
+    { label: t('items.step'), value: task.step_name },
+    {
+      label: t('fields.status'),
+      value: <StatusField status={task.status} />,
+    },
+    {
+      label: t('fields.started-at'),
+      value: task.started_at ? getISOString(new Date(task.started_at), timezone) : '',
+    },
+    {
+      label: t('fields.finished-at'),
+      value: task.finished_at ? getISOString(new Date(task.finished_at), timezone) : '',
+    },
+    {
+      label: t('fields.duration'),
+      value: getAttemptDuration(task),
+    },
+  ];
+
   return (
     <>
-      <InformationRow spaceless>
-        <PropertyTable
-          items={[task]}
-          scheme="dark"
-          columns={[
-            {
-              label: t('fields.task-id'),
-              accessor: (item) => <ForceBreakText>{getTaskId(item)}</ForceBreakText>,
-            },
-            { label: t('items.step'), prop: 'step_name' },
-            {
-              label: t('fields.status'),
-              accessor: (_item) => <StatusField status={_item.status} />,
-            },
-            {
-              label: t('fields.started-at'),
-              accessor: (item) => (item.started_at ? getISOString(new Date(item.started_at), timezone) : ''),
-            },
-            {
-              label: t('fields.finished-at'),
-              accessor: (item) => (item.finished_at ? getISOString(new Date(item.finished_at), timezone) : ''),
-            },
-            {
-              label: t('fields.duration'),
-              accessor: (item) => getAttemptDuration(item),
-            },
-          ]}
-        />
-      </InformationRow>
+      <HeaderContainer>
+        <DataHeader items={headerItems} />
+      </HeaderContainer>
 
       {FEATURE_FLAGS.TASK_METADATA && (
         <Collapsable title={t('task.task-details')}>
@@ -113,6 +109,10 @@ export function getAttemptDuration(task: ITask): string {
   }
   return task.duration ? formatDuration(task.duration) : '';
 }
+
+const HeaderContainer = styled.div`
+  margin-bottom: 1rem;
+`;
 
 const PluginHeader = styled.div`
   i {
