@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Collapsable from '../../components/Collapsable';
 import { APIErrorRenderer } from '../../components/GenericError';
 import SmoothSpinner from '../../components/Spinner';
 import { ItemRow } from '../../components/Structure';
@@ -14,14 +13,14 @@ import { Run, RunParam } from '../../types';
 
 type Props = {
   run: Run;
-  initialState?: boolean;
+  noTitle?: boolean;
 };
 
 //
 // Component
 //
 
-const RunParameterTable: React.FC<Props> = ({ run, initialState }) => {
+const RunParameterTable: React.FC<Props> = ({ run, noTitle = false }) => {
   const { t } = useTranslation();
 
   const { data, status, error } = useResource<RunParam, RunParam>({
@@ -35,31 +34,28 @@ const RunParameterTable: React.FC<Props> = ({ run, initialState }) => {
     return { ...obj, [param_name]: param_props.value };
   }, {});
 
-  return (
-    <Collapsable title={t('run.parameters')} initialState={initialState}>
-      {status === 'Loading' ? (
-        <ItemRow margin="md" justify="center">
-          <SmoothSpinner sm />
-        </ItemRow>
-      ) : (
-        <TitledRow
-          {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
-            ? {
-                type: 'default',
-                content:
-                  status === 'Error' && error ? (
-                    <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
-                  ) : (
-                    t('run.no-parameters')
-                  ),
-              }
-            : {
-                type: 'table',
-                content: parameterTableItems,
-              })}
-        />
-      )}
-    </Collapsable>
+  return status === 'Loading' ? (
+    <ItemRow margin="md" justify="center">
+      <SmoothSpinner sm />
+    </ItemRow>
+  ) : (
+    <TitledRow
+      title={!noTitle ? t('run.parameters') : undefined}
+      {...(status !== 'Ok' || Object.keys(parameterTableItems).length === 0
+        ? {
+            type: 'default',
+            content:
+              status === 'Error' && error ? (
+                <APIErrorRenderer error={error} message={t('run.run-parameters-error')} />
+              ) : (
+                t('run.no-parameters')
+              ),
+          }
+        : {
+            type: 'table',
+            content: parameterTableItems,
+          })}
+    />
   );
 };
 

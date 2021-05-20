@@ -76,7 +76,7 @@ const en = {
     },
 
     run: {
-      'run-details': 'Run details',
+      'run-details': 'Details',
       'no-run-data': 'No run data',
       'no-tags': 'No user tags',
       'no-system-tags': 'No system tags',

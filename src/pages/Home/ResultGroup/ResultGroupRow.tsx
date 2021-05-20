@@ -12,6 +12,8 @@ import ResultGroupCells from './ResultGroupCells';
 import { StatusColorCell } from './ResultGroupStatus';
 import { TableColDefinition } from './';
 import HeightAnimatedContainer from '../../../components/HeightAnimatedContainer';
+import Collapsable from '../../../components/Collapsable';
+import { useTranslation } from 'react-i18next';
 
 //
 // Typedef
@@ -37,6 +39,7 @@ enum RowState {
 // Row component that will lock it's state when hovered or set active
 //
 const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue, run, timezone, cols }) => {
+  const { t } = useTranslation();
   const [runToRender, setRunToRender] = useState(run);
   const [isHovering, setIsHovering] = useState(false);
   const [rowState, setRowState] = useState<RowState>(RowState.Closed);
@@ -109,7 +112,9 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
             <HeightAnimatedContainer active={isTransitioning(rowState)}>
               <StyledSection closing={rowState === RowState.Closing}>
                 <TimelinePreview run={runToRender} />
-                <RunParameterTable run={runToRender} initialState={false} />
+                <Collapsable title={t('run.parameters')} initialState={false}>
+                  <RunParameterTable run={runToRender} noTitle />
+                </Collapsable>
               </StyledSection>
             </HeightAnimatedContainer>
           </StyledTD>

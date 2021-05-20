@@ -63,10 +63,10 @@ const RunHeader: React.FC<Props> = ({ run }) => {
     <RunHeaderContainer>
       <DataHeader items={headerItems} wide />
 
-      <RunParameterTable run={run} />
-
       <Collapsable title={t('run.run-details')}>
         <>
+          <RunParameterTable run={run} />
+
           <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
 
           <TagRow
