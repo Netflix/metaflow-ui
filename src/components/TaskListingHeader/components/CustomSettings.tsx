@@ -7,7 +7,7 @@ import { RowCounts } from '../../Timeline/taskdataUtils';
 import StatusLights from './StatusLights';
 import { CheckboxField, DropdownField } from '../../Form';
 import Icon from '../../Icon';
-import { TaskListSort, TasksSortBy } from '../../Timeline/useTaskListSettings';
+import { TaskListMode, TaskListSort, TasksSortBy } from '../../Timeline/useTaskListSettings';
 
 //
 // Typedef
@@ -17,6 +17,8 @@ export type CustomSettingsProps = {
   updateSort: (order: TasksSortBy, direction: string) => void;
   updateStatusFilter: (status: null | string) => void;
   updateGroupBy: (group: boolean) => void;
+  updateMode: (mode: TaskListMode) => void;
+  activeMode: TaskListMode;
   sort: TaskListSort;
   statusFilter?: string | null;
   group: boolean;
@@ -31,6 +33,8 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
   updateStatusFilter,
   updateSort,
   updateGroupBy,
+  updateMode,
+  activeMode,
   sort,
   statusFilter,
   group,
@@ -41,6 +45,25 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
   return (
     <ItemRow style={{ height: '100%' }}>
       <ItemRow>
+        <TaskListDropdownContainer>
+          <DropdownField
+            horizontal
+            label={t('run.mode')}
+            onChange={(e) => {
+              if (e?.target.value) {
+                updateMode(e?.target.value as TaskListMode);
+              }
+            }}
+            value={activeMode}
+            options={[
+              ['overview', t('run.overview')],
+              ['monitoring', t('run.monitoring')],
+              ['error-tracker', t('run.error-tracker')],
+              ['custom', t('run.custom')],
+            ]}
+          />
+        </TaskListDropdownContainer>
+
         <TaskListDropdownContainer>
           <DropdownField
             horizontal
@@ -168,6 +191,16 @@ const OrderLabelValue = styled(ForceNoWrapText)`
 
 const TaskListDropdownContainer = styled.div`
   margin: 0 0.375rem;
+
+  .dropdown-button {
+    min-width: 12.5rem;
+  }
+
+  @media (max-width: 1400px) {
+    .dropdown-button {
+      min-width: auto;
+    }
+  }
 
   button {
     padding-left: 1rem;

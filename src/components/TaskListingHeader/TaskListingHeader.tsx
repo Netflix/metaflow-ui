@@ -10,7 +10,6 @@ import SearchField from '../SearchField';
 import CollapseButton from './components/CollapseButton';
 import { RowCounts } from '../Timeline/taskdataUtils';
 import CustomSettings from './components/CustomSettings';
-import ModeSelector from './components/ModeSelector';
 import FEATURE_FLAGS from '../../utils/FEATURE';
 import { SetQuery } from 'use-query-params';
 import { TaskListMode, TaskSettingsQueryParameters, TaskSettingsState } from '../Timeline/useTaskListSettings';
@@ -58,8 +57,6 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
 
   return (
     <TaskListingContainer>
-      <ModeSelector activeMode={activeMode} select={(newMode) => onModeSelect(newMode)} />
-
       <SettingsRow>
         <SettingsRowLeft>
           <CollapseButton
@@ -87,6 +84,8 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
             updateSort={(order, direction) => setQueryParam({ order, direction }, 'replaceIn')}
             updateStatusFilter={(status: null | string) => setQueryParam({ status })}
             updateGroupBy={(group) => setQueryParam({ group: group ? 'true' : 'false' }, 'replaceIn')}
+            updateMode={(newMode) => onModeSelect(newMode)}
+            activeMode={activeMode}
             sort={settings.sort}
             statusFilter={settings.statusFilter}
             group={settings.group}

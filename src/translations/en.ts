@@ -102,6 +102,7 @@ const en = {
       'filter-running': 'Running',
       'filter-failed': 'Failed',
       'filter-unknown': 'Unknown',
+      mode: 'Mode',
       overview: 'Workflow',
       monitoring: 'New tasks',
       'error-tracker': 'Failed tasks',

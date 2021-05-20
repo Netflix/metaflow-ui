@@ -59,6 +59,7 @@ export const Dropdown: React.FC<
       </select>
       {!useNativeComponent && (
         <DropdownButton
+          className="dropdown-button"
           textOnly
           variant="text"
           size="sm"
