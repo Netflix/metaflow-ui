@@ -191,7 +191,7 @@ const Breadcrumb: React.FC = () => {
                       resetAutocomplete();
                     }
                   }}
-                  onBlur={() => {
+                  onFocus={() => {
                     resetAutocomplete();
                   }}
                   autoFocus={true}
