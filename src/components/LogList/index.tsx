@@ -33,13 +33,22 @@ const LogList: React.FC<LogProps> = ({ rows, fixedHeight }) => {
 
   useEffect(() => {
     if (stickBottom && _list) {
-      _list.current?.scrollToRow(rows.length - 1);
+      _list.current?.scrollToRow(rows.length);
     }
   }, [rows, stickBottom]);
 
   const totalHeight = rows.reduce((val, _item, index) => {
     return val + (cache.getHeight(index, 0) || 0);
   }, 0);
+
+  // Clear cached row heights on window resize events
+  useEffect(() => {
+    const listener = () => {
+      cache.clearAll();
+    };
+    window.addEventListener('resize', listener);
+    return () => window.removeEventListener('resize', listener);
+  }, []); // eslint-disable-line
 
   return (
     <div style={{ flex: '1 1 0' }}>

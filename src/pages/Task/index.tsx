@@ -106,23 +106,29 @@ const Task: React.FC<TaskViewProps> = ({
   // Related data start
   //
 
-  const metadata = useResource<Metadata[], Metadata>({
+  const [metadata, setMetadata] = useState<Metadata[]>([]);
+  const metadataRes = useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/metadata`,
     fetchAllData: true,
     subscribeToEvents: true,
     initialData: [],
     pause: !isCurrentTaskFinished,
+    onUpdate(items) {
+      setMetadata((oldItems) => [...oldItems, ...items]);
+    },
   });
+
+  const logParams = {
+    attempt_id: attemptId.toString(),
+    _limit: '500',
+  };
 
   const [stdout, setStdout] = useState<Log[]>([]);
   const stdoutRes = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
-    queryParams: {
-      attempt_id: attemptId.toString(),
-    },
-    subscribeToEvents: true,
+    queryParams: logParams,
     initialData: [],
-    useBatching: true,
+    fetchAllData: true,
     pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
       items && setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
@@ -132,12 +138,9 @@ const Task: React.FC<TaskViewProps> = ({
   const [stderr, setStderr] = useState<Log[]>([]);
   const stderrRes = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
-    queryParams: {
-      attempt_id: attemptId.toString(),
-    },
-    subscribeToEvents: true,
+    queryParams: logParams,
     initialData: [],
-    useBatching: true,
+    fetchAllData: true,
     pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
       items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
@@ -145,14 +148,13 @@ const Task: React.FC<TaskViewProps> = ({
   });
 
   useEffect(() => {
-    setStdout([]);
-    setStderr([]);
+    setMetadata([]);
   }, [stepName, taskId]);
 
   useEffect(() => {
     setStdout([]);
     setStderr([]);
-  }, [attemptId]);
+  }, [stepName, taskId, attemptId]);
 
   return (
     <TaskContainer>
@@ -217,7 +219,7 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.task-info'),
                   component: (
                     <>
-                      <TaskDetails task={task} metadata={metadata} />
+                      <TaskDetails task={task} metadata={metadata} metadataResource={metadataRes} />
                     </>
                   ),
                 },

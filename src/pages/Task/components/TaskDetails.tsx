@@ -5,7 +5,6 @@ import { ForceBreakText } from '../../../components/Text';
 import { Metadata, Task as ITask } from '../../../types';
 import { getISOString } from '../../../utils/date';
 import { formatDuration } from '../../../utils/format';
-import { Resource } from '../../../hooks/useResource';
 import { APIErrorRenderer } from '../../../components/GenericError';
 
 import { TimezoneContext } from '../../../components/TimezoneProvider';
@@ -17,23 +16,25 @@ import Icon from '../../../components/Icon';
 import styled from 'styled-components';
 import RenderMetadata from '../../../components/RenderMetadata';
 import DataHeader from '../../../components/DataHeader';
+import { Resource } from '../../../hooks/useResource';
 
 type Props = {
   task: ITask;
-  metadata: Resource<Metadata[]>;
+  metadata: Metadata[];
+  metadataResource: Resource<Metadata[]>;
 };
 
-const TaskDetails: React.FC<Props> = ({ task, metadata }) => {
+const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource }) => {
   const { t } = useTranslation();
   const { timezone } = useContext(TimezoneContext);
 
-  const metadataParams: Record<string, string> = (metadata.data || [])
+  const metadataParams: Record<string, string> = (metadata || [])
     .filter((md) => !md.field_name.startsWith('ui-content'))
     .reduce((obj, val) => {
       return { ...obj, [val.field_name]: val.value };
     }, {});
 
-  const uiContent = metadata?.data?.filter((md) => md.field_name.startsWith('ui-content')) || [];
+  const uiContent = metadata.filter((md) => md.field_name.startsWith('ui-content')) || [];
 
   const headerItems = [
     {
@@ -69,12 +70,12 @@ const TaskDetails: React.FC<Props> = ({ task, metadata }) => {
         <Collapsable title={t('task.task-details')}>
           <TitledRow
             title={t('task.metadata')}
-            {...(metadata.status !== 'Ok' || Object.keys(metadataParams).length === 0
+            {...(metadataResource.status !== 'Ok' || Object.keys(metadataParams).length === 0
               ? {
                   type: 'default',
                   content:
-                    metadata.status === 'Error' && metadata.error ? (
-                      <APIErrorRenderer error={metadata.error} message={t('run.failed-to-load-metadata')} />
+                    metadataResource.status === 'Error' && metadataResource.error ? (
+                      <APIErrorRenderer error={metadataResource.error} message={t('run.failed-to-load-metadata')} />
                     ) : (
                       t('run.no-metadata')
                     ),
