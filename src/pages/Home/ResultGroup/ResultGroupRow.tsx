@@ -59,7 +59,7 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
 
   // Update state after 250 of closing or opening
   useEffect(() => {
-    let t1: number | undefined = undefined;
+    let t1: ReturnType<typeof setTimeout>;
     if (isTransitioning(rowState)) {
       t1 = setTimeout(() => {
         setRowState((rs) => (rs === RowState.Opening ? RowState.Open : RowState.Closing ? RowState.Closed : rs));

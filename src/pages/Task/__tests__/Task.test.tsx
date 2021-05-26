@@ -6,6 +6,7 @@ import { Run } from '../../../types';
 import WS from 'jest-websocket-mock';
 import useSeachField from '../../../hooks/useSearchField';
 import useTaskListSettings from '../../../components/Timeline/useTaskListSettings';
+import { createDataModel, createTask } from '../../../utils/testhelper';
 
 const run: Run = {
   flow_id: 'string',
@@ -19,8 +20,8 @@ const run: Run = {
 };
 
 describe('Task page', () => {
-  beforeAll(() => {
-    global.fetch = mockfetch as any;
+  beforeEach(() => {
+    fetchMock.resetMocks();
   });
 
   test('<Task /> - health check', async () => {

@@ -91,7 +91,7 @@ export interface Announcement {
   id: string;
   message: string;
   start: number;
-  type: NotificationType | string;
+  type: NotificationType;
   url?: string;
   urlText?: string;
 }

@@ -125,7 +125,6 @@ const ResultGroup: React.FC<Props> = React.memo(
             })}
           </tbody>
         </Table>
-
         <ResultGroupFooter grouping={grouping} rows={rows.length} onOpenGroup={() => handleGroupTitleClick(label)} />
       </StyledResultGroup>
     );

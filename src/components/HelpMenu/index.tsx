@@ -73,9 +73,9 @@ const HelpMenu: React.FC = () => {
         ))}
 
         {links.map((link) => (
-          <HelpMenuLink key={link.href + link.label} href={link.href} target="_blank" data-testid="helpmenu-link">
+          <StyledHelpMenuLink key={link.href + link.label} href={link.href} target="_blank" data-testid="helpmenu-link">
             {link.label}
-          </HelpMenuLink>
+          </StyledHelpMenuLink>
         ))}
         {VERSION_INFO.release_version && (
           <VersionContainer>
@@ -138,7 +138,7 @@ const HelpMenuItemStyles = css`
   }
 `;
 
-const HelpMenuLink = styled.a`
+const StyledHelpMenuLink = styled.a`
   ${HelpMenuItemStyles}
 `;
 

@@ -1,12 +1,12 @@
 import React from 'react';
 import Home from '..';
 import { render } from '@testing-library/react';
-import TestWrapper, { mockfetch } from '../../../utils/testing';
+import TestWrapper from '../../../utils/testing';
 import WS from 'jest-websocket-mock';
 
 describe('Home page', () => {
-  beforeAll(() => {
-    global.fetch = mockfetch as any;
+  beforeEach(() => {
+    fetchMock.resetMocks();
   });
 
   test('<Home /> - health check', async () => {

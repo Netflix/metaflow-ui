@@ -164,7 +164,7 @@ const AnnouncementsContainer = styled.div`
   z-index: 1000;
 `;
 
-const AnnouncementItemContainer = styled.div<{ type: NotificationType | string; open: boolean; last: boolean }>`
+const AnnouncementItemContainer = styled.div<{ type: NotificationType; open: boolean; last: boolean }>`
   position: ${(p) => (p.open ? 'relative' : 'absolute')};
   opacity: ${(p) => (p.open ? '1' : '0')};
   padding: 1rem 0;

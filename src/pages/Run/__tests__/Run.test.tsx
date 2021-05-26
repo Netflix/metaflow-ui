@@ -1,12 +1,14 @@
 import React from 'react';
 import Run from '..';
 import { render } from '@testing-library/react';
-import TestWrapper, { mockfetch } from '../../../utils/testing';
+import TestWrapper from '../../../utils/testing';
 import WS from 'jest-websocket-mock';
+import { createRun } from '../../../utils/testhelper';
 
 describe('Run page', () => {
-  beforeAll(() => {
-    global.fetch = mockfetch as any;
+  beforeEach(() => {
+    fetchMock.resetMocks();
+    fetchMock.mockResponse(JSON.stringify(createRun({})));
   });
 
   test('<Run /> - health check', async () => {
@@ -16,7 +18,6 @@ describe('Run page', () => {
         <Run />
       </TestWrapper>,
     );
-
     await server.connected;
   });
 

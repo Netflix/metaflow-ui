@@ -96,7 +96,7 @@ const notFoundError = {
 // Imperative store for data if useBatching is on. Meaning that arriving websocket data is stored in this object while waiting to be batched to
 // view. We use this to prevent dozens of renders per second for more intensive runs.
 //
-const updateBatcher: Record<string, any> = {};
+const updateBatcher: Record<string, unknown> = {};
 
 //
 // Status handling
@@ -153,8 +153,8 @@ export default function useResource<T, U>({
   const target = apiHttp(`${url}${q ? '?' + q : ''}`);
   // Call batch update
   useInterval(() => {
-    if (useBatching && onUpdate && updateBatcher[target] && updateBatcher[target].length > 0) {
-      onUpdate(updateBatcher[target]);
+    if (useBatching && onUpdate && updateBatcher[target] && (updateBatcher[target] as Array<U>).length > 0) {
+      onUpdate(updateBatcher[target] as T);
       updateBatcher[target] = [];
     }
   }, 1000);
@@ -165,7 +165,7 @@ export default function useResource<T, U>({
     url: websocketUrl,
     queryParams: socketParamFilter ? socketParamFilter(queryParams || {}) : websocketParams || queryParams,
     enabled: subscribeToEvents && !pause && !!websocketUrl,
-    onUpdate: (event: Event<any>) => {
+    onUpdate: (event: Event<unknown>) => {
       if (pause) return;
       // If onUpdate or onWSUpdate is given, dont update stateful data object.
       if (onUpdate || onWSUpdate) {
@@ -174,12 +174,12 @@ export default function useResource<T, U>({
           if (!updateBatcher[target]) {
             updateBatcher[target] = [];
           }
-          updateBatcher[target].push(event.data);
+          (updateBatcher[target] as Array<U>).push(event.data as U);
         } else {
           if (onWSUpdate) {
-            onWSUpdate(event.data, event.type);
+            onWSUpdate(event.data as U, event.type);
           } else if (onUpdate) {
-            onUpdate(Array.isArray(initialData) ? [event.data] : event.data);
+            onUpdate((Array.isArray(initialData) ? [event.data] : event.data) as T);
           }
         }
       } else {
@@ -189,7 +189,7 @@ export default function useResource<T, U>({
           setData(
             (d) =>
               (Array.isArray(d)
-                ? d.map((item) => (updatePredicate(item, event.data) ? event.data : item))
+                ? d.map((item) => (updatePredicate(item, event.data as U) ? event.data : item))
                 : event.data) as T,
           );
         }

@@ -16,6 +16,11 @@ describe('Breadcrumb component', () => {
     runNumber: '5',
   };
 
+  beforeEach(() => {
+    fetchMock.resetMocks();
+    fetchMock.dontMock();
+  });
+
   test('findAdditionalButtons - empty states', () => {
     // Empty returns
     expect(findAdditionalButtons(null, '')).toEqual([]);

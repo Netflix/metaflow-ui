@@ -4,6 +4,10 @@ import HelpMenu from '..';
 import TestWrapper from '../../../utils/testing';
 
 describe('HelpMenu component', () => {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
+
   test('<HelpMenu />', () => {
     const { getByTestId, getAllByTestId } = render(
       <TestWrapper>

@@ -2,7 +2,7 @@ import { TimelineMetrics } from '../components/Timeline/Timeline';
 import { RowDataModel, StepRowData } from '../components/Timeline/useTaskData';
 import { TaskSettingsState } from '../components/Timeline/useTaskListSettings';
 import { Row } from '../components/Timeline/VirtualizedTimeline';
-import { Resource } from '../hooks/useResource';
+import { DataModel, Resource } from '../hooks/useResource';
 import { Task, Step, Run, Metadata, APIError, TaskStatus } from '../types';
 
 //
@@ -154,5 +154,21 @@ export function createTimelineMetrics(data: Partial<TimelineMetrics>): TimelineM
     sortBy: 'startTime',
     groupingEnabled: true,
     ...data,
+  };
+}
+
+export function createDataModel<T>(data: T, props: Partial<DataModel<T>>): DataModel<T> {
+  return {
+    data,
+    status: 200,
+    links: { self: '/' },
+    pages: {
+      self: 1,
+      first: 1,
+      prev: 1,
+      next: null,
+    },
+    query: {},
+    ...props,
   };
 }

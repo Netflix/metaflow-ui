@@ -74,7 +74,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
 
   // Open or close autocomplete list with slight delay so click events gets registered
   useEffect(() => {
-    let t: number | undefined = undefined;
+    let t: ReturnType<typeof setTimeout>;
 
     if (hasFocus && !autoCompleteOpen) {
       t = setTimeout(() => {

@@ -18,13 +18,8 @@ const run: Run = {
 };
 
 describe('DAG component', () => {
-  beforeAll(() => {
-    global.fetch = jest.fn(() =>
-      Promise.resolve({
-        status: 500,
-        json: () => Promise.resolve({}),
-      }),
-    ) as any;
+  beforeEach(() => {
+    fetchMock.resetMocks();
   });
 
   test('<DAG /> - health check', async () => {

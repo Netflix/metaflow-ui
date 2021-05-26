@@ -49,7 +49,7 @@ const ResourceObjectComponent = (useResourceSettings: Partial<HookConfig<BasicRe
 
 describe('useResource hook', () => {
   const server = new WS('ws://localhost/api/ws', { jsonProtocol: true });
-  beforeAll(() => {
+  beforeEach(() => {
     global.fetch = jest.fn(() =>
       Promise.resolve({
         status: 200,
@@ -158,11 +158,14 @@ describe('useResource hook', () => {
     );
     await waitFor(() => expect(getByTestId('container').textContent).toBe(''));
     await waitFor(() =>
-      expect(mockfn).toHaveBeenLastCalledWith([
-        { id: '1', label: '1' },
-        { id: '2', label: '2' },
-        { id: '3', label: '3' },
-      ], BasicResponse),
+      expect(mockfn).toHaveBeenLastCalledWith(
+        [
+          { id: '1', label: '1' },
+          { id: '2', label: '2' },
+          { id: '3', label: '3' },
+        ],
+        BasicResponse,
+      ),
     );
     await server.connected;
     // Send few messages in row

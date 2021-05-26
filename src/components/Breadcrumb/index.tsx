@@ -33,8 +33,11 @@ const Breadcrumb: React.FC = () => {
   const [str, setStr] = useState(currentBreadcrumbPath.replace(/\s/g, ''));
   const [warning, setWarning] = useState('');
 
+  const autoCompleteUrl = urlFromString(str);
   const { result: autoCompleteResult, reset: resetAutocomplete } = useAutoComplete<string>({
-    ...urlFromString(str),
+    url: autoCompleteUrl.url || '',
+    params: autoCompleteUrl.params,
+    enabled: !!autoCompleteUrl.url,
     finder: (item, input) => {
       const last = takeLastSplitFromURL(item.label);
       return !input ? true : last.toLowerCase().includes(input.toLowerCase());
@@ -277,7 +280,7 @@ export function pathFromString(str: string): string | null {
   return null;
 }
 
-function urlFromString(str: string): { url: string; params: Record<string, string> } {
+function urlFromString(str: string): { url: string | null; params: Record<string, string> } {
   const parts = str.split('/');
   const lastSplit = takeLastSplitFromURL(str);
 
@@ -288,7 +291,7 @@ function urlFromString(str: string): { url: string; params: Record<string, strin
   } else if (parts.length === 3) {
     return { url: `/flows/${parts[0]}/runs/${parts[1]}/steps/autocomplete`, params: { 'step_name:co': lastSplit } };
   }
-  return { url: 'not-implemented', params: {} };
+  return { url: null, params: {} };
 }
 
 function mergeWithString(str: string, toAdd: string): string {

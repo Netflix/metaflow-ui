@@ -4,6 +4,10 @@ import { render } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
 
 describe('AppBar component', () => {
+  beforeEach(() => {
+    fetchMock.resetMocks();
+  });
+
   test('<AppBar /> - health check', () => {
     render(
       <TestWrapper>

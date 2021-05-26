@@ -5,6 +5,9 @@
 import '@testing-library/jest-dom/extend-expect';
 // Add mocks to indexed db (used in logging)
 import 'fake-indexeddb/auto';
+import { enableFetchMocks } from 'jest-fetch-mock';
+
+enableFetchMocks();
 // Mock window scroll events
 const noop = () => null;
 Object.defineProperty(window, 'scrollTo', { value: noop, writable: true });

@@ -6,10 +6,10 @@ import { RunStatus } from '../../../types';
 // Small status indicator on left side of the rows
 //
 
-const statusColors: RunStatus = {
-  completed: 'green',
-  running: 'yellow',
-  failed: 'red',
+const statusColors = {
+  completed: 'green' as const,
+  running: 'yellow' as const,
+  failed: 'red' as const,
 };
 
 const statusCellCSS = css`

@@ -4,8 +4,8 @@ import App from './App';
 import WS from 'jest-websocket-mock';
 import { mockfetch } from './utils/testing';
 
-beforeAll(() => {
-  global.fetch = mockfetch as any;
+beforeEach(() => {
+  fetchMock.resetMocks();
 });
 
 test('health check', async () => {

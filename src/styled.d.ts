@@ -26,7 +26,6 @@ declare module 'styled-components' {
     };
 
     spacer: {
-      [index: string];
       xs: number;
       sm: number;
       md: number;
@@ -36,7 +35,6 @@ declare module 'styled-components' {
 
     color: {
       bg: {
-        [index: string];
         white: string;
         light: string;
         dark: string;
@@ -76,7 +74,6 @@ declare module 'styled-components' {
     };
 
     notification: {
-      [index: string];
       success: NotificationColorMap;
       info: NotificationColorMap;
       warning: NotificationColorMap;
