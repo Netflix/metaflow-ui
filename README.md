@@ -1,5 +1,5 @@
 
-![Dashboard UI workloads page](docs/images/metaflow-ui.png)
+![Dashboard UI workloads page](docs/images/metaflow_ui_latest.png)
 
 # Metaflow UI
 
