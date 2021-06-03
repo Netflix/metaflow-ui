@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import styled, { css } from 'styled-components';
 import useComponentSize, { ComponentSize } from '@rehooks/component-size';
 import useWindowSize from '../../../hooks/useWindowSize';
-import { Run } from '../../../types';
+import { Run, TaskStatus } from '../../../types';
 import { DAGStructureTree, DAGTreeNode, StepTree } from '../DAGUtils';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../../utils/routing';
@@ -27,12 +27,6 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, s
   const ContainerSize = useComponentSize(_container);
   const WindowSize = useWindowSize();
 
-  const stepIds = stepData.map((item) => item.step_name);
-  const failedStepIds = stepData.reduce(
-    (arr: string[], item) => (item.status === 'failed' ? arr.concat([item.step_name]) : arr),
-    [],
-  );
-
   return (
     <DAGRenderingContainer
       showFullscreen={showFullscreen}
@@ -50,7 +44,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, s
               key={index}
               isFirst={index === 0}
               isLast={index + 1 === dagTree.length}
-              stepIds={[stepIds, failedStepIds]}
+              stepData={stepData}
             />
           ))}
         </NormalItemContainer>
@@ -90,12 +84,12 @@ export const RenderStep: React.FC<{
   isFirst?: boolean;
   isLast?: boolean;
   inContainer?: boolean;
-  stepIds: [string[], string[]];
+  stepData: StepLineData[];
   run: Run;
-}> = ({ item, isFirst, isLast, stepIds, run }) => {
+}> = ({ item, isFirst, isLast, stepData, run }) => {
   const history = useHistory();
   if (item.node_type === 'normal') {
-    const stepState = stateOfStep(item, stepIds);
+    const stepState = stateOfStep(item, stepData);
 
     return (
       <NormalItemContainer isFirst={isFirst} isLast={isLast} data-testid="dag-normalitem">
@@ -118,7 +112,7 @@ export const RenderStep: React.FC<{
                   item={child}
                   isLast={index + 1 === item.children?.length}
                   key={index}
-                  stepIds={stepIds}
+                  stepData={stepData}
                 />
               );
             })}
@@ -131,7 +125,7 @@ export const RenderStep: React.FC<{
       <ContainerElement containerType={item.container_type}>
         {item.steps &&
           item.steps.map((child, index) => (
-            <RenderStep run={run} item={child} key={index} inContainer={true} stepIds={stepIds} />
+            <RenderStep run={run} item={child} key={index} inContainer={true} stepData={stepData} />
           ))}
       </ContainerElement>
     );
@@ -154,18 +148,12 @@ export const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' 
 // Find out correct state for a step. Step doesn't have status field so we need to figure it out ourselves
 //
 
-type StepBoxStatus = 'ok' | 'running' | 'warning' | 'unknown';
+export function stateOfStep(item: StepTree, stepData: StepLineData[]): TaskStatus {
+  const data = stepData.find((s) => s.step_name === item.step_name);
 
-export function stateOfStep(item: StepTree, [stepIds, failedIds]: [string[], string[]]): StepBoxStatus {
-  if (stepIds.indexOf(item.step_name) > -1) {
-    if (failedIds.indexOf(item.step_name) > -1) {
-      return 'warning';
-    } else if (item.original && (stepIds.indexOf(item.original.next[0]) > -1 || item.original?.next.length === 0)) {
-      return 'ok';
-    }
-    return 'running';
+  if (data) {
+    return data.status;
   }
-
   return 'unknown';
 }
 
@@ -228,27 +216,27 @@ const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; is
   }
 `;
 
-const StatusColorStyles = css<{ state: StepBoxStatus }>`
+const StatusColorStyles = css<{ state: TaskStatus }>`
   border: 1px solid
     ${(p) =>
-      p.state === 'ok'
+      p.state === 'completed'
         ? p.theme.notification.success.text
         : p.state === 'running'
         ? p.theme.notification.warning.text
-        : p.state === 'warning'
+        : p.state === 'failed'
         ? p.theme.notification.danger.text
         : p.theme.color.border.mid};
   background: ${(p) =>
-    p.state === 'ok'
+    p.state === 'completed'
       ? mix(0.05, p.theme.notification.success.text, '#fff')
       : p.state === 'running'
       ? mix(0.05, p.theme.notification.warning.text, '#fff')
-      : p.state === 'warning'
+      : p.state === 'failed'
       ? mix(0.05, p.theme.notification.danger.text, '#fff')
       : '#fff'};
 `;
 
-const NormalItem = styled.div<{ state: StepBoxStatus }>`
+const NormalItem = styled.div<{ state: TaskStatus }>`
   ${StatusColorStyles}
   padding: 0.75rem 1.5rem;
 

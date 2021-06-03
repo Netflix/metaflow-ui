@@ -52,7 +52,7 @@ describe('DAGContent components', () => {
               next: ['a'],
             },
           }}
-          stepIds={[[], []]}
+          stepData={[]}
           run={createRun({})}
         />
       </TestWrapper>,
@@ -73,7 +73,7 @@ describe('DAGContent components', () => {
             container_type: 'parallel',
             steps: [],
           }}
-          stepIds={[[], []]}
+          stepData={[]}
           run={createRun({})}
         />
       </TestWrapper>,
