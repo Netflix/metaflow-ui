@@ -25,6 +25,7 @@
     "prettier": "^2.0.5",
     "query-string": "^6.13.1",
     "react": "^16.13.1",
+    "react-custom-scrollbars-2": "^4.4.0",
     "react-dom": "^16.13.1",
     "react-ga": "^3.3.0",
     "react-i18next": "^11.7.0",
@@ -38,14 +39,14 @@
     "typescript": "^4.2.3",
     "use-debounce": "^5.0.0",
     "use-is-in-viewport": "^1.0.9",
-    "use-query-params": "^1.1.6",
+    "use-query-params": "1.1.6",
     "uuid": "^8.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:coverage": "CI=true react-scripts test --env=jsdom --coverage",
+    "start": "DISABLE_NEW_JSX_TRANSFORM=true react-scripts start",
+    "build": "DISABLE_NEW_JSX_TRANSFORM=true react-scripts build",
+    "test": "DISABLE_NEW_JSX_TRANSFORM=true react-scripts test",
+    "test:coverage": "DISABLE_NEW_JSX_TRANSFORM=true CI=true react-scripts test --env=jsdom --coverage",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "eject": "react-scripts eject",
     "format": "prettier --write src"

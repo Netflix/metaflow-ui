@@ -1,4 +1,5 @@
 import { FeatureFlags } from './utils/FEATURE';
+import { toRelativeSize } from './utils/style';
 
 declare global {
   interface Window {
@@ -29,3 +30,4 @@ export const apiHttp = (path: string): string => formatUrl(METAFLOW_SERVICE, pat
 export const apiWs = (path: string): string => formatUrl(METAFLOW_SERVICE_WS, path);
 
 export const HEADER_SIZE_PX = 112;
+export const HEADER_SIZE_REM = toRelativeSize(112 / 16);

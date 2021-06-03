@@ -64,7 +64,7 @@ export default function useSearchRequest({
   const searchKv = parseSearchValue(searchValue);
   useWebsocketRequest<SearchResult>({
     url,
-    queryParams: searchKv !== null ? ((searchKv as unknown) as Record<string, string>) : {},
+    queryParams: searchKv !== null ? (searchKv as unknown as Record<string, string>) : {},
     enabled: searchKv !== null && enabled,
     onConnecting,
     onUpdate,

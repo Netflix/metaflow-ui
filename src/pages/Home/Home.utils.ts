@@ -127,46 +127,50 @@ const shouldUseTiebreaker = (
 };
 
 // Generic string sorting
-export const strSort = (dir: DirectionText, key: string) => (a: Run, b: Run): number => {
-  const val1 = dir === 'up' ? a[key as keyof Run] : b[key as keyof Run];
-  const val2 = dir === 'up' ? b[key as keyof Run] : a[key as keyof Run];
+export const strSort =
+  (dir: DirectionText, key: string) =>
+  (a: Run, b: Run): number => {
+    const val1 = dir === 'up' ? a[key as keyof Run] : b[key as keyof Run];
+    const val2 = dir === 'up' ? b[key as keyof Run] : a[key as keyof Run];
 
-  // Only use ts_epoch tiebreaker with flow_id or user
-  if (shouldUseTiebreaker(val1, val2, key)) {
-    return nmbSort('down', 'ts_epoch')(a, b);
-  }
+    // Only use ts_epoch tiebreaker with flow_id or user
+    if (shouldUseTiebreaker(val1, val2, key)) {
+      return nmbSort('down', 'ts_epoch')(a, b);
+    }
 
-  if (typeof val1 === 'string' && typeof val2 === 'string') {
-    return val1.toUpperCase() > val2.toUpperCase() ? 1 : val1.toUpperCase() < val2.toUpperCase() ? -1 : 0;
-  } else if (typeof val1 === 'string') {
-    return -1;
-  } else if (typeof val2 === 'string') {
-    return 1;
-  }
+    if (typeof val1 === 'string' && typeof val2 === 'string') {
+      return val1.toUpperCase() > val2.toUpperCase() ? 1 : val1.toUpperCase() < val2.toUpperCase() ? -1 : 0;
+    } else if (typeof val1 === 'string') {
+      return -1;
+    } else if (typeof val2 === 'string') {
+      return 1;
+    }
 
-  return 0;
-};
+    return 0;
+  };
 
 // Generic number sorting
-export const nmbSort = (dir: DirectionText, key: string) => (a: Run, b: Run): number => {
-  const val1 = dir === 'up' ? a[key as keyof Run] : b[key as keyof Run];
-  const val2 = dir === 'up' ? b[key as keyof Run] : a[key as keyof Run];
+export const nmbSort =
+  (dir: DirectionText, key: string) =>
+  (a: Run, b: Run): number => {
+    const val1 = dir === 'up' ? a[key as keyof Run] : b[key as keyof Run];
+    const val2 = dir === 'up' ? b[key as keyof Run] : a[key as keyof Run];
 
-  // Only use ts_epoch tiebreaker with flow_id or user
-  if (shouldUseTiebreaker(val1, val2, key)) {
-    return nmbSort(dir, 'ts_epoch')(a, b);
-  }
+    // Only use ts_epoch tiebreaker with flow_id or user
+    if (shouldUseTiebreaker(val1, val2, key)) {
+      return nmbSort(dir, 'ts_epoch')(a, b);
+    }
 
-  if (typeof val1 === 'number' && typeof val2 === 'number') {
-    return val1 - val2;
-  } else if (typeof val1 === 'number') {
-    return -1;
-  } else if (typeof val2 === 'number') {
-    return 1;
-  }
+    if (typeof val1 === 'number' && typeof val2 === 'number') {
+      return val1 - val2;
+    } else if (typeof val1 === 'number') {
+      return -1;
+    } else if (typeof val2 === 'number') {
+      return 1;
+    }
 
-  return 0;
-};
+    return 0;
+  };
 
 //
 // We sort list on client side as well so we can align websocket updates properly

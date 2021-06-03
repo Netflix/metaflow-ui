@@ -1,12 +1,11 @@
 import React from 'react';
 import Task from '..';
 import { render } from '@testing-library/react';
-import TestWrapper, { mockfetch } from '../../../utils/testing';
+import TestWrapper from '../../../utils/testing';
 import { Run } from '../../../types';
 import WS from 'jest-websocket-mock';
 import useSeachField from '../../../hooks/useSearchField';
 import useTaskListSettings from '../../../components/Timeline/useTaskListSettings';
-import { createDataModel, createTask } from '../../../utils/testhelper';
 
 const run: Run = {
   flow_id: 'string',
@@ -44,7 +43,7 @@ describe('Task page', () => {
             taskStatus="Ok"
             paramsString=""
             isAnyGroupOpen={true}
-            counts={{ all: 0, completed: 0, failed: 0, running: 0 }}
+            counts={{ all: 0, completed: 0, failed: 0, running: 0, unknown: 0 }}
             onModeSelect={setMode}
             setQueryParam={setQueryParam}
           />

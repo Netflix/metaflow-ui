@@ -46,7 +46,7 @@ describe('TaskListingHeader component', () => {
         isCustomEnabled: false,
         group: true,
         statusFilter: null,
-        sort: ['startTime', 'asc']
+        sort: ['startTime', 'asc'],
       }),
     ).toBe('overview');
     expect(
@@ -55,7 +55,7 @@ describe('TaskListingHeader component', () => {
         isCustomEnabled: false,
         group: false,
         statusFilter: null,
-        sort: ['startTime', 'desc']
+        sort: ['startTime', 'desc'],
       }),
     ).toBe('monitoring');
     expect(
@@ -64,7 +64,7 @@ describe('TaskListingHeader component', () => {
         isCustomEnabled: false,
         group: true,
         statusFilter: 'failed',
-        sort: ['startTime', 'asc']
+        sort: ['startTime', 'asc'],
       }),
     ).toBe('error-tracker');
     // Random settings -> custom
@@ -74,7 +74,7 @@ describe('TaskListingHeader component', () => {
         isCustomEnabled: false,
         group: false,
         statusFilter: 'running',
-        sort: ['endTime', 'asc']
+        sort: ['endTime', 'asc'],
       }),
     ).toBe('custom');
   });

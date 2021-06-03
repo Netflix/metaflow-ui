@@ -59,9 +59,11 @@ const FilterInput: React.FC<FilterInputProps> = ({
   const inputEl = useRef<HTMLInputElement>(null);
   const autoCEnabled = autoCompleteSettings ? (autoCompleteEnabled ? autoCompleteEnabled(val) : true) : false;
 
-  const { result: autoCompleteResult, reset: resetAutocomplete, refetch: refetchAutocomplete } = useAutoComplete<
-    string
-  >(
+  const {
+    result: autoCompleteResult,
+    reset: resetAutocomplete,
+    refetch: refetchAutocomplete,
+  } = useAutoComplete<string>(
     autoCompleteSettings
       ? {
           ...autoCompleteSettings,

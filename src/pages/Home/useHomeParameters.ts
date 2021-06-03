@@ -21,9 +21,9 @@ const ParameterSettings = {
 
 type ParametersMap = DecodedValueMap<typeof ParameterSettings>;
 
-function useHomeParameters(
-  onUpdate: (params: Record<string, string>) => void,
-): { setQp: SetQuery<typeof ParameterSettings> } {
+function useHomeParameters(onUpdate: (params: Record<string, string>) => void): {
+  setQp: SetQuery<typeof ParameterSettings>;
+} {
   const [qp, setQp] = useQueryParams(ParameterSettings);
 
   useEffect(() => {

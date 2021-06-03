@@ -88,7 +88,11 @@ const Task: React.FC<TaskViewProps> = ({
   //
   // Task/attempt data
   //
-  const { data: tasksFromFetch, status, error } = useResource<ITask[], ITask>({
+  const {
+    data: tasksFromFetch,
+    status,
+    error,
+  } = useResource<ITask[], ITask>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts?postprocess=true`,
     subscribeToEvents: true,
     initialData: null,

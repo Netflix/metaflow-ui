@@ -11,6 +11,8 @@ import FilterInput from '../../../components/FilterInput';
 
 import FEATURE from '../../../utils/FEATURE';
 import { isDefaultParams, paramList } from '../Home.utils';
+import { HEADER_SIZE_REM } from '../../../constants';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 type Props = {
   // Update queryparameter
@@ -36,135 +38,143 @@ const HomeSidebar: React.FC<Props> = ({
 
   return (
     <Sidebar className="sidebar">
-      {FEATURE.RUN_GROUPS && (
-        <DropdownWrapper>
-          <DropdownField
-            horizontal
-            label={t('filters.group-by')}
-            noMinWidth
-            value={params._group || ''}
-            onChange={(e) => e && handleParamChange('_group', e.target.value)}
-            options={[
-              ['', t('fields.group.none')],
-              ['flow_id', t('fields.group.flow')],
-              ['user', t('fields.group.user')],
-            ]}
-          />
-        </DropdownWrapper>
-      )}
+      {/* Add sidebar size to be 100% viewheight - (header size + 1 rem for padding) */}
+      <Scrollbars
+        style={{ height: `calc(100vh - ${HEADER_SIZE_REM + 1}rem)`, width: '15rem', paddingTop: '0.25rem' }}
+        autoHide
+      >
+        <SidebarContent>
+          {FEATURE.RUN_GROUPS && (
+            <DropdownWrapper>
+              <DropdownField
+                horizontal
+                label={t('filters.group-by')}
+                noMinWidth
+                value={params._group || ''}
+                onChange={(e) => e && handleParamChange('_group', e.target.value)}
+                options={[
+                  ['', t('fields.group.none')],
+                  ['flow_id', t('fields.group.flow')],
+                  ['user', t('fields.group.user')],
+                ]}
+              />
+            </DropdownWrapper>
+          )}
 
-      <Section>
-        <SectionHeader>{t('fields.status')}</SectionHeader>
-        <StatusCheckboxField
-          label={t('filters.running')}
-          value="running"
-          activeStatus={params.status}
-          updateField={updateListValue}
-        />
-        <StatusCheckboxField
-          label={t('filters.failed')}
-          value="failed"
-          activeStatus={params.status}
-          updateField={updateListValue}
-        />
-        <StatusCheckboxField
-          label={t('filters.completed')}
-          value="completed"
-          activeStatus={params.status}
-          updateField={updateListValue}
-        />
-      </Section>
+          <Section>
+            <SectionHeader>{t('fields.status')}</SectionHeader>
+            <StatusCheckboxField
+              label={t('filters.running')}
+              value="running"
+              activeStatus={params.status}
+              updateField={updateListValue}
+            />
+            <StatusCheckboxField
+              label={t('filters.failed')}
+              value="failed"
+              activeStatus={params.status}
+              updateField={updateListValue}
+            />
+            <StatusCheckboxField
+              label={t('filters.completed')}
+              value="completed"
+              activeStatus={params.status}
+              updateField={updateListValue}
+            />
+          </Section>
 
-      <ParametersWrapper>
-        <FilterInput
-          onSubmit={(v) => updateListValue('flow_id', v)}
-          sectionLabel={t('fields.flow')}
-          autoCompleteSettings={{
-            url: '/flows/autocomplete',
-            params: (str) => ({ 'flow_id:co': str }),
-          }}
-        />
-        <TagParameterList paramKey="flow_id" updateList={updateListValue} value={params.flow_id} />
-      </ParametersWrapper>
+          <ParametersWrapper>
+            <FilterInput
+              onSubmit={(v) => updateListValue('flow_id', v)}
+              sectionLabel={t('fields.flow')}
+              autoCompleteSettings={{
+                url: '/flows/autocomplete',
+                params: (str) => ({ 'flow_id:co': str }),
+              }}
+            />
+            <TagParameterList paramKey="flow_id" updateList={updateListValue} value={params.flow_id} />
+          </ParametersWrapper>
 
-      <ParametersWrapper>
-        <FilterInput
-          onSubmit={(v) => updateListValue('_tags', v.startsWith('project:') ? v : `project:${v}`)}
-          sectionLabel={t('fields.project')}
-          autoCompleteSettings={{
-            url: '/tags/autocomplete',
-            params: (input: string) => ({ 'tag:li': `project:%${input}%` }),
-          }}
-        />
-        <TagParameterList
-          paramKey="_tags"
-          mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
-          mapValue={(x) => `project:${x}`}
-          updateList={updateListValue}
-          value={params._tags}
-        />
-      </ParametersWrapper>
+          <ParametersWrapper>
+            <FilterInput
+              onSubmit={(v) => updateListValue('_tags', v.startsWith('project:') ? v : `project:${v}`)}
+              sectionLabel={t('fields.project')}
+              autoCompleteSettings={{
+                url: '/tags/autocomplete',
+                params: (input: string) => ({ 'tag:li': `project:%${input}%` }),
+              }}
+            />
+            <TagParameterList
+              paramKey="_tags"
+              mapList={(xs) => xs.filter((x) => x.startsWith('project:')).map((x) => x.substr('project:'.length))}
+              mapValue={(x) => `project:${x}`}
+              updateList={updateListValue}
+              value={params._tags}
+            />
+          </ParametersWrapper>
 
-      <ParametersWrapper>
-        <FilterInput
-          onSubmit={(v) => updateListValue('_tags', v.startsWith('project_branch:') ? v : `project_branch:${v}`)}
-          sectionLabel={t('fields.branch')}
-          autoCompleteSettings={{
-            url: '/tags/autocomplete',
-            params: (input: string) => ({ 'tag:li': `project_branch:%${input}%` }),
-          }}
-        />
-        <TagParameterList
-          paramKey="_tags"
-          mapList={(xs) =>
-            xs.filter((x) => x.startsWith('project_branch:')).map((x) => x.substr('project_branch:'.length))
-          }
-          mapValue={(x) => `project_branch:${x}`}
-          updateList={updateListValue}
-          value={params._tags}
-        />
-      </ParametersWrapper>
+          <ParametersWrapper>
+            <FilterInput
+              onSubmit={(v) => updateListValue('_tags', v.startsWith('project_branch:') ? v : `project_branch:${v}`)}
+              sectionLabel={t('fields.branch')}
+              autoCompleteSettings={{
+                url: '/tags/autocomplete',
+                params: (input: string) => ({ 'tag:li': `project_branch:%${input}%` }),
+              }}
+            />
+            <TagParameterList
+              paramKey="_tags"
+              mapList={(xs) =>
+                xs.filter((x) => x.startsWith('project_branch:')).map((x) => x.substr('project_branch:'.length))
+              }
+              mapValue={(x) => `project_branch:${x}`}
+              updateList={updateListValue}
+              value={params._tags}
+            />
+          </ParametersWrapper>
 
-      <ParametersWrapper>
-        <FilterInput
-          onSubmit={(v) => updateListValue('user', omitFromString('user', v))}
-          sectionLabel={t('fields.user')}
-          autoCompleteSettings={{
-            url: '/tags/autocomplete',
-            params: (input: string) => ({ 'tag:li': `user:%${input}%` }),
-          }}
-        />
-        <TagParameterList
-          paramKey="user"
-          updateList={updateListValue}
-          value={params.user ? params.user.replace('null', 'None') : ''}
-        />
-      </ParametersWrapper>
+          <ParametersWrapper>
+            <FilterInput
+              onSubmit={(v) => updateListValue('user', omitFromString('user', v))}
+              sectionLabel={t('fields.user')}
+              autoCompleteSettings={{
+                url: '/tags/autocomplete',
+                params: (input: string) => ({ 'tag:li': `user:%${input}%` }),
+              }}
+            />
+            <TagParameterList
+              paramKey="user"
+              updateList={updateListValue}
+              value={params.user ? params.user.replace('null', 'None') : ''}
+            />
+          </ParametersWrapper>
 
-      <ParametersWrapper>
-        <FilterInput
-          onSubmit={(v) => updateListValue('_tags', v)}
-          sectionLabel={t('fields.tag')}
-          autoCompleteSettings={{
-            url: '/tags/autocomplete',
-            params: (input: string) => ({ 'tag:co': input }),
-          }}
-        />
-        <TagParameterList
-          paramKey="_tags"
-          mapList={(xs) => xs.filter((x) => !/^project:|project_branch:/.test(x))}
-          updateList={updateListValue}
-          value={params._tags}
-        />
-      </ParametersWrapper>
+          <ParametersWrapper>
+            <FilterInput
+              onSubmit={(v) => updateListValue('_tags', v)}
+              sectionLabel={t('fields.tag')}
+              autoCompleteSettings={{
+                url: '/tags/autocomplete',
+                params: (input: string) => ({ 'tag:co': input }),
+              }}
+            />
+            <TagParameterList
+              paramKey="_tags"
+              mapList={(xs) => xs.filter((x) => !/^project:|project_branch:/.test(x))}
+              updateList={updateListValue}
+              value={params._tags}
+            />
+          </ParametersWrapper>
 
-      {!defaultFiltersActive && (
-        <div>
-          <ButtonResetAll size="sm" onClick={() => resetAllFilters()} disabled={isDefaultParams(params)}>
-            <Text>{t('filters.reset-all')}</Text>
-          </ButtonResetAll>
-        </div>
-      )}
+          {!defaultFiltersActive && (
+            <div>
+              <ButtonResetAll size="sm" onClick={() => resetAllFilters()} disabled={isDefaultParams(params)}>
+                <Text>{t('filters.reset-all')}</Text>
+              </ButtonResetAll>
+            </div>
+          )}
+        </SidebarContent>
+      </Scrollbars>
     </Sidebar>
   );
 };
@@ -196,6 +206,11 @@ const Sidebar = styled.div`
   top: ${(p) => p.theme.layout.appbarHeight}rem;
   font-size: 0.875rem;
   padding-top: 6px;
+`;
+
+const SidebarContent = styled.div`
+  margin-top: 0.25rem;
+  width: 14rem;
 `;
 
 const DropdownWrapper = styled.div`

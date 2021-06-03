@@ -1,8 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from 'styled-components';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route } from 'react-router-dom';
 import './i18n';
 import theme from '../theme';
+import { QueryParamProvider } from 'use-query-params';
 
 export const mockfetch = jest.fn(() =>
   Promise.resolve({
@@ -18,7 +19,9 @@ export const mockfetch = jest.fn(() =>
 const TestWrapper: React.FC<{ route?: string }> = ({ children, route = '/' }) => {
   return (
     <ThemeProvider theme={theme}>
-      <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
+      <MemoryRouter initialEntries={[route]}>
+        <QueryParamProvider ReactRouterRoute={Route}>{children}</QueryParamProvider>
+      </MemoryRouter>
     </ThemeProvider>
   );
 };
