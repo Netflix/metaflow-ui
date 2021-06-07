@@ -17,7 +17,6 @@ import ErrorBoundary from './components/GeneralErrorBoundary';
 import { TimezoneProvider } from './components/TimezoneProvider';
 import FeatureFlagLoader from './components/FeatureLoader';
 import Logger from './components/Logger';
-import AutoScrollTop from './utils/AutoScrollTop';
 
 import { fetchServiceVersion } from './utils/VERSION';
 import { fetchFeaturesConfig } from './utils/FEATURE';
@@ -46,7 +45,6 @@ const App: React.FC = () => {
           <TimezoneProvider>
             <GlobalStyle />
             <Router>
-              <AutoScrollTop />
               <QueryParamProvider ReactRouterRoute={Route}>
                 {flagsReceived ? (
                   <>

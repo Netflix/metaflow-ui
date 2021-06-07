@@ -11,9 +11,49 @@ import useHomeParameters, { defaultHomeParameters } from './useHomeParameters';
 import HomeReducer from './Home.state';
 import { isGrouping, makeActiveRequestParameters, makeWebsocketParameters, paramList } from './Home.utils';
 import ScrollToTop from './ScrollToTop';
+import { useHistory } from 'react-router';
+
+type HomeCache = {
+  active: boolean;
+  data: Record<string, IRun[]>;
+  scroll: number;
+  page: number;
+};
+
+const HomeStateCache: HomeCache = {
+  active: false,
+  data: {},
+  scroll: 0,
+  page: 1,
+};
 
 const Home: React.FC = () => {
   const { t } = useTranslation();
+
+  const { action: historyAction } = useHistory();
+
+  useEffect(() => {
+    HomeStateCache.active = false;
+  }, []);
+
+  //
+  // QueryParams
+  //
+
+  const { setQp, params: rawParams } = useHomeParameters();
+  const defaultFiltersActive = JSON.stringify(defaultHomeParameters) === JSON.stringify(rawParams);
+  const resetAllFilters = useCallback(() => {
+    // Reseting filter still keeps grouping settings as before.
+    setQp({ ...defaultHomeParameters }, 'replace');
+  }, [setQp]);
+  const rawParamsString = JSON.stringify(rawParams);
+  useEffect(() => {
+    dispatch({
+      type: 'setParams',
+      params: rawParams,
+      cachedResult: historyAction === 'POP' && !HomeStateCache.active && HomeStateCache.scroll > 0,
+    });
+  }, [rawParamsString]); // eslint-disable-line
 
   //
   // State
@@ -26,27 +66,30 @@ const Home: React.FC = () => {
     initialised: false,
     showLoader: true,
     isLastPage: false,
-    page: 1,
-    rungroups: {},
+    page: historyAction === 'POP' ? HomeStateCache.page : 1,
+    rungroups: historyAction === 'POP' ? HomeStateCache.data : {},
     newRuns: [],
-    params: defaultHomeParameters,
+    params: rawParams || defaultHomeParameters,
     placeHolderParameters: null,
-    isScrolledFromTop: false,
+    isScrolledFromTop: historyAction === 'POP' && HomeStateCache.scroll > 100,
   });
 
   //
-  // QueryParams
+  // Cache
   //
 
-  const onParametersUpdate = useCallback((activeParams) => {
-    dispatch({ type: 'setParams', params: activeParams });
-  }, []);
-  const { setQp } = useHomeParameters(onParametersUpdate);
-  const defaultFiltersActive = JSON.stringify(defaultHomeParameters) === JSON.stringify(params);
-  const resetAllFilters = useCallback(() => {
-    // Reseting filter still keeps grouping settings as before.
-    setQp({ ...defaultHomeParameters }, 'replace');
-  }, [setQp]);
+  useEffect(() => {
+    const scrollValue = HomeStateCache.scroll;
+    if (historyAction === 'POP' && scrollValue > 0 && initialised) {
+      HomeStateCache.active = true;
+    } else if (historyAction !== 'POP' || scrollValue === 0) {
+      HomeStateCache.active = true;
+    }
+  }, [historyAction, initialised]);
+
+  useEffect(() => {
+    HomeStateCache.page = page;
+  }, [page]);
 
   //
   // Data
@@ -89,6 +132,10 @@ const Home: React.FC = () => {
       }
     },
   });
+
+  useEffect(() => {
+    HomeStateCache.data = rungroups;
+  }, [rungroups]);
 
   //
   // Event Handlers
@@ -154,13 +201,6 @@ const Home: React.FC = () => {
     }
   }, [params, resetAllFilters]);
 
-  // Jump to page 1 if we change filters
-  useEffect(() => {
-    if (page !== 1) {
-      dispatch({ type: 'setPage', page: 1 });
-    }
-  }, [params.flow_id, params._tags, params.status, params._group]); // eslint-disable-line
-
   //
   // Scroll status
   //
@@ -170,6 +210,9 @@ const Home: React.FC = () => {
         dispatch({ type: 'setScroll', isScrolledFromTop: true });
       } else if (window.scrollY <= 100 && isScrolledFromTop) {
         dispatch({ type: 'setScroll', isScrolledFromTop: false });
+      }
+      if (HomeStateCache.active) {
+        HomeStateCache.scroll = window.scrollY;
       }
     };
 

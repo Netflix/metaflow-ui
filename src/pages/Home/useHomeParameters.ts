@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { DecodedValueMap, SetQuery, StringParam, useQueryParams, withDefault } from 'use-query-params';
 
 export const defaultHomeParameters = {
@@ -21,24 +20,22 @@ const ParameterSettings = {
 
 type ParametersMap = DecodedValueMap<typeof ParameterSettings>;
 
-function useHomeParameters(onUpdate: (params: Record<string, string>) => void): {
-  setQp: SetQuery<typeof ParameterSettings>;
-} {
+function useHomeParameters(): { setQp: SetQuery<typeof ParameterSettings>; params: Record<string, string> } {
   const [qp, setQp] = useQueryParams(ParameterSettings);
-
-  useEffect(() => {
-    const activeParams = cleanParams(qp);
-    // If we are grouping, we should have max 6 in one group.
-    activeParams._group_limit = activeParams._group ? '6' : defaultHomeParameters._group_limit;
-    onUpdate(activeParams);
-  }, [qp, onUpdate]);
-
-  return { setQp };
+  const params = makeParams(qp);
+  return { setQp, params };
 }
 
 //
 // Helper functions
 //
+
+function makeParams(qp: ParametersMap): Record<string, string> {
+  const activeParams = cleanParams(qp);
+  // If we are grouping, we should have max 6 in one group.
+  activeParams._group_limit = activeParams._group ? '6' : defaultHomeParameters._group_limit;
+  return activeParams;
+}
 
 //
 // Make sure that params object is type of Record<string, string>

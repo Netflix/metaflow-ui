@@ -34,7 +34,7 @@ type HomeAction =
   | { type: 'setLastPage'; isLast: boolean }
   | { type: 'data'; data: Run[]; replace: boolean; isLastPage?: boolean }
   | { type: 'realtimeData'; data: Run[] }
-  | { type: 'setParams'; params: Record<string, string> }
+  | { type: 'setParams'; params: Record<string, string>; cachedResult: boolean }
   | { type: 'groupReset' }
   | { type: 'setScroll'; isScrolledFromTop: boolean };
 
@@ -47,14 +47,21 @@ const HomeReducer = (state: HomeState, action: HomeAction): HomeState => {
     case 'setLoader':
       return { ...state, showLoader: action.show };
     case 'setParams': {
+      const shouldGoToPageOne =
+        state.params.flow_id !== action.params.flow_id ||
+        state.params._tags !== action.params._tags ||
+        state.params.status !== action.params.status ||
+        state.params._group !== action.params._group;
       const reordering = state.params._order !== action.params._order && state.page > 1;
+
       return {
         ...state,
         params: action.params,
-        placeHolderParameters: reordering
-          ? { _limit: String(parseInt(action.params._limit) * state.page), _page: '1' }
-          : null,
-        page: reordering ? state.page : 1,
+        placeHolderParameters:
+          reordering || action.cachedResult
+            ? { _limit: String(parseInt(action.params._limit) * state.page), _page: '1' }
+            : null,
+        page: action.cachedResult ? state.page : shouldGoToPageOne ? 1 : reordering ? state.page : 1,
         showLoader: true,
         initialised: true,
       };
