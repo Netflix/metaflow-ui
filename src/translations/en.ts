@@ -247,6 +247,10 @@ const en = {
     component: {
       show: 'Show',
       hide: 'Hide',
+      startTime: 'Start time',
+      endTime: 'End time',
+      cancel: 'Cancel',
+      set: 'Set',
     },
   },
 };

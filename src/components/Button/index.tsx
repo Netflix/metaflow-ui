@@ -152,7 +152,7 @@ export const BigButton = styled(Button)`
   line-height: 1.875rem;
   font-size: 0.875rem;
   white-space: nowrap;
-  border-color: ${(p) => p.theme.color.bg.blue};
+
   padding-left: 0.75rem;
   padding-right: 0.75rem;
   &:hover {

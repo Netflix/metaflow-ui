@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
 import { ReactComponent as Timeline } from '../../assets/timeline.svg';
@@ -37,47 +37,9 @@ import { ReactComponent as ToTopArrow } from '../../assets/to_top_arrow.svg';
 import { ReactComponent as ArrowPointTop } from '../../assets/arrow-point-up.svg';
 import { ReactComponent as RowLoader } from '../../assets/row-loader.svg';
 import { ReactComponent as Plugin } from '../../assets/plugin.svg';
+import { ReactComponent as Calendar } from '../../assets/calendar.svg';
 
-export type SupportedIcons = {
-  timeline: FunctionComponent;
-  arrowDown: FunctionComponent;
-  times: FunctionComponent;
-  plus: FunctionComponent;
-  minus: FunctionComponent;
-  sort: FunctionComponent;
-  check: FunctionComponent;
-  pen: FunctionComponent;
-  search: FunctionComponent;
-  ellipsis: FunctionComponent;
-  return: FunctionComponent;
-  maximize: FunctionComponent;
-  collapse: FunctionComponent;
-  expand: FunctionComponent;
-  listing: FunctionComponent;
-  enter: FunctionComponent;
-  questionCircled: FunctionComponent;
-  listItemNotFound: FunctionComponent;
-  listNotFound: FunctionComponent;
-  noDag: FunctionComponent;
-  noData: FunctionComponent;
-  searchNotFound: FunctionComponent;
-  danger: FunctionComponent;
-  success: FunctionComponent;
-  info: FunctionComponent;
-  infoSmall: FunctionComponent;
-  infoThick: FunctionComponent;
-  warning: FunctionComponent;
-  warningThick: FunctionComponent;
-  external: FunctionComponent;
-  copy: FunctionComponent;
-  download: FunctionComponent;
-  toTopArrow: FunctionComponent;
-  arrowPointTop: FunctionComponent;
-  rowLoader: FunctionComponent;
-  plugin: FunctionComponent;
-};
-
-const icons: SupportedIcons = {
+const icons = {
   timeline: Timeline,
   arrowDown: ArrowDown,
   times: Times,
@@ -114,7 +76,10 @@ const icons: SupportedIcons = {
   arrowPointTop: ArrowPointTop,
   rowLoader: RowLoader,
   plugin: Plugin,
+  calendar: Calendar,
 };
+
+export type SupportedIcons = typeof icons;
 
 export type IconKeys = keyof SupportedIcons;
 

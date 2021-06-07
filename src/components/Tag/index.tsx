@@ -49,7 +49,7 @@ export const RemovableTag: React.FC<{ className?: string; onClick: () => void }>
   children,
   onClick,
 }) => (
-  <Tag onClick={onClick} className={className} highlighted>
+  <Tag onClick={onClick} className={`removable-tag  ${className}`} highlighted>
     {children}
     <Icon name="times" padLeft />
   </Tag>

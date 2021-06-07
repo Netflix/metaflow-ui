@@ -2,15 +2,16 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { CheckboxField, DropdownField } from '../../../components/Form';
-import { Section, SectionHeader } from '../../../components/Structure';
+import { DropdownField } from '../../../components/Form';
 import Button from '../../../components/Button';
 import { Text } from '../../../components/Text';
-import { RemovableTag } from '../../../components/Tag';
 import FilterInput from '../../../components/FilterInput';
 
 import FEATURE from '../../../utils/FEATURE';
-import { isDefaultParams, paramList } from '../Home.utils';
+import SidebarStatusSelection from './SidebarStatusSelection';
+import { TagParameterList } from './SidebarTags';
+import SidebarTimerangeSelection from './SidebarTimerangeSelection';
+import { isDefaultParams } from '../Home.utils';
 import { HEADER_SIZE_REM } from '../../../constants';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 
@@ -45,7 +46,7 @@ const HomeSidebar: React.FC<Props> = ({
       >
         <SidebarContent>
           {FEATURE.RUN_GROUPS && (
-            <DropdownWrapper>
+            <SidebarSectionWrapper>
               <DropdownField
                 horizontal
                 label={t('filters.group-by')}
@@ -58,32 +59,12 @@ const HomeSidebar: React.FC<Props> = ({
                   ['user', t('fields.group.user')],
                 ]}
               />
-            </DropdownWrapper>
+            </SidebarSectionWrapper>
           )}
 
-          <Section>
-            <SectionHeader>{t('fields.status')}</SectionHeader>
-            <StatusCheckboxField
-              label={t('filters.running')}
-              value="running"
-              activeStatus={params.status}
-              updateField={updateListValue}
-            />
-            <StatusCheckboxField
-              label={t('filters.failed')}
-              value="failed"
-              activeStatus={params.status}
-              updateField={updateListValue}
-            />
-            <StatusCheckboxField
-              label={t('filters.completed')}
-              value="completed"
-              activeStatus={params.status}
-              updateField={updateListValue}
-            />
-          </Section>
+          <SidebarStatusSelection updateField={updateListValue} status={params.status} />
 
-          <ParametersWrapper>
+          <SidebarSectionWrapper>
             <FilterInput
               onSubmit={(v) => updateListValue('flow_id', v)}
               sectionLabel={t('fields.flow')}
@@ -93,9 +74,9 @@ const HomeSidebar: React.FC<Props> = ({
               }}
             />
             <TagParameterList paramKey="flow_id" updateList={updateListValue} value={params.flow_id} />
-          </ParametersWrapper>
+          </SidebarSectionWrapper>
 
-          <ParametersWrapper>
+          <SidebarSectionWrapper>
             <FilterInput
               onSubmit={(v) => updateListValue('_tags', v.startsWith('project:') ? v : `project:${v}`)}
               sectionLabel={t('fields.project')}
@@ -111,9 +92,9 @@ const HomeSidebar: React.FC<Props> = ({
               updateList={updateListValue}
               value={params._tags}
             />
-          </ParametersWrapper>
+          </SidebarSectionWrapper>
 
-          <ParametersWrapper>
+          <SidebarSectionWrapper>
             <FilterInput
               onSubmit={(v) => updateListValue('_tags', v.startsWith('project_branch:') ? v : `project_branch:${v}`)}
               sectionLabel={t('fields.branch')}
@@ -131,9 +112,9 @@ const HomeSidebar: React.FC<Props> = ({
               updateList={updateListValue}
               value={params._tags}
             />
-          </ParametersWrapper>
+          </SidebarSectionWrapper>
 
-          <ParametersWrapper>
+          <SidebarSectionWrapper>
             <FilterInput
               onSubmit={(v) => updateListValue('user', omitFromString('user', v))}
               sectionLabel={t('fields.user')}
@@ -147,9 +128,15 @@ const HomeSidebar: React.FC<Props> = ({
               updateList={updateListValue}
               value={params.user ? params.user.replace('null', 'None') : ''}
             />
-          </ParametersWrapper>
+          </SidebarSectionWrapper>
 
-          <ParametersWrapper>
+          <SidebarTimerangeSelection
+            updateField={handleParamChange}
+            startTime={params.timerange_start}
+            endTime={params.timerange_end}
+          />
+
+          <SidebarSectionWrapper>
             <FilterInput
               onSubmit={(v) => updateListValue('_tags', v)}
               sectionLabel={t('fields.tag')}
@@ -164,7 +151,7 @@ const HomeSidebar: React.FC<Props> = ({
               updateList={updateListValue}
               value={params._tags}
             />
-          </ParametersWrapper>
+          </SidebarSectionWrapper>
 
           {!defaultFiltersActive && (
             <div>
@@ -192,14 +179,6 @@ const ButtonResetAll = styled(Button)`
   }
 `;
 
-const StyledRemovableTag = styled(RemovableTag)`
-  align-items: center;
-  min-height 2rem;
-  margin-right: ${(p) => p.theme.spacer.sm}rem;
-  margin-top: ${(p) => p.theme.spacer.sm}rem;
-  word-break: break-all;
-`;
-
 const Sidebar = styled.div`
   position: fixed;
   width: ${(p) => p.theme.layout.sidebarWidth}rem;
@@ -213,66 +192,8 @@ const SidebarContent = styled.div`
   width: 14rem;
 `;
 
-const DropdownWrapper = styled.div`
-  margin: 0 0 1rem;
-`;
-
-const ParametersWrapper = styled.div`
+export const SidebarSectionWrapper = styled.div`
   margin: 0 0 1rem;
 `;
 
 export default HomeSidebar;
-
-//
-// Tag list
-//
-
-type TagParameterListProps = {
-  paramKey: string;
-  mapList?: (xs: string[]) => string[];
-  mapValue?: (x: string) => string;
-  updateList: (key: string, value: string) => void;
-  value?: string;
-};
-
-const TagParameterList: React.FC<TagParameterListProps> = ({
-  paramKey,
-  mapList = (xs) => xs,
-  mapValue = (x) => x,
-  updateList,
-  value,
-}) => (
-  <>
-    {value
-      ? mapList(paramList(value)).map((x, i) => (
-          <StyledRemovableTag key={i} onClick={() => updateList(paramKey, mapValue(x))}>
-            {x}
-          </StyledRemovableTag>
-        ))
-      : null}
-  </>
-);
-
-//
-// Status field
-//
-
-type StatusFieldProps = {
-  value: string;
-  label: string;
-  updateField: (key: string, value: string) => void;
-  activeStatus?: string | null;
-};
-
-const StatusCheckboxField: React.FC<StatusFieldProps> = ({ value, label, updateField, activeStatus }) => {
-  return (
-    <CheckboxField
-      label={label}
-      className={`status-${value}`}
-      checked={!!(activeStatus && activeStatus.indexOf(value) > -1)}
-      onChange={() => {
-        updateField('status', value);
-      }}
-    />
-  );
-};

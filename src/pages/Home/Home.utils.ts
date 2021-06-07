@@ -4,7 +4,8 @@ import { DirectionText, parseOrderParam } from '../../utils/url';
 import { defaultHomeParameters } from './useHomeParameters';
 
 export function makeActiveRequestParameters(params: Record<string, string>): Record<string, string> {
-  let newParams = { ...params };
+  const { timerange_start, timerange_end, ...rest } = params;
+  let newParams = rest;
   // We want to remove groupping from request in some cases
   // 1) When grouping is flow_id and only 1 flow_id filter is active, we want to show all runs of this group
   // 2) When grouping is user and only 1 user filter is active, we want to show all runs of this group
@@ -24,6 +25,14 @@ export function makeActiveRequestParameters(params: Record<string, string>): Rec
 
   if (newParams.status && newParams.status.split(',').length === 3) {
     delete newParams.status;
+  }
+  // start time parameter will be converted to greater than or equal ts_epoch
+  if (timerange_start) {
+    newParams['ts_epoch:ge'] = timerange_start;
+  }
+  // end time parameter will be converted to lesser than or equal ts_epoch
+  if (timerange_end) {
+    newParams['ts_epoch:le'] = timerange_end;
   }
 
   return newParams;

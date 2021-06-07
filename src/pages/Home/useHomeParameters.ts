@@ -14,6 +14,8 @@ const ParameterSettings = {
   _group_limit: withDefault(StringParam, defaultHomeParameters._group_limit),
   _tags: StringParam,
   status: withDefault(StringParam, defaultHomeParameters.status),
+  timerange_start: StringParam,
+  timerange_end: StringParam,
   flow_id: StringParam,
   user: StringParam,
 };
