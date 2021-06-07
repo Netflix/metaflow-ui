@@ -64,7 +64,7 @@ const HomeSidebar: React.FC<Props> = ({
 
           <SidebarStatusSelection updateField={updateListValue} status={params.status} />
 
-          <SidebarSectionWrapper>
+          <SidebarSectionWrapper data-testid="filter-input-flow">
             <FilterInput
               onSubmit={(v) => updateListValue('flow_id', v)}
               sectionLabel={t('fields.flow')}
@@ -76,7 +76,7 @@ const HomeSidebar: React.FC<Props> = ({
             <TagParameterList paramKey="flow_id" updateList={updateListValue} value={params.flow_id} />
           </SidebarSectionWrapper>
 
-          <SidebarSectionWrapper>
+          <SidebarSectionWrapper data-testid="filter-input-project">
             <FilterInput
               onSubmit={(v) => updateListValue('_tags', v.startsWith('project:') ? v : `project:${v}`)}
               sectionLabel={t('fields.project')}
@@ -94,7 +94,7 @@ const HomeSidebar: React.FC<Props> = ({
             />
           </SidebarSectionWrapper>
 
-          <SidebarSectionWrapper>
+          <SidebarSectionWrapper data-testid="filter-input-branch">
             <FilterInput
               onSubmit={(v) => updateListValue('_tags', v.startsWith('project_branch:') ? v : `project_branch:${v}`)}
               sectionLabel={t('fields.branch')}
@@ -114,7 +114,7 @@ const HomeSidebar: React.FC<Props> = ({
             />
           </SidebarSectionWrapper>
 
-          <SidebarSectionWrapper>
+          <SidebarSectionWrapper data-testid="filter-input-user">
             <FilterInput
               onSubmit={(v) => updateListValue('user', omitFromString('user', v))}
               sectionLabel={t('fields.user')}
@@ -136,7 +136,7 @@ const HomeSidebar: React.FC<Props> = ({
             endTime={params.timerange_end}
           />
 
-          <SidebarSectionWrapper>
+          <SidebarSectionWrapper data-testid="filter-input-tag">
             <FilterInput
               onSubmit={(v) => updateListValue('_tags', v)}
               sectionLabel={t('fields.tag')}

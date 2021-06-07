@@ -103,6 +103,7 @@ export const Dropdown: React.FC<
                       }
                       setOpen(false);
                     }}
+                    data-testid={`option-${o[0]}`}
                   >
                     {optionRenderer ? optionRenderer(o[0], o[1]) : o[1]}
                   </DropdownOption>

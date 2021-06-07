@@ -106,13 +106,13 @@ const Notifications: React.FC = () => {
           )}
 
           {status === 'Ok' && (
-            <div>
+            <div data-testId={'notification-results'}>
               {combinedArray.map((announcement) => {
                 if (announcement.type === 'header') {
                   return <AnnouncementHeader key={announcement.id}>{announcement.message}</AnnouncementHeader>;
                 } else {
                   return (
-                    <AnnouncementWrapper key={announcement.id}>
+                    <AnnouncementWrapper data-testId={'notification-result'} key={announcement.id}>
                       <IconWrapper>
                         <Icon name="warningThick" size="md" />
                       </IconWrapper>

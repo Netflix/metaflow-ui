@@ -2,6 +2,7 @@
 
 - [Deployment](deployment.md)
 - [Styles](styles.md)
+- [Tests](tests.md)
 
 ## Getting started
 
@@ -23,12 +24,6 @@ $ REACT_APP_METAFLOW_SERVICE=http://localhost:8083 yarn start
 
 # Modify Websocket endpoint (default: same as API with /ws suffix)
 $ REACT_APP_METAFLOW_SERVICE_WS=ws://localhost:8083 yarn start
-```
-
-Launch the test runner in the interactive watch mode.
-
-```bash
-$ yarn test
 ```
 
 Build the app for production to the `build` folder.

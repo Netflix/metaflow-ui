@@ -104,7 +104,7 @@ const ResultGroup: React.FC<Props> = React.memo(
     const rowsToRender = rows.slice(0, targetCount);
 
     return (
-      <StyledResultGroup ref={targetRef}>
+      <StyledResultGroup ref={targetRef} data-testid="result-group">
         <Table cellPadding="0" cellSpacing="0" ref={tableRef} style={{ position: 'relative', zIndex: 1 }}>
           {isInViewport ? <StickyHeader tableRef={tableRef}>{tableHeader}</StickyHeader> : <thead>{tableHeader}</thead>}
           <tbody>

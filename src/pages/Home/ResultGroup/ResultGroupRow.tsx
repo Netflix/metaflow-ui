@@ -73,6 +73,7 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
   return (
     <>
       <StyledTR
+        data-testid="result-group-row"
         clickable
         stale={isStale}
         active={visible}
