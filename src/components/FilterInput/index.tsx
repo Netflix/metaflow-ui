@@ -5,7 +5,8 @@ import Icon, { IconKeys, IconSizes } from '../Icon';
 import AutoComplete from '../AutoComplete';
 import { AsyncStatus } from '../../types';
 import { InputLabel } from '../Form/InputLabel';
-import { isFirefox } from '../../utils/browser';
+import InputWrapper from '../Form/InputWrapper';
+import InputTip from '../Form/InputTip';
 
 //
 // Typedef
@@ -52,11 +53,10 @@ const FilterInput: React.FC<FilterInputProps> = ({
   noClear = false,
   status = 'Ok',
   tip,
-  inputType = 'text',
   errorMsg,
 }) => {
   const [hasFocus, setHasFocus] = useState(false);
-  const [val, setVal] = useState(getInitialValue(inputType, initialValue));
+  const [val, setVal] = useState(initialValue);
   const [autoCompleteOpen, setAutoCompleteOpen] = useState(false);
   const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
   const inputEl = useRef<HTMLInputElement>(null);
@@ -96,7 +96,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
   }, [hasFocus, autoCompleteOpen, resetAutocomplete]);
 
   return (
-    <FilterInputWrapper
+    <InputWrapper
       status={status}
       active={hasFocus}
       onClick={() => {
@@ -104,14 +104,14 @@ const FilterInput: React.FC<FilterInputProps> = ({
       }}
     >
       {sectionLabel && (
-        <InputLabel active={hasFocus || val !== '' || inputType === 'datetime-local'} status={status}>
+        <InputLabel active={hasFocus || val !== ''} status={status}>
           {sectionLabel}
         </InputLabel>
       )}
       <FilterInputContainer>
         <input
           data-testid="filter-input-field"
-          type={inputType}
+          type="text"
           ref={inputEl}
           value={val}
           autoFocus={autoFocus}
@@ -151,7 +151,6 @@ const FilterInput: React.FC<FilterInputProps> = ({
           onBlur={() => {
             setHasFocus(false);
           }}
-          {...getInputProps(inputType)}
         />
         <SubmitIconHolder
           data-testid="filter-input-submit-button"
@@ -163,10 +162,6 @@ const FilterInput: React.FC<FilterInputProps> = ({
               if (!noClear) {
                 setVal('');
               }
-              // Currently it feels more natural to keep the focus on the input when adding tags
-              // Enable these if user feedback suggets that more conventional behaviour is wanted
-              // setHasFocus(false);
-              // inputEl.current.blur();
             }
           }}
         >
@@ -178,7 +173,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
           )}
         </SubmitIconHolder>
 
-        {tip && <Tip visible={hasFocus && val === ''}>{tip}</Tip>}
+        {tip && <InputTip visible={hasFocus && val === ''}>{tip}</InputTip>}
       </FilterInputContainer>
       {autoCompleteOpen && autoCompleteResult.data.length > 0 && val !== '' && autoCEnabled && (
         <AutoComplete
@@ -201,74 +196,13 @@ const FilterInput: React.FC<FilterInputProps> = ({
       )}
 
       {status === 'Error' && errorMsg && <ErrorMsgContainer title={errorMsg}>{errorMsg}</ErrorMsgContainer>}
-    </FilterInputWrapper>
+    </InputWrapper>
   );
 };
 
 //
-// Utils
-//
-
-function getInitialValue(inputType: string, initialValue: string) {
-  // Firefox doesnt support datetime-local so need to transform input to date
-  if (inputType === 'datetime-local' && isFirefox && initialValue) {
-    return initialValue.replace('T', ' ');
-  }
-  return initialValue;
-}
-
-function getInputProps(inputType: string): Record<string, string | number> {
-  if (inputType === 'date' || inputType === 'datetime-local') {
-    return { max: '9999-12-31T23:59' };
-  }
-  return {};
-}
-
-//
 // Styles
 //
-
-const FilterInputWrapper = styled.section<{ active: boolean; status: AsyncStatus }>`
-  align-items: center;
-  border: ${(p) => (p.status === 'Error' ? '1px solid ' + p.theme.color.bg.red : p.theme.border.thinLight)};
-  border-radius: 0.25rem;
-  color: #333;
-  display: flex;
-  height: 2.5rem;
-  padding: 0.5rem 1rem;
-  position: relative;
-  transition: border 0.15s;
-
-  input {
-    width: 100%;
-    border: none;
-    cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
-    background-color: transparent;
-    padding-right: 1.5rem;
-
-    &:focus {
-      outline: none;
-      border: none;
-    }
-
-    &::placeholder {
-      color: #333;
-      font-weight: 500;
-      opacity: 1;
-    }
-  }
-
-  input[type='datetime-local'],
-  input[type='date'] {
-    padding-right: 0;
-  }
-
-  cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
-
-  &:hover {
-    border-color: ${(p) => (p.status === 'Error' ? p.theme.color.bg.red : p.active ? p.theme.color.text.blue : '#333')};
-  }
-`;
 
 const FilterInputContainer = styled.div`
   position: relative;
@@ -316,17 +250,6 @@ const SubmitIconHolder = styled.div<{ focus: boolean; status: AsyncStatus }>`
           `}} 
 
   }
-`;
-
-const Tip = styled.div<{ visible: boolean }>`
-  position: absolute;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  opacity: ${(p) => (p.visible ? '1' : '0')};
-  color: #aaa;
-  transition: 0.25s opacity;
-  padding-left: 0.25rem;
 `;
 
 const ErrorMsgContainer = styled.div`

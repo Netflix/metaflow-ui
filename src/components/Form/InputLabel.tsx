@@ -2,6 +2,10 @@ import styled, { css } from 'styled-components';
 import { ForceNoWrapText } from '../Text';
 import { AsyncStatus } from '../../types';
 
+//
+// Label for InputWrapper that has Material UI kind of animation when focused on.
+//
+
 export const InputLabel = styled(ForceNoWrapText)<{ active: boolean; status?: AsyncStatus }>`
   background: #fff;
   font-size: 0.875rem;

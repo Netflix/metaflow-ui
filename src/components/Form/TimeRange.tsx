@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import Icon from '../Icon';
-import { AsyncStatus } from '../../types';
 import { InputLabel } from './InputLabel';
 import Popover from '../Popover';
-import FilterInput from '../FilterInput';
 import { BigButton } from '../Button';
 import { TimezoneContext } from '../TimezoneProvider';
 import { getDateTimeLocalString } from '../../utils/date';
 import spacetime from 'spacetime';
 import { useTranslation } from 'react-i18next';
 import { isFirefox } from '../../utils/browser';
+import InputWrapper from './InputWrapper';
+import DateInput from './DateInput';
 
 //
 // Typedef
@@ -50,7 +50,7 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
 
   return (
     <TimeRangeContainer>
-      <TimeRangeWrapper status={'Ok'} active={show} onClick={() => setShow(!show)}>
+      <InputWrapper status={'Ok'} active={show} onClick={() => setShow(!show)}>
         {sectionLabel && (
           <InputLabel active={false} status={'Ok'}>
             {sectionLabel}
@@ -61,17 +61,15 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
             <Icon name="calendar" size="sm" />
           </SubmitIconHolder>
         </TimeRangeInputContainer>
-      </TimeRangeWrapper>
+      </InputWrapper>
       <Popover show={show}>
         {show && (
           <>
-            <FilterInput
+            <DateInput
               inputType="datetime-local"
               tip={isFirefox ? 'YYYY-MM-DD HH:mm' : undefined}
               onSubmit={HandleSubmit}
-              sectionLabel={t('component.startTime')}
-              noIcon
-              noClear
+              label={t('component.startTime')}
               initialValue={
                 initialValues && initialValues[0]
                   ? getDateTimeLocalString(new Date(initialValues[0]), timezone)
@@ -81,13 +79,11 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
                 setValues((vals) => ({ ...vals, start: value ? spacetime(value, timezone).epoch : null }));
               }}
             />
-            <FilterInput
+            <DateInput
               inputType="datetime-local"
               tip={isFirefox ? 'YYYY-MM-DD HH:mm' : undefined}
               onSubmit={HandleSubmit}
-              sectionLabel={t('component.endTime')}
-              noIcon
-              noClear
+              label={t('component.endTime')}
               initialValue={
                 initialValues && initialValues[1]
                   ? getDateTimeLocalString(new Date(initialValues[1]), timezone)
@@ -143,23 +139,6 @@ const TimeRangeContainer = styled.div`
   }
 `;
 
-const TimeRangeWrapper = styled.section<{ active: boolean; status: AsyncStatus }>`
-  align-items: center;
-  border: ${(p) => (p.status === 'Error' ? '1px solid ' + p.theme.color.bg.red : p.theme.border.thinLight)};
-  border-radius: 0.25rem;
-  color: #333;
-  display: flex;
-  height: 2.5rem;
-  padding: 0.5rem 1rem;
-  position: relative;
-  transition: border 0.15s;
-  cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
-
-  &:hover {
-    border-color: ${(p) => (p.status === 'Error' ? p.theme.color.bg.red : p.active ? p.theme.color.text.blue : '#333')};
-  }
-`;
-
 const TimeRangeInputContainer = styled.div`
   position: relative;
   width: 100%;
@@ -169,33 +148,12 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
   position: absolute;
   right: 0;
   top: 0;
-  line-height: 1.125rem;
-  z-index: 10;
   transform: translateY(-50%);
 
-  i {
-    margin: -0.125rem 0 0;
-    vertical-align: middle;
-  }
-
-  .icon-enter svg {
-    color: #fff;
-  }
-
   &:hover {
-    ${(p) =>
-      p.focus
-        ? css`
-            svg path {
-              stroke: ${p.theme.color.text.blue};
-            }
-          `
-        : css`
-            svg {
-              color: ${p.theme.color.text.blue};
-            }
-          `}} 
-
+    svg {
+      color: ${(p) => p.theme.color.text.blue};
+    }
   }
 `;
 

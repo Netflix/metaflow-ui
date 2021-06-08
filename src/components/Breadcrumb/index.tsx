@@ -2,11 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useLocation, match, useHistory, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-
 import { getPath, getRouteMatch, KnownURLParams } from '../../utils/routing';
-
 import Button, { ButtonLink, ButtonCSS, BigButton } from '../Button';
-import { TextInputField } from '../Form';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
 import { ItemRow } from '../Structure';
@@ -14,6 +11,7 @@ import useAutoComplete from '../../hooks/useAutoComplete';
 import { takeLastSplitFromURL } from '../../utils/url';
 import { AutoCompleteLine } from '../AutoComplete';
 import HeightAnimatedContainer from '../HeightAnimatedContainer';
+import InputWrapper from '../Form/InputWrapper';
 
 //
 // Component
@@ -50,6 +48,9 @@ const Breadcrumb: React.FC = () => {
   // Handlers
   //
 
+  //
+  // Try to move to given url
+  //
   const tryMove = (str: string) => {
     const path = pathFromString(str);
 
@@ -61,7 +62,9 @@ const Breadcrumb: React.FC = () => {
       closeUp();
     }
   };
-
+  //
+  // Handles submitting path on breadcrumb
+  //
   const onKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.charCode === 13) {
       if (activeAutoCompleteOption) {
@@ -78,7 +81,9 @@ const Breadcrumb: React.FC = () => {
       }
     }
   };
-
+  //
+  // Handles movement on suggested routes on autocomplete
+  //
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
       e.preventDefault();
@@ -130,12 +135,13 @@ const Breadcrumb: React.FC = () => {
       {/* On home page, when not editing breadcrumb */}
       {buttonList.length === 0 && !edit && (
         <BreadcrumbEmptyInput
-          horizontal
-          placeholder={t('breadcrumb.goto')}
+          active={true}
           onClick={openModal}
           onKeyPress={openModal}
           data-testid="breadcrumb-goto-input-inactive"
-        />
+        >
+          <input placeholder={t('breadcrumb.goto')} />
+        </BreadcrumbEmptyInput>
       )}
 
       {/* Rendering breadcrumb items when not in home and not editing. */}
@@ -183,22 +189,25 @@ const Breadcrumb: React.FC = () => {
           <GoToHolder data-testid="breadcrumb-goto-container">
             <GoToContainer>
               <ItemRow>
-                <TextInputField
-                  placeholder={t('breadcrumb.goto')}
-                  value={str}
-                  onKeyPress={onKeyPress}
-                  onKeyDown={onKeyDown}
-                  onChange={(e) => {
-                    setStr(e?.target.value?.replace(/\s/g, '') || '');
-                    if (!e?.target.value?.replace(/\s/g, '')) {
+                <BreadcrumbInputWrapper active={edit}>
+                  <input
+                    type="text"
+                    placeholder={t('breadcrumb.goto')}
+                    value={str}
+                    onKeyPress={onKeyPress}
+                    onKeyDown={onKeyDown}
+                    onChange={(e) => {
+                      setStr(e?.target.value?.replace(/\s/g, '') || '');
+                      if (!e?.target.value?.replace(/\s/g, '')) {
+                        resetAutocomplete();
+                      }
+                    }}
+                    onFocus={() => {
                       resetAutocomplete();
-                    }
-                  }}
-                  onFocus={() => {
-                    resetAutocomplete();
-                  }}
-                  autoFocus={true}
-                />
+                    }}
+                    autoFocus={true}
+                  />
+                </BreadcrumbInputWrapper>
                 <GotoClose onClick={() => closeUp()}>
                   <Icon name="times" size="md" />
                 </GotoClose>
@@ -359,7 +368,18 @@ const BreadcrumbGroup = styled.div`
   border-color: ${(p) => p.theme.color.text.blue};
 `;
 
-const BreadcrumbEmptyInput = styled(TextInputField)``;
+const BreadcrumbEmptyInput = styled(InputWrapper)`
+  width: 35rem;
+  border: 1px solid ${(p) => p.theme.color.text.blue};
+
+  input {
+    padding-left: 0;
+    margin-left: -0.25rem;
+    &::placeholder {
+      color: #808080;
+    }
+  }
+`;
 
 const CrumbComponent = styled.div`
   white-space: nowrap;
@@ -433,14 +453,14 @@ const StyledBreadcrumb = styled(ItemRow)`
     line-height: 1.875rem;
     font-size: 0.875rem;
     width: 35rem;
-    border: ${(p) => p.theme.border.thinPrimary};
     background: #fff;
-    padding-left: 0.5rem;
-
-    &:hover {
-      border: ${(p) => p.theme.border.thinPrimary};
-    }
+    padding-left: 0;
+    margin-left: -0.25rem;
   }
+`;
+
+const BreadcrumbInputWrapper = styled(InputWrapper)`
+  border: 1px solid ${(p) => p.theme.color.text.blue};
 `;
 
 const GoToHolder = styled.div`

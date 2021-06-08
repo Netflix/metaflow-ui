@@ -23,7 +23,7 @@
     "markdown-to-jsx": "^7.1.2",
     "mock-socket": "^9.0.3",
     "polished": "^3.6.4",
-    "prettier": "^2.0.5",
+    "prettier": "^2.3.1",
     "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-custom-scrollbars-2": "^4.4.0",

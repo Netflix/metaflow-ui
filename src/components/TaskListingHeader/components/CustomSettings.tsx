@@ -5,7 +5,8 @@ import { ItemRow } from '../../Structure';
 import { ForceNoWrapText } from '../../Text';
 import { RowCounts } from '../../Timeline/taskdataUtils';
 import StatusLights from './StatusLights';
-import { CheckboxField, DropdownField } from '../../Form';
+import { CheckboxField } from '../../Form/Checkbox';
+import DropdownField from '../../Form/Dropdown';
 import Icon from '../../Icon';
 import { TaskListMode, TaskListSort, TasksSortBy } from '../../Timeline/useTaskListSettings';
 
@@ -47,7 +48,6 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
       <ItemRow>
         <TaskListDropdownContainer>
           <DropdownField
-            horizontal
             label={t('run.mode')}
             onChange={(e) => {
               if (e?.target.value) {
@@ -66,7 +66,7 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
 
         <TaskListDropdownContainer>
           <DropdownField
-            horizontal
+            label={t('fields.status')}
             onChange={(e) => {
               if (e?.target.value === 'all') {
                 updateStatusFilter(null);
@@ -85,13 +85,13 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
                 : []),
             ]}
             labelRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} />}
-            optionRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} noTitle />}
+            optionRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} />}
           />
         </TaskListDropdownContainer>
 
         <TaskListDropdownContainer>
           <DropdownField
-            horizontal
+            label={t('timeline.order-by')}
             onChange={(e) => {
               const val = e?.target.value;
               if (val) {
@@ -109,7 +109,7 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
               ['duration,desc', t('timeline.duration')],
             ]}
             labelRenderer={(value) => <OrderLabelRenderer val={value} />}
-            optionRenderer={(value) => <OrderLabelRenderer val={value} noTitle />}
+            optionRenderer={(value) => <OrderLabelRenderer val={value} />}
           />
         </TaskListDropdownContainer>
 
@@ -130,27 +130,20 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
 // Extra components
 //
 
-const StatusLabelRenderer: React.FC<{ val: string; status: string | null | undefined; noTitle?: boolean }> = ({
-  val,
-  status,
-  noTitle,
-}) => {
-  const { t } = useTranslation();
+const StatusLabelRenderer: React.FC<{ val: string; status: string | null | undefined }> = ({ val, status }) => {
   return (
     <StatusLabelContainer>
-      {!noTitle && <DropdownLabelTitle>{t('fields.status')}</DropdownLabelTitle>}
       <ForceNoWrapText>{val}</ForceNoWrapText>
       <StatusLights status={status || 'all'} />
     </StatusLabelContainer>
   );
 };
 
-const OrderLabelRenderer: React.FC<{ val: string; noTitle?: boolean }> = ({ val, noTitle }) => {
+const OrderLabelRenderer: React.FC<{ val: string }> = ({ val }) => {
   const { t } = useTranslation();
   const [str, direction] = val.split(',');
   return (
     <OrderLabelContainer>
-      {!noTitle && <DropdownLabelTitle>{t('timeline.order-by')}</DropdownLabelTitle>}
       <OrderLabelValue>
         {t(`timeline.${str}`)} <Icon size="xs" name="arrowPointTop" rotate={direction === 'asc' ? 180 : 0} />
       </OrderLabelValue>
@@ -201,27 +194,6 @@ const TaskListDropdownContainer = styled.div`
       min-width: auto;
     }
   }
-
-  button {
-    padding-left: 1rem;
-    padding-right: 1rem;
-
-    &:hover {
-      background: transparent;
-      border-color: #333;
-    }
-  }
-`;
-
-const DropdownLabelTitle = styled(ForceNoWrapText)`
-  background: #fff;
-  font-size: 0.625rem;
-  font-weight: bold;
-  left: 0.75rem;
-  margin-right: 0.3125rem;
-  padding: 0 0.25rem;
-  position: absolute;
-  top: -0.5rem;
 `;
 
 export default CustomSettings;

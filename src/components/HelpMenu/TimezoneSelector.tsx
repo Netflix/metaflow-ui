@@ -2,8 +2,7 @@ import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import spacetime from 'spacetime';
 import styled from 'styled-components';
-import { DropdownOption } from '../Form/Dropdown';
-import { DropdownField } from '../Form';
+import DropdownField, { DropdownOption } from '../Form/Dropdown';
 import { TimezoneContext } from '../TimezoneProvider';
 import FilterInput from '../FilterInput';
 

@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { DropdownField } from '../../../components/Form';
+import DropdownField from '../../../components/Form/Dropdown';
 import Button from '../../../components/Button';
 import { Text } from '../../../components/Text';
 import FilterInput from '../../../components/FilterInput';
@@ -48,9 +48,7 @@ const HomeSidebar: React.FC<Props> = ({
           {FEATURE.RUN_GROUPS && (
             <SidebarSectionWrapper>
               <DropdownField
-                horizontal
                 label={t('filters.group-by')}
-                noMinWidth
                 value={params._group || ''}
                 onChange={(e) => e && handleParamChange('_group', e.target.value)}
                 options={[
