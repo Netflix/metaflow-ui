@@ -163,7 +163,7 @@ export function makeTasksForStep(currentData: Record<string, Task[]>, item: Task
     if (!added) {
       newtasks.push(item);
     }
-    return newtasks;
+    return newtasks.sort((a, b) => a.attempt_id - b.attempt_id);
   } else {
     return [item];
   }
