@@ -80,6 +80,7 @@ const en = {
       'no-run-data': 'No run data',
       'no-tags': 'No user tags',
       'no-system-tags': 'No system tags',
+      'no-metadata': 'No run metadata found',
       DAG: 'DAG',
       'dag-not-available': 'DAG is currently not available',
       'dag-only-available-AWS': 'DAG is only available when flow is executed on AWS.',
