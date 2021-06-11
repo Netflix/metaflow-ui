@@ -80,7 +80,7 @@ const HomeSidebar: React.FC<Props> = ({
               sectionLabel={t('fields.project')}
               autoCompleteSettings={{
                 url: '/tags/autocomplete',
-                params: (input: string) => ({ 'tag:li': `project:%${input}%` }),
+                params: (input: string) => ({ 'tag:re': `project:.*${input}.*` }),
               }}
             />
             <TagParameterList
@@ -98,7 +98,7 @@ const HomeSidebar: React.FC<Props> = ({
               sectionLabel={t('fields.branch')}
               autoCompleteSettings={{
                 url: '/tags/autocomplete',
-                params: (input: string) => ({ 'tag:li': `project_branch:%${input}%` }),
+                params: (input: string) => ({ 'tag:re': `project_branch:.*${input}.*` }),
               }}
             />
             <TagParameterList
@@ -118,7 +118,7 @@ const HomeSidebar: React.FC<Props> = ({
               sectionLabel={t('fields.user')}
               autoCompleteSettings={{
                 url: '/tags/autocomplete',
-                params: (input: string) => ({ 'tag:li': `user:%${input}%` }),
+                params: (input: string) => ({ 'tag:re': `user:.*${input}.*` }),
               }}
             />
             <TagParameterList
