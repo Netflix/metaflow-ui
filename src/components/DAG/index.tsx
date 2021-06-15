@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { DAGModel, convertDAGModelToTree, DAGStructureTree } from './DAGUtils';
 import { AsyncStatus, Run } from '../../types';
 import { ItemRow } from '../Structure';
-import useResource from '../../hooks/useResource';
+import { Resource } from '../../hooks/useResource';
 import FullPageContainer from '../FullPageContainer';
 import Spinner from '../Spinner';
 import DAGContent from './components/DAGContent';
@@ -16,19 +16,10 @@ import { StepLineData } from '../Timeline/taskdataUtils';
 // DAG
 //
 
-const DAG: React.FC<{ run: Run; steps: StepLineData[] }> = ({ run, steps }) => {
+const DAG: React.FC<{ run: Run; steps: StepLineData[]; result: Resource<DAGModel> }> = ({ run, steps, result }) => {
   const { t } = useTranslation();
   const [showFullscreen, setFullscreen] = useState(false);
-  const [dagTree, setDagTree] = useState<DAGStructureTree>([]);
-
-  const { status, error } = useResource<DAGModel, DAGModel>({
-    url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
-    subscribeToEvents: false,
-    initialData: null,
-    onUpdate: (data) => {
-      setDagTree(convertDAGModelToTree(data));
-    },
-  });
+  const dagTree = result.data ? convertDAGModelToTree(result.data) : [];
 
   const content = !!dagTree.length && (
     <DAGContent dagTree={dagTree} showFullscreen={showFullscreen} stepData={steps} run={run} />
@@ -36,12 +27,12 @@ const DAG: React.FC<{ run: Run; steps: StepLineData[] }> = ({ run, steps }) => {
 
   return (
     <div style={{ width: '100%' }}>
-      {isDAGError(status, dagTree) ? (
-        <DAGError error={error} t={t} />
+      {isDAGError(result.status, dagTree) ? (
+        <DAGError error={result.error} t={t} />
       ) : (
         <DAGControlBar setFullscreen={setFullscreen} t={t} />
       )}
-      {status === 'Loading' && (
+      {result.status === 'Loading' && (
         <ItemRow justify="center">
           <Spinner md />
         </ItemRow>

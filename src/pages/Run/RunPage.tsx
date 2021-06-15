@@ -27,6 +27,8 @@ import {
 import styled from 'styled-components';
 import { FixedContent } from '../../components/Structure';
 import useTaskListSettings from '../../components/Timeline/useTaskListSettings';
+import useResource from '../../hooks/useResource';
+import { DAGModel } from '../../components/DAG/DAGUtils';
 
 //
 // Typedef
@@ -159,6 +161,15 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     onModeSelect: setMode,
   };
 
+  //
+  // DAG data, fetch here to prevent multiple fetches when switching tabs
+  //
+  const dagResult = useResource<DAGModel, DAGModel>({
+    url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
+    subscribeToEvents: false,
+    initialData: null,
+  });
+
   return (
     <>
       <RunPageContainer visible={visible}>
@@ -176,7 +187,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                     linkTo: getPath.dag(params.flowId, params.runNumber) + '?' + urlParams,
                     component: (
                       <ErrorBoundary message={t('error.dag-error')}>
-                        <DAG run={run} steps={steps} />
+                        <DAG run={run} steps={steps} result={dagResult} />
                       </ErrorBoundary>
                     ),
                   },
@@ -217,6 +228,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                       taskFromList={getTaskFromList(rows, params.stepName, params.taskId)}
                       stepName={previousStepName || 'not-selected'}
                       taskId={previousTaskId || 'not-selected'}
+                      dagResult={dagResult}
                     />
                   )}
                 </ErrorBoundary>

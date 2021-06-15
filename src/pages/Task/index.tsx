@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
 import { Run as IRun, Task as ITask, Log, Metadata, AsyncStatus } from '../../types';
-import useResource from '../../hooks/useResource';
+import useResource, { Resource } from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 
 import Spinner from '../../components/Spinner';
@@ -26,6 +26,7 @@ import {
   TaskSettingsQueryParameters,
   TaskSettingsState,
 } from '../../components/Timeline/useTaskListSettings';
+import { DAGModel } from '../../components/DAG/DAGUtils';
 
 //
 // Typedef
@@ -46,6 +47,7 @@ type TaskViewProps = {
   isAnyGroupOpen: boolean;
   setQueryParam: SetQuery<TaskSettingsQueryParameters>;
   onModeSelect: (mode: TaskListMode) => void;
+  dagResult: Resource<DAGModel>;
 };
 
 //
@@ -67,6 +69,7 @@ const Task: React.FC<TaskViewProps> = ({
   isAnyGroupOpen,
   setQueryParam,
   onModeSelect,
+  dagResult,
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
@@ -160,6 +163,8 @@ const Task: React.FC<TaskViewProps> = ({
     setStderr([]);
   }, [stepName, taskId, attemptId]);
 
+  const developerNote = getDocString(dagResult, stepName);
+
   return (
     <TaskContainer>
       <TaskListingHeader
@@ -223,7 +228,12 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.task-info'),
                   component: (
                     <>
-                      <TaskDetails task={task} metadata={metadata} metadataResource={metadataRes} />
+                      <TaskDetails
+                        task={task}
+                        metadata={metadata}
+                        metadataResource={metadataRes}
+                        developerNote={developerNote}
+                      />
                     </>
                   ),
                 },
@@ -291,6 +301,22 @@ const Task: React.FC<TaskViewProps> = ({
     </TaskContainer>
   );
 };
+
+//
+// Utils
+//
+
+function getDocString(dagResult: Resource<DAGModel>, stepName: string): string | null {
+  if (dagResult.data) {
+    const dagItem = dagResult.data[stepName];
+
+    if (dagItem && dagItem.doc) {
+      return dagItem.doc;
+    }
+    return null;
+  }
+  return null;
+}
 
 //
 // Style

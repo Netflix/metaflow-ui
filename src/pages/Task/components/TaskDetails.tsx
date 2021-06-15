@@ -22,9 +22,10 @@ type Props = {
   task: ITask;
   metadata: Metadata[];
   metadataResource: Resource<Metadata[]>;
+  developerNote: string | null;
 };
 
-const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource }) => {
+const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, developerNote }) => {
   const { t } = useTranslation();
   const { timezone } = useContext(TimezoneContext);
 
@@ -85,6 +86,8 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource }) => {
                   content: metadataParams,
                 })}
           />
+
+          {developerNote && <TitledRow type="default" title={'Developer note'} content={developerNote} />}
         </Collapsable>
       )}
 

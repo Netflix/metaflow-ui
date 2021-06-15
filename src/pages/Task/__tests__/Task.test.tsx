@@ -2,6 +2,7 @@ import React from 'react';
 import Task from '..';
 import { render } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
+import { createResource } from '../../../utils/testhelper';
 import { Run } from '../../../types';
 import WS from 'jest-websocket-mock';
 import useSeachField from '../../../hooks/useSearchField';
@@ -46,6 +47,7 @@ describe('Task page', () => {
             counts={{ all: 0, completed: 0, failed: 0, running: 0, unknown: 0 }}
             onModeSelect={setMode}
             setQueryParam={setQueryParam}
+            dagResult={createResource({})}
           />
         </TestWrapper>
       );

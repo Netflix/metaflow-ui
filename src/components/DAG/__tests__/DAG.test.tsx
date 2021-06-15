@@ -2,6 +2,7 @@ import React from 'react';
 import DAG, { isDAGError } from '..';
 import { render } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
+import { createResource } from '../../../utils/testhelper';
 import { Run } from '../../../types';
 
 const run: Run = {
@@ -25,7 +26,7 @@ describe('DAG component', () => {
   test('<DAG /> - health check', async () => {
     const { findAllByTestId } = render(
       <TestWrapper>
-        <DAG run={run} steps={[]} />
+        <DAG run={run} steps={[]} result={createResource({}, {})} />
       </TestWrapper>,
     );
     // Expect to see error here since we don't mock websocket
