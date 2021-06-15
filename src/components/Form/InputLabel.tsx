@@ -13,6 +13,7 @@ export const InputLabel = styled(ForceNoWrapText)<{ active: boolean; status?: As
   padding: 0 0.25rem;
   position: absolute;
   top: 0;
+  left: 0.75rem;
   transition: all 125ms linear;
 
   color: ${(p) => (p.status === 'Error' ? p.theme.color.bg.red : 'inherit')};
