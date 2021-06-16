@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
 import { Run as IRun, Task as ITask, Log, Metadata, AsyncStatus, Artifact } from '../../types';
-import useResource, { DataModel, Resource } from '../../hooks/useResource';
+import useResource, { Resource } from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 
 import Spinner from '../../components/Spinner';
@@ -24,7 +24,6 @@ import ArtifactTable from './components/ArtifactTable';
 import ArtifactViewer from './components/ArtifactViewer';
 import ArtifactActionBar from './components/ArtifactActionBar';
 import { getTaskId } from '../../utils/task';
-import { apiHttp } from '../../constants';
 import {
   TaskListMode,
   TaskSettingsQueryParameters,
@@ -174,38 +173,16 @@ const Task: React.FC<TaskViewProps> = ({
     url: artifactUrl,
     queryParams: {
       attempt_id: attemptId !== null ? attemptId.toString() : '',
+      postprocess: 'true',
+      _limit: '50',
     },
     subscribeToEvents: true,
     fetchAllData: true,
     initialData: [],
     onUpdate: (data) => {
-      data && setArtifacts(data);
+      data && setArtifacts((currentData) => [...currentData, ...data]);
     },
     pause: !isCurrentTaskFinished || attemptId === null,
-    postRequest: () => {
-      fetch(apiHttp(`${artifactUrl}?attempt_id=${attemptId !== null ? attemptId.toString() : ''}&postprocess=true`))
-        .then((response) => response.json())
-        .then((response: DataModel<Artifact[]>) => {
-          if (response?.status === 200) {
-            setArtifacts((currentData) => {
-              const names = currentData.map((item) => item.name);
-              // Merge or add incoming items. It should always be merge but better be prepared.
-              return response.data.reduce((arr, value) => {
-                const itemIndex = names.indexOf(value.name);
-                if (itemIndex > -1) {
-                  arr[itemIndex] = value;
-                  return arr;
-                } else {
-                  return arr.concat([value]);
-                }
-              }, currentData);
-            });
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
-    },
   });
 
   useEffect(() => {
@@ -215,6 +192,7 @@ const Task: React.FC<TaskViewProps> = ({
   useEffect(() => {
     setStdout([]);
     setStderr([]);
+    setArtifacts([]);
   }, [stepName, taskId, attemptId]);
 
   const developerNote = getDocString(dagResult, stepName);
