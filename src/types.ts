@@ -70,6 +70,8 @@ export interface Artifact extends MetaDataBaseObject {
   sha: string;
   type: string;
   content_type: string;
+  content?: string;
+  postprocess_error?: { id: string; detail: string };
   attempt_id: number;
 }
 

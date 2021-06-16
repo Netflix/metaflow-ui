@@ -103,7 +103,7 @@ const sizeTable: SupportedSizes = {
 interface IconProps {
   name: keyof SupportedIcons;
   size?: keyof SupportedSizes;
-  customSize?: number;
+  customSize?: string;
   rotate?: number;
   className?: string;
   padLeft?: boolean;
@@ -125,7 +125,7 @@ export default Icon;
 
 const Wrapper = styled.i<{
   size: keyof SupportedSizes;
-  customSize?: number;
+  customSize?: string;
   rotate?: number;
   spin?: boolean;
   padLeft?: boolean;
@@ -147,7 +147,7 @@ const Wrapper = styled.i<{
       : null}
 
   svg {
-    height: ${(p) => p.customSize || sizeTable[p.size]}rem;
+    height: ${(p) => p.customSize || sizeTable[p.size] + 'rem'};
     transform: ${(p) => (p.rotate ? `rotate(${p.rotate}deg)` : 'none')};
     width: auto;
   }

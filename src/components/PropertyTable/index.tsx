@@ -7,6 +7,7 @@ export type PropertyTableColumns<T> = {
   label: React.ReactNode;
   prop?: keyof T;
   accessor?: (item: T) => React.ReactNode;
+  width?: string; // Needs to be valid for css width property
 };
 
 type PropertyTableProps<T> = {
@@ -22,7 +23,12 @@ function PropertyTable<T>({ items, columns, scheme = 'normal', ...rest }: Proper
       <thead>
         <tr>
           {columns.map((col, index) => (
-            <PropertyTableRowItemHeader key={index} scheme={scheme} data-testid="property-table-header">
+            <PropertyTableRowItemHeader
+              key={index}
+              scheme={scheme}
+              data-testid="property-table-header"
+              width={col.width}
+            >
               {col.label}
             </PropertyTableRowItemHeader>
           ))}
@@ -52,7 +58,7 @@ const PropertyTableContainer = styled.table`
   width: 100%;
 `;
 
-const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme }>`
+const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme; width?: string }>`
   background: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.black : p.theme.color.bg.silver)};
   color: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.white : p.theme.color.text.dark)};
   border-right: ${(p) => p.theme.border.mediumWhite};
@@ -61,6 +67,8 @@ const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme }>`
   padding: 0.4rem 1rem;
   font-weight: 400;
   text-align: left;
+  white-space: pre;
+  ${(p) => (p.width ? `width: ${p.width};` : '')}
 
   &:last-child {
     border-right: none;

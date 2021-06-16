@@ -65,6 +65,7 @@ const en = {
 
       'run-id': 'Run ID',
       'task-id': 'Task ID',
+      content: 'Content',
     },
 
     filters: {
@@ -154,7 +155,10 @@ const en = {
       'copy-logs-to-clipboard': 'Copy to clipboard',
       'all-logs-copied': 'Full log copied to clipboard',
       'line-copied': 'Line copied to clipboard',
+      'copy-to-clipboard': 'Copy to clipboard',
+      'download-artifact-content': 'Download artifact content',
       'download-logs': 'Download logs as txt file',
+      'artifact-copied': 'Artifact content copied to clipboard',
       'show-fullscreen': 'Show logs in fullscreen',
       'no-artifacts-found': 'No artifacts found',
       metadata: 'Metadata',
@@ -236,6 +240,11 @@ const en = {
         'Timeline encountered an unexpected error. This should not happen and might be caused by unexpected data.',
       'task-error':
         'Task page encountered an unexpected error. This should not happen and might be caused by unexpected data.',
+
+      'artifact-too-large': 'File too large to display. Only available as download from location.',
+      'artifact-not-accessible': 'Artifact location is not accessible by the server.',
+      'artifact-handle-failed': 'Reading the artifact content failed.',
+      'artifact-unknown-error': 'Unexpected error happened while loading artifacts.',
     },
 
     notifications: {

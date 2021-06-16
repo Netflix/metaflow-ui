@@ -10,7 +10,6 @@ import { useTranslation } from 'react-i18next';
 
 type LogProps = {
   rows: ILog[];
-  onShowFullscreen?: () => void;
   fixedHeight?: number;
 };
 

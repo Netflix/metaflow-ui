@@ -13,7 +13,7 @@ import { downloadString } from '../../utils/file';
 //
 
 type LogActionBarProps = {
-  setFullscreen: () => void;
+  setFullscreen?: () => void;
   name: string;
   data: Log[];
 };
@@ -55,7 +55,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, name, data }
         </Button>
       )}
 
-      {data && data.length > 0 && (
+      {data && data.length > 0 && setFullscreen && (
         <Button title={t('task.show-fullscreen')} onClick={() => setFullscreen()} withIcon>
           <Icon name="maximize" />
         </Button>

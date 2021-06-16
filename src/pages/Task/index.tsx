@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
-import { Run as IRun, Task as ITask, Log, Metadata, AsyncStatus } from '../../types';
-import useResource, { Resource } from '../../hooks/useResource';
+import { Run as IRun, Task as ITask, Log, Metadata, AsyncStatus, Artifact } from '../../types';
+import useResource, { DataModel, Resource } from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 
 import Spinner from '../../components/Spinner';
@@ -20,12 +20,17 @@ import AnchoredView from './components/AnchoredView';
 import SectionLoader from './components/SectionLoader';
 import TaskDetails from './components/TaskDetails';
 import AttemptSelector from './components/AttemptSelector';
+import ArtifactTable from './components/ArtifactTable';
+import ArtifactViewer from './components/ArtifactViewer';
+import ArtifactActionBar from './components/ArtifactActionBar';
 import { getTaskId } from '../../utils/task';
+import { apiHttp } from '../../constants';
 import {
   TaskListMode,
   TaskSettingsQueryParameters,
   TaskSettingsState,
 } from '../../components/Timeline/useTaskListSettings';
+import FEATURE_FLAGS from '../../utils/FEATURE';
 import { DAGModel } from '../../components/DAG/DAGUtils';
 
 //
@@ -50,6 +55,10 @@ type TaskViewProps = {
   dagResult: Resource<DAGModel>;
 };
 
+type FullScreenData =
+  | { type: 'logs'; logtype: 'stdout' | 'stderr' }
+  | { type: 'artifact'; name: string; artifactdata: string };
+
 //
 // Component
 //
@@ -72,7 +81,7 @@ const Task: React.FC<TaskViewProps> = ({
   dagResult,
 }) => {
   const { t } = useTranslation();
-  const [fullscreen, setFullscreen] = useState<null | 'stdout' | 'stderr'>(null);
+  const [fullscreen, setFullscreen] = useState<null | FullScreenData>(null);
 
   //
   // Query params
@@ -90,6 +99,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   //
   // Task/attempt data
+  // This is only used if we dont have data already from tasks listing.
   //
   const {
     data: tasksFromFetch,
@@ -113,6 +123,7 @@ const Task: React.FC<TaskViewProps> = ({
   // Related data start
   //
 
+  // Metadata
   const [metadata, setMetadata] = useState<Metadata[]>([]);
   const metadataRes = useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/metadata`,
@@ -130,6 +141,7 @@ const Task: React.FC<TaskViewProps> = ({
     _limit: '500',
   };
 
+  // Stantard out logs
   const [stdout, setStdout] = useState<Log[]>([]);
   const stdoutRes = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
@@ -142,6 +154,7 @@ const Task: React.FC<TaskViewProps> = ({
     },
   });
 
+  // Error logs
   const [stderr, setStderr] = useState<Log[]>([]);
   const stderrRes = useResource<Log[], Log>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
@@ -151,6 +164,47 @@ const Task: React.FC<TaskViewProps> = ({
     pause: !isCurrentTaskFinished,
     onUpdate: (items) => {
       items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
+    },
+  });
+
+  // Artifacts
+  const [artifacts, setArtifacts] = useState<Artifact[]>([]);
+  const artifactUrl = `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`;
+  const { status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
+    url: artifactUrl,
+    queryParams: {
+      attempt_id: attemptId !== null ? attemptId.toString() : '',
+    },
+    subscribeToEvents: true,
+    fetchAllData: true,
+    initialData: [],
+    onUpdate: (data) => {
+      data && setArtifacts(data);
+    },
+    pause: !isCurrentTaskFinished || attemptId === null,
+    postRequest: () => {
+      fetch(apiHttp(`${artifactUrl}?attempt_id=${attemptId !== null ? attemptId.toString() : ''}&postprocess=true`))
+        .then((response) => response.json())
+        .then((response: DataModel<Artifact[]>) => {
+          if (response?.status === 200) {
+            setArtifacts((currentData) => {
+              const names = currentData.map((item) => item.name);
+              // Merge or add incoming items. It should always be merge but better be prepared.
+              return response.data.reduce((arr, value) => {
+                const itemIndex = names.indexOf(value.name);
+                if (itemIndex > -1) {
+                  arr[itemIndex] = value;
+                  return arr;
+                } else {
+                  return arr.concat([value]);
+                }
+              }, currentData);
+            });
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+        });
     },
   });
 
@@ -248,7 +302,7 @@ const Task: React.FC<TaskViewProps> = ({
                     <LogActionBar
                       data={stdout}
                       name={`stdout-${task.ts_epoch}-${getTaskId(task)}-attempt${task.attempt_id}`}
-                      setFullscreen={() => setFullscreen('stdout')}
+                      setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stdout' })}
                     />
                   ),
                   component: (
@@ -257,7 +311,7 @@ const Task: React.FC<TaskViewProps> = ({
                         minHeight={110}
                         status={(stdout || []).length > 0 ? 'Ok' : stdoutRes.status}
                         error={stdoutRes.error}
-                        component={<LogList rows={stdout} onShowFullscreen={() => setFullscreen('stdout')} />}
+                        component={<LogList rows={stdout} />}
                       />
                     </>
                   ),
@@ -273,7 +327,7 @@ const Task: React.FC<TaskViewProps> = ({
                     <LogActionBar
                       data={stderr}
                       name={`stderr-${task.ts_epoch}-${task.task_id}-attempt${task.attempt_id}`}
-                      setFullscreen={() => setFullscreen('stderr')}
+                      setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stderr' })}
                     />
                   ),
                   component: (
@@ -282,20 +336,67 @@ const Task: React.FC<TaskViewProps> = ({
                         minHeight={110}
                         status={(stderr || []).length > 0 ? 'Ok' : stderrRes.status}
                         error={stderrRes.error}
-                        component={<LogList rows={stderr} onShowFullscreen={() => setFullscreen('stderr')} />}
+                        component={<LogList rows={stderr} />}
                       />
                     </>
                   ),
                 },
+                ...(FEATURE_FLAGS.ARTIFACT_TABLE
+                  ? [
+                      {
+                        key: 'artifacts',
+                        order: 4,
+                        label: t('task.artifacts'),
+                        component: (
+                          <>
+                            <SectionLoader
+                              minHeight={110}
+                              status={artifactStatus}
+                              error={artifactError}
+                              component={
+                                <ArtifactTable
+                                  artifacts={artifacts}
+                                  onOpenContentClick={(name, data) =>
+                                    setFullscreen({ type: 'artifact', name, artifactdata: data })
+                                  }
+                                />
+                              }
+                            />
+                          </>
+                        ),
+                      },
+                    ]
+                  : []),
               ].sort((a, b) => a.order - b.order)}
             />
           </>
         )}
       </div>
-      {fullscreen && (
+      {fullscreen && task && (
         <FullPageContainer
           onClose={() => setFullscreen(null)}
-          component={(height) => <LogList rows={fullscreen === 'stdout' ? stdout : stderr} fixedHeight={height} />}
+          actionbar={
+            fullscreen.type === 'logs' ? (
+              <LogActionBar
+                data={fullscreen.logtype === 'stdout' ? stdout : stderr}
+                name={`${fullscreen.logtype}-${task.ts_epoch}-${getTaskId(task)}-attempt${task.attempt_id}`}
+              />
+            ) : (
+              <ArtifactActionBar
+                data={fullscreen.artifactdata}
+                name={`${fullscreen.name}-${task.ts_epoch}-${getTaskId(task)}-attempt${task.attempt_id}`}
+              />
+            )
+          }
+          title={fullscreen.type === 'logs' ? fullscreen.logtype : fullscreen.name}
+          component={(height) => {
+            if (fullscreen.type === 'logs') {
+              return <LogList rows={fullscreen.logtype === 'stdout' ? stdout : stderr} fixedHeight={height} />;
+            } else if (fullscreen.type === 'artifact') {
+              return <ArtifactViewer data={fullscreen.artifactdata} height={height} />;
+            }
+            return <div />;
+          }}
         ></FullPageContainer>
       )}
     </TaskContainer>

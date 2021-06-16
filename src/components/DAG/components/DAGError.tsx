@@ -15,7 +15,7 @@ type DAGErrorProps = {
 
 const DAGError: React.FC<DAGErrorProps> = ({ error }) => (
   <div style={{ padding: '3rem 0' }} data-testid="dag-container-Error">
-    <APIErrorRenderer error={error} icon={<Icon name="noDag" customSize={5} />} />
+    <APIErrorRenderer error={error} icon={<Icon name="noDag" customSize="5rem" />} />
   </div>
 );
 
