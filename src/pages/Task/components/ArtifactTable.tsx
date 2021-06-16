@@ -76,7 +76,7 @@ const knownErrorIds = [
   's3-bad-url',
   's3-missing-credentials',
   's3-generic-error',
-  'object-too-large',
+  'artifact-too-large',
   'artifact-not-accessible',
   'artifact-handle-failed',
 ];
