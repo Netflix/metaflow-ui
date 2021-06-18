@@ -16,17 +16,21 @@ test('renderValue', () => {
   expect(valueToRenderableType('1')).toBe('1');
   expect(valueToRenderableType('hello world')).toBe('hello world');
   // stringified object
-  expect(valueToRenderableType('{"a":"hello world"}')).toBe('{\n  "a": "hello world"\n}');
-  expect(valueToRenderableType('{"a":"h","b":4,"c":{"a":"a"}}')).toBe(
-    '{\n  "a": "h",\n  "b": 4,\n  "c": {\n    "a": "a"\n  }\n}',
+  expect(valueToRenderableType('{"a":"hello world"}')).toEqual(
+    <code>{`{
+  "a": "hello world"
+}`}</code>,
+  );
+  expect(valueToRenderableType('{"a":"h","b":4,"c":{"a":"a"}}')).toEqual(
+    <code>{`{\n  "a": "h",\n  "b": 4,\n  "c": {\n    "a": "a"\n  }\n}`}</code>,
   );
   // object
-  expect(valueToRenderableType({ a: 'hello world' })).toBe('{\n  "a": "hello world"\n}');
-  expect(valueToRenderableType({ a: 'h', b: 4, c: { a: 'a' } })).toBe(
-    '{\n  "a": "h",\n  "b": 4,\n  "c": {\n    "a": "a"\n  }\n}',
+  expect(valueToRenderableType({ a: 'hello world' })).toEqual(<code>{`{\n  "a": "hello world"\n}`}</code>);
+  expect(valueToRenderableType({ a: 'h', b: 4, c: { a: 'a' } })).toEqual(
+    <code>{'{\n  "a": "h",\n  "b": 4,\n  "c": {\n    "a": "a"\n  }\n}'}</code>,
   );
   // array
-  expect(valueToRenderableType([1, 2, 3, 4])).toBe('[\n  1,\n  2,\n  3,\n  4\n]');
+  expect(valueToRenderableType([1, 2, 3, 4])).toEqual(<code>{'[\n  1,\n  2,\n  3,\n  4\n]'}</code>);
 });
 
 test('<TitledRow /> - default mode', () => {

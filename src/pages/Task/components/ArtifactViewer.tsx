@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import InformationRow from '../../../components/InformationRow';
+import { valueToRenderableType } from '../../../components/TitledRow';
 
 type Props = {
   data: string;
@@ -10,7 +11,7 @@ type Props = {
 const ArtifactViewer: React.FC<Props> = ({ data, height }) => {
   return (
     <ArtifactViewerContainer height={height}>
-      <InformationRow>{data}</InformationRow>
+      <InformationRow>{valueToRenderableType(data)}</InformationRow>
     </ArtifactViewerContainer>
   );
 };

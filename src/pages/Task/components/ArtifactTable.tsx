@@ -8,6 +8,7 @@ import { ForceBreakText } from '../../../components/Text';
 import { ItemRow } from '../../../components/Structure';
 import Icon from '../../../components/Icon';
 import GenericError from '../../../components/GenericError';
+import { valueToRenderableType } from '../../../components/TitledRow';
 
 type Props = { artifacts: Artifact[]; onOpenContentClick: (artifactName: string, data: string) => void };
 
@@ -24,7 +25,7 @@ const ArtifactTable: React.FC<Props> = ({ artifacts, onOpenContentClick }) => {
         if (data && data.length > 500) {
           return (
             <span>
-              {data.slice(0, 500)}{' '}
+              {valueToRenderableType(data.slice(0, 500))}{' '}
               <OpenContenButton onClick={() => onOpenContentClick(item.name, data)}>Open content</OpenContenButton>
             </span>
           );

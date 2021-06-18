@@ -56,6 +56,11 @@ const globalCSS = css`
     outline: none;
     border: none;
   }
+
+  code {
+    font-family: 'RobotoMono', monospace;
+    font-size: 0.75rem;
+  }
 `;
 
 export default createGlobalStyle`${globalCSS}`;

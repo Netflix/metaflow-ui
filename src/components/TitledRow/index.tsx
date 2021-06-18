@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { readParameterValue } from '../../utils/parameters';
 
 //
 // Typedef
@@ -48,7 +47,7 @@ const TitledRow: React.FC<Props> = (props) => {
 
 /**
  * Turn any value to renderable ReactChild. Also make sure that some values like boolean or
- * JSON objects looks better thatn by default stringify
+ * JSON objects looks better than by default stringify
  * @param value Pretty much any value
  */
 export function valueToRenderableType(value: React.ReactNode): React.ReactChild {
@@ -59,11 +58,20 @@ export function valueToRenderableType(value: React.ReactNode): React.ReactChild 
   } else if (typeof value === 'number') {
     return value;
   } else if (typeof value === 'string') {
-    return readParameterValue(value);
+    try {
+      const val = JSON.parse(value);
+      if (typeof val === 'object') {
+        return <code>{JSON.stringify(val, null, 2)}</code>;
+      }
+      return value;
+    } catch {
+      return value;
+    }
   }
+
   try {
     const stringified = JSON.stringify(value, null, 2);
-    return stringified;
+    return <code>{stringified}</code>;
   } catch (e) {
     return '';
   }
