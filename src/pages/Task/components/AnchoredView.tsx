@@ -103,7 +103,7 @@ const HeightTracker: React.FC<{ updateLastSectionHeight: (height: number) => voi
 
 const AnchoredViewContainer = styled.div`
   display: flex;
-  padding: 0.75rem 0 0;
+  padding: 0.75rem 0 3rem 0;
   width 100%;
 `;
 

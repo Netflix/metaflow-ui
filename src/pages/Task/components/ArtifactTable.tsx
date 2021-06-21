@@ -42,12 +42,12 @@ const ArtifactTable: React.FC<Props> = ({ artifacts, onOpenContentClick }) => {
 
         return item.content;
       },
-      width: '25%',
+      width: '18rem',
     },
     {
       label: t('fields.location'),
       accessor: (item) => <ForceBreakText>{item.location}</ForceBreakText>,
-      width: '25%',
+      width: '18rem',
     },
     { label: t('fields.datastore-type'), prop: 'ds_type', width: '1%' },
   ];
