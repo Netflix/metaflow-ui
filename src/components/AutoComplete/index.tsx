@@ -42,7 +42,7 @@ const AutoComplete: React.FC<Props> = ({ result, setActiveOption, onSelect }) =>
         <AutoCompleteLine
           key={item.value}
           active={index === active}
-          onClick={() => {
+          onMouseDown={() => {
             onSelect(item.value);
           }}
           onMouseOver={() => {
