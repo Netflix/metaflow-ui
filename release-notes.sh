@@ -36,7 +36,7 @@ gh_api() {
     else
         curl -s -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com$1
     fi
-}    
+}
 
 # Extract value of key from JSON input
 # 
@@ -89,9 +89,10 @@ RELEASE_DATE=$(date)
 
 MERGES=$(git log --first-parent --pretty='format:%h %s' ${PREVIOUS_VERSION}..${VERSION})
 PR=$(echo "${MERGES}" | grep "#[[:digit:]]")
-PR_FEATURES=$(echo "${PR}" | grep -E 'feat/|feat:|Feat/')
-PR_BUGS=$(echo "${PR}" | grep -E 'bug/|bug:|hotfix/|hotfix:|bugfix/|bugfix:')
-PR_IMPROVEMENTS=$(echo "${PR}" | awk '!/feat\/|feat:|Feat\// && !/bug\/|bug:/ && !/hotfix\/|hotfix:/ && !/bugfix\/|bugfix:/')
+
+PR_FEATURES=$(echo "${PR}" | grep -Ei 'feat[/:]')
+PR_BUGS=$(echo "${PR}" | grep -Ei 'bug[/:]|hotfix[/:]|fix[/:]|bugfix[/:]')
+PR_IMPROVEMENTS=$(echo "${PR}" | grep -Eiv 'feat[/:]|bug[/:]|hotfix[/:]|fix[/:]|bugfix[/:]')
 
 RELEASE_NOTES="\
 **What’s new in version** \`${VERSION}\`
