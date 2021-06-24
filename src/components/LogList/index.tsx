@@ -14,7 +14,7 @@ type LogProps = {
 };
 
 //
-// Component
+// List large amount of logs in virtualised list.
 //
 
 const LIST_MAX_HEIGHT = 400;

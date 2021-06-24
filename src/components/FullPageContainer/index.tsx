@@ -17,7 +17,7 @@ type FullPageContainerProps = {
 };
 
 //
-// Component
+// Component for showing content full screen. Useful for part we want to give more space on demand.
 //
 
 const FullPageContainer: React.FC<FullPageContainerProps> = ({ children, onClose, component, title, actionbar }) => {

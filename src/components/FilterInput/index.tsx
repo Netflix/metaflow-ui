@@ -37,7 +37,7 @@ type FilterInputProps = {
 };
 
 //
-// Component
+// Input field with bunch of features like autocomplete.
 //
 
 const FilterInput: React.FC<FilterInputProps> = ({

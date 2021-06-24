@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 
 //
-// Component
+// Container that is automatically updating its height with animations.
 //
 
 const HeightAnimatedContainer: React.FC<{ active?: boolean }> = ({ children, active = true }) => {

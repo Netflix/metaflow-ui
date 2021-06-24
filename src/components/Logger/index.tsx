@@ -5,6 +5,10 @@ import styled from 'styled-components';
 import { StringParam, useQueryParams } from 'use-query-params';
 import { ItemRow } from '../Structure';
 
+//
+// Debug information logger. Logging records all HTTP and WS info to text file.
+//
+
 const Logger: React.FC = () => {
   const [logging, setLogging] = useState(false);
   const [q, sq] = useQueryParams({ debug: StringParam });

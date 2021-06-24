@@ -19,6 +19,9 @@ type Props = {
   'data-testid'?: string;
 };
 
+//
+// Basic error with (optional) icon and text
+//
 const GenericError: React.FC<Props> = ({ message, icon, noIcon, ...rest }) => (
   <GenericErrorContainer data-testid="generic-error" {...rest}>
     {!noIcon && (icon && typeof icon !== 'string' ? icon : <Icon name={icon || 'noData'} size="lg" />)}
@@ -52,6 +55,10 @@ export const knownErrorIds = [
   'log-error-s3',
   'log-error',
 ];
+
+//
+// Rendering API error with lot of data visible (stack trace etc...)
+//
 
 type APIErrorRendererProps = {
   error: APIError | null;
@@ -173,6 +180,10 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
     </DetailContainer>
   );
 };
+
+//
+// Style
+//
 
 const APIErrorContainer = styled.div`
   width: 100%;

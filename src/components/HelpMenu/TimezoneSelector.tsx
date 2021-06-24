@@ -42,6 +42,10 @@ const localTimeZone = tZones.find(
     tz[1].includes(spacetime().timezone().current.offset.toString()) && tz[1].includes(spacetime().timezone().name),
 );
 
+//
+// Show and select used timezone. Works hand in hand with timezone context
+//
+
 const TimezoneSelector: React.FC = () => {
   const [filter, setFilter] = useState<string>('');
   const { timezone, updateTimezone } = useContext(TimezoneContext);

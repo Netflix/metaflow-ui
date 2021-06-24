@@ -35,7 +35,7 @@ export type TaskListingProps = {
 };
 
 //
-// Component
+// Horizontal row with controls for task list (Timeline and task page)
 //
 
 const TaskListingHeader: React.FC<TaskListingProps> = ({

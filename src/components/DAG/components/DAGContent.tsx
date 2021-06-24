@@ -11,6 +11,7 @@ import Icon from '../../Icon';
 import { useTranslation } from 'react-i18next';
 import Tooltip, { TooltipTitle } from '../../Tooltip';
 import { mix } from 'polished';
+
 //
 // DAG Content section for when we have dag data
 //

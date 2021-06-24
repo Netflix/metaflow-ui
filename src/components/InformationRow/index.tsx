@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 
+//
+// Container element with predefined styles.
+//
+
 const InformationRow: React.FC<{
   spaceless?: boolean;
   scrollOverflow?: boolean;

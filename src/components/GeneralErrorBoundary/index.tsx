@@ -10,6 +10,10 @@ interface State {
   hasError: boolean;
 }
 
+//
+// Basic error boundary. Used in multiple parts of app
+//
+
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
     hasError: false,

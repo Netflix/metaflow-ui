@@ -10,36 +10,9 @@ import LaunchIconWhite from '../../assets/launch_white.svg';
 import { NotificationType } from '../Notifications';
 import { Announcement as IAnnouncement } from '../../types';
 
-/**
- * Add announcement item to seen list. Do we want to do this?
- */
-function addToSeenList(id: string) {
-  const items = localStorage.getItem('banned-announcements');
-  if (items) {
-    const parsed: string[] = JSON.parse(items);
-    if (Array.isArray(parsed)) {
-      if (parsed.indexOf(id) === -1) {
-        localStorage.setItem('banned-announcements', JSON.stringify([...parsed, id]));
-      }
-    } else {
-      localStorage.setItem('banned-announcements', JSON.stringify([id]));
-    }
-  } else {
-    localStorage.setItem('banned-announcements', JSON.stringify([id]));
-  }
-}
-
-function getSeenAnnouncements(): string[] {
-  const items = localStorage.getItem('banned-announcements');
-  if (items) {
-    const parsed: string[] = JSON.parse(items);
-    if (Array.isArray(parsed)) {
-      return parsed;
-    }
-  }
-  return [];
-}
-
+//
+// Render list of announcements which are not shown before
+//
 const Announcements: React.FC = () => {
   const [seen, setSeen] = useState<string[]>(getSeenAnnouncements());
   const [announcements, setAnnouncements] = useState<IAnnouncement[]>([]);
@@ -84,6 +57,9 @@ const Announcements: React.FC = () => {
   );
 };
 
+//
+// Render single announcement
+//
 const AnnouncementItem: React.FC<{ item: IAnnouncement; last: boolean; onClose: () => void }> = ({
   item,
   last,
@@ -117,6 +93,9 @@ const AnnouncementItem: React.FC<{ item: IAnnouncement; last: boolean; onClose: 
   );
 };
 
+//
+// Handle rendering of message in markdown OR plain text
+//
 export const MessageRender: React.FC<{ item: IAnnouncement }> = ({ item }) => {
   return (
     <>
@@ -152,6 +131,48 @@ export const MessageRender: React.FC<{ item: IAnnouncement }> = ({ item }) => {
     </>
   );
 };
+
+//
+// Utils
+//
+
+//
+// Add item to seen list that is stored in localstorage so we dont show
+// those announcements again
+//
+function addToSeenList(id: string) {
+  const items = localStorage.getItem('banned-announcements');
+  if (items) {
+    const parsed: string[] = JSON.parse(items);
+    if (Array.isArray(parsed)) {
+      if (parsed.indexOf(id) === -1) {
+        localStorage.setItem('banned-announcements', JSON.stringify([...parsed, id]));
+      }
+    } else {
+      localStorage.setItem('banned-announcements', JSON.stringify([id]));
+    }
+  } else {
+    localStorage.setItem('banned-announcements', JSON.stringify([id]));
+  }
+}
+
+//
+// Get all seen announcement IDs from localstorage
+//
+function getSeenAnnouncements(): string[] {
+  const items = localStorage.getItem('banned-announcements');
+  if (items) {
+    const parsed: string[] = JSON.parse(items);
+    if (Array.isArray(parsed)) {
+      return parsed;
+    }
+  }
+  return [];
+}
+
+//
+// Style
+//
 
 const AnnouncementsContainer = styled.div`
   position: fixed;

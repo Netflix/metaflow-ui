@@ -2,6 +2,11 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Spinner from '../Spinner';
 
+//
+// Full page loader that hides everything until finished. We want to be
+// sure that feature flags are loaded before showing the app so we dont get weird layout shifts
+//
+
 const FeatureFlagLoader: React.FC = () => {
   const [show, setShow] = useState(false);
 

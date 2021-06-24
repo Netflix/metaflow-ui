@@ -1,5 +1,9 @@
 import styled, { css } from 'styled-components';
 
+//
+// Collection of structuring elements for page.
+//
+
 export const Page = styled.div`
   max-width: ${(p) => p.theme.layout.maxWidth}px;
   margin: 0 auto 0 auto;

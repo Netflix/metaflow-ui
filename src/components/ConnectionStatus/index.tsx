@@ -11,6 +11,10 @@ type RealtimeStatus = 'Connected' | 'Stale' | 'Disconnected';
 
 const nowUnixTime = () => Math.floor(new Date().getTime() / 1000);
 
+//
+// Component for showing websocket status on top of the page.
+//
+
 const ConnectionStatus: React.FC = () => {
   const { t } = useTranslation();
 
@@ -75,6 +79,10 @@ const ConnectionStatus: React.FC = () => {
 };
 
 export default ConnectionStatus;
+
+//
+// Style
+//
 
 const Text = styled(SmallText)<{ status: RealtimeStatus }>`
   white-space: 'nowrap';

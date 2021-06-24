@@ -3,6 +3,10 @@ import styled, { css, ButtonColors } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { darken } from 'polished';
 
+//
+// Typedef
+//
+
 export type ButtonProps = {
   className?: string;
   disabled?: boolean;
@@ -24,6 +28,11 @@ const buttonFontSizes = {
   md: 1,
   lg: 1.25,
 };
+
+//
+// Basic button through out the application
+// TODO: Check if we really need all therse params
+//
 
 const Button: React.FC<ButtonProps> = ({
   className = '',
@@ -48,6 +57,10 @@ const Button: React.FC<ButtonProps> = ({
   );
 };
 
+//
+// Button but its actually a link.
+//
+
 export const ButtonLink: React.FC<Omit<ButtonProps, 'onClick'> & { to: string }> = ({ to, ...rest }) => {
   return (
     <StyledButtonLink to={to}>
@@ -55,6 +68,10 @@ export const ButtonLink: React.FC<Omit<ButtonProps, 'onClick'> & { to: string }>
     </StyledButtonLink>
   );
 };
+
+//
+// Style
+//
 
 const StyledButtonLink = styled(Link)`
   text-decoration: none;

@@ -7,6 +7,10 @@ import { ItemRow } from '../Structure';
 import HelpMenu from '../HelpMenu';
 import ConnectionStatus from '../ConnectionStatus';
 
+//
+// Main application bar which is always shown on top of the page
+//
+
 const AppBar: React.FC = () => {
   return (
     <Wrapper>
@@ -25,6 +29,10 @@ const AppBar: React.FC = () => {
 };
 
 export default AppBar;
+
+//
+// Style
+//
 
 const Wrapper = styled.header`
   max-width: ${(p) => p.theme.layout.maxWidth}px;

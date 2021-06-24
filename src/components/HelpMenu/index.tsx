@@ -21,6 +21,10 @@ const DEFAULT_LINKS = [
   { href: 'https://github.com/Netflix/metaflow', label: 'Github' },
 ];
 
+//
+// Additional menu that is available on top right corner of the page.
+//
+
 const HelpMenu: React.FC = () => {
   const [links, setLinks] = useState<HelpMenuLink[]>(DEFAULT_LINKS);
   const [open, setOpen] = useState(false);
@@ -94,6 +98,10 @@ const HelpMenu: React.FC = () => {
     </HelpMenuContainer>
   );
 };
+
+//
+// Style
+//
 
 const HelpMenuContainer = styled.div`
   position: relative;

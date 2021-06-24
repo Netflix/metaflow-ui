@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 
+//
+// Container to force rerender every second. Useful for time based components where we are
+// calculating time on client side
+//
+
 const AutoUpdating: React.FC<{ enabled: boolean; content: () => React.ReactNode }> = ({ content, enabled }) => {
   const rerender = useState(0);
 

@@ -3,11 +3,20 @@ import styled from 'styled-components';
 import { AutoCompleteItem } from '../../hooks/useAutoComplete';
 import { PopoverStyles } from '../Popover';
 
+//
+// Typedef
+//
+
 type Props = {
   result: AutoCompleteItem[];
   setActiveOption: (item: string | null) => void;
   onSelect: (item: string) => void;
 };
+
+//
+// Render list of autocomplete items in fixed popup container.
+// Active item can be changed with up and down arrows.
+//
 
 const AutoComplete: React.FC<Props> = ({ result, setActiveOption, onSelect }) => {
   const [active, setActive] = useState(-1);
@@ -55,6 +64,10 @@ const AutoComplete: React.FC<Props> = ({ result, setActiveOption, onSelect }) =>
     </AutoCompletePopup>
   );
 };
+
+//
+// Styles
+//
 
 const AutoCompletePopup = styled.div`
   ${PopoverStyles};

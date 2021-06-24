@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 
+//
+// Typedef
+//
+
 type PropertyTableScheme = 'dark' | 'bright' | 'normal';
 
 export type PropertyTableColumns<T> = {
@@ -16,6 +20,10 @@ type PropertyTableProps<T> = {
   scheme?: PropertyTableScheme;
   'data-testid'?: string;
 };
+
+//
+// Basic property table.
+//
 
 function PropertyTable<T>({ items, columns, scheme = 'normal', ...rest }: PropertyTableProps<T>): JSX.Element {
   return (
@@ -49,6 +57,10 @@ function PropertyTable<T>({ items, columns, scheme = 'normal', ...rest }: Proper
     </PropertyTableContainer>
   );
 }
+
+//
+// Style
+//
 
 const PropertyTableContainer = styled.table`
   border-radius: 4px;

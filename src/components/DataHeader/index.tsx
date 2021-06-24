@@ -12,6 +12,10 @@ type Props = {
   wide?: boolean;
 };
 
+//
+// Render full width container or label - value pairs horizontally.
+//
+
 const DataHeader: React.FC<Props> = ({ items, wide = false }) => {
   return (
     <DataHeaderContainer isWide={wide}>
@@ -23,6 +27,17 @@ const DataHeader: React.FC<Props> = ({ items, wide = false }) => {
     </DataHeaderContainer>
   );
 };
+
+const DataHeaderItem: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
+  <DataHeaderItemContainer>
+    <DataHeaderItemLabel>{label}</DataHeaderItemLabel>
+    <div>{value}</div>
+  </DataHeaderItemContainer>
+);
+
+//
+// Style
+//
 
 const DataHeaderContainer = styled.div<{ isWide: boolean }>`
   background: ${(p) => p.theme.color.bg.black};
@@ -37,13 +52,6 @@ const DataHeaderContent = styled.div`
   max-width: ${(p) => p.theme.layout.maxWidth}px;
   width: 100%;
 `;
-
-const DataHeaderItem: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
-  <DataHeaderItemContainer>
-    <DataHeaderItemLabel>{label}</DataHeaderItemLabel>
-    <div>{value}</div>
-  </DataHeaderItemContainer>
-);
 
 const DataHeaderItemContainer = styled.div`
   flex: auto;

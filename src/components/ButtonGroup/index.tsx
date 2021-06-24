@@ -1,5 +1,9 @@
 import styled from 'styled-components';
 
+//
+// Render bunch of buttons in grouped container
+//
+
 const ButtonGroup = styled.div<{ big?: boolean }>`
   display: flex;
   align-items: center;

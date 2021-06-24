@@ -7,6 +7,10 @@ type Props = {
   metadata: Metadata[];
 };
 
+//
+// Rendering custom metadata as markdown.
+//
+
 const RenderMetadata: React.FC<Props> = ({ metadata }) => {
   return (
     <div>
@@ -18,6 +22,10 @@ const RenderMetadata: React.FC<Props> = ({ metadata }) => {
     </div>
   );
 };
+
+//
+// Style
+//
 
 const TemplateSlot = styled.div`
   padding: 0.5rem 0;

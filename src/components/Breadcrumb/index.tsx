@@ -273,6 +273,9 @@ export function notEmptyAndEqual(value: string, current: string): boolean {
   return (value || '').length > 0 && value === current;
 }
 
+//
+// Take given string and try to parse valid path in our app for it.
+//
 export function pathFromString(str: string): string | null {
   const parts = str.split('/').filter((item) => item);
   if (parts.length === 0) {
@@ -289,6 +292,9 @@ export function pathFromString(str: string): string | null {
   return null;
 }
 
+//
+// Figure out path for auto complete request pased on path.
+//
 function urlFromString(str: string): { url: string | null; params: Record<string, string> } {
   const parts = str.split('/');
   const lastSplit = takeLastSplitFromURL(str);
@@ -303,6 +309,9 @@ function urlFromString(str: string): { url: string | null; params: Record<string
   return { url: null, params: {} };
 }
 
+//
+// Add one item to path string. So a/b/c d -> a/b/c/d
+//
 function mergeWithString(str: string, toAdd: string): string {
   return str
     .split('/')
