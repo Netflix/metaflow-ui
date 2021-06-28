@@ -12,7 +12,7 @@ it('Nofitifications - Default settings', () => {
           body: [],
         });
       }).as('NotificationsMockDataEmpty');
-      cy.get('[data-testid="helpmenu-link-notifications"]').click();
+      cy.get('[data-testid="helpmenu-link-notifications"]').first().click();
       cy.wait('@NotificationsMockDataEmpty');
       cy.get('[data-testid="generic-error"]').contains('No results found');
       cy.wait(500);
@@ -29,7 +29,7 @@ it('Nofitifications - Default settings', () => {
           body: NotificationsResponse,
         });
       }).as('NotificationsMockData');
-      cy.get('[data-testid="helpmenu-link-notifications"]').click();
+      cy.get('[data-testid="helpmenu-link-notifications"]').first().click();
       cy.wait('@NotificationsMockData');
       cy.get('[data-testid="notification-result"]').should('have.length', 3);
       cy.wait(500);

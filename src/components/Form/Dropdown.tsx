@@ -45,7 +45,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   }, [open, onClose]);
 
   return (
-    <InputWrapper active={open}>
+    <InputWrapper active={open} data-testid="select-field">
       {label && <InputLabel active={true}>{label}</InputLabel>}
       <DropdownWrapper>
         <select
@@ -95,6 +95,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
                   const isSelected = val === value;
                   return (
                     <DropdownOption
+                      data-testid={`option-${o[0]}`}
                       key={o[0]}
                       textOnly
                       variant={isSelected ? 'primaryText' : 'text'}

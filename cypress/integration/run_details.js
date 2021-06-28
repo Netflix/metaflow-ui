@@ -6,19 +6,20 @@ it('Run details - Default settings', () => {
   cy.get('.result-group-title').contains('Runs');
   // Should have only one result group
   cy.get('[data-testid="result-group"]').should('have.length', 1);
+
+  // set intercept for /dag GET and insert mock response for error
+  cy.intercept({ method: 'GET', url: '**/dag*' }, (req) => {
+    req.reply({
+      statusCode: 400,
+      body: {},
+    });
+  }).as('DAGMockDataError');
   // click on the first run item on the list
   cy.get('[data-testid="result-group-row"]').first().click();
   cy.get('[data-testid="collapsable-header"]').contains('Details').click();
   cy.get('[data-testid="titled-row"]').should('have.length', 3);
   cy.get('[data-testid="collapsable-header"]').contains('Details').click();
 
-  // set intercept for /dag GET and insert mock response for error
-  cy.intercept({ method: 'get', url: '**/dag**' }, (req) => {
-    req.reply({
-      statusCode: 400,
-      body: {},
-    });
-  }).as('DAGMockDataError');
   cy.get('[data-testid="tab-heading-item"]').first().contains('DAG').click();
   cy.wait('@DAGMockDataError');
   cy.get('[data-testid="collapsable-header"]').contains('Error details').click();
@@ -26,16 +27,24 @@ it('Run details - Default settings', () => {
   cy.get('[data-testid="collapsable-header"]').contains('Error details').click();
   cy.wait(500);
 
-  // navigate back to Timeline
-  cy.get('[data-testid="tab-heading-item"]').eq(1).contains('Timeline').click();
+  // go back to home to test for DAG content
+  cy.visit('');
+  // Should have general title "Runs"
+  cy.get('.result-group-title').contains('Runs');
+  // Should have only one result group
+  cy.get('[data-testid="result-group"]').should('have.length', 1);
 
   // set intercept for /dag GET and insert mock response for success
-  cy.intercept({ method: 'get', url: '**/dag**' }, (req) => {
+  cy.intercept({ method: 'GET', url: '**/dag*' }, (req) => {
     req.reply({
       statusCode: 200,
       body: DAGResponse,
     });
   }).as('DAGMockData');
+  cy.get('[data-testid="result-group-row"]').first().click();
+  // navigate back to Timeline
+  cy.get('[data-testid="tab-heading-item"]').eq(1).contains('Timeline').click();
+
   // navigate to DAG
   cy.get('[data-testid="tab-heading-item"]').first().contains('DAG').click();
   cy.wait('@DAGMockData');
@@ -70,7 +79,7 @@ it('Run details - Default settings', () => {
   // uncollapse timeline before moving forward
   cy.get('[data-testid="timeline-collapse-button"]').click();
   // lets test that Mode change actually changes the amount of timeline items
-  cy.get('.field-select')
+  cy.get('[data-testid="select-field"]')
     .contains('Mode')
     .parent()
     .click()
@@ -92,7 +101,7 @@ it('Run details - Default settings', () => {
         });
     });
   // reset timeline to Workflow mode
-  cy.get('.field-select')
+  cy.get('[data-testid="select-field"]')
     .contains('Mode')
     .parent()
     .click()

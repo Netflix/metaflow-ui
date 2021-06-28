@@ -12,13 +12,13 @@ it('Home - Default settings', () => {
     expect(new Date($dateCells.get(0).textContent) > new Date($dateCells.get(1).textContent)).to.be.true;
   });
   // open Group by
-  cy.get('.sidebar .field-select').click();
+  cy.get('.sidebar [data-testid="select-field"]').click();
   // should contain Group by flow
   cy.get('[data-testid="option-flow_id"]').contains('Group by flow').click();
   // Runs header should not exist any more
   cy.get('.result-group-title').should('not.contain', 'Runs');
   // open Group by
-  cy.get('.sidebar .field-select').click();
+  cy.get('.sidebar [data-testid="select-field"]').click();
   // should contain Group by user
   cy.get('[data-testid="option-user"]').contains('Group by user').click();
   // filter the list to show all runs by single user
@@ -28,7 +28,7 @@ it('Home - Default settings', () => {
   // remove the filter tag
   cy.get('[data-testid="filter-input-user"]').children().eq(1).click();
   // open Group by
-  cy.get('.sidebar .field-select').click();
+  cy.get('.sidebar [data-testid="select-field"]').click();
   // reset grouping
   cy.get('[data-testid="option-"]').contains('No grouping').click();
   // Should have only one result group
@@ -42,10 +42,10 @@ it('Home - Default settings', () => {
     .invoke('text')
     .then((text1) => {
       cy.get('[data-testid="helpmenu-toggle"]').click();
-      cy.get('[data-testid="helpmenu-popup"] .field-select').click();
+      cy.get('[data-testid="helpmenu-popup"] [data-testid="select-field"]').click();
       cy.get('[data-testid="helpmenu-popup"] [data-testid="filter-input-field"]').type('helsinki');
       cy.get('[data-testid="helpmenu-popup"] label').contains('Timezones').next().click();
-      cy.get('[data-testid="helpmenu-popup"] .field-select .dropdown-button')
+      cy.get('[data-testid="helpmenu-popup"] [data-testid="select-field"] .dropdown-button')
         .children()
         .should('contain.text', 'Europe/Helsinki');
       cy.get('[data-testid="helpmenu-close"]').click();
