@@ -16,6 +16,8 @@ import Spinner from '../../components/Spinner';
 import LaunchIconBlack from '../../assets/launch_black.svg';
 import { ItemRow } from '../../components/Structure';
 import GenericError from '../../components/GenericError';
+import ContentHeader from '../../components/Content/ContentHeader';
+import ContentWrapper from '../../components/Content/ContentWrapper';
 
 const Notifications: React.FC = () => {
   const { t } = useTranslation();
@@ -109,10 +111,10 @@ const Notifications: React.FC = () => {
             <div data-testId={'notification-results'}>
               {combinedArray.map((announcement) => {
                 if (announcement.type === 'header') {
-                  return <AnnouncementHeader key={announcement.id}>{announcement.message}</AnnouncementHeader>;
+                  return <ContentHeader key={announcement.id}>{announcement.message}</ContentHeader>;
                 } else {
                   return (
-                    <AnnouncementWrapper data-testId={'notification-result'} key={announcement.id}>
+                    <ContentWrapper data-testId={'notification-result'} key={announcement.id}>
                       <IconWrapper>
                         <Icon name="warningThick" size="md" />
                       </IconWrapper>
@@ -123,7 +125,7 @@ const Notifications: React.FC = () => {
                             (announcement as IAnnouncement).created,
                         )}`}</Published>
                       </MessageWrapper>
-                    </AnnouncementWrapper>
+                    </ContentWrapper>
                   );
                 }
               })}
@@ -147,28 +149,6 @@ const Content = styled.div`
 
 const Header = styled.h3`
   margin: 1rem 0;
-`;
-
-const AnnouncementHeader = styled.div`
-  border-bottom: 1px solid #e9e9e9;
-  color: #333;
-  display: inline-flex;
-  font-size: 0.875rem;
-  font-weight: 400;
-  line-height: 1.5rem;
-  margin: 1.5rem 0 1rem;
-  padding: 0 0 0.25rem;
-  width: 100%;
-
-  &:first-of-type {
-    margin: 0 0 1rem;
-  }
-`;
-
-const AnnouncementWrapper = styled.div`
-  display: flex;
-  flex-direction: row;
-  margin: 0 0 0.5rem;
 `;
 
 const IconWrapper = styled.div`

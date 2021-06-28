@@ -4,6 +4,7 @@ import NotFound from '../NotFound';
 import HomePage from '../Home';
 import RunPage from '../Run';
 import NotificationsPage from '../Notifications';
+import DebugPage from '../Debug';
 import { SHORT_PATHS } from '../../utils/routing';
 import { analyticsSendPageView } from '../../utils/analytics';
 
@@ -39,6 +40,10 @@ const RootPage: React.FC = () => {
 
         <Route exact path={SHORT_PATHS.notifications}>
           <NotificationsPage />
+        </Route>
+
+        <Route exact path={SHORT_PATHS.debug}>
+          <DebugPage />
         </Route>
 
         <Route>

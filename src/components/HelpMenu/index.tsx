@@ -7,6 +7,7 @@ import { PopoverWrapper } from '../Popover';
 import { BigButton } from '../Button';
 import TimezoneSelector from './TimezoneSelector';
 import VERSION_INFO from '../../utils/VERSION';
+import FEATURE_FLAGS from '../../utils/FEATURE';
 import { Link } from 'react-router-dom';
 
 type HelpMenuLink = {
@@ -75,6 +76,12 @@ const HelpMenu: React.FC = () => {
             <HelpMenuItem data-testid="helpmenu-link-notifications">{t(link.label)}</HelpMenuItem>
           </Link>
         ))}
+
+        {FEATURE_FLAGS.DEBUG_VIEW && (
+          <Link to="/debug" style={{ textDecoration: 'none' }}>
+            <HelpMenuItem data-testid="helpmenu-link-notifications">Debug</HelpMenuItem>
+          </Link>
+        )}
 
         {links.map((link) => (
           <StyledHelpMenuLink key={link.href + link.label} href={link.href} target="_blank" data-testid="helpmenu-link">

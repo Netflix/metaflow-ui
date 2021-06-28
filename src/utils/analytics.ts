@@ -5,9 +5,12 @@ import ReactGA from 'react-ga';
 //
 
 let trackingEnabled = false;
+export let GAtrackingId: string | null = null;
+
 export function initializeGA(trackingId: string | null = null): void {
   if (trackingId && trackingId !== 'none') {
     trackingEnabled = true;
+    GAtrackingId = trackingId;
     ReactGA.initialize(trackingId);
   }
 }

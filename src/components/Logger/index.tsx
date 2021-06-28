@@ -1,47 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { endLogging, getLogs, startLogging } from '../../utils/debugdb';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { getLogs } from '../../utils/debugdb';
 import Button from '../Button';
 import styled from 'styled-components';
-import { StringParam, useQueryParams } from 'use-query-params';
 import { ItemRow } from '../Structure';
+import useLogger from '../../hooks/useLogger';
 
 //
 // Debug information logger. Logging records all HTTP and WS info to text file.
 //
 
 const Logger: React.FC = () => {
-  const [logging, setLogging] = useState(false);
-  const [q, sq] = useQueryParams({ debug: StringParam });
+  const { enabled, stopLogging } = useLogger();
+  const { t } = useTranslation();
 
-  const stopLogging = () => {
-    endLogging();
-    sq({ debug: undefined }, 'replaceIn');
-    localStorage.setItem('debug-mode', 'false');
-    setLogging(false);
-  };
-
-  useEffect(() => {
-    const setting = localStorage.getItem('debug-mode');
-    if ((setting && setting === 'true') || q?.debug === '1') {
-      setLogging(true);
-      startLogging();
-      localStorage.setItem('debug-mode', 'true');
-    } else {
-      stopLogging();
-    }
-  }, []); // eslint-disable-line
-
-  return logging ? (
+  return enabled ? (
     <LoggerContainer>
       <ItemRow justify="space-between">
-        <div style={{ width: '100%' }}>Recording logs</div>
+        <div style={{ width: '100%' }}>{t('debug.recording_logs')}</div>
 
         <ItemRow>
-          <Button textOnly onClick={() => getLogs()}>
-            Download logs
+          <Button
+            textOnly
+            onClick={() => {
+              getLogs();
+              stopLogging();
+            }}
+          >
+            {t('debug.stop_and_download')}
           </Button>
           <Button textOnly onClick={stopLogging}>
-            Stop
+            {t('debug.stop_and_discard')}
           </Button>
         </ItemRow>
       </ItemRow>
@@ -58,7 +47,7 @@ const LoggerContainer = styled.div`
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 25rem;
+  width: 35rem;
   z-index: 999;
   background: #dd5d54;
   color: #fff;
@@ -66,12 +55,17 @@ const LoggerContainer = styled.div`
   padding: 0.15rem 0 0.15rem 0.5rem;
 
   button {
+    white-space: nowrap;
     color: #fff;
     background: rgba(0, 0, 0, 0.2);
 
     &:hover {
       background: transparent;
       background: rgba(0, 0, 0, 0.1);
+    }
+
+    &:last-child {
+      margin-right: 0.5rem;
     }
   }
 `;

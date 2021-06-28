@@ -15,6 +15,7 @@ import AppBar from './components/AppBar';
 import { NotificationsProvider, Notifications } from './components/Notifications';
 import ErrorBoundary from './components/GeneralErrorBoundary';
 import { TimezoneProvider } from './components/TimezoneProvider';
+import { LoggingProvider } from './hooks/useLogger';
 import FeatureFlagLoader from './components/FeatureLoader';
 import Logger from './components/Logger';
 
@@ -43,24 +44,26 @@ const App: React.FC = () => {
       <ErrorBoundary message={t('error.application-error')}>
         <NotificationsProvider>
           <TimezoneProvider>
-            <GlobalStyle />
-            <Router>
-              <QueryParamProvider ReactRouterRoute={Route}>
-                {flagsReceived ? (
-                  <>
-                    <Notifications />
-                    <Announcements />
-                    <AppBar />
-                    <Page>
-                      <Root />
-                    </Page>
-                    <Logger />
-                  </>
-                ) : (
-                  <FeatureFlagLoader />
-                )}
-              </QueryParamProvider>
-            </Router>
+            <LoggingProvider>
+              <GlobalStyle />
+              <Router>
+                <QueryParamProvider ReactRouterRoute={Route}>
+                  {flagsReceived ? (
+                    <>
+                      <Notifications />
+                      <Announcements />
+                      <AppBar />
+                      <Page>
+                        <Root />
+                      </Page>
+                      <Logger />
+                    </>
+                  ) : (
+                    <FeatureFlagLoader />
+                  )}
+                </QueryParamProvider>
+              </Router>
+            </LoggingProvider>
           </TimezoneProvider>
         </NotificationsProvider>
       </ErrorBoundary>
