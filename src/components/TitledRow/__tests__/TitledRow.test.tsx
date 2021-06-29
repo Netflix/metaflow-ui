@@ -30,7 +30,7 @@ test('renderValue', () => {
     <code>{'{\n  "a": "h",\n  "b": 4,\n  "c": {\n    "a": "a"\n  }\n}'}</code>,
   );
   // array
-  expect(valueToRenderableType([1, 2, 3, 4])).toEqual(<code>{'[\n  1,\n  2,\n  3,\n  4\n]'}</code>);
+  expect(valueToRenderableType([1, 2, 3, 4])).toEqual(<code>{'[1,2,3,4]'}</code>);
 });
 
 test('<TitledRow /> - default mode', () => {

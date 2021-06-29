@@ -70,7 +70,7 @@ export function valueToRenderableType(value: React.ReactNode): React.ReactChild 
   }
 
   try {
-    const stringified = JSON.stringify(value, null, 2);
+    const stringified = JSON.stringify(value, null, Array.isArray(value) ? undefined : 2);
     return <code>{stringified}</code>;
   } catch (e) {
     return '';
