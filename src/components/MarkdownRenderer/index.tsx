@@ -4,24 +4,35 @@ import Markdown from 'markdown-to-jsx';
 import LaunchIconBlack from '../../assets/launch_black.svg';
 
 const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => (
-  <Markdown
-    className="markdown"
-    options={{
-      overrides: {
-        a: {
-          component: MarkdownLink,
-          props: {
-            target: '_blank',
+  <MarkdownContainer>
+    <Markdown
+      className="markdown"
+      options={{
+        overrides: {
+          a: {
+            component: MarkdownLink,
+            props: {
+              target: '_blank',
+            },
           },
         },
-      },
-    }}
-  >
-    {content}
-  </Markdown>
+      }}
+    >
+      {content}
+    </Markdown>
+  </MarkdownContainer>
 );
 
 export default MarkdownRenderer;
+
+const MarkdownContainer = styled.div`
+  max-width: 100%;
+  overflow-x: auto;
+
+  .markdown {
+    white-space: pre-wrap;
+  }
+`;
 
 const MarkdownLink = styled.a`
   color: inherit;
