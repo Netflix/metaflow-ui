@@ -1,12 +1,11 @@
 import DAGResponse from '../fixtures/dag_response';
 
 it('Run details - Default settings', () => {
-  cy.visit('');
+  cy.visit('/');
   // Should have general title "Runs"
   cy.get('.result-group-title').contains('Runs');
   // Should have only one result group
   cy.get('[data-testid="result-group"]').should('have.length', 1);
-
   // set intercept for /dag GET and insert mock response for error
   cy.intercept({ method: 'GET', url: '**/dag*' }, (req) => {
     req.reply({
@@ -19,21 +18,18 @@ it('Run details - Default settings', () => {
   cy.get('[data-testid="collapsable-header"]').contains('Details').click();
   cy.get('[data-testid="titled-row"]').should('have.length', 3);
   cy.get('[data-testid="collapsable-header"]').contains('Details').click();
-
   cy.get('[data-testid="tab-heading-item"]').first().contains('DAG').click();
   cy.wait('@DAGMockDataError');
   cy.get('[data-testid="collapsable-header"]').contains('Error details').click();
   cy.get('[data-testid="titled-row"]').should('have.length', 4);
   cy.get('[data-testid="collapsable-header"]').contains('Error details').click();
-  cy.wait(500);
 
   // go back to home to test for DAG content
-  cy.visit('');
+  cy.visit('/');
   // Should have general title "Runs"
   cy.get('.result-group-title').contains('Runs');
   // Should have only one result group
   cy.get('[data-testid="result-group"]').should('have.length', 1);
-
   // set intercept for /dag GET and insert mock response for success
   cy.intercept({ method: 'GET', url: '**/dag*' }, (req) => {
     req.reply({
@@ -44,7 +40,6 @@ it('Run details - Default settings', () => {
   cy.get('[data-testid="result-group-row"]').first().click();
   // navigate back to Timeline
   cy.get('[data-testid="tab-heading-item"]').eq(1).contains('Timeline').click();
-
   // navigate to DAG
   cy.get('[data-testid="tab-heading-item"]').first().contains('DAG').click();
   cy.wait('@DAGMockData');
@@ -52,7 +47,6 @@ it('Run details - Default settings', () => {
   cy.get('[data-testid="dag-parallel-container"]').should('have.length', 1);
   cy.get('[data-testid="dag-normalitem-box"]').should('have.length', 34);
   cy.get('[data-testid="dag-normalitem"]').first().scrollIntoView({ duration: 500 }).should('be.visible');
-  cy.wait(500);
 
   // lets test that collapse button actually changes the amount of timeline items
   cy.get('[data-testid="tab-heading-item"]')
@@ -113,4 +107,26 @@ it('Run details - Default settings', () => {
   cy.get('#taskinfo [data-testid="collapsable-header"]').click();
   cy.get('[data-testid="titled-row"]').should('have.length', 6);
   cy.get('#taskinfo [data-testid="collapsable-header"]').click();
+
+  // open details
+  cy.get('[data-testid="collapsable-header"]').contains('Details').scrollIntoView({ duration: 500 }).click();
+  cy.get('[data-testid="titled-row-title"]').eq(2).contains('System tags');
+  // ensure that the run actually has some run parameters
+  cy.get('[data-testid="titled-row-default-mode"]')
+    .eq(2)
+    .get('[data-testid="titled-row-default-mode"] div')
+    .children()
+    .should('have.length.above', 1);
+  cy.get('[data-testid="titled-row-default-mode"]')
+    .eq(2)
+    .get('[data-testid="titled-row-default-mode"] div a')
+    .eq(2)
+    .then((element) => {
+      // filter runs view with a system tag
+      cy.get(element).click();
+      // ensure that the selected tag from earlier exists
+      cy.wait(500).get('.removable-tag').contains(element.text().replace(', ', ''));
+      // remove the tag
+      cy.get('.removable-tag').click();
+    });
 });
