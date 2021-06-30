@@ -11,15 +11,8 @@ Metaflow UI is tool to monitor [Metaflow](https://github.com/Netflix/metaflow) w
 
 Using Metaflow UI requires [Metaflow Metadata Service](https://github.com/Netflix/metaflow-service) for now.
 
-### Quick try
+See [docs/README.md](docs/README.md) to setup local development environment.
 
-For trying out UI with existing [Metaflow Metadata Service](https://github.com/Netflix/metaflow-service) you can use `local-service.sh` script. Script will install most recent version of UI and it's backend service and connect to your existing database. Requires [docker](https://www.docker.com/) to be installed and running.
-
-1. Clone or download this repo
-2. Run `./local-service.sh` on your terminal
-3. Script will ask for Database info to connect
-
-Note that spinning up UI for first time will take a while since UI and it's backend has to be downloaded.
 ### Installation to server
 
 Metaflow UI has separate backend service from Metaflow Metadata Service but it is using same Database. To setup UI service to your server follow instructions at [Metaflow UI Service](https://github.com/Netflix/metaflow-service/tree/ui).
