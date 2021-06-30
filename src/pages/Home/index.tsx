@@ -3,13 +3,20 @@ import React, { useEffect, useCallback, useReducer } from 'react';
 import { Run as IRun } from '../../types';
 import useResource from '../../hooks/useResource';
 import { parseOrderParam, directionFromText, swapDirection } from '../../utils/url';
+import { getTimeFromPastByDays } from '../../utils/date';
 import HomeSidebar from './Sidebar';
 import HomeContentArea from './Content';
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { useTranslation } from 'react-i18next';
 import useHomeParameters, { defaultHomeParameters } from './useHomeParameters';
 import HomeReducer from './Home.state';
-import { isGrouping, makeActiveRequestParameters, makeWebsocketParameters, paramList } from './Home.utils';
+import {
+  isGrouping,
+  makeActiveRequestParameters,
+  makeWebsocketParameters,
+  paramList,
+  isDefaultParams,
+} from './Home.utils';
 import ScrollToTop from './ScrollToTop';
 import { useHistory } from 'react-router';
 
@@ -85,7 +92,15 @@ const Home: React.FC = () => {
     } else if (historyAction !== 'POP' || scrollValue === 0) {
       HomeStateCache.active = true;
     }
-  }, [historyAction, initialised]);
+
+    if (historyAction !== 'POP') {
+      // We want to add timerange filter if we are rolling with default params
+      // but not in back event. In back event we should keep state we had
+      if (isDefaultParams(rawParams)) {
+        setQp({ timerange_start: getTimeFromPastByDays(30).toString() });
+      }
+    }
+  }, [historyAction, initialised]); // eslint-disable-line
 
   useEffect(() => {
     HomeStateCache.page = page;

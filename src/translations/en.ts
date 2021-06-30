@@ -17,6 +17,7 @@ const en = {
       'show-all-runs': 'Show all runs',
       'new-run-available': 'New runs at the top',
       'scroll-to-top': 'Scroll to top',
+      'no-timeframe-warning': 'Handling runs without a Time frame can be slow.',
     },
 
     help: {
@@ -82,6 +83,7 @@ const en = {
       'no-tags': 'No user tags',
       'no-system-tags': 'No system tags',
       'no-metadata': 'No run metadata found',
+      'failed-to-load-metadata': 'Failed to load metadata',
       DAG: 'DAG',
       'dag-not-available': 'DAG is currently not available',
       'dag-only-available-AWS': 'DAG is only available when flow is executed on AWS.',
@@ -263,6 +265,13 @@ const en = {
       set: 'Set',
     },
 
+    date: {
+      'select-preset': 'Select preset',
+      month: 'Last 30 days',
+      twoweeks: 'Last 14 days',
+      yesterday: 'Yesterday',
+      today: 'Today',
+    },
     debug: {
       title: 'Debug',
       feature_flags: 'Feature flags',

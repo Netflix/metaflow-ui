@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { isFirefox } from '../../utils/browser';
 import { InputLabel } from './InputLabel';
@@ -33,6 +33,10 @@ const DateInput: React.FC<DateInputProps> = ({
   const [hasFocus, setHasFocus] = useState(false);
   const [val, setVal] = useState(getInitialValue(inputType, initialValue));
   const inputEl = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setVal(initialValue);
+  }, [initialValue]);
 
   return (
     <InputWrapper

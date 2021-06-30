@@ -73,6 +73,7 @@ const AutoCompletePopup = styled.div`
   ${PopoverStyles};
   position: absolute;
   top: 100%;
+  margin-top: 0.375rem;
   left: 0;
   width: 100%;
   word-break: break-all;

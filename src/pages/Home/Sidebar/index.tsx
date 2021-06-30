@@ -62,6 +62,8 @@ const HomeSidebar: React.FC<Props> = ({
 
           <SidebarStatusSelection updateField={updateListValue} status={params.status} />
 
+          <SidebarTimerangeSelection updateField={handleParamChange} params={params} />
+
           <SidebarSectionWrapper data-testid="filter-input-flow">
             <FilterInput
               onSubmit={(v) => updateListValue('flow_id', v)}
@@ -128,12 +130,6 @@ const HomeSidebar: React.FC<Props> = ({
             />
           </SidebarSectionWrapper>
 
-          <SidebarTimerangeSelection
-            updateField={handleParamChange}
-            startTime={params.timerange_start}
-            endTime={params.timerange_end}
-          />
-
           <SidebarSectionWrapper data-testid="filter-input-tag">
             <FilterInput
               onSubmit={(v) => updateListValue('_tags', v)}
@@ -188,6 +184,7 @@ const Sidebar = styled.div`
 const SidebarContent = styled.div`
   margin-top: 0.25rem;
   width: 14rem;
+  padding-left: 0.25rem;
 `;
 
 export const SidebarSectionWrapper = styled.div`

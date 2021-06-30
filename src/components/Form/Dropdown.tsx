@@ -4,6 +4,7 @@ import Icon from '../Icon';
 import Button from '../Button';
 import InputWrapper from './InputWrapper';
 import { InputLabel } from './InputLabel';
+import { PopoverWrapper } from '../Popover';
 
 type DropdownProps = {
   id?: string;
@@ -88,7 +89,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
         {open && (
           <>
-            <DropdownOptions>
+            <DropdownOptions show={open}>
               {children ||
                 options.map((o) => {
                   const val = o[0];
@@ -169,20 +170,17 @@ const DropdownButton = styled(Button)`
   }
 `;
 
-const DropdownOptions = styled.div`
+const DropdownOptions = styled(PopoverWrapper)`
   position: absolute;
   width: 100%;
   min-width: 9.375rem;
 
-  top: 110%;
-  left: 0;
+  top: 100%;
+  margin-top: 0.375rem;
 
   padding: 0.625rem;
-  background: ${(p) => p.theme.color.bg.white};
-  border: ${(p) => p.theme.border.thinMid};
   z-index: 10;
   white-space: nowrap;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.06);
 
   max-height: 80vh;
   overflow-y: auto;

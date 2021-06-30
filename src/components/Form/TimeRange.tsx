@@ -11,6 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { isFirefox } from '../../utils/browser';
 import InputWrapper from './InputWrapper';
 import DateInput from './DateInput';
+import Dropdown from './Dropdown';
+import { getTimeFromPastByDays } from '../../utils/date';
 
 //
 // Typedef
@@ -30,7 +32,11 @@ type TimeRangeProps = {
 const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialValues }) => {
   const { t } = useTranslation();
   const [show, setShow] = useState(false);
-  const [values, setValues] = useState<{ start: number | null; end: number | null }>({ start: null, end: null });
+  const [values, setValues] = useState<{ start: number | null; end: number | null }>({
+    start: initialValues ? initialValues[0] : null,
+    end: initialValues ? initialValues[1] : null,
+  });
+  const [selectedPreset, setPreset] = useState<string>('none');
   const { timezone } = useContext(TimezoneContext);
 
   const startValue = initialValues && initialValues[0];
@@ -65,16 +71,40 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
       <Popover show={show}>
         {show && (
           <>
+            <Dropdown
+              label="Preset"
+              value={selectedPreset}
+              options={[
+                ['none', t('date.select-preset')],
+                ['month', t('date.month')],
+                ['twoweek', t('date.twoweeks')],
+                ['yesterday', t('date.yesterday')],
+                ['today', t('date.today')],
+              ]}
+              onChange={(e) => {
+                const val = e?.target?.value;
+                if (val) {
+                  setPreset(val);
+                }
+
+                if (val === 'month') {
+                  setValues({ start: getTimeFromPastByDays(30, timezone), end: null });
+                } else if (val === 'twoweek') {
+                  setValues({ start: getTimeFromPastByDays(14, timezone), end: null });
+                } else if (val === 'yesterday') {
+                  setValues({ start: getTimeFromPastByDays(1, timezone), end: getTimeFromPastByDays(0, timezone) });
+                } else if (val === 'today') {
+                  setValues({ start: getTimeFromPastByDays(0, timezone), end: null });
+                }
+              }}
+            />
+
             <DateInput
               inputType="datetime-local"
               tip={isFirefox ? 'YYYY-MM-DD HH:mm' : undefined}
               onSubmit={HandleSubmit}
               label={t('component.startTime')}
-              initialValue={
-                initialValues && initialValues[0]
-                  ? getDateTimeLocalString(new Date(initialValues[0]), timezone)
-                  : undefined
-              }
+              initialValue={values.start ? getDateTimeLocalString(new Date(values.start), timezone) : undefined}
               onChange={(value) => {
                 setValues((vals) => ({ ...vals, start: value ? spacetime(value, timezone).epoch : null }));
               }}
@@ -84,11 +114,7 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
               tip={isFirefox ? 'YYYY-MM-DD HH:mm' : undefined}
               onSubmit={HandleSubmit}
               label={t('component.endTime')}
-              initialValue={
-                initialValues && initialValues[1]
-                  ? getDateTimeLocalString(new Date(initialValues[1]), timezone)
-                  : undefined
-              }
+              initialValue={values.end ? getDateTimeLocalString(new Date(values.end), timezone) : undefined}
               onChange={(value) => {
                 setValues((vals) => ({ ...vals, end: value ? spacetime(value, timezone).epoch : null }));
               }}
@@ -101,6 +127,7 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
             shaded={true}
             onClick={() => {
               setShow(false);
+              setPreset('none');
             }}
           >
             {t('component.cancel')}
@@ -113,6 +140,7 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
                 end: values.end,
               });
               setShow(false);
+              setPreset('none');
             }}
           >
             {t('component.set')}
@@ -130,7 +158,8 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
 const TimeRangeContainer = styled.div`
   position: relative;
   .popover {
-    top: 2.75rem;
+    top: 100%;
+    margin-top: 0.375rem;
     width: 100%;
 
     > section {

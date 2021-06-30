@@ -20,3 +20,11 @@ export const getDateTimeLocalString = (date: Date, timezone?: string): string =>
   }
   return spacetime(date, 'GMT+0').unixFmt('yyyy-MM-ddTHH:mm');
 };
+
+// Return timepoint X days from now.
+export const getTimeFromPastByDays = (days: number, timezone?: string): number => {
+  if (timezone) {
+    return spacetime.now(`${timezone}`).subtract(days, 'day').startOf('day').epoch;
+  }
+  return spacetime(Date.now() - 1000 * 60 * 60 * 24 * days).startOf('day').epoch;
+};

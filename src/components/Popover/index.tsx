@@ -18,7 +18,8 @@ const Popover: React.FC<{ children: ReactNode; show?: boolean }> = ({ children, 
 //
 
 export const PopoverStyles = css`
-  box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.07), 0 0px 0px 1px rgba(0, 0, 0, 0.07);
+  border: 1px solid #d0d0d0;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.25));
   padding: ${(p) => p.theme.spacer.sm}rem;
   background: ${(p) => p.theme.color.bg.white};
   border-radius: 0.25rem;
