@@ -230,7 +230,7 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     updatePredicate: (a, b) => a.task_id === b.task_id,
     queryParams: {
       _order: '+ts_epoch',
-      _limit: '200',
+      _limit: '1000',
       postprocess: 'false',
     },
     socketParamFilter: ({ postprocess, ...rest }) => {
