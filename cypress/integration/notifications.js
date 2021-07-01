@@ -1,7 +1,10 @@
 import NotificationsResponse from '../fixtures/notifications_response';
 
-it('Nofitifications - Default settings', () => {
-  cy.visit('');
+beforeEach(() => {
+  cy.visit('/');
+});
+
+it('Nofitifications - Mock empty response', () => {
   cy.get('[data-testid="helpmenu-toggle"]')
     .click()
     .then(() => {
@@ -15,10 +18,10 @@ it('Nofitifications - Default settings', () => {
       cy.get('[data-testid="helpmenu-link-notifications"]').first().click();
       cy.wait('@NotificationsMockDataEmpty');
       cy.get('[data-testid="generic-error"]').contains('No results found');
-      cy.wait(500);
     });
+});
 
-  cy.visit('');
+it('Nofitifications - Mock response', () => {
   cy.get('[data-testid="helpmenu-toggle"]')
     .click()
     .then(() => {
@@ -32,6 +35,5 @@ it('Nofitifications - Default settings', () => {
       cy.get('[data-testid="helpmenu-link-notifications"]').first().click();
       cy.wait('@NotificationsMockData');
       cy.get('[data-testid="notification-result"]').should('have.length', 3);
-      cy.wait(500);
     });
 });

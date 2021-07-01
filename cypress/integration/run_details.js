@@ -1,11 +1,14 @@
 import DAGResponse from '../fixtures/dag_response';
 
-it('Run details - Default settings', () => {
+beforeEach(() => {
   cy.visit('/');
   // Should have general title "Runs"
   cy.get('.result-group-title').contains('Runs');
   // Should have only one result group
   cy.get('[data-testid="result-group"]').should('have.length', 1);
+});
+
+it('Run details - Navigate to Run Details/DAG with an error response', () => {
   // set intercept for /dag GET and insert mock response for error
   cy.intercept({ method: 'GET', url: '**/dag*' }, (req) => {
     req.reply({
@@ -23,13 +26,9 @@ it('Run details - Default settings', () => {
   cy.get('[data-testid="collapsable-header"]').contains('Error details').click();
   cy.get('[data-testid="titled-row"]').should('have.length', 4);
   cy.get('[data-testid="collapsable-header"]').contains('Error details').click();
+});
 
-  // go back to home to test for DAG content
-  cy.visit('/');
-  // Should have general title "Runs"
-  cy.get('.result-group-title').contains('Runs');
-  // Should have only one result group
-  cy.get('[data-testid="result-group"]').should('have.length', 1);
+it('Run details - Navigate to Run Details/DAG with a succesful response', () => {
   // set intercept for /dag GET and insert mock response for success
   cy.intercept({ method: 'GET', url: '**/dag*' }, (req) => {
     req.reply({
@@ -47,7 +46,11 @@ it('Run details - Default settings', () => {
   cy.get('[data-testid="dag-parallel-container"]').should('have.length', 1);
   cy.get('[data-testid="dag-normalitem-box"]').should('have.length', 34);
   cy.get('[data-testid="dag-normalitem"]').first().scrollIntoView({ duration: 500 }).should('be.visible');
+});
 
+it('Run details - Test Timeline controls', () => {
+  // click on the first run item on the list
+  cy.get('[data-testid="result-group-row"]').first().click();
   // lets test that collapse button actually changes the amount of timeline items
   cy.get('[data-testid="tab-heading-item"]')
     .eq(1)
@@ -102,6 +105,11 @@ it('Run details - Default settings', () => {
     .then(() => {
       cy.get('[data-testid="option-overview"]').click();
     });
+});
+
+it('Run details - Navigate back to Runs view with a system_tag filter', () => {
+  // click on the first run item on the list
+  cy.get('[data-testid="result-group-row"]').first().click().wait(500);
   // move to Task tab
   cy.get('[data-testid="tab-heading-item"]').eq(2).contains('Task').click();
   cy.get('#taskinfo [data-testid="collapsable-header"]').click();
