@@ -114,7 +114,12 @@ const Task: React.FC<TaskViewProps> = ({
 
   const tasks = taskFromList || tasksFromFetch;
 
-  const attemptId = qp.attempt ? parseInt(qp.attempt) : tasks ? tasks.length - 1 : 0;
+  // Use attempt id from query parameters OR biggest attemmpt id available
+  const attemptId = qp.attempt
+    ? parseInt(qp.attempt)
+    : tasks
+    ? tasks.map((item) => item.attempt_id).sort((a, b) => b - a)[0]
+    : 0;
   const task = tasks?.find((item) => item.attempt_id === attemptId) || null;
   const isCurrentTaskFinished = !!(task && task.finished_at);
 
