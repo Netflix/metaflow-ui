@@ -2,8 +2,8 @@ import { DecodedValueMap, SetQuery, StringParam, useQueryParams, withDefault } f
 
 export const defaultHomeParameters = {
   _order: '-ts_epoch',
-  _limit: '15',
-  _group_limit: '15',
+  _limit: '30',
+  _group_limit: '30',
   status: 'completed,failed,running',
 };
 
