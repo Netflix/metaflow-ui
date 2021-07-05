@@ -58,7 +58,11 @@ export default function useSeachField(flowID: string, runNumber: string): Search
   const [enabled, setEnabled] = useState(true);
 
   const updateSearchResults = (newResults: SearchResultModel) => {
-    setSearchResults(newResults);
+    setSearchResults({
+      ...newResults,
+      // Only display items that were searchable, unsearchable result indicates error
+      result: newResults.result.filter((r) => r.searchable),
+    });
     cache.results = newResults;
     cache.id = flowID + runNumber;
   };
