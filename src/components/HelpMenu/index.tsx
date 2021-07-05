@@ -78,8 +78,14 @@ const HelpMenu: React.FC = () => {
         ))}
 
         {FEATURE_FLAGS.DEBUG_VIEW && (
-          <Link to="/debug" style={{ textDecoration: 'none' }}>
-            <HelpMenuItem data-testid="helpmenu-link-notifications">Debug</HelpMenuItem>
+          <Link
+            to="/debug"
+            onClick={() => {
+              setOpen(false);
+            }}
+            style={{ textDecoration: 'none' }}
+          >
+            <HelpMenuItem data-testid="helpmenu-link-debug">Debug</HelpMenuItem>
           </Link>
         )}
 

@@ -18,8 +18,8 @@ const DebugPage: React.FC = () => {
     <div>
       <h2>{t('debug.title')}</h2>
       <DebugContainer>
-        <DebugColumn>
-          <ContentHeader>{t('debug.feature_flags')}</ContentHeader>
+        <DebugColumn data-testid="debug_column">
+          <ContentHeader data-testid="debug_content_header">{t('debug.feature_flags')}</ContentHeader>
           <BasicWrapper>
             {Object.keys(FEATURE_FLAGS).map((key) => (
               <FeatureFlagItem key={key} flag={key} active={FEATURE_FLAGS[key as keyof FeatureFlags]} />
@@ -27,8 +27,8 @@ const DebugPage: React.FC = () => {
           </BasicWrapper>
         </DebugColumn>
 
-        <DebugColumn>
-          <ContentHeader>{t('debug.ganalytics_id')}</ContentHeader>
+        <DebugColumn data-testid="debug_column">
+          <ContentHeader data-testid="debug_content_header">{t('debug.ganalytics_id')}</ContentHeader>
           <ContentWrapper>
             <DebugSectionContainer>
               <DebugSectionTitle>{GAtrackingId || '-'}</DebugSectionTitle>
@@ -37,7 +37,7 @@ const DebugPage: React.FC = () => {
             </DebugSectionContainer>
           </ContentWrapper>
 
-          <ContentHeader>{t('debug.log_recording')}</ContentHeader>
+          <ContentHeader data-testid="debug_content_header">{t('debug.log_recording')}</ContentHeader>
           <div>
             <DebugSectionContent>{t('debug.logging_msg')}</DebugSectionContent>
             <ItemRow margin="md">

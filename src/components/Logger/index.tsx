@@ -15,7 +15,7 @@ const Logger: React.FC = () => {
   const { t } = useTranslation();
 
   return enabled ? (
-    <LoggerContainer>
+    <LoggerContainer data-testid="logger_container">
       <ItemRow justify="space-between">
         <div style={{ width: '100%' }}>{t('debug.recording_logs')}</div>
 
