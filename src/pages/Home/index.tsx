@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useReducer } from 'react';
+import React, { useEffect, useCallback, useReducer, useContext } from 'react';
 
 import { Run as IRun } from '../../types';
 import useResource from '../../hooks/useResource';
@@ -19,6 +19,7 @@ import {
 } from './Home.utils';
 import ScrollToTop from './ScrollToTop';
 import { useHistory } from 'react-router';
+import { TimezoneContext } from '../../components/TimezoneProvider';
 
 type HomeCache = {
   active: boolean;
@@ -38,6 +39,7 @@ const Home: React.FC = () => {
   const { t } = useTranslation();
 
   const { action: historyAction } = useHistory();
+  const { timezone } = useContext(TimezoneContext);
 
   useEffect(() => {
     HomeStateCache.active = false;
@@ -97,7 +99,7 @@ const Home: React.FC = () => {
       // We want to add timerange filter if we are rolling with default params
       // but not in back event. In back event we should keep state we had
       if (isDefaultParams(rawParams)) {
-        setQp({ timerange_start: getTimeFromPastByDays(30).toString() });
+        setQp({ timerange_start: getTimeFromPastByDays(30, timezone).toString() });
       }
     }
   }, [historyAction, initialised]); // eslint-disable-line
