@@ -13,12 +13,18 @@ export type SearchResult =
       id: string;
     };
 
+interface MatchError {
+  id: string;
+  detail: string;
+}
+
 interface Match {
   flow_id: string;
   run_number: string;
   searchable: boolean;
   step_name: string;
   task_id: string;
+  error?: MatchError;
 }
 
 export type TaskMatch = Match;
