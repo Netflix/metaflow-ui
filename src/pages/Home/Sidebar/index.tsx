@@ -165,8 +165,10 @@ function omitFromString(partToOmit: string, str: string): string {
 }
 
 const ButtonResetAll = styled(Button)`
-  width: 100%;
   color: #333;
+  height: 2.25rem;
+  width: 100%;
+
   span {
     display: inline-block;
     width: 100%;
