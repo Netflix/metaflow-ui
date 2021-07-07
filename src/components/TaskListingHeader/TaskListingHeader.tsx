@@ -102,19 +102,30 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
                     onClick={() => onZoom('reset')}
                     active={!userZoomed}
                     data-testid="timeline-header-zoom-fit"
+                    title={t('timeline.fit-to-screen')}
                   >
                     <span style={{ fontSize: '0.875rem' }}>{t('timeline.fit-to-screen')}</span>
                   </Button>
-                  <Button size="sm" onClick={() => onZoom('out')} data-testid="timeline-header-zoom-out">
+                  <Button
+                    size="sm"
+                    onClick={() => onZoom('out')}
+                    data-testid="timeline-header-zoom-out"
+                    title={t('timeline.zoom-out')}
+                  >
                     <Icon name="minus" />
                   </Button>
-                  <Button size="sm" onClick={() => onZoom('in')} data-testid="timeline-header-zoom-in">
+                  <Button
+                    size="sm"
+                    onClick={() => onZoom('in')}
+                    data-testid="timeline-header-zoom-in"
+                    title={t('timeline.zoom-in')}
+                  >
                     <Icon name="plus" />
                   </Button>
                 </ButtonGroup>
               )}
               {!isFullscreen && onSetFullscreen && (
-                <ExpandButton onClick={() => onSetFullscreen()} iconOnly>
+                <ExpandButton onClick={() => onSetFullscreen()} iconOnly title={t('timeline.fullscreen')}>
                   <Icon name="maximize" />
                 </ExpandButton>
               )}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import Button from '../../Button';
 import Icon from '../../Icon';
@@ -9,6 +10,7 @@ const CollapseButton: React.FC<{
   collapse: () => void;
   isAnyGroupOpen: boolean;
 }> = ({ disabled, expand, collapse, isAnyGroupOpen }) => {
+  const { t } = useTranslation();
   return (
     <StyledCollapseButton>
       <Button
@@ -21,6 +23,7 @@ const CollapseButton: React.FC<{
           }
         }}
         data-testid="timeline-collapse-button"
+        title={isAnyGroupOpen ? t('timeline.collapse-all') : t('timeline.expand-all')}
       >
         <Icon name={isAnyGroupOpen ? 'collapse' : 'expand'} rotate={isAnyGroupOpen ? 180 : 0} />
       </Button>
