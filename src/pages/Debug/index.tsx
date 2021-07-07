@@ -16,7 +16,7 @@ const DebugPage: React.FC = () => {
 
   return (
     <div>
-      <h2>{t('debug.title')}</h2>
+      <Header>{t('debug.title')}</Header>
       <DebugContainer>
         <DebugColumn data-testid="debug_column">
           <ContentHeader data-testid="debug_content_header">{t('debug.feature_flags')}</ContentHeader>
@@ -85,6 +85,10 @@ function getExplainText(flag: string): string {
 //
 // Style
 //
+
+const Header = styled.h3`
+  margin: 1rem 0;
+`;
 
 const DebugContainer = styled.div`
   display: flex;
