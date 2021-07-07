@@ -98,6 +98,7 @@ const PropertyTableRowItemContent = styled.td<{ scheme: PropertyTableScheme }>`
   font-size: 0.875rem;
   border-right: ${(p) => p.theme.border.mediumWhite};
   background: ${(p) => (p.scheme === 'bright' ? p.theme.color.bg.white : 'transparent')};
+  word-break: break-word;
   &:last-child {
     border-right: none;
   }

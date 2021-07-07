@@ -107,8 +107,6 @@ const TaskList: React.FC<Props> = ({
             <Spinner sm />
           </div>
         )}
-        {/* Search failed */}
-        {results.status === 'Error' && <div>{t('search.error')}</div>}
       </FixedList>
     </TaskListContainer>
   );

@@ -76,7 +76,7 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSectio
 };
 
 const AnchorMenuContainer = styled.div`
-  width: 165px;
+  width: 6.25rem;
   flex-shrink: 0;
   position: relative;
 `;

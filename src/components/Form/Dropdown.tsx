@@ -83,7 +83,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
             >
               {labelRenderer ? labelRenderer(activeOption[0], activeOption[1]) : activeOption[1]}
             </span>
-            <Icon name="arrowDown" padLeft />
+            <Icon name="caretDown" padLeft customSize="1.25rem" rotate={open ? 180 : 0} />
           </DropdownButton>
         )}
 
@@ -141,7 +141,7 @@ const DropdownWrapper = styled.div`
   position: relative;
   flex: auto;
   margin: 0 -1rem;
-  padding: 0 1rem;
+  padding: 0 0.75rem 0 1rem;
 
   select {
     width: 100%;
@@ -163,10 +163,6 @@ const DropdownButton = styled(Button)`
   &:hover,
   &:focus {
     background: transparent;
-  }
-
-  svg path {
-    fill: #fff;
   }
 `;
 

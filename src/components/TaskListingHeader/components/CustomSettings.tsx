@@ -132,10 +132,10 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
 
 const StatusLabelRenderer: React.FC<{ val: string; status: string | null | undefined }> = ({ val, status }) => {
   return (
-    <StatusLabelContainer>
+    <CustomContainer>
       <ForceNoWrapText>{val}</ForceNoWrapText>
       <StatusLights status={status || 'all'} />
-    </StatusLabelContainer>
+    </CustomContainer>
   );
 };
 
@@ -143,11 +143,11 @@ const OrderLabelRenderer: React.FC<{ val: string }> = ({ val }) => {
   const { t } = useTranslation();
   const [str, direction] = val.split(',');
   return (
-    <OrderLabelContainer>
+    <CustomContainer>
       <OrderLabelValue>
         {t(`timeline.${str}`)} <Icon size="xs" name="arrowPointTop" rotate={direction === 'asc' ? 180 : 0} />
       </OrderLabelValue>
-    </OrderLabelContainer>
+    </CustomContainer>
   );
 };
 
@@ -163,12 +163,7 @@ const FiltersSection = styled(ItemRow)`
   }
 `;
 
-const StatusLabelContainer = styled.div`
-  display: flex;
-  min-width: 8.5rem;
-`;
-
-const OrderLabelContainer = styled.div`
+const CustomContainer = styled.div`
   display: flex;
   min-width: 8.5rem;
 
@@ -183,15 +178,19 @@ const OrderLabelValue = styled(ForceNoWrapText)`
 `;
 
 const TaskListDropdownContainer = styled.div`
-  margin: 0 0.375rem;
+  margin: 0 0.5rem;
 
   .dropdown-button {
-    min-width: 12.5rem;
+    min-width: 10.5rem;
   }
 
   @media (max-width: 1400px) {
     .dropdown-button {
       min-width: auto;
+    }
+
+    ${CustomContainer} {
+      min-width: unset;
     }
   }
 `;

@@ -3,6 +3,7 @@ import styled, { css, keyframes } from 'styled-components';
 
 import { ReactComponent as Timeline } from '../../assets/timeline.svg';
 import { ReactComponent as ArrowDown } from '../../assets/arrow_down.svg';
+import { ReactComponent as CaretDown } from '../../assets/caret_down.svg';
 import { ReactComponent as Times } from '../../assets/times.svg';
 import { ReactComponent as Plus } from '../../assets/plus.svg';
 import { ReactComponent as Minus } from '../../assets/minus.svg';
@@ -42,6 +43,7 @@ import { ReactComponent as Calendar } from '../../assets/calendar.svg';
 const icons = {
   timeline: Timeline,
   arrowDown: ArrowDown,
+  caretDown: CaretDown,
   times: Times,
   plus: Plus,
   minus: Minus,
@@ -149,6 +151,7 @@ const Wrapper = styled.i<{
   svg {
     height: ${(p) => p.customSize || sizeTable[p.size] + 'rem'};
     transform: ${(p) => (p.rotate ? `rotate(${p.rotate}deg)` : 'none')};
+    transition: transform 0.25s;
     width: auto;
   }
   svg path {
