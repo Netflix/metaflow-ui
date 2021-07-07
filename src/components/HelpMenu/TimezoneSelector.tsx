@@ -154,6 +154,7 @@ const TimezoneRow = styled.div`
     width: 100%;
   }
   label {
+    display: inline-block;
     margin: 0.5rem 0;
 
     &:first-of-type {

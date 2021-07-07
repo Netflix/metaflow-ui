@@ -8,6 +8,7 @@ import { BigButton } from '../Button';
 import TimezoneSelector from './TimezoneSelector';
 import VERSION_INFO from '../../utils/VERSION';
 import FEATURE_FLAGS from '../../utils/FEATURE';
+import LaunchIconBlack from '../../assets/launch_black.svg';
 import { Link } from 'react-router-dom';
 
 type HelpMenuLink = {
@@ -62,7 +63,9 @@ const HelpMenu: React.FC = () => {
           <Icon name="times" size="sm" onClick={() => setOpen(false)} data-testid="helpmenu-close" />
         </HelpMenuTitle>
 
-        <TimezoneSelector />
+        <TimezoneSelectorContainer>
+          <TimezoneSelector />
+        </TimezoneSelectorContainer>
 
         {INTERNAL_LINKS.map((link) => (
           <Link
@@ -131,6 +134,10 @@ const PopoverContainer = styled(PopoverWrapper)`
   left: auto;
 `;
 
+const TimezoneSelectorContainer = styled.div`
+  margin: 1rem 0 0.5rem;
+`;
+
 const HelpMenuTitle = styled.div`
   align-items: center;
   border-bottom: ${(p) => p.theme.border.thinLight};
@@ -150,10 +157,12 @@ const HelpMenuTitle = styled.div`
 `;
 
 const HelpMenuItemStyles = css`
-  display: flex;
-  padding: 0.5rem 0.5rem;
   color: ${(p) => p.theme.color.text.mid};
+  display: flex;
+  line-height: 1rem;
+  padding: 0.5rem 0.5rem;
   text-decoration: none;
+
   &:hover {
     color: ${(p) => p.theme.color.text.blue};
   }
@@ -161,6 +170,22 @@ const HelpMenuItemStyles = css`
 
 const StyledHelpMenuLink = styled.a`
   ${HelpMenuItemStyles}
+
+  &:hover:after {
+    background-color: ${(p) => p.theme.color.text.blue};
+  }
+  &:after {
+    background-color: #666;
+    content: '';
+    display: inline-block;
+    height: 1rem;
+    margin: 0 0 0 0.125rem;
+    -webkit-mask: url(${LaunchIconBlack}) no-repeat 50% 50%;
+    mask: url(${LaunchIconBlack}) no-repeat 50% 50%;
+    -webkit-mask-size: cover;
+    mask-size: cover;
+    width: 1rem;
+  }
 `;
 
 const HelpMenuItem = styled.div`
