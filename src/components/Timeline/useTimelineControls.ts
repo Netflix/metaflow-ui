@@ -209,10 +209,10 @@ export default function useTimelineControls(
   mode: 'left' | 'startTime' = 'startTime',
 ): TimelineControlsHook {
   const [timelineControls, dispatch] = useReducer(timelineControlsReducer, {
-    min: 0,
-    max: 0,
-    timelineStart: 0,
-    timelineEnd: 0,
+    min: run.ts_epoch,
+    max: run.finished_at || run.ts_epoch,
+    timelineStart: run.ts_epoch,
+    timelineEnd: run.finished_at || run.ts_epoch,
     controlled: false,
   });
 
