@@ -1,4 +1,5 @@
 import { QueryParam, Run } from '../../types';
+import { getTimeFromPastByDays } from '../../utils/date';
 import { omit } from '../../utils/object';
 import { DirectionText, parseOrderParam } from '../../utils/url';
 import { defaultHomeParameters } from './useHomeParameters';
@@ -85,12 +86,13 @@ export function makeWebsocketParameters(
 //
 // Check if current parameters are default params
 //
-export function isDefaultParams(params: Record<string, string>): boolean {
-  if (Object.keys(params).length === 4) {
+export function isDefaultParams(params: Record<string, string>, checkTimerange: boolean, timezone?: string): boolean {
+  if (Object.keys(params).length === 4 || Object.keys(params).length === 5) {
     if (
       params._order === defaultHomeParameters._order &&
       params._limit === defaultHomeParameters._limit &&
-      params.status === defaultHomeParameters.status
+      params.status === defaultHomeParameters.status &&
+      (checkTimerange ? params.timerange_start === getTimeFromPastByDays(30, timezone).toString() : true)
     ) {
       return true;
     }

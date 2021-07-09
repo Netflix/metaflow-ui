@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
@@ -14,6 +14,11 @@ import SidebarTimerangeSelection from './SidebarTimerangeSelection';
 import { isDefaultParams } from '../Home.utils';
 import { HEADER_SIZE_REM } from '../../../constants';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import { TimezoneContext } from '../../../components/TimezoneProvider';
+
+//
+// Typedef
+//
 
 type Props = {
   // Update queryparameter
@@ -22,20 +27,17 @@ type Props = {
   updateListValue: (key: string, value: string) => void;
   // Current active parameters
   params: Record<string, string>;
-  // Are default filters currently active
-  defaultFiltersActive: boolean;
   // Reset all params
   resetAllFilters: () => void;
 };
 
-const HomeSidebar: React.FC<Props> = ({
-  handleParamChange,
-  updateListValue,
-  params,
-  defaultFiltersActive,
-  resetAllFilters,
-}) => {
+//
+// Component
+//
+
+const HomeSidebar: React.FC<Props> = ({ handleParamChange, updateListValue, params, resetAllFilters }) => {
   const { t } = useTranslation();
+  const { timezone } = useContext(TimezoneContext);
 
   return (
     <Sidebar className="sidebar">
@@ -147,9 +149,13 @@ const HomeSidebar: React.FC<Props> = ({
             />
           </SidebarSectionWrapper>
 
-          {!defaultFiltersActive && (
+          {!isDefaultParams(params, true, timezone) && (
             <div>
-              <ButtonResetAll size="sm" onClick={() => resetAllFilters()} disabled={isDefaultParams(params)}>
+              <ButtonResetAll
+                size="sm"
+                onClick={() => resetAllFilters()}
+                disabled={isDefaultParams(params, true, timezone)}
+              >
                 <Text>{t('filters.reset-all')}</Text>
               </ButtonResetAll>
             </div>
@@ -160,9 +166,17 @@ const HomeSidebar: React.FC<Props> = ({
   );
 };
 
+//
+// Utils
+//
+
 function omitFromString(partToOmit: string, str: string): string {
   return str.startsWith(partToOmit + ':') ? str.split(':').slice(1, str.split(':').length).join('') : str;
 }
+
+//
+// Styles
+//
 
 const ButtonResetAll = styled(Button)`
   color: #333;

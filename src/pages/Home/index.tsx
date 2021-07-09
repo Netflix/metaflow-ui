@@ -50,11 +50,10 @@ const Home: React.FC = () => {
   //
 
   const { setQp, params: rawParams } = useHomeParameters();
-  const defaultFiltersActive = JSON.stringify(defaultHomeParameters) === JSON.stringify(rawParams);
   const resetAllFilters = useCallback(() => {
     // Reseting filter still keeps grouping settings as before.
-    setQp({ ...defaultHomeParameters }, 'replace');
-  }, [setQp]);
+    setQp({ ...defaultHomeParameters, timerange_start: getTimeFromPastByDays(30, timezone).toString() }, 'replace');
+  }, [setQp, timezone]);
   const rawParamsString = JSON.stringify(rawParams);
   useEffect(() => {
     dispatch({
@@ -98,7 +97,7 @@ const Home: React.FC = () => {
     if (historyAction !== 'POP') {
       // We want to add timerange filter if we are rolling with default params
       // but not in back event. In back event we should keep state we had
-      if (isDefaultParams(rawParams)) {
+      if (isDefaultParams(rawParams, false, timezone)) {
         setQp({ timerange_start: getTimeFromPastByDays(30, timezone).toString() });
       }
     }
@@ -244,7 +243,6 @@ const Home: React.FC = () => {
           handleParamChange={changeParameter}
           updateListValue={updateListValue}
           params={params}
-          defaultFiltersActive={defaultFiltersActive}
           resetAllFilters={resetAllFilters}
         />
       </ErrorBoundary>
