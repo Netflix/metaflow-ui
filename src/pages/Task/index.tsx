@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
@@ -31,6 +31,7 @@ import {
 } from '../../components/Timeline/useTaskListSettings';
 import FEATURE_FLAGS from '../../utils/FEATURE';
 import { DAGModel } from '../../components/DAG/DAGUtils';
+import { PluginsContext } from '../../components/Plugins/PluginManager';
 
 //
 // Typedef
@@ -81,6 +82,7 @@ const Task: React.FC<TaskViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | FullScreenData>(null);
+  const { addDataToStore } = useContext(PluginsContext);
 
   //
   // Query params
@@ -132,11 +134,18 @@ const Task: React.FC<TaskViewProps> = ({
   const metadataRes = useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/metadata`,
     fetchAllData: true,
+    queryParams: {
+      _limit: '100',
+    },
     subscribeToEvents: true,
     initialData: [],
     pause: !isCurrentTaskFinished,
     onUpdate(items) {
-      setMetadata((oldItems) => [...oldItems, ...items]);
+      setMetadata((oldItems) => {
+        const newSet = [...oldItems, ...items];
+        addDataToStore('metadata', newSet);
+        return newSet;
+      });
     },
   });
 
@@ -202,6 +211,10 @@ const Task: React.FC<TaskViewProps> = ({
 
   const developerNote = getDocString(dagResult, stepName);
 
+  useEffect(() => {
+    addDataToStore('task', task);
+  }, [task, addDataToStore]);
+
   return (
     <TaskContainer>
       <TaskListingHeader
@@ -266,6 +279,7 @@ const Task: React.FC<TaskViewProps> = ({
                   component: (
                     <>
                       <TaskDetails
+                        run={run}
                         task={task}
                         metadata={metadata}
                         metadataResource={metadataRes}

@@ -3,6 +3,7 @@ import React, { useState, useCallback, useContext, useEffect } from 'react';
 import { v4 as generateIdentifier } from 'uuid';
 import styled from 'styled-components';
 import Icon, { SupportedIcons } from '../Icon';
+import { PluginsContext } from '../Plugins/PluginManager';
 
 /**
  * Usage example:
@@ -106,7 +107,8 @@ enum NotificationState {
 }
 
 export const Notifications: React.FC = () => {
-  const { notifications, removeNotification } = useNotifications();
+  const { notifications, removeNotification, addNotification } = useNotifications();
+  const { subscribeToEvent, unsubscribeFromEvent } = useContext(PluginsContext);
   // Lifecycle state of unique notifications
   const [notificationState, setNotificationState] = useState<Record<string, NotificationState>>({});
 
@@ -142,6 +144,26 @@ export const Notifications: React.FC = () => {
     );
     setTimeout(() => onRemove(n), 3000);
   };
+
+  // Subscribe to event calls from anywhere
+  useEffect(() => {
+    subscribeToEvent('Notifications', 'SEND_NOTIFICATION', (message) => {
+      if (!message) {
+        return;
+      }
+      if (typeof message === 'string') {
+        addNotification({ type: NotificationType.Info, message });
+      } else if (
+        isNotificationsMessage(message) &&
+        Object.values(NotificationType).includes(message.type as NotificationType)
+      ) {
+        addNotification({ type: message.type as NotificationType, message: message.message });
+      } else {
+        console.log('Plugin attempted to call notification with invalid arguments');
+      }
+    });
+    return () => unsubscribeFromEvent('Notifications');
+  }, []);
 
   return (
     <NotificationsWrapper>
@@ -194,6 +216,23 @@ const NotificationRenderer: React.FC<{
     </NotificationWrapper>
   );
 };
+
+//
+// Utils
+//
+
+function isNotificationsMessage(value: unknown): value is { type: string; message: string } {
+  function isNotificationLike(
+    given: unknown,
+  ): given is Partial<Record<keyof { type: string; message: string }, unknown>> {
+    return typeof given === 'object' && given !== null;
+  }
+  return isNotificationLike(value) && typeof value.type === 'string' && typeof value.message === 'string';
+}
+
+//
+// Style
+//
 
 const NotificationsWrapper = styled.div`
   z-index: 99999;

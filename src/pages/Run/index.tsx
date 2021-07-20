@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouteMatch } from 'react-router-dom';
 import useResource from '../../hooks/useResource';
@@ -7,6 +7,7 @@ import { Run as IRun } from '../../types';
 import Spinner from '../../components/Spinner';
 import { APIErrorRenderer } from '../../components/GenericError';
 import RunPage from './RunPage';
+import { PluginsContext } from '../../components/Plugins/PluginManager';
 
 //
 // Typedef
@@ -27,6 +28,7 @@ export type RunPageParams = {
 const RunContainer: React.FC = () => {
   const { t } = useTranslation();
   const { params } = useRouteMatch<RunPageParams>();
+  const { addDataToStore } = useContext(PluginsContext);
 
   const {
     data: run,
@@ -41,6 +43,10 @@ const RunContainer: React.FC = () => {
     subscribeToEvents: true,
     initialData: null,
   });
+
+  useEffect(() => {
+    addDataToStore('run', run);
+  }, [run, addDataToStore]);
 
   return (
     <div>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    }
+
+    /*
+      Data row
+    */
+
+    .data-row {
+      display: flex;
+      background-color: rgba(0, 0, 0, 0.03);
+      border-radius: 4px;
+      font-size: 0.875rem;
+    }
+
+    .data-row>div:first-child {
+      width: 200px;
+      min-width: 200px;
+    }
+
+    .data-row>div:not(:last-child) {
+      border-right: 2px solid white;
+    }
+
+    .data-row>div {
+      padding: 0.5rem 1rem;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .data-row:not(:last-child) {
+      border-bottom: 2px solid white;
+    }
+
+    /*
+      Template slot
+    */
+    .template-slot {
+      padding: 0.5rem 0;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    .template-slot:last-child {
+      margin-bottom: 0;
+    }
+
+    /*
+      Table
+    */
+
+    table {
+      overflow-x: auto;
+      border-spacing: 0px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th {
+      background: #333;
+      color: #fff;
+      border-right: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      font-size: 0.875rem;
+      padding: 0.4rem 1rem;
+      font-weight: 400;
+      text-align: left;
+    }
+
+    th:first-child {
+      border-top-left-radius: 0.25rem;
+    }
+
+    th:last-child {
+      border-top-right-radius: 0.25rem;
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      border-right: 2px solid #fff;
+      border-bottom: 2px solid #fff;
+      background: rgba(0, 0, 0, 0.03);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="container">
+  </div>
+
+  <script src="http://localhost:5000/MetaflowPluginAPI.js"></script>
+  <script src="https://unpkg.com/squirrelly@8.0.8/dist/browser/squirrelly.min.js"></script>
+  <script>
+    (function () {
+      // Give visible parameter so we dont show plugin by default. Only if there is actual content for it.
+      Metaflow.register({ slot: 'task-details', visible: false }, () => {
+        const Templates = {}
+        Metaflow.setHeight();
+        Metaflow.subscribe(['metadata'], ({ data }) => {
+          if (!Array.isArray(data) || data.length === 0) {
+            // Dont do anything if there is no metadata
+            return
+          }
+
+          const templates = Array.isArray(data) ? data.filter(metadata => {
+            return metadata.type.startsWith('template')
+          }) : [];
+
+          for (const template of templates) {
+            const templatename = template.type.split(":")[1];
+            const templatevalues = JSON.parse(template.value)
+
+            if (typeof templatevalues !== "object") {
+              return
+            }
+            if (Templates[templatename]) {
+              document.getElementById(templatename).innerHTML = Sqrl.render(Templates[templatename], templatevalues)
+              Metaflow.setHeight()
+            } else {
+              fetch(`templates/${templatename}.html`, {
+                mode: 'no-cors',
+                headers: {
+                  'Content-Type': 'text/html',
+                  'accept': 'text/html',
+                }
+              })
+                .then(response => response.status === 200 ? response.text() : Promise.reject())
+                .then(d => {
+                  const newDiv = document.createElement("div");
+                  newDiv.id = templatename;
+                  newDiv.innerHTML = Sqrl.render(d, templatevalues);
+                  newDiv.className = "template-slot";
+                  document.getElementById("container").appendChild(newDiv);
+                  Templates[templatename] = d;
+                  Metaflow.setHeight();
+                })
+                .catch(e => console.log(e))
+            }
+          }
+          // Update visibility accordingly
+          if (templates.length > 0) {
+            Metaflow.setVisibility(true);
+          } else {
+            Metaflow.setVisibility(false);
+          }
+        })
+      })
+    })();
+  </script>
+</body>
+
+</html>

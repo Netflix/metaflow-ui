@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import TestWrapper from '../../../utils/testing';
 import WS from 'jest-websocket-mock';
 import { createRun } from '../../../utils/testhelper';
+import { PluginsProvider } from '../../../components/Plugins/PluginManager';
 
 describe('Run page', () => {
   beforeEach(() => {
@@ -15,7 +16,9 @@ describe('Run page', () => {
     const server = new WS('ws://localhost/api/ws', { jsonProtocol: true });
     render(
       <TestWrapper>
-        <Run />
+        <PluginsProvider>
+          <Run />
+        </PluginsProvider>
       </TestWrapper>,
     );
     await server.connected;

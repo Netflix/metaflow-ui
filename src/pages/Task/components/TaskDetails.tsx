@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import StatusField from '../../../components/Status';
 import { ForceBreakText } from '../../../components/Text';
-import { Metadata, Task as ITask } from '../../../types';
+import { Metadata, Run, Task as ITask } from '../../../types';
 import { getISOString } from '../../../utils/date';
 import { formatDuration } from '../../../utils/format';
 import { APIErrorRenderer } from '../../../components/GenericError';
@@ -12,6 +12,7 @@ import { getTaskId } from '../../../utils/task';
 import FEATURE_FLAGS from '../../../utils/FEATURE';
 import TitledRow from '../../../components/TitledRow';
 import Collapsable from '../../../components/Collapsable';
+import PluginGroup, { PluginHeader } from '../../../components/Plugins/PluginGroup';
 import Icon from '../../../components/Icon';
 import styled from 'styled-components';
 import RenderMetadata from '../../../components/RenderMetadata';
@@ -19,11 +20,19 @@ import DataHeader from '../../../components/DataHeader';
 import { Resource } from '../../../hooks/useResource';
 
 type Props = {
+  run: Run;
   task: ITask;
   metadata: Metadata[];
   metadataResource: Resource<Metadata[]>;
   developerNote: string | null;
 };
+
+function makeMetadataString(md: Metadata): string {
+  if (md.field_name !== md.type) {
+    return `${md.field_name} (${md.type})`;
+  }
+  return md.field_name;
+}
 
 const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, developerNote }) => {
   const { t } = useTranslation();
@@ -32,7 +41,7 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
   const metadataParams: Record<string, string> = (metadata || [])
     .filter((md) => !md.field_name.startsWith('ui-content'))
     .reduce((obj, val) => {
-      return { ...obj, [val.field_name]: val.value };
+      return { ...obj, [makeMetadataString(val)]: val.value };
     }, {});
 
   const uiContent = metadata.filter((md) => md.field_name.startsWith('ui-content')) || [];
@@ -103,6 +112,13 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
           <RenderMetadata metadata={uiContent} />
         </Collapsable>
       )}
+
+      <PluginGroup
+        key={getTaskId(task) + task.attempt_id}
+        id={getTaskId(task)}
+        title="Extensions"
+        slot="task-details"
+      />
     </>
   );
 };
@@ -116,16 +132,6 @@ export function getAttemptDuration(task: ITask): string {
 
 const HeaderContainer = styled.div`
   margin-bottom: 1rem;
-`;
-
-const PluginHeader = styled.div`
-  i {
-    margin-right: 0.375rem;
-  }
-
-  svg path {
-    fill: #333;
-  }
 `;
 
 export default TaskDetails;

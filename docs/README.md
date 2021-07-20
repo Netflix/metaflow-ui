@@ -3,6 +3,7 @@
 - [Deployment](deployment.md)
 - [Styles](styles.md)
 - [Tests](tests.md)
+- [Plugin system](plugin-system.md)
 
 ## Getting started
 

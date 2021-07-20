@@ -7,6 +7,7 @@ import { Run } from '../../../types';
 import WS from 'jest-websocket-mock';
 import useSeachField from '../../../hooks/useSearchField';
 import useTaskListSettings from '../../../components/Timeline/useTaskListSettings';
+import { PluginsProvider } from '../../../components/Plugins/PluginManager';
 
 const run: Run = {
   flow_id: 'string',
@@ -32,23 +33,25 @@ describe('Task page', () => {
       const searchField = useSeachField('asd', '0');
       return (
         <TestWrapper>
-          <Task
-            run={run}
-            stepName="test"
-            taskId="test"
-            rows={[]}
-            rowDataDispatch={(_action) => null}
-            settings={settings}
-            searchField={searchField}
-            taskFromList={null}
-            taskStatus="Ok"
-            paramsString=""
-            isAnyGroupOpen={true}
-            counts={{ all: 0, completed: 0, failed: 0, running: 0, unknown: 0 }}
-            onModeSelect={setMode}
-            setQueryParam={setQueryParam}
-            dagResult={createResource({})}
-          />
+          <PluginsProvider>
+            <Task
+              run={run}
+              stepName="test"
+              taskId="test"
+              rows={[]}
+              rowDataDispatch={(_action) => null}
+              settings={settings}
+              searchField={searchField}
+              taskFromList={null}
+              taskStatus="Ok"
+              paramsString=""
+              isAnyGroupOpen={true}
+              counts={{ all: 0, completed: 0, failed: 0, running: 0, unknown: 0 }}
+              onModeSelect={setMode}
+              setQueryParam={setQueryParam}
+              dagResult={createResource({})}
+            />
+          </PluginsProvider>
         </TestWrapper>
       );
     };

@@ -13,6 +13,7 @@ import TagRow from './components/TagRow';
 
 import Collapsable from '../../components/Collapsable';
 import RunParameterTable from './RunParameterTable';
+import PluginGroup from '../../components/Plugins/PluginGroup';
 import AutoUpdating from '../../components/AutoUpdating';
 import DataHeader from '../../components/DataHeader';
 
@@ -77,6 +78,8 @@ const RunHeader: React.FC<Props> = ({ run }) => {
           />
         </>
       </Collapsable>
+
+      <PluginGroup id={getRunId(run)} title="Extensions" slot="run-header" />
     </RunHeaderContainer>
   );
 };
