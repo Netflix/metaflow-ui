@@ -1,31 +1,33 @@
-import { render } from '@testing-library/react';
+
 import React from 'react';
+import { mount } from '@cypress/react';
+import { ThemeProvider } from 'styled-components';
+import theme from '../../../theme';
 import { createRun } from '../../../utils/testhelper';
-import TestWrapper from '../../../utils/testing';
 import { ContainerElement, RenderStep } from '../components/DAGContent';
 
 describe('DAGContent components', () => {
-  test('<ContainerElement /> - should render parallel container', () => {
-    const { getByTestId } = render(
-      <TestWrapper>
+  it('<ContainerElement /> - should render parallel container', () => {
+    mount(
+      <ThemeProvider theme={theme}>
         <ContainerElement containerType="parallel" />
-      </TestWrapper>,
+      </ThemeProvider>
     );
-    expect(getByTestId('dag-parallel-container')).toBeInTheDocument();
+    cy.get('[data-testid="dag-parallel-container"]').should('exist');
   });
 
-  test('<ContainerElement /> - should render foreach container', () => {
-    const { getByTestId } = render(
-      <TestWrapper>
+  it('<ContainerElement /> - should render foreach container', () => {
+    mount(
+      <ThemeProvider theme={theme}>
         <ContainerElement containerType="foreach" />
-      </TestWrapper>,
+      </ThemeProvider>
     );
-    expect(getByTestId('dag-foreach-container')).toBeInTheDocument();
+    cy.get('[data-testid="dag-foreach-container"]').should('exist');
   });
 
-  test('<RenderStep /> - should render Normalitem', () => {
-    const { getByTestId, getAllByTestId } = render(
-      <TestWrapper>
+  it('<RenderStep /> - should render Normalitem', () => {
+   mount(
+      <ThemeProvider theme={theme}>
         <RenderStep
           item={{
             node_type: 'normal',
@@ -55,18 +57,18 @@ describe('DAGContent components', () => {
           stepData={[]}
           run={createRun({})}
         />
-      </TestWrapper>,
+      </ThemeProvider>
     );
 
-    expect(getAllByTestId('dag-normalitem').length).toBe(2);
-    expect(getByTestId('dag-normalitem-children').children.length).toBe(1);
-    expect(getAllByTestId('dag-normalitem-box')[0].textContent).toBe('start');
-    expect(getAllByTestId('dag-normalitem-box')[1].textContent).toBe('a');
+    cy.get('[data-testid="dag-normalitem"]').should('have.length','2');
+    cy.get('[data-testid="dag-normalitem-children').children().should('have.length', '1');
+    cy.get('[data-testid="dag-normalitem-box"]').eq(0).contains('start');
+    cy.get('[data-testid="dag-normalitem-box"]').eq(1).contains('a');
   });
 
-  test('<RenderStep /> - should render ContainerItem', () => {
-    const { getByTestId } = render(
-      <TestWrapper>
+  it('<RenderStep /> - should render ContainerItem', () => {
+    mount(
+      <ThemeProvider theme={theme}>
         <RenderStep
           item={{
             node_type: 'container',
@@ -76,9 +78,9 @@ describe('DAGContent components', () => {
           stepData={[]}
           run={createRun({})}
         />
-      </TestWrapper>,
+      </ThemeProvider>
     );
 
-    expect(getByTestId('dag-parallel-container')).toBeInTheDocument();
+    cy.get('[data-testid="dag-parallel-container"]').should('exist');
   });
 });

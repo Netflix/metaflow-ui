@@ -45,19 +45,19 @@ const DEFAULT_ROW_DATA = () => ({
 describe('useRowData hook - reducer', () => {
   it('fillStep - non existing', () => {
     const newState = rowDataReducer({}, { type: 'fillStep', data: [createStep({})] });
-    expect(newState['start'].isOpen).toBe(true);
-    expect(newState['start'].data).toEqual({});
+    expect(newState['start'].isOpen).to.be.true;
+    expect(newState['start'].data).to.deep.equal({});
   });
 
   it('fillStep - existing', () => {
     const newState = rowDataReducer(DEFAULT_ROW_DATA(), { type: 'fillStep', data: [createStep({ ts_epoch: 100 })] });
-    expect(newState['start'].isOpen).toBe(true);
-    expect(newState['start'].step?.ts_epoch).toEqual(100);
+    expect(newState['start'].isOpen).to.be.true;
+    expect(newState['start'].step?.ts_epoch).to.equal(100);
   });
 
   it('fillTasks - empty task list', () => {
     const newState = rowDataReducer(DEFAULT_ROW_DATA(), { type: 'fillTasks', data: [] });
-    expect(newState).toEqual(DEFAULT_ROW_DATA());
+    expect(newState).to.deep.equal(DEFAULT_ROW_DATA());
   });
 
   it('fillTasks - Add task to non existent step', () => {
@@ -65,9 +65,9 @@ describe('useRowData hook - reducer', () => {
       type: 'fillTasks',
       data: [createTask({ step_name: 'newstep', started_at: 100 })],
     });
-    expect(Object.keys(newState)).toEqual(['start', 'newstep']);
+    expect(Object.keys(newState)).to.deep.equal(['start', 'newstep']);
     const newStepObject = newState.newstep;
-    expect(newStepObject).toEqual({
+    expect(newStepObject).to.deep.equal({
       isOpen: true,
       finished_at: 100,
       status: 'completed',
@@ -84,12 +84,12 @@ describe('useRowData hook - reducer', () => {
       type: 'fillTasks',
       data: [createTask({ step_name: 'start', task_id: 2, ts_epoch: 100, finished_at: 200 })],
     });
-    expect(Object.keys(newState)).toEqual(['start']);
+    expect(Object.keys(newState)).to.deep.equal(['start']);
     const newStepObject = newState.start;
 
-    expect(Object.keys(newStepObject.data)).toEqual(['1', '2']);
+    expect(Object.keys(newStepObject.data)).to.deep.equal(['1', '2']);
     // Result has added one row to data property AND updated duration and finished_at values
-    expect(newStepObject).toEqual({
+    expect(newStepObject).to.deep.equal({
       step: createStep({}),
       isOpen: false,
       finished_at: 200,
@@ -108,12 +108,12 @@ describe('useRowData hook - reducer', () => {
       type: 'fillTasks',
       data: [createTask({ ts_epoch: 100, finished_at: 200 })],
     });
-    expect(Object.keys(newState)).toEqual(['start']);
+    expect(Object.keys(newState)).to.deep.equal(['start']);
     const newStepObject = newState.start;
 
-    expect(Object.keys(newStepObject.data)).toEqual(['1']);
+    expect(Object.keys(newStepObject.data)).to.deep.equal(['1']);
     // Result has old task replaced since it didn't have finsihed_at time
-    expect(newStepObject).toEqual({
+    expect(newStepObject).to.deep.equal({
       step: createStep({}),
       isOpen: false,
       finished_at: 200,
@@ -127,26 +127,26 @@ describe('useRowData hook - reducer', () => {
 
   it('toggle', () => {
     // Row with 'non-esixiting-id' doesnt exist so state is equals to old state
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'non-existing-id' })).toEqual(DEFAULT_ROW_DATA());
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'non-existing-id' })).to.deep.equal(DEFAULT_ROW_DATA());
     // Row with 'start' exists. Boolean is toggled
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'start' })).not.toEqual(DEFAULT_ROW_DATA());
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'start' })).not.to.deep.equal(DEFAULT_ROW_DATA());
   });
 
   it('open', () => {
     // Row with 'non-esixiting-id' doesnt exist so state is equals to old state
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'non-existing-id' })).toEqual(DEFAULT_ROW_DATA());
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'non-existing-id' })).to.deep.equal(DEFAULT_ROW_DATA());
     // Row with 'start' exists. Boolean is set true
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'start' })['start'].isOpen).toBe(true);
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'start' })['start'].isOpen).to.be.true;
   });
 
   it('open', () => {
     // Row with 'non-esixiting-id' doesnt exist so state is equals to old state
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'non-existing-id' })).toEqual(DEFAULT_ROW_DATA());
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'non-existing-id' })).to.deep.equal(DEFAULT_ROW_DATA());
     // Row with 'start' exists. Boolean is set true
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'start' })['start'].isOpen).toBe(false);
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'start' })['start'].isOpen).to.be.false;
   });
 
   it('reset', () => {
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'reset' })).toEqual({});
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'reset' })).to.deep.equal({});
   });
 });

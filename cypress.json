@@ -1,5 +1,9 @@
 {
   "baseUrl": "http://localhost:3000/",
+  "component": {
+    "testFiles": "**/*.test.cypress.{js,ts,jsx,tsx}",
+    "componentFolder": "src"
+  },
   "screenshotOnRunFailure": false,
   "video": false
 }

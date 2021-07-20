@@ -1,7 +1,8 @@
 import React from 'react';
+import { mount } from '@cypress/react';
+import { ThemeProvider } from 'styled-components';
+import theme from '../../../theme';
 import TaskListingHeader, { getMode } from '../TaskListingHeader';
-import { render, fireEvent } from '@testing-library/react';
-import TestWrapper from '../../../utils/testing';
 import useSeachField from '../../../hooks/useSearchField';
 import CollapseButton from '../components/CollapseButton';
 import { createTaskListSettings } from '../../../utils/testhelper';
@@ -22,23 +23,23 @@ const headerFunctionProps = {
   },
 };
 
-describe('TaskListingHeader component', () => {
-  test('<TaskListingHeader> - should render', () => {
+describe('TaskListingHeader test', () => {
+  it('<TaskListingHeader> - should render', () => {
     const Component = () => {
       const searchField = useSeachField('a', 'b');
       return (
-        <TestWrapper>
+        <ThemeProvider theme={theme}>
           <TaskListingHeader settings={createTaskListSettings({})} searchField={searchField} {...headerFunctionProps} />
-        </TestWrapper>
+        </ThemeProvider>
       );
     };
-    render(<Component />);
+    mount(<Component />);
   });
 
-  test('getMode', () => {
+  it('getMode', () => {
     const settings = createTaskListSettings({ isCustomEnabled: true });
 
-    expect(getMode(settings)).toBe('custom');
+    expect(getMode(settings)).to.equal('custom');
     // Predefined modes
     expect(
       getMode({
@@ -48,7 +49,7 @@ describe('TaskListingHeader component', () => {
         statusFilter: null,
         sort: ['startTime', 'asc'],
       }),
-    ).toBe('overview');
+    ).to.equal('overview');
     expect(
       getMode({
         ...settings,
@@ -57,7 +58,7 @@ describe('TaskListingHeader component', () => {
         statusFilter: null,
         sort: ['startTime', 'desc'],
       }),
-    ).toBe('monitoring');
+    ).to.equal('monitoring');
     expect(
       getMode({
         ...settings,
@@ -66,7 +67,7 @@ describe('TaskListingHeader component', () => {
         statusFilter: 'failed',
         sort: ['startTime', 'asc'],
       }),
-    ).toBe('error-tracker');
+    ).to.equal('error-tracker');
     // Random settings -> custom
     expect(
       getMode({
@@ -76,31 +77,37 @@ describe('TaskListingHeader component', () => {
         statusFilter: 'running',
         sort: ['endTime', 'asc'],
       }),
-    ).toBe('custom');
+    ).to.equal('custom');
   });
 
-  test('<CollapseButton> - settings button', () => {
+  it('<CollapseButton> - settings button', () => {
     const props = {
-      expand: jest.fn(),
-      collapse: jest.fn(),
+      expand: cy.stub(),
+      collapse: cy.stub(),
       isAnyGroupOpen: true,
     };
-    const { getByTestId, rerender } = render(
-      <TestWrapper>
+    mount(
+      <ThemeProvider theme={theme}>
         <CollapseButton {...props} />
-      </TestWrapper>,
+      </ThemeProvider>
     );
 
-    fireEvent.click(getByTestId('timeline-collapse-button'));
-    expect(props.collapse).toHaveBeenCalled();
+    cy.get('[data-testid="timeline-collapse-button"]')
+      .click()
+      .then(() => {
+        expect(props.collapse).to.be.calledOnce;
+      }); 
 
-    rerender(
-      <TestWrapper>
+    mount(
+      <ThemeProvider theme={theme}>
         <CollapseButton {...props} isAnyGroupOpen={false} />
-      </TestWrapper>,
+      </ThemeProvider>
     );
 
-    fireEvent.click(getByTestId('timeline-collapse-button'));
-    expect(props.expand).toHaveBeenCalled();
+    cy.get('[data-testid="timeline-collapse-button"]')
+      .click()
+      .then(() => {
+        expect(props.expand).to.be.calledOnce;
+      });
   });
 });

@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 
 const StatusField: React.FC<{ status: string }> = ({ status }) => (
-  <StatusContainer>
-    <StatusColorIndicator status={status} />
+  <StatusContainer data-testid="status-container">
+    <StatusColorIndicator status={status} data-testid="status-container-color" />
     {status}
   </StatusContainer>
 );

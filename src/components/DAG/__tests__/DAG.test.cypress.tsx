@@ -1,7 +1,8 @@
 import React from 'react';
+import { mount } from '@cypress/react';
+import { ThemeProvider } from 'styled-components';
+import theme from '../../../theme';
 import DAG, { isDAGError } from '..';
-import { render } from '@testing-library/react';
-import TestWrapper from '../../../utils/testing';
 import { createResource } from '../../../utils/testhelper';
 import { Run } from '../../../types';
 
@@ -18,26 +19,22 @@ const run: Run = {
   system_tags: ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-08-10', 'metaflow_version:2.0.5'],
 };
 
-describe('DAG component', () => {
-  beforeEach(() => {
-    fetchMock.resetMocks();
-  });
-
-  test('<DAG /> - health check', async () => {
-    const { findAllByTestId } = render(
-      <TestWrapper>
+describe('DAG test', () => {
+  it('<DAG /> - health check', async () => {
+    mount(
+      <ThemeProvider theme={theme}>
         <DAG run={run} steps={[]} result={createResource({}, {})} />
-      </TestWrapper>,
+      </ThemeProvider>
     );
     // Expect to see error here since we don't mock websocket
-    await findAllByTestId('dag-container-Error');
+    cy.get('[data-testid="dag-container-Error"]').should('exist');
   });
 
-  test('isDAGError', () => {
-    expect(isDAGError('Error', [])).toBe(true);
-    expect(isDAGError('Ok', [])).toBe(true);
-    expect(isDAGError('Loading', [])).toBe(false);
-    expect(isDAGError('NotAsked', [])).toBe(false);
+  it('isDAGError', () => {
+    expect(isDAGError('Error', [])).to.be.true;
+    expect(isDAGError('Ok', [])).to.be.true;
+    expect(isDAGError('Loading', [])).to.be.false;
+    expect(isDAGError('NotAsked', [])).to.be.false;
 
     expect(
       isDAGError('Error', [
@@ -47,7 +44,7 @@ describe('DAG component', () => {
           steps: [],
         },
       ]),
-    ).toBe(false);
+    ).to.be.false;
 
     expect(
       isDAGError('Ok', [
@@ -57,6 +54,6 @@ describe('DAG component', () => {
           steps: [],
         },
       ]),
-    ).toBe(false);
+    ).to.be.false;
   });
 });

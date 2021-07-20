@@ -58,7 +58,7 @@ describe('DAG utilities', () => {
         original: { type: 'end', box_next: false, box_ends: null, next: [] },
       },
     ];
-    expect(convertDAGModelToTree(BASIC_DAG)).toEqual(BASIC_DAG_EXPECTED_RESULT);
+    expect(convertDAGModelToTree(BASIC_DAG)).to.deep.equal(BASIC_DAG_EXPECTED_RESULT);
   });
 
   it('convertDAGModelToTree - HugeFlow dag', () => {
@@ -260,6 +260,6 @@ describe('DAG utilities', () => {
         original: { type: 'end', box_next: false, box_ends: null, next: [] },
       },
     ];
-    expect(convertDAGModelToTree(HUGEFLOW_DAG)).toEqual(HUGEFLOW_EXPECTED_RESULT);
+    expect(convertDAGModelToTree(HUGEFLOW_DAG)).to.deep.equal(HUGEFLOW_EXPECTED_RESULT);
   });
 });
