@@ -18,6 +18,8 @@ Plugins will use JS API to communicate with host application. Plugin must call a
 
 ## How to
 
+Here is 3 different ways to use plugin API file.
+
 1. Add MetaflowPluginAPI.js to your plugin folder. Don't forget to refer to it like:
 
 ```html
