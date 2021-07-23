@@ -94,7 +94,9 @@ function useAutoComplete<T>({
   const abortCtrl = new AbortController();
 
   useEffect(() => {
-    abortCtrl.abort();
+    if (DataStore[url] && DataStore[url].status === 'Loading') {
+      abortCtrl.abort();
+    }
   }, [requestUrl]); //eslint-disable-line
 
   useEffect(() => {

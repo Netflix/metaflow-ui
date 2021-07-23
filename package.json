@@ -46,7 +46,7 @@
   "scripts": {
     "start": "DISABLE_NEW_JSX_TRANSFORM=true react-scripts start",
     "build": "DISABLE_NEW_JSX_TRANSFORM=true react-scripts build",
-    "test": "DISABLE_NEW_JSX_TRANSFORM=true react-scripts test --testPathIgnorePatterns=\"src\/\\S*\/__tests__\/.\\w*.test.cypress.\\w*\"",
+    "test": "DISABLE_NEW_JSX_TRANSFORM=true react-scripts test --testPathIgnorePatterns=\"src/\\S*/__tests__/.\\w*.test.cypress.\\w*\"",
     "test:coverage": "DISABLE_NEW_JSX_TRANSFORM=true CI=true react-scripts test --env=jsdom --coverage",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
@@ -73,6 +73,7 @@
     "@cypress/webpack-dev-server": "^1.4.0",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
+    "cypress-wait-until": "^1.7.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-flowtype": "^5.7.2",
@@ -83,7 +84,8 @@
     "eslint-plugin-react-hooks": "^4.2.0",
     "fake-indexeddb": "^3.1.2",
     "http-proxy-middleware": "^1.0.4",
-    "jest-websocket-mock": "^2.1.0"
+    "jest-websocket-mock": "^2.1.0",
+    "mock-websocket": "^0.0.7"
   },
   "resolutions": {
     "jest-environment-jsdom": "^26.0.1"

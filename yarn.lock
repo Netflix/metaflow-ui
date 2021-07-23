@@ -4667,6 +4667,11 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/cyclist/-/cyclist-1.0.1.tgz#596e9698fd0c80e12038c2b82d6eb1b35b6224d9"
   integrity sha1-WW6WmP0MgOEgOMK4LW6xs1tiJNk=
 
+cypress-wait-until@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/cypress-wait-until/-/cypress-wait-until-1.7.1.tgz#3789cd18affdbb848e3cfc1f918353c7ba1de6f8"
+  integrity sha512-8DL5IsBTbAxBjfYgCzdbohPq/bY+IKc63fxtso1C8RWhLnQkZbVESyaclNr76jyxfId6uyzX8+Xnt0ZwaXNtkA==
+
 cypress@^7.7.0:
   version "7.7.0"
   resolved "https://registry.yarnpkg.com/cypress/-/cypress-7.7.0.tgz#0839ae28e5520536f9667d6c9ae81496b3836e64"
@@ -8678,6 +8683,13 @@ mock-socket@^9.0.3:
   version "9.0.3"
   resolved "https://registry.yarnpkg.com/mock-socket/-/mock-socket-9.0.3.tgz#4bc6d2aea33191e4fed5ec71f039e2bbeb95e414"
   integrity sha512-SxIiD2yE/By79p3cNAAXyLQWTvEFNEzcAO7PH+DzRqKSFaplAPFjiQLmw8ofmpCsZf+Rhfn2/xCJagpdGmYdTw==
+  dependencies:
+    url-parse "^1.4.4"
+
+mock-websocket@^0.0.7:
+  version "0.0.7"
+  resolved "https://registry.yarnpkg.com/mock-websocket/-/mock-websocket-0.0.7.tgz#eba3fb000207bfdf37dbf266669187ad7dffd52d"
+  integrity sha512-msBc5kX1yIL8E/oMSFY2oTAWb2l3Wo6wYtXdvIY5fxP6925gIaiYOCKqGUK+ybQE59Z0m4Tv0uEpBU6BvH5q5Q==
   dependencies:
     url-parse "^1.4.4"
 

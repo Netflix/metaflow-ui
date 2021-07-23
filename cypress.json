@@ -4,6 +4,7 @@
     "testFiles": "**/*.test.cypress.{js,ts,jsx,tsx}",
     "componentFolder": "src"
   },
+  "supportFile": "cypress/support/commands.js",
   "screenshotOnRunFailure": false,
   "video": false
 }
