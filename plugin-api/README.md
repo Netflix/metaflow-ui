@@ -18,13 +18,13 @@ Plugins will use JS API to communicate with host application. Plugin must call a
 
 ## How to
 
-1. Download MetaflowPluginAPI.js and include it to your plugin folder. Don't forget to refer to it like:
+1. Add MetaflowPluginAPI.js to your plugin folder. Don't forget to refer to it like:
 
 ```html
 <script src="MetaflowPluginAPI.js"></script>
 ```
 
-2. Store API to CDN and use it from there. Don't forget to refer to it like:
+2. Store API to CDN and use it from there. This might be good option when you have lot of plugins and dont want to add js file to every single one. Don't forget to refer to it like:
 
 ```html
 <script src="PATH_TO_YOUR_CDN/MetaflowPluginAPI.js"></script>
