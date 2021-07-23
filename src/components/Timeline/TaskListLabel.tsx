@@ -82,10 +82,12 @@ const TaskListLabel: React.FC<Props> = (props) => {
             <RowStepName
               data-testid="tasklistlabel-text"
               bigName={props.item.step_name.length > 20}
-              title={props.item.step_name}
+              title={`${props.item.step_name} ${
+                tasksTotal === tasksVisible ? tasksTotal : `${tasksVisible}/${tasksTotal}`
+              }`}
             >
               {props.item.step_name}
-              {tasksTotal && (
+              {!!tasksTotal && (
                 <>
                   {' '}
                   <StepCount>({tasksTotal === tasksVisible ? tasksTotal : `${tasksVisible}/${tasksTotal}`})</StepCount>
