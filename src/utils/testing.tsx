@@ -5,13 +5,6 @@ import './i18n';
 import theme from '../theme';
 import { QueryParamProvider } from 'use-query-params';
 
-export const mockfetch = jest.fn(() =>
-  Promise.resolve({
-    status: 500,
-    json: () => Promise.resolve({}),
-  }),
-);
-
 /**
  * Wrapper for testing component that depends on theming and routing. Also accepts route as param if
  * component depends on certain routes.
@@ -25,5 +18,10 @@ const TestWrapper: React.FC<{ route?: string }> = ({ children, route = '/' }) =>
     </ThemeProvider>
   );
 };
+
+// Get by data-testid
+export function gid(selector: string) {
+  return cy.get(`[data-testid=${selector}]`);
+}
 
 export default TestWrapper;

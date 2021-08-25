@@ -26,33 +26,35 @@ function createPluginManifest(d: Partial<PluginManifest> = {}): PluginManifest {
 describe('Plugins utils', () => {
   it('isVersionEqualOrHigher', () => {
     // Equals
-    expect(isVersionEqualOrHigher('0.0.1', '0.0.1')).toBe(true);
-    expect(isVersionEqualOrHigher('0.1.0', '0.1.0')).toBe(true);
-    expect(isVersionEqualOrHigher('1.0.0', '1.0.0')).toBe(true);
+    expect(isVersionEqualOrHigher('0.0.1', '0.0.1')).to.equal(true);
+    expect(isVersionEqualOrHigher('0.1.0', '0.1.0')).to.equal(true);
+    expect(isVersionEqualOrHigher('1.0.0', '1.0.0')).to.equal(true);
 
     // Is smaller
-    expect(isVersionEqualOrHigher('0.0.0', '0.0.1')).toBe(false);
-    expect(isVersionEqualOrHigher('0.0.1', '0.1.0')).toBe(false);
-    expect(isVersionEqualOrHigher('0.1.0', '1.0.0')).toBe(false);
+    expect(isVersionEqualOrHigher('0.0.0', '0.0.1')).to.equal(false);
+    expect(isVersionEqualOrHigher('0.0.1', '0.1.0')).to.equal(false);
+    expect(isVersionEqualOrHigher('0.1.0', '1.0.0')).to.equal(false);
 
-    expect(isVersionEqualOrHigher('0.1.0', '0.2.0')).toBe(false);
-    expect(isVersionEqualOrHigher('0.2.3', '1.0.0')).toBe(false);
-    expect(isVersionEqualOrHigher('0.0.3', '1.0.0')).toBe(false);
-    expect(isVersionEqualOrHigher('125.1315.12315', '125.12316.1')).toBe(false);
+    expect(isVersionEqualOrHigher('0.1.0', '0.2.0')).to.equal(false);
+    expect(isVersionEqualOrHigher('0.2.3', '1.0.0')).to.equal(false);
+    expect(isVersionEqualOrHigher('0.0.3', '1.0.0')).to.equal(false);
+    expect(isVersionEqualOrHigher('125.1315.12315', '125.12316.1')).to.equal(false);
 
     // Is bigger
-    expect(isVersionEqualOrHigher('0.0.2', '0.0.1')).toBe(true);
-    expect(isVersionEqualOrHigher('0.2.0', '0.1.0')).toBe(true);
-    expect(isVersionEqualOrHigher('2.0.0', '1.0.0')).toBe(true);
+    expect(isVersionEqualOrHigher('0.0.2', '0.0.1')).to.equal(true);
+    expect(isVersionEqualOrHigher('0.2.0', '0.1.0')).to.equal(true);
+    expect(isVersionEqualOrHigher('2.0.0', '1.0.0')).to.equal(true);
 
-    expect(isVersionEqualOrHigher('1.2.3', '1.0.0')).toBe(true);
-    expect(isVersionEqualOrHigher('2.2.3', '2.1.1')).toBe(true);
-    expect(isVersionEqualOrHigher('3.0.1', '2.1.1')).toBe(true);
-    expect(isVersionEqualOrHigher('125.1315.12315', '2.1.1')).toBe(true);
+    expect(isVersionEqualOrHigher('1.2.3', '1.0.0')).to.equal(true);
+    expect(isVersionEqualOrHigher('2.2.3', '2.1.1')).to.equal(true);
+    expect(isVersionEqualOrHigher('3.0.1', '2.1.1')).to.equal(true);
+    expect(isVersionEqualOrHigher('125.1315.12315', '2.1.1')).to.equal(true);
   });
 
   it('pluginPath', () => {
-    expect(pluginPath(createPluginManifest())).toBe('http://localhost/api/plugin/Plugin name/index.html');
+    expect(pluginPath(createPluginManifest())).to.equal(
+      `http://${window.location.host}/api/plugin/Plugin name/index.html`,
+    );
     expect(
       pluginPath(
         createPluginManifest({
@@ -60,7 +62,7 @@ describe('Plugins utils', () => {
           config: { name: 'another_name', entrypoint: 'plugin.html', version: '0' },
         }),
       ),
-    ).toBe('http://localhost/api/plugin/another_name/plugin.html');
+    ).to.equal(`http://${window.location.host}/api/plugin/another_name/plugin.html`);
   });
 
   it('PluginCommuncationsAPI.isPluginMessage', () => {
@@ -76,7 +78,7 @@ describe('Plugins utils', () => {
           } as MessageEvent,
           'test',
         ),
-      ).toBe(true);
+      ).to.equal(true);
     }
     // Wrong type fails
     expect(
@@ -89,7 +91,7 @@ describe('Plugins utils', () => {
         } as MessageEvent,
         'test',
       ),
-    ).toBe(false);
+    ).to.equal(false);
     // Mismatch on names fails
     expect(
       PluginCommuncationsAPI.isPluginMessage(
@@ -101,56 +103,60 @@ describe('Plugins utils', () => {
         } as MessageEvent,
         'test',
       ),
-    ).toBe(false);
+    ).to.equal(false);
   });
 
   it('PluginCommuncationsAPI.isRegisterMessage', () => {
     // Messages with too little properties
-    expect(PluginCommuncationsAPI.isRegisterMessage({ data: {} } as MessageEvent)).toBe(false);
-    expect(PluginCommuncationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent' } } as MessageEvent)).toBe(
-      false,
-    );
+    expect(PluginCommuncationsAPI.isRegisterMessage({ data: {} } as MessageEvent)).to.equal(false);
+    expect(
+      PluginCommuncationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent' } } as MessageEvent),
+    ).to.equal(false);
     expect(
       PluginCommuncationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent', name: 'test' } } as MessageEvent),
-    ).toBe(false);
+    ).to.equal(false);
     expect(
       PluginCommuncationsAPI.isRegisterMessage({
         data: { type: 'PluginRegisterEvent', name: 'test', slot: 'test' },
       } as MessageEvent),
-    ).toBe(false);
+    ).to.equal(false);
 
     // Correct message
     const correctMessage = {
       data: { type: 'PluginRegisterEvent', name: 'test', slot: 'test', version: { api: '1.0.0' } },
     };
-    expect(PluginCommuncationsAPI.isRegisterMessage(correctMessage as MessageEvent)).toEqual(correctMessage.data);
+    const result = PluginCommuncationsAPI.isRegisterMessage(correctMessage as MessageEvent);
+    expect((result as any).type).to.equal(correctMessage.data.type);
+
     // Messages with wrong data types
     expect(
       PluginCommuncationsAPI.isRegisterMessage({
         data: { ...correctMessage.data, version: { api: 13 } },
       } as MessageEvent),
-    ).toBe(false);
+    ).to.equal(false);
     expect(
       PluginCommuncationsAPI.isRegisterMessage({
         data: { ...correctMessage.data, name: 123 },
       } as MessageEvent),
-    ).toBe(false);
+    ).to.equal(false);
     expect(
       PluginCommuncationsAPI.isRegisterMessage({
         data: { ...correctMessage.data, slot: 123 },
       } as MessageEvent),
-    ).toBe(false);
+    ).to.equal(false);
   });
 
   it('PluginCommuncationsAPI.isUpdatePluginMessage', () => {
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage(null)).toBe(false);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage(123)).toBe(false);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage('null')).toBe(false);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage([null])).toBe(false);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage({})).toBe(false);
+    expect(PluginCommuncationsAPI.isUpdatePluginMessage(null)).to.equal(false);
+    expect(PluginCommuncationsAPI.isUpdatePluginMessage(123)).to.equal(false);
+    expect(PluginCommuncationsAPI.isUpdatePluginMessage('null')).to.equal(false);
+    expect(PluginCommuncationsAPI.isUpdatePluginMessage([null])).to.equal(false);
+    expect(PluginCommuncationsAPI.isUpdatePluginMessage({})).to.equal(false);
 
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage({ name: 'test', slot: 'test', visible: true })).toBe(true);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage({ name: 'test', slot: 'test', visible: 'true' })).toBe(false);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage({ name: 'test', visible: true })).toBe(false);
+    expect(PluginCommuncationsAPI.isUpdatePluginMessage({ name: 'test', slot: 'test', visible: true })).to.equal(true);
+    expect(PluginCommuncationsAPI.isUpdatePluginMessage({ name: 'test', slot: 'test', visible: 'true' })).to.equal(
+      false,
+    );
+    expect(PluginCommuncationsAPI.isUpdatePluginMessage({ name: 'test', visible: true })).to.equal(false);
   });
 });

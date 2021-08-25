@@ -2,6 +2,7 @@ import React from 'react';
 import useResource, { HookConfig } from '..';
 import { Server } from 'mock-websocket';
 import { mount } from '@cypress/react';
+import { gid } from '../../../utils/testing';
 
 type BasicReponseData = { id: string; label: string };
 
@@ -52,10 +53,6 @@ const ResourceObjectComponent = (useResourceSettings: Partial<HookConfig<BasicRe
 describe('useResource hook', () => {
   let server: Server;
   let connected = false;
-
-  function gid(selector: string) {
-    return cy.get(`[data-testid=${selector}]`);
-  }
 
   before(() => {
     server = new Server(`ws://${window.location.host}/api/ws`);
