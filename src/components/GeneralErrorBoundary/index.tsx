@@ -1,5 +1,4 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { analyticsSendException } from '../../utils/analytics';
 
 interface Props {
   children: ReactNode;
@@ -27,7 +26,7 @@ class ErrorBoundary extends Component<Props, State> {
     console.error('Uncaught error:', error, errorInfo);
     this.setState({ hasError: true });
     const warning = `${error.name}: ${error.message}, ${errorInfo.componentStack?.split('\n')[1]}`;
-    analyticsSendException(warning, true);
+    console.log(warning);
   }
 
   public render(): React.ReactNode {

@@ -6,7 +6,6 @@ import RunPage from '../Run';
 import NotificationsPage from '../Notifications';
 import DebugPage from '../Debug';
 import { SHORT_PATHS } from '../../utils/routing';
-import { analyticsSendPageView } from '../../utils/analytics';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
 import { getVersionInfo } from '../../utils/VERSION';
 
@@ -15,7 +14,6 @@ const RootPage: React.FC = () => {
   const { addDataToStore } = useContext(PluginsContext);
 
   useEffect(() => {
-    analyticsSendPageView(location.pathname + location.search);
     addDataToStore('location', location);
   }, [location.pathname]); // eslint-disable-line
 

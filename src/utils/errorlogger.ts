@@ -1,8 +1,6 @@
 // import { getVersionInfo } from './VERSION';
-import { analyticsSendException } from './analytics';
 
 export function logWarning(str: string, ...arg: unknown[]): void {
   console.warn(str, ...arg);
   // console.log('Version information: ', getVersionInfo());
-  analyticsSendException(str, false);
 }

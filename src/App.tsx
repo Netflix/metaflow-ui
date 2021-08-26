@@ -21,7 +21,6 @@ import Logger from './components/Logger';
 
 import { fetchServiceVersion } from './utils/VERSION';
 import { fetchFeaturesConfig } from './utils/FEATURE';
-import { fetchConfigurations } from './utils/config';
 import Announcements from './components/Announcement';
 import { PluginsProvider } from './components/Plugins/PluginManager';
 import HeadlessPluginSlot from './components/Plugins/HeadlessPluginSlot';
@@ -38,8 +37,6 @@ const App: React.FC = () => {
     fetchServiceVersion();
     // Get info about features that are enabled by server
     fetchFeaturesConfig(() => setFlagsReceived(true));
-    // Get other configurations
-    fetchConfigurations();
   }, []);
 
   return (

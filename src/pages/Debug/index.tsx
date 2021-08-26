@@ -2,12 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import ContentHeader from '../../components/Content/ContentHeader';
-import ContentWrapper from '../../components/Content/ContentWrapper';
 import { ItemRow } from '../../components/Structure';
 import { StatusColorIndicator } from '../../components/Status';
 import { BigButton } from '../../components/Button';
 import FEATURE_FLAGS, { FeatureFlags } from '../../utils/FEATURE';
-import { GAtrackingId } from '../../utils/analytics';
 import useLogger from '../../hooks/useLogger';
 
 const DebugPage: React.FC = () => {
@@ -28,15 +26,6 @@ const DebugPage: React.FC = () => {
         </DebugColumn>
 
         <DebugColumn data-testid="debug_column">
-          <ContentHeader data-testid="debug_content_header">{t('debug.ganalytics_id')}</ContentHeader>
-          <ContentWrapper>
-            <DebugSectionContainer>
-              <DebugSectionTitle>{GAtrackingId || '-'}</DebugSectionTitle>
-
-              <DebugSectionContent>{t('debug.analytics_msg')}</DebugSectionContent>
-            </DebugSectionContainer>
-          </ContentWrapper>
-
           <ContentHeader data-testid="debug_content_header">{t('debug.log_recording')}</ContentHeader>
           <div>
             <DebugSectionContent>{t('debug.logging_msg')}</DebugSectionContent>

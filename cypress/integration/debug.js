@@ -27,12 +27,11 @@ it('Debug - Test network logging and discard logs', () => {
     .eq(1)
     .then(($column) => {
       // check that correct sections are found within the second column
-      cy.wrap($column).find('[data-testid="debug_content_header"]').eq(0).contains('Google analytics tracking ID');
-      cy.wrap($column).find('[data-testid="debug_content_header"]').eq(1).contains('Log recording');
+      cy.wrap($column).find('[data-testid="debug_content_header"]').eq(0).contains('Log recording');
       // find the start recording button
       cy.wrap($column)
         .find('[data-testid="debug_content_header"]')
-        .eq(1)
+        .eq(0)
         .siblings()
         .find('button')
         .should('have.text', 'Start recording')
@@ -54,12 +53,11 @@ it('Debug - Test network logging and download logs', () => {
     .eq(1)
     .then(($column) => {
       // check that correct sections are found within the second column
-      cy.wrap($column).find('[data-testid="debug_content_header"]').eq(0).contains('Google analytics tracking ID');
-      cy.wrap($column).find('[data-testid="debug_content_header"]').eq(1).contains('Log recording');
+      cy.wrap($column).find('[data-testid="debug_content_header"]').eq(0).contains('Log recording');
       // find the start recording button
       cy.wrap($column)
         .find('[data-testid="debug_content_header"]')
-        .eq(1)
+        .eq(0)
         .siblings()
         .find('button')
         .should('have.text', 'Start recording')

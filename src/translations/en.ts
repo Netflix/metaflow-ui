@@ -278,7 +278,6 @@ const en = {
     debug: {
       title: 'Debug',
       feature_flags: 'Feature flags',
-      ganalytics_id: 'Google analytics tracking ID',
       log_recording: 'Log recording',
       start_recording: 'Start recording',
       stop_recording: 'Stop recording',
@@ -300,7 +299,6 @@ const en = {
       S3_DISABLE_msg: 'Disable fetching extra data from AWS S3.',
       WS_DISABLE_msg: 'Disable websocket real time messaging.',
       generic_msg: 'Value of feature flag can be changed server side.',
-      analytics_msg: 'Google analytics can be used to gather usage data.',
       logging_msg:
         'Logging can be used to gather information in problem situations. Logging will record all HTTP and websocket traffic which can then be downloaded as text files even in case of application crash.',
     },
