@@ -201,7 +201,8 @@ const Task: React.FC<TaskViewProps> = ({
 
   useEffect(() => {
     setMetadata([]);
-  }, [stepName, taskId]);
+    addDataToStore('metadata', []);
+  }, [stepName, taskId, addDataToStore]);
 
   useEffect(() => {
     setStdout([]);
