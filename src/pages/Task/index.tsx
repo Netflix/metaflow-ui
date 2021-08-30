@@ -132,14 +132,14 @@ const Task: React.FC<TaskViewProps> = ({
   // Metadata
   const [metadata, setMetadata] = useState<Metadata[]>([]);
   const metadataRes = useResource<Metadata[], Metadata>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/metadata`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/metadata`,
     fetchAllData: true,
     queryParams: {
       _limit: '100',
     },
     subscribeToEvents: true,
     initialData: [],
-    pause: !isCurrentTaskFinished,
+    pause: !task,
     onUpdate(items) {
       setMetadata((oldItems) => {
         const newSet = [...oldItems, ...items];
@@ -157,7 +157,7 @@ const Task: React.FC<TaskViewProps> = ({
   // Stantard out logs
   const [stdout, setStdout] = useState<Log[]>([]);
   const stdoutRes = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/out`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/logs/out`,
     queryParams: logParams,
     initialData: [],
     fetchAllData: true,
@@ -170,7 +170,7 @@ const Task: React.FC<TaskViewProps> = ({
   // Error logs
   const [stderr, setStderr] = useState<Log[]>([]);
   const stderrRes = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/logs/err`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/logs/err`,
     queryParams: logParams,
     initialData: [],
     fetchAllData: true,
@@ -182,7 +182,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   // Artifacts
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
-  const artifactUrl = `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/artifacts`;
+  const artifactUrl = `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/artifacts`;
   const { status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: artifactUrl,
     queryParams: {
@@ -190,19 +190,24 @@ const Task: React.FC<TaskViewProps> = ({
       postprocess: 'true',
       _limit: '50',
     },
+    socketParamFilter: ({ postprocess, ...rest }) => {
+      return rest;
+    },
     subscribeToEvents: true,
     fetchAllData: true,
     initialData: [],
     onUpdate: (data) => {
       data && setArtifacts((currentData) => [...currentData, ...data]);
     },
-    pause: !isCurrentTaskFinished || attemptId === null,
+    pause: !task || attemptId === null,
   });
 
   useEffect(() => {
-    setMetadata([]);
-    addDataToStore('metadata', []);
-  }, [stepName, taskId, addDataToStore]);
+    if (metadata && metadata.length !== 0) {
+      setMetadata([]);
+      addDataToStore('metadata', []);
+    }
+  }, [stepName, taskId]); // eslint-disable-line
 
   useEffect(() => {
     setStdout([]);
