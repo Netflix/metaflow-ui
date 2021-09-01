@@ -1,0 +1,18 @@
+name: Metaflow UI test suite
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Dispatch Netflix/metaflow-ui-test-suite workflow
+        run: |
+          curl -X POST -f https://api.github.com/repos/Netflix/metaflow-ui-test-suite/actions/workflows/test.yml/dispatches \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token ${{ secrets.TEST_SUITE_ACCESS_TOKEN }}" \
+            -d '{"ref":"master","inputs":{"ui-version":"${{ env.GITHUB_REF }}"}}'
