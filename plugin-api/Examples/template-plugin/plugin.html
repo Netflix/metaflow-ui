@@ -110,7 +110,8 @@
   <script>
     (function () {
       // Give visible parameter so we dont show plugin by default. Only if there is actual content for it.
-      Metaflow.register({ slot: 'task-details', visible: false }, () => {
+      // ALso render plugin to normal titled container instead of collapsable element by giving container parameter
+      Metaflow.register({ slot: 'task-details', visible: false, container: 'titled-container' }, () => {
         const Templates = {}
         Metaflow.setHeight();
         Metaflow.subscribe(['metadata'], ({ data }) => {

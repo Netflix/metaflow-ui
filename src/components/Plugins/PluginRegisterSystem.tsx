@@ -32,7 +32,15 @@ const PluginRegisterSystem: React.FC = () => {
         if (definition) {
           // Register plugin to specific slot
           register(
-            { slot: msg.slot, visible: typeof msg.visible === 'boolean' ? (msg.visibile as boolean) : true },
+            {
+              slot: msg.slot,
+              visible: typeof msg.visible === 'boolean' ? (msg.visibile as boolean) : true,
+              container: typeof msg.container === 'string' ? msg.container : 'collapsable',
+              containerProps:
+                msg.containerProps && typeof msg.containerProps === 'object'
+                  ? (msg.containerProps as Record<string, unknown>)
+                  : undefined,
+            },
             definition,
             msg.version,
           );
