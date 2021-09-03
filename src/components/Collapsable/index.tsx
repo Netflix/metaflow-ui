@@ -49,7 +49,7 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title, animated = t
         </CollapsableHeader>
 
         {(animated || open) && (
-          <ContentContainer>
+          <ContentContainer data-testid="collapsable-content">
             <Content open={open}>{children}</Content>
           </ContentContainer>
         )}

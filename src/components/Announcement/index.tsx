@@ -41,7 +41,7 @@ const Announcements: React.FC = () => {
   }, []);
 
   return (
-    <AnnouncementsContainer>
+    <AnnouncementsContainer data-testid="announcements-container">
       {announcements
         .filter((item) => seen.indexOf(item.id) === -1)
         .slice(0, 3)

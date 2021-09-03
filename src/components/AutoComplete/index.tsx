@@ -43,6 +43,7 @@ const AutoComplete: React.FC<Props> = ({ result, setActiveOption, onSelect }) =>
 
   return (
     <AutoCompletePopup
+      data-testid="autocomplete-popup"
       onMouseOut={() => {
         setActive(-1);
       }}

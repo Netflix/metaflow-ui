@@ -17,7 +17,7 @@ type Props = {
 
 const VerticalToggle: React.FC<Props> = ({ visible, active, onClick }) => {
   return (
-    <ToggleContainer onClick={onClick} show={visible}>
+    <ToggleContainer data-testid="vertical-toggle" onClick={onClick} show={visible}>
       <StyledToggle active={active} />
     </ToggleContainer>
   );

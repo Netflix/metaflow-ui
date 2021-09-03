@@ -58,6 +58,7 @@ const ConnectionStatus: React.FC = () => {
 
   return (
     <Wrapper
+      data-testid="connection-status-wrapper"
       status={status}
       onClick={() => {
         if (status === 'Stale') {
