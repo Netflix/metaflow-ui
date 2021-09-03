@@ -37,6 +37,7 @@ const bgColor = {
   yellow: '#E5A90C',
   red: '#EB3428',
   green: '#20AF2E',
+  greenLight: '#BCE307',
 };
 
 const borderColor = {

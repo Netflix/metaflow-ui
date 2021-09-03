@@ -48,7 +48,7 @@ export interface Task extends MetaDataBaseObject {
   status: TaskStatus;
 }
 
-export type TaskStatus = 'running' | 'completed' | 'failed' | 'unknown' | 'pending';
+export type TaskStatus = 'running' | 'completed' | 'failed' | 'unknown' | 'pending' | 'refining';
 
 export interface Metadata extends MetaDataBaseObject {
   id: number;

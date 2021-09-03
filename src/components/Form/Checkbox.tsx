@@ -87,8 +87,8 @@ const CheckboxWrapper = styled.div<{ checked: boolean }>`
       }
 
       &.status-running span.checkbox {
-        border-color: ${(p) => p.theme.color.bg.yellow};
-        color: ${(p) => p.theme.color.bg.yellow};
+        border-color: ${(p) => p.theme.color.bg.greenLight};
+        color: ${(p) => p.theme.color.bg.greenLight};
       }
       &.status-failed span.checkbox {
         border-color: ${(p) => p.theme.color.bg.red};

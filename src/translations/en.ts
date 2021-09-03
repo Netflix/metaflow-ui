@@ -105,6 +105,7 @@ const en = {
       'filter-completed': 'Completed',
       'filter-running': 'Running',
       'filter-failed': 'Failed',
+      'filter-pending': 'Pending',
       'filter-unknown': 'Unknown',
       mode: 'Mode',
       overview: 'Workflow',

@@ -18,6 +18,16 @@ const SidebarStatusSelection: React.FC<Props> = ({ updateField, status }) => {
   return (
     <Section>
       <SectionHeader>{t('fields.status')}</SectionHeader>
+
+      <CheckboxContainer>
+        <StatusCheckboxField
+          label={t('filters.completed')}
+          value="completed"
+          activeStatus={status}
+          updateField={updateField}
+        />
+      </CheckboxContainer>
+
       <CheckboxContainer>
         <StatusCheckboxField
           label={t('filters.running')}
@@ -26,18 +36,11 @@ const SidebarStatusSelection: React.FC<Props> = ({ updateField, status }) => {
           updateField={updateField}
         />
       </CheckboxContainer>
+
       <CheckboxContainer>
         <StatusCheckboxField
           label={t('filters.failed')}
           value="failed"
-          activeStatus={status}
-          updateField={updateField}
-        />
-      </CheckboxContainer>
-      <CheckboxContainer>
-        <StatusCheckboxField
-          label={t('filters.completed')}
-          value="completed"
           activeStatus={status}
           updateField={updateField}
         />

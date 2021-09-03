@@ -9,7 +9,7 @@ describe('Icon test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Status status="Test" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
     cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(118, 118, 118)');
@@ -17,7 +17,7 @@ describe('Icon test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Status status="completed" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
     cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(32, 175, 46)');
@@ -25,7 +25,7 @@ describe('Icon test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Status status="failed" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
     cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(235, 52, 40)');
@@ -33,7 +33,15 @@ describe('Icon test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Status status="running" />
-      </ThemeProvider>
+      </ThemeProvider>,
+    );
+    cy.get('[data-testid="status-container"]').should('exist');
+    cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(188, 227, 7)');
+
+    mount(
+      <ThemeProvider theme={theme}>
+        <Status status="pending" />
+      </ThemeProvider>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
     cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(229, 169, 12)');

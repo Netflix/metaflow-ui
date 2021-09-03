@@ -207,6 +207,9 @@ const Task: React.FC<TaskViewProps> = ({
       setMetadata([]);
       addDataToStore('metadata', []);
     }
+    return () => {
+      addDataToStore('metadata', []);
+    };
   }, [stepName, taskId]); // eslint-disable-line
 
   useEffect(() => {

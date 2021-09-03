@@ -51,6 +51,8 @@ export function lineColor(theme: DefaultTheme, grayed: boolean, state: string, i
       case 'ok':
         return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.green;
       case 'running':
+        return theme.color.bg.greenLight;
+      case 'pending':
         return theme.color.bg.yellow;
       case 'failed':
         return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.red;

@@ -9,6 +9,7 @@ export type RowCounts = {
   all: number;
   completed: number;
   running: number;
+  pending: number;
   failed: number;
   unknown: number;
 };
@@ -19,8 +20,10 @@ export function countTaskRowsByStatus(rows: RowDataModel): RowCounts {
     completed: 0,
     running: 0,
     failed: 0,
+    pending: 0,
     unknown: 0,
   };
+  const keys: Array<keyof typeof counts> = Object.keys(counts) as Array<keyof typeof counts>;
 
   // Iterate steps
   for (const stepName of Object.keys(rows)) {
@@ -33,16 +36,12 @@ export function countTaskRowsByStatus(rows: RowDataModel): RowCounts {
 
         if (taskRow.length > 0) {
           const task = taskRow[taskRow.length - 1];
-
+          // Every task adds one to all count
           counts.all++;
-          if (task.status === 'completed') {
-            counts.completed++;
-          } else if (task.status === 'running') {
-            counts.running++;
-          } else if (task.status === 'failed') {
-            counts.failed++;
-          } else if (task.status === 'unknown') {
-            counts.unknown++;
+          // Increment specific count
+          const status = task.status as keyof typeof counts;
+          if (keys.indexOf(status) > -1) {
+            counts[status]++;
           }
         }
       }

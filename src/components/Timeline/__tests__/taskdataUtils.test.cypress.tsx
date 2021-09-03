@@ -33,6 +33,7 @@ describe('taskdataUtils tests', () => {
       completed: 1,
       running: 1,
       failed: 1,
+      pending: 0,
       unknown: 0,
     });
   });
@@ -56,6 +57,7 @@ describe('taskdataUtils tests', () => {
       completed: 2,
       running: 2,
       failed: 2,
+      pending: 0,
       unknown: 0,
     });
   });
@@ -74,6 +76,7 @@ describe('taskdataUtils tests', () => {
       completed: 1,
       running: 1,
       failed: 1,
+      pending: 0,
       unknown: 0,
     });
   });
@@ -93,7 +96,10 @@ describe('taskdataUtils tests', () => {
       ]),
     ).to.deep.equal([10, 20]);
 
-    expect(timepointsOfTasks([createTask({}), createTask({}), createTask({ finished_at: 800 })])).to.deep.equal([null, 800]);
+    expect(timepointsOfTasks([createTask({}), createTask({}), createTask({ finished_at: 800 })])).to.deep.equal([
+      null,
+      800,
+    ]);
     expect(
       timepointsOfTasks([
         createTask({ started_at: 100, finished_at: 200 }),

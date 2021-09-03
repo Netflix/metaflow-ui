@@ -55,7 +55,7 @@ const LineElement: React.FC<LineElementProps> = ({
   const visibleDuration = timeline.visibleEndTime - timeline.visibleStartTime + extendAmount;
   const boxStartTime = row.type === 'step' ? row.data.ts_epoch : row.data.started_at;
 
-  if (!boxStartTime) {
+  if (!boxStartTime || status === 'pending') {
     return null;
   }
 
@@ -114,7 +114,7 @@ const RowMetricLabel: React.FC<{
 }> = ({ duration, labelPosition, ...rest }) =>
   labelPosition === 'none' ? null : (
     <BoxGraphicValue position={labelPosition} {...rest}>
-      {duration ? formatDuration(duration, 1) : '?'}
+      {duration ? formatDuration(duration, 1) : ''}
     </BoxGraphicValue>
   );
 
@@ -182,7 +182,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
   overflow: hidden;
 
   ${(p) =>
-    p.state === 'pending' &&
+    p.state === 'refining' &&
     css`
       animation: 5s ${UnkownAnimation(p.theme)} infinite;
       &::after {
