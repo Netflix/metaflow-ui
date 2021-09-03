@@ -36,6 +36,20 @@ For example when used with locally setup [Metaflow Metadata UI Service](https://
 $ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://localhost:8083/ metaflow-ui:latest
 ```
 
+Dockerfile also supports following environment variables to inject content to Metaflow UI index.html:
+
+- `METAFLOW_HEAD` - Inject content to `head` element
+- `METAFLOW_BODY_BEFORE` - Inject content at the beginning of `body` element
+- `METAFLOW_BODY_AFTER` - Inject content at the end of `body` element
+
+Use case for these variables ranges from additional meta tags to analytics script injection.
+
+Example on how to add keyword meta tag to Metaflow UI:
+
+```
+METAFLOW_HEAD='<meta name="keywords" content="metaflow" />'
+```
+
 ## Documentation
 
 See [docs/README.md](docs/README.md) to learn more.
