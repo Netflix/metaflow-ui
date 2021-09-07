@@ -215,6 +215,8 @@ const en = {
       'no-runs': 'No runs found',
       'no-tasks': 'No tasks found',
       'not-found': 'Not available',
+      'dag-not-found': 'DAG is not available since code package is missing',
+      'dag-not-found-running': 'DAG is not available since code package is missing. Try again later.',
       'stack-trace': 'Stack trace',
       'copy-stack-trace': 'Copy error stack trace',
       'stack-trace-copied': 'Stack trace copied',

@@ -62,7 +62,10 @@ export const knownErrorIds = [
 
 type APIErrorRendererProps = {
   error: APIError | null;
-  message?: string;
+  // use message to override whole message, or remap error.id with object.
+  // eg. message: { 'not-found': 'home-not-found' } will translate not-found messages to
+  // error.home-not-found messages.
+  message?: string | Record<string, string>;
   icon?: IconKeys | JSX.Element | false;
   customNotFound?: React.ReactNode; // error rendering streamlined for now and this is not needed
 };
@@ -71,11 +74,14 @@ export const APIErrorRenderer: React.FC<APIErrorRendererProps> = ({ error, messa
   const { t } = useTranslation();
   let msg = t('error.generic-error');
 
-  if (error && knownErrorIds.indexOf(error.id) > -1) {
+  // Define msg value
+  if (typeof message === 'string') {
+    msg = message;
+  } else if (error && typeof message === 'object' && message[error.id]) {
+    msg = t(`error.${message[error.id]}`);
+  } else if (error && knownErrorIds.indexOf(error.id) > -1) {
     msg = t(`error.${error.id}`);
   }
-
-  msg = message || msg;
 
   const iconProps = icon === false ? { noIcon: true } : { icon: icon };
 

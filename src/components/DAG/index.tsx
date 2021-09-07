@@ -28,7 +28,7 @@ const DAG: React.FC<{ run: Run; steps: StepLineData[]; result: Resource<DAGModel
   return (
     <div style={{ width: '100%' }}>
       {isDAGError(result.status, dagTree) ? (
-        <DAGError error={result.error} t={t} />
+        <DAGError error={result.error} t={t} run={run} />
       ) : (
         <DAGControlBar setFullscreen={setFullscreen} t={t} />
       )}
