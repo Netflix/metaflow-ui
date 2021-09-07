@@ -46,13 +46,12 @@ interface SearchKeyValuePair {
 }
 
 const parseSearchValue = (searchValue: string): SearchKeyValuePair | null => {
-  const components = (searchValue || '').trim().split(/\s+/).filter(Boolean);
+  const components = (searchValue || '').trim().split(':').filter(Boolean);
   if (components.length > 0) {
-    const condition = components[0].split(':');
-    if (condition[1]) {
-      return { key: condition[0], value: condition[1] };
+    if (components[1]) {
+      return { key: components[0], value: components[1] };
     }
-    return { key: condition[0] };
+    return { key: components[0] };
   }
   return null;
 };
