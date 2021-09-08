@@ -32,6 +32,7 @@ type FilterInputProps = {
   noClear?: boolean;
   status?: AsyncStatus;
   tip?: string;
+  infoMsg?: string;
   errorMsg?: string;
   inputType?: string;
 };
@@ -53,6 +54,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
   noClear = false,
   status = 'Ok',
   tip,
+  infoMsg,
   errorMsg,
 }) => {
   const [hasFocus, setHasFocus] = useState(false);
@@ -195,6 +197,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
         />
       )}
 
+      {status !== 'Error' && infoMsg && hasFocus && <InfoMsgContainer title={infoMsg}>{infoMsg}</InfoMsgContainer>}
       {status === 'Error' && errorMsg && <ErrorMsgContainer title={errorMsg}>{errorMsg}</ErrorMsgContainer>}
     </InputWrapper>
   );
@@ -252,18 +255,32 @@ const SubmitIconHolder = styled.div<{ focus: boolean; status: AsyncStatus }>`
   }
 `;
 
-const ErrorMsgContainer = styled.div`
-  position: absolute;
-  top: 100%;
-  font-size: 0.75rem;
-  color: ${(p) => p.theme.color.bg.red};
-  padding-top: 0.25rem;
-  width: 100%;
+const InfoMsgContainer = styled.div`
+  color: ${(p) => p.theme.color.bg.black};
+  font-size: 0.5rem;
+  font-weight: 500;
   left: 0;
-  padding-left: 1rem;
   overflow: hidden;
+  padding: 0.25rem 0 0 1rem;
+  position: absolute;
   text-overflow: ellipsis;
+  top: 100%;
   white-space: nowrap;
+  width: 100%;
+`;
+
+const ErrorMsgContainer = styled.div`
+  color: ${(p) => p.theme.color.bg.red};
+  font-size: 0.5rem;
+  font-weight: 500;
+  left: 0;
+  overflow: hidden;
+  padding: 0.25rem 0 0 1rem;
+  position: absolute;
+  text-overflow: ellipsis;
+  top: 100%;
+  white-space: nowrap;
+  width: 100%;
 `;
 
 export default FilterInput;

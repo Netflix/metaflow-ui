@@ -189,6 +189,7 @@ const en = {
     search: {
       search: 'Search',
       artifact: 'Artifact',
+      artifactInfo: 'You can wrap value "" to search for an exact match.',
       'no-results': 'No search results',
       'no-tasks': 'No tasks with selected settings',
       'failed-to-search': 'Failed to search',

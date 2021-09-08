@@ -44,6 +44,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
         autoCompleteEnabled={autoCompleteEnabled}
         tip="key:value"
         status={results.status}
+        infoMsg={t('search.artifactInfo')}
         errorMsg={(results.status === 'Error' && results.errorMsg) || undefined}
       />
     </SearchFieldContainer>
