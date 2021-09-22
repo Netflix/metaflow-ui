@@ -19,7 +19,11 @@ const TestWrapper: React.FC<{ route?: string }> = ({ children, route = '/' }) =>
   );
 };
 
-// Get by data-testid
+/**
+ * Shorthand function for cy.get(data-testid=param)
+ * @param selector testid
+ * @returns Cypress.Chainable
+ */
 export function gid(selector: string) {
   return cy.get(`[data-testid=${selector}]`);
 }

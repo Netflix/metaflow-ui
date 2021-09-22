@@ -1,15 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
-import { Log as ILog } from '../../types';
 import { useTranslation } from 'react-i18next';
+import { LogData } from '../../hooks/useLogData';
+import { useDebounce } from 'use-debounce/lib';
 
 //
 // Typedef
 //
 
 type LogProps = {
-  rows: ILog[];
+  logdata: LogData;
+  onScroll?: (startIndex: number) => void;
   fixedHeight?: number;
 };
 
@@ -19,8 +21,9 @@ type LogProps = {
 
 const LIST_MAX_HEIGHT = 400;
 
-const LogList: React.FC<LogProps> = ({ rows, fixedHeight }) => {
+const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
   const { t } = useTranslation();
+  const rows = logdata.logs;
   const [stickBottom, setStickBottom] = useState(true);
   const [cache] = useState(
     new CellMeasurerCache({
@@ -30,11 +33,12 @@ const LogList: React.FC<LogProps> = ({ rows, fixedHeight }) => {
   );
   const _list = useRef<List>(null);
 
+  const count = rows.length;
   useEffect(() => {
     if (stickBottom && _list) {
-      _list.current?.scrollToRow(rows.length);
+      _list.current?.scrollToRow(count);
     }
-  }, [rows, stickBottom]);
+  }, [count, stickBottom]);
 
   const totalHeight = rows.reduce((val, _item, index) => {
     return val + (cache.getHeight(index, 0) || 0);
@@ -49,11 +53,41 @@ const LogList: React.FC<LogProps> = ({ rows, fixedHeight }) => {
     return () => window.removeEventListener('resize', listener);
   }, []); // eslint-disable-line
 
+  // Force row height calculations after fetch ok
+
+  const okCount = rows.reduce((okAmount, item) => {
+    return typeof item === 'object' ? okAmount + 1 : okAmount;
+  }, 0);
+
+  useEffect(() => {
+    if (_list?.current) {
+      cache.clearAll();
+      _list.current.recomputeRowHeights();
+    }
+  }, [okCount]); // eslint-disable-line
+
+  //
+  // Index tracking
+  //
+
+  const [scrollIndex, setIndex] = useState(0);
+  const [debouncedIndex] = useDebounce(scrollIndex, 300);
+  useEffect(() => {
+    if (onScroll && !stickBottom) {
+      onScroll(debouncedIndex);
+    }
+  }, [debouncedIndex, onScroll]); // eslint-disable-line
+
   return (
-    <div style={{ flex: '1 1 0' }}>
-      {rows.length === 0 && <div>{t('task.no-logs')}</div>}
+    <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">
+      {rows.length === 0 && ['Ok', 'Error'].includes(logdata.preloadStatus) && logdata.status === 'NotAsked' && (
+        <div data-testid="loglist-preload-empty">{t('task.no-preload-logs')}</div>
+      )}
+
+      {rows.length === 0 && logdata.status === 'Ok' && <div data-testid="loglist-empty">{t('task.no-logs')}</div>}
+
       {rows.length > 0 && (
-        <LogListContainer>
+        <LogListContainer data-testid="loglist-container">
           <AutoSizer disableHeight>
             {({ width }) => (
               <List
@@ -61,6 +95,11 @@ const LogList: React.FC<LogProps> = ({ rows, fixedHeight }) => {
                 overscanRowCount={5}
                 rowCount={rows.length}
                 rowHeight={cache.rowHeight}
+                onRowsRendered={(data) => {
+                  if (onScroll) {
+                    setIndex(data.overscanStartIndex);
+                  }
+                }}
                 deferredMeasurementCache={cache}
                 onScroll={(args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
                   if (args.scrollTop + args.clientHeight >= args.scrollHeight) {
@@ -71,12 +110,16 @@ const LogList: React.FC<LogProps> = ({ rows, fixedHeight }) => {
                 }}
                 rowRenderer={({ index, style, key, parent }) => (
                   <CellMeasurer cache={cache} columnIndex={0} key={key} rowIndex={index} parent={parent}>
-                    {() => (
-                      <LogLine style={style}>
-                        <LogLineNumber className="logline-number">{rows[index].row}</LogLineNumber>
-                        <LogLineText>{rows[index].line}</LogLineText>
-                      </LogLine>
-                    )}
+                    {() => {
+                      const item = rows[index];
+
+                      return (
+                        <LogLine style={style} data-testid="log-line">
+                          <LogLineNumber className="logline-number">{index}</LogLineNumber>
+                          <LogLineText>{typeof item === 'object' ? item.line : 'Loading...'}</LogLineText>
+                        </LogLine>
+                      );
+                    }}
                   </CellMeasurer>
                 )}
                 height={fixedHeight ? fixedHeight - 16 : totalHeight < LIST_MAX_HEIGHT ? totalHeight : LIST_MAX_HEIGHT}
@@ -86,7 +129,7 @@ const LogList: React.FC<LogProps> = ({ rows, fixedHeight }) => {
           </AutoSizer>
 
           {!stickBottom && (
-            <ScrollToBottomButton onClick={() => setStickBottom(true)}>
+            <ScrollToBottomButton onClick={() => setStickBottom(true)} data-testid="loglist-stick-bottom">
               {t('run.scroll-to-bottom')}
             </ScrollToBottomButton>
           )}
@@ -125,7 +168,7 @@ const LogLineNumber = styled.div`
   font-size: 0.75rem;
   line-height: 1rem;
   padding-right: 0.5rem;
-  min-width: 2.1875rem;
+  min-width: 3rem;
   user-select: none;
 `;
 

@@ -76,7 +76,7 @@ export interface Resource<T> {
 // Default errors
 //
 
-const defaultError = {
+export const defaultError = {
   id: 'generic-error',
   traceback: '',
   status: 500,

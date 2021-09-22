@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
-import { Run as IRun, Task as ITask, Log, Metadata, AsyncStatus, Artifact } from '../../types';
+import { Run as IRun, Task as ITask, Metadata, AsyncStatus, Artifact } from '../../types';
 import useResource, { Resource } from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 
@@ -32,6 +32,8 @@ import {
 import FEATURE_FLAGS from '../../utils/FEATURE';
 import { DAGModel } from '../../components/DAG/DAGUtils';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
+import useLogData, { LogData } from '../../hooks/useLogData';
+import { apiHttp } from '../../constants';
 
 //
 // Typedef
@@ -149,35 +151,20 @@ const Task: React.FC<TaskViewProps> = ({
     },
   });
 
-  const logParams = {
-    attempt_id: attemptId.toString(),
-    _limit: '500',
-  };
+  const logUrl = `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/logs/`;
 
   // Stantard out logs
-  const [stdout, setStdout] = useState<Log[]>([]);
-  const stdoutRes = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/logs/out`,
-    queryParams: logParams,
-    initialData: [],
-    fetchAllData: true,
-    pause: !isCurrentTaskFinished,
-    onUpdate: (items) => {
-      items && setStdout((l) => l.concat(items).sort((a, b) => a.row - b.row));
-    },
+  const stdout = useLogData({
+    paused: !isCurrentTaskFinished,
+    preload: task?.status === 'running',
+    url: `${logUrl}out?attempt_id=${attemptId.toString()}`,
   });
 
   // Error logs
-  const [stderr, setStderr] = useState<Log[]>([]);
-  const stderrRes = useResource<Log[], Log>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/logs/err`,
-    queryParams: logParams,
-    initialData: [],
-    fetchAllData: true,
-    pause: !isCurrentTaskFinished,
-    onUpdate: (items) => {
-      items && setStderr((l) => l.concat(items).sort((a, b) => a.row - b.row));
-    },
+  const stderr = useLogData({
+    paused: !isCurrentTaskFinished,
+    preload: task?.status === 'running',
+    url: `${logUrl}err?attempt_id=${attemptId.toString()}`,
   });
 
   // Artifacts
@@ -213,8 +200,6 @@ const Task: React.FC<TaskViewProps> = ({
   }, [stepName, taskId]); // eslint-disable-line
 
   useEffect(() => {
-    setStdout([]);
-    setStderr([]);
     setArtifacts([]);
   }, [stepName, taskId, attemptId]);
 
@@ -306,8 +291,8 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.std-out'),
                   actionbar: (
                     <LogActionBar
-                      data={stdout}
-                      name={`stdout-${task.ts_epoch}-${getTaskId(task)}-attempt${task.attempt_id}`}
+                      data={stdout.logs}
+                      downloadlink={apiHttp(logUrl + 'out/download')}
                       setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stdout' })}
                     />
                   ),
@@ -315,9 +300,9 @@ const Task: React.FC<TaskViewProps> = ({
                     <>
                       <SectionLoader
                         minHeight={110}
-                        status={(stdout || []).length > 0 ? 'Ok' : stdoutRes.status}
-                        error={stdoutRes.error}
-                        component={<LogList rows={stdout} />}
+                        status={getLogSectionStatus(stdout)}
+                        error={stdout.error}
+                        component={<LogList onScroll={stdout.loadMore} logdata={stdout} />}
                       />
                     </>
                   ),
@@ -331,8 +316,8 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.std-err'),
                   actionbar: (
                     <LogActionBar
-                      data={stderr}
-                      name={`stderr-${task.ts_epoch}-${task.task_id}-attempt${task.attempt_id}`}
+                      data={stderr.logs}
+                      downloadlink={apiHttp(logUrl + 'err/download')}
                       setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stderr' })}
                     />
                   ),
@@ -340,9 +325,9 @@ const Task: React.FC<TaskViewProps> = ({
                     <>
                       <SectionLoader
                         minHeight={110}
-                        status={(stderr || []).length > 0 ? 'Ok' : stderrRes.status}
-                        error={stderrRes.error}
-                        component={<LogList rows={stderr} />}
+                        status={getLogSectionStatus(stderr)}
+                        error={stderr.error}
+                        component={<LogList onScroll={stderr.loadMore} logdata={stderr} />}
                       />
                     </>
                   ),
@@ -384,8 +369,8 @@ const Task: React.FC<TaskViewProps> = ({
           actionbar={
             fullscreen.type === 'logs' ? (
               <LogActionBar
-                data={fullscreen.logtype === 'stdout' ? stdout : stderr}
-                name={`${fullscreen.logtype}-${task.ts_epoch}-${getTaskId(task)}-attempt${task.attempt_id}`}
+                data={fullscreen.logtype === 'stdout' ? stdout.logs : stderr.logs}
+                downloadlink={apiHttp(`${logUrl}${fullscreen.logtype === 'stdout' ? 'out' : 'err'}/download`)}
               />
             ) : (
               <ArtifactActionBar
@@ -397,7 +382,13 @@ const Task: React.FC<TaskViewProps> = ({
           title={fullscreen.type === 'logs' ? fullscreen.logtype : fullscreen.name}
           component={(height) => {
             if (fullscreen.type === 'logs') {
-              return <LogList rows={fullscreen.logtype === 'stdout' ? stdout : stderr} fixedHeight={height} />;
+              return (
+                <LogList
+                  logdata={fullscreen.logtype === 'stdout' ? stdout : stderr}
+                  onScroll={fullscreen.logtype === 'stdout' ? stdout.loadMore : stderr.loadMore}
+                  fixedHeight={height}
+                />
+              );
             } else if (fullscreen.type === 'artifact') {
               return <ArtifactViewer data={fullscreen.artifactdata} height={height} />;
             }
@@ -423,6 +414,10 @@ function getDocString(dagResult: Resource<DAGModel>, stepName: string): string |
     return null;
   }
   return null;
+}
+
+function getLogSectionStatus(logdata: LogData): AsyncStatus {
+  return logdata.logs.length > 0 ? 'Ok' : logdata.preloadStatus === 'Loading' ? 'Loading' : logdata.status;
 }
 
 //
