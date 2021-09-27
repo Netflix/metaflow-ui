@@ -63,11 +63,25 @@ function PropertyTable<T>({ items, columns, scheme = 'normal', ...rest }: Proper
 //
 
 const PropertyTableContainer = styled.table`
-  border-radius: 4px;
-  overflow: hidden;
   border-spacing: 0px;
   border-collapse: collapse;
   width: 100%;
+
+  thead tr:first-child th:first-child {
+    border-top-left-radius: 0.25rem;
+  }
+
+  thead tr:first-child th:last-child {
+    border-top-right-radius: 0.25rem;
+  }
+
+  tbody tr:last-child td:first-child {
+    border-bottom-left-radius: 0.25rem;
+  }
+
+  tbody tr:last-child td:last-child {
+    border-bottom-right-radius: 0.25rem;
+  }
 `;
 
 const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme; width?: string }>`
@@ -77,7 +91,7 @@ const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme; widt
   border-bottom: ${(p) => p.theme.border.mediumWhite};
   font-size: 0.875rem;
   padding: 0.4rem 1rem;
-  font-weight: 400;
+  font-weight: 500;
   text-align: left;
   white-space: pre;
   ${(p) => (p.width ? `width: ${p.width};` : '')}

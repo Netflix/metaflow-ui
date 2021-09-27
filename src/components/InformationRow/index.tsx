@@ -11,15 +11,13 @@ const InformationRow: React.FC<{
   'data-testid'?: string;
 }> = ({ spaceless = false, scrollOverflow = true, children, ...rest }) => {
   return (
-    <StyledRow spaceless={spaceless} scrollOverflow={scrollOverflow} {...rest}>
+    <StyledRow spaceless={spaceless} {...rest}>
       {children}
     </StyledRow>
   );
 };
 
-const StyledRow = styled.div<{ spaceless: boolean; scrollOverflow: boolean }>`
-  overflow: hidden;
-  overflow-x: ${(p) => (p.scrollOverflow ? 'auto' : 'hidden')};
+const StyledRow = styled.div<{ spaceless: boolean }>`
   background: ${(p) => p.theme.color.bg.light};
   border-bottom: ${(p) => p.theme.border.mediumWhite};
   padding: ${(p) => (p.spaceless ? '0px' : '0.625rem')};

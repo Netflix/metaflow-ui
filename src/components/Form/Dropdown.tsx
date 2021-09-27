@@ -8,12 +8,15 @@ import { PopoverWrapper } from '../Popover';
 
 type DropdownProps = {
   id?: string;
+  // [value, label]
   options: [string, string][];
   useNativeComponent?: boolean;
   label?: string;
   labelRenderer?: (value: string, label: string) => JSX.Element;
   optionRenderer?: (value: string, label: string) => JSX.Element;
   value?: string;
+  size?: 'sm' | 'md';
+  optionsAlignment?: 'left' | 'right';
   onClose?: () => void;
   onChange?: (e?: React.ChangeEvent<HTMLSelectElement>) => void;
 };
@@ -28,6 +31,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
   children,
   onClose,
   label,
+  size,
+  optionsAlignment = 'right',
   ...rest
 }) => {
   const selectEl = useRef<HTMLSelectElement>(null);
@@ -46,7 +51,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   }, [open, onClose]);
 
   return (
-    <InputWrapper active={open} data-testid="select-field">
+    <InputWrapper active={open} size={size} data-testid="select-field">
       {label && <InputLabel active={true}>{label}</InputLabel>}
       <DropdownWrapper>
         <select
@@ -69,8 +74,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
             className="dropdown-button"
             textOnly
             variant="text"
-            size="sm"
-            withIcon="right"
+            size={size || 'md'}
+            withIcon={size === 'sm' ? false : 'right'}
             onClick={() => {
               setOpen(true);
             }}
@@ -89,7 +94,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
         {open && (
           <>
-            <DropdownOptions show={open}>
+            <DropdownOptions show={open} alignment={optionsAlignment}>
               {children ||
                 options.map((o) => {
                   const val = o[0];
@@ -155,7 +160,7 @@ const DropdownWrapper = styled.div`
 
 const DropdownButton = styled(Button)`
   border-radius: 0.25rem;
-  height: 2.5rem;
+  height: ${(p) => (p.size ? '2rem' : '2.5rem')};
   line-height: 1rem;
   padding: 0.5rem 0rem 0.5rem 0rem;
   width: 100%;

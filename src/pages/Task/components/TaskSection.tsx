@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
+import { TitledSectionHeader } from '../../../components/TitledSection';
 
 //
 // Task section presents one title section of task view
@@ -38,12 +39,7 @@ const TaskSection: React.FC<Props> = ({
 
   return (
     <TaskSectionContainer ref={ref} id={sectionkey} last={last}>
-      {!noTitle && (
-        <TaskSectionHeader>
-          <h3>{label}</h3>
-          <div>{actionbar && actionbar}</div>
-        </TaskSectionHeader>
-      )}
+      {!noTitle && <TitledSectionHeader label={label} actionbar={actionbar} />}
       <TaskSectionContent>{children}</TaskSectionContent>
     </TaskSectionContainer>
   );
@@ -52,16 +48,7 @@ const TaskSection: React.FC<Props> = ({
 const TaskSectionContainer = styled.div<{ last: boolean }>`
   margin-bottom: ${(p) => (p.last ? '0' : '1rem')};
 `;
-const TaskSectionHeader = styled.div`
-  border-bottom: ${(p) => p.theme.border.thinNormal};
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 
-  h3 {
-    margin: 0.75rem 0;
-  }
-`;
 const TaskSectionContent = styled.div`
   padding-top: 1rem;
 `;

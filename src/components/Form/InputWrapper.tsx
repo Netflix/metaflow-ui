@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import { AsyncStatus } from '../../types';
 
-type InputWrapperProps = { active: boolean; status?: AsyncStatus };
+type InputWrapperProps = { active: boolean; status?: AsyncStatus; size?: 'sm' | 'md' };
 
 //
 // Wrapper for input and dropdown fields. Makes correct kind of borders and stylings for elements,
@@ -12,10 +12,11 @@ const InputWrapper = styled.section<InputWrapperProps>`
   border: ${(p) => (p.status && p.status === 'Error' ? '1px solid ' + p.theme.color.bg.red : p.theme.border.thinLight)};
   border-radius: 0.25rem;
   color: #333;
+  background: #fff;
   display: flex;
-  height: 2.5rem;
+  height: ${(p) => (p.size === 'sm' ? '2.0rem' : '2.5rem')};
   width: 100%;
-  padding: 0.5rem 1rem;
+  padding: ${(p) => (p.size === 'sm' ? '0.5rem' : '0.5rem 1rem')};
   position: relative;
   transition: border 0.15s;
 

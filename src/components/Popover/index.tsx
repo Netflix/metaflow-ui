@@ -25,11 +25,12 @@ export const PopoverStyles = css`
   border-radius: 0.25rem;
 `;
 
-export const PopoverWrapper = styled.div<{ show: boolean }>`
+export const PopoverWrapper = styled.div<{ show: boolean; alignment?: 'left' | 'right' }>`
   ${PopoverStyles}
   position: absolute;
   z-index: 11;
-  left: 0;
+  left: ${(p) => (p.alignment === 'right' ? 'auto' : '0')};
+  right: ${(p) => (p.alignment === 'right' ? '0' : 'auto')};
   top: 0;
   display: ${(p) => (p.show ? 'block' : 'none')};
 `;

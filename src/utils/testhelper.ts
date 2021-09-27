@@ -3,7 +3,7 @@ import { RowDataModel, StepRowData } from '../components/Timeline/useTaskData';
 import { TaskSettingsState } from '../components/Timeline/useTaskListSettings';
 import { Row } from '../components/Timeline/VirtualizedTimeline';
 import { DataModel, Resource } from '../hooks/useResource';
-import { Task, Step, Run, Metadata, APIError, TaskStatus } from '../types';
+import { Task, Step, Run, Metadata, APIError, TaskStatus, Artifact } from '../types';
 
 //
 // LOT OF TESTS DEPEND ON THESE VALUES AS DEFAULTS SO DONT CHANGE THESE!!!
@@ -170,5 +170,27 @@ export function createDataModel<T>(data: T, props: Partial<DataModel<T>>): DataM
     },
     query: {},
     ...props,
+  };
+}
+
+export function createArtifact(artifact: Partial<Artifact>): Artifact {
+  return {
+    flow_id: 'LogTestFlow',
+    run_number: 968832,
+    step_name: 'loglines',
+    task_id: 33632798,
+    name: '_current_step',
+    location: '/metaflow/runs/v1/LogTestFlow/data/14/uuid',
+    ds_type: 's3',
+    sha: 'uuid',
+    type: 'metaflow.artifact',
+    content_type: 'gzip+pickle-v2',
+    user_name: 'testuser',
+    attempt_id: 0,
+    ts_epoch: 1632226288635,
+    tags: [],
+    system_tags: ['user:testuser', 'python_version:3.7.11', 'date:2021-09-21'],
+    content: 'loglines',
+    ...artifact,
   };
 }

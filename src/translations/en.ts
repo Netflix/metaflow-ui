@@ -169,6 +169,8 @@ const en = {
       'artifact-copied': 'Artifact content copied to clipboard',
       'show-fullscreen': 'Show logs in fullscreen',
       'no-artifacts-found': 'No artifacts found',
+      'artifact-remote': 'Remote',
+      'artifact-local': 'Local',
       metadata: 'Metadata',
       'failed-to-load-metadata': 'Failed to load metadata',
       'metadata-not-loaded': 'Metadata not loaded',

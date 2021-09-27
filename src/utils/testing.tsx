@@ -24,7 +24,7 @@ const TestWrapper: React.FC<{ route?: string }> = ({ children, route = '/' }) =>
  * @param selector testid
  * @returns Cypress.Chainable
  */
-export function gid(selector: string) {
+export function gid(selector: string): Cypress.Chainable {
   return cy.get(`[data-testid=${selector}]`);
 }
 
