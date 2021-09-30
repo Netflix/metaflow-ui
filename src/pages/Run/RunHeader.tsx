@@ -76,10 +76,11 @@ const RunHeader: React.FC<Props> = ({ run }) => {
             push={history.push}
             noTagsMsg={t('run.no-system-tags')}
           />
+          <PluginWrapper>
+            <PluginGroup id={getRunId(run)} title="Extensions" slot="run-header" />
+          </PluginWrapper>
         </>
       </Collapsable>
-
-      <PluginGroup id={getRunId(run)} title="Extensions" slot="run-header" />
     </RunHeaderContainer>
   );
 };
@@ -124,6 +125,10 @@ const StyledLink = styled(Link)`
   &:hover {
     text-decoration: underline;
   }
+`;
+
+const PluginWrapper = styled.div`
+  margin-top: 1rem;
 `;
 
 export default RunHeader;
