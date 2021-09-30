@@ -19,7 +19,7 @@ const AppBar: React.FC = () => {
       </ConnectionStatusWrapper>
       <ItemRow pad="lg">
         <LogoLink to={'/'}>
-          <Logo data-testId="page-logo-image" src={logo} />
+          <Logo data-testid="page-logo-image" src={logo} />
         </LogoLink>
         <Breadcrumb />
         <HelpMenu />

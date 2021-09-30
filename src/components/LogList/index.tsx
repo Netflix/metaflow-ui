@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
 import { LogData } from '../../hooks/useLogData';
 import { useDebounce } from 'use-debounce/lib';
+import { AsyncStatus } from '../../types';
 
 //
 // Typedef
@@ -34,11 +35,10 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
   const _list = useRef<List>(null);
 
   const count = rows.length;
-  useEffect(() => {
-    if (stickBottom && _list) {
-      _list.current?.scrollToRow(count);
-    }
-  }, [count, stickBottom]);
+
+  const okCount = rows.reduce((okAmount, item) => {
+    return typeof item === 'object' ? okAmount + 1 : okAmount;
+  }, 0);
 
   const totalHeight = rows.reduce((val, _item, index) => {
     return val + (cache.getHeight(index, 0) || 0);
@@ -55,16 +55,18 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
 
   // Force row height calculations after fetch ok
 
-  const okCount = rows.reduce((okAmount, item) => {
-    return typeof item === 'object' ? okAmount + 1 : okAmount;
-  }, 0);
-
   useEffect(() => {
     if (_list?.current) {
       cache.clearAll();
       _list.current.recomputeRowHeights();
     }
   }, [okCount]); // eslint-disable-line
+
+  useEffect(() => {
+    if (stickBottom && _list) {
+      _list.current?.scrollToRow(count);
+    }
+  }, [count, okCount, stickBottom]);
 
   //
   // Index tracking
@@ -133,9 +135,84 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
               {t('run.scroll-to-bottom')}
             </ScrollToBottomButton>
           )}
+
+          <PollLoader status={logdata.status} preloadStatus={logdata.preloadStatus} />
         </LogListContainer>
       )}
     </div>
+  );
+};
+
+//
+// Poller indicator
+//
+
+type PollLoaderProps = { status: AsyncStatus; preloadStatus: AsyncStatus };
+
+const pollAnimate = keyframes`
+0% { stroke-dashoffset: 0; }
+100% { stroke-dashoffset: -125; }
+`;
+
+const loadAnimate = keyframes`
+0% { transform: rotateZ(-90deg); }
+100% { transform: rotateZ(270deg); }
+`;
+
+const PollLoaderContainer = styled.div<{ show: boolean; preloadStatus: AsyncStatus }>`
+  position: absolute;
+  top: 0.5rem;
+  right: 1rem;
+
+  opacity: ${(p) => (p.show ? '1' : '0')};
+  transition: 0.25s opacity;
+`;
+
+const PollWaitingIndicator = styled.div<{ show: boolean; isLoading: boolean }>`
+  svg {
+    height: 1rem;
+    width: 1rem;
+    transform: rotateZ(-90deg);
+    animation: ${(p) =>
+      p.isLoading
+        ? css`
+            ${loadAnimate} 2s linear infinite
+          `
+        : ''};
+  }
+
+  .path {
+    stroke: ${(p) => p.theme.color.bg.blue};
+    stroke-linecap: round;
+    stroke-dasharray: 150;
+    stroke-dashoffset: ${(p) => (p.isLoading ? '-25' : '-125')};
+    transition: all 0.5s;
+    animation: ${(p) =>
+      p.show
+        ? css`
+            ${pollAnimate} 20s linear
+          `
+        : ''};
+  }
+`;
+
+const PollLoader: React.FC<PollLoaderProps> = ({ status, preloadStatus }) => {
+  const { t } = useTranslation();
+  return (
+    <PollLoaderContainer
+      show={['Ok', 'Error', 'Loading'].includes(preloadStatus) && status === 'NotAsked'}
+      preloadStatus={preloadStatus}
+    >
+      <PollWaitingIndicator
+        show={preloadStatus === 'Ok' || preloadStatus === 'Error'}
+        isLoading={preloadStatus === 'Loading'}
+        title={t('task.poll-loader-msg')}
+      >
+        <svg className="spinner" viewBox="0 0 50 50">
+          <circle className="path" cx="25" cy="25" r="20" fill="none" strokeWidth="5"></circle>
+        </svg>
+      </PollWaitingIndicator>
+    </PollLoaderContainer>
   );
 };
 
@@ -149,6 +226,7 @@ const LogListContainer = styled.div`
   font-family: monospace;
   border-radius: 0.25rem;
   font-size: 0.875rem;
+  position: relative;
   overflow: hidden;
   white-space: pre-wrap;
 `;

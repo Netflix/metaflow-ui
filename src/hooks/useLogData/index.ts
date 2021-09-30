@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Log, AsyncStatus, APIError } from '../../types';
 import { DataModel, defaultError } from '../../hooks/useResource';
 import { apiHttp } from '../../constants';
@@ -42,16 +42,26 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
   const [logs, setLogs] = useState<LogItem[]>([]);
   const PAGE_SIZE = pagesize || DEFAULT_PAGE_SIZE;
 
+  const aborter = useRef<AbortController>();
+
   // generic log fetcher
   function fetchLogs(
     page: number,
     order: '+' | '-' = '+',
   ): Promise<{ type: 'error'; error: APIError } | { type: 'ok'; data: Log[] }> {
-    const fullUrl = `${url}${url.indexOf('?') > -1 ? '&' : '?'}_limit=${PAGE_SIZE}${
+    const requestUrl = url;
+    const fullUrl = `${requestUrl}${requestUrl.indexOf('?') > -1 ? '&' : '?'}_limit=${PAGE_SIZE}${
       page ? `&_page=${page}` : ''
     }&_order=${order}row`;
 
-    return fetch(apiHttp(fullUrl))
+    if (aborter.current) {
+      aborter.current.abort();
+    }
+
+    const currentAborter = new AbortController();
+    aborter.current = currentAborter;
+
+    return fetch(apiHttp(fullUrl), { signal: currentAborter.signal })
       .then((response) => response.json())
       .then((result: DataModel<Log[]> | APIError) => {
         if (isOkResult(result)) {
@@ -67,37 +77,37 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
           return { type: 'error' as const, error: result };
         }
       })
-      .catch(() => {
+      .catch((e) => {
+        if (e instanceof DOMException) {
+          return { type: 'error', error: { ...defaultError, id: 'user-aborted' } };
+        }
         return { type: 'error', error: defaultError };
       });
   }
 
-  // Reset state on url changes
-  useEffect(() => {
-    if (status !== 'NotAsked' || preloadStatus !== 'NotAsked') {
-      setStatus('NotAsked');
-      setPreloadStatus('NotAsked');
-      setLogs([]);
-    }
-  }, [url]); // eslint-disable-line
-
-  useEffect(() => {
-    // For preload to happen following rules has to be matched
-    // paused        -> Run has to be on running state
-    // status        -> This should always be NotAsked if paused is on. Check just in case
-    // preload       -> Run has to be runnign
-    // preloadStatus -> We havent triggered this yet.
-    if (paused && status === 'NotAsked' && preload && preloadStatus === 'NotAsked') {
-      fetchLogs(1, '-').then((result) => {
-        if (result.type === 'error') {
-          setPreloadStatus('Error');
+  function fetchPreload() {
+    setPreloadStatus('Loading');
+    fetchLogs(1, '-').then((result) => {
+      if (result.type === 'error') {
+        if (result.error.id === 'user-aborted') {
+          setPreloadStatus('NotAsked');
           return;
         }
+        setPreloadStatus('Error');
+        return;
+      }
 
-        setPreloadStatus('Ok');
-      });
-    }
-  }, [paused, preload, preloadStatus, status]); // eslint-disable-line
+      setPreloadStatus('Ok');
+    });
+  }
+
+  // Clean up on url change
+  useEffect(() => {
+    setStatus('NotAsked');
+    setPreloadStatus('NotAsked');
+    setLogs([]);
+    setError(null);
+  }, [url]); // eslint-disable-line
 
   // Fetch logs when task gets completed
   useEffect(() => {
@@ -106,6 +116,10 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
 
       fetchLogs(1, '-').then((result) => {
         if (result.type === 'error') {
+          if (result.error.id === 'user-aborted') {
+            return;
+          }
+
           setStatus('Error');
           setError(result.error);
           return;
@@ -114,7 +128,31 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
         setStatus('Ok');
       });
     }
-  }, [paused, url]); // eslint-disable-line
+  }, [paused, url, status]); // eslint-disable-line
+
+  useEffect(() => {
+    // For preload to happen following rules has to be matched
+    // paused        -> Run has to be on running state
+    // status        -> This should always be NotAsked if paused is on. Check just in case
+    // preload       -> Run has to be runnign
+    // preloadStatus -> We havent triggered this yet.
+    if (paused && status === 'NotAsked' && preload && preloadStatus === 'NotAsked') {
+      fetchPreload();
+    }
+  }, [paused, preload, preloadStatus, status, url]); // eslint-disable-line
+
+  // Poller for auto updates when task is running
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    if (['Ok', 'Error'].includes(preloadStatus) && paused) {
+      t = setTimeout(() => {
+        fetchPreload();
+      }, 20000);
+    }
+    return () => {
+      clearTimeout(t);
+    };
+  }, [preloadStatus, paused]); // eslint-disable-line
 
   // loadMore gets triggered on all scrolling events on list.
   function loadMore(index: number) {
@@ -134,7 +172,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
         return arr;
       });
 
-      fetchLogs(page).then((result) => {
+      fetchLogs(page, '+').then((result) => {
         if (result.type === 'error') {
           return;
         }

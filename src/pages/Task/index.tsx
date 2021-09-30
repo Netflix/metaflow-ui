@@ -304,6 +304,7 @@ const Task: React.FC<TaskViewProps> = ({
                         error={stdout.error}
                         component={<LogList onScroll={stdout.loadMore} logdata={stdout} />}
                       />
+                      {task.status === 'pending' && t('task.waiting-for-task-to-start')}
                     </>
                   ),
                 },
@@ -329,6 +330,7 @@ const Task: React.FC<TaskViewProps> = ({
                         error={stderr.error}
                         component={<LogList onScroll={stderr.loadMore} logdata={stderr} />}
                       />
+                      {task.status === 'pending' && t('task.waiting-for-task-to-start')}
                     </>
                   ),
                 },
