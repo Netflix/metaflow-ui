@@ -46,7 +46,7 @@ const RunContainer: React.FC = () => {
 
   useEffect(() => {
     addDataToStore('run', run);
-  }, [run, addDataToStore]);
+  }, [run]); // eslint-disable-line
 
   return (
     <div>

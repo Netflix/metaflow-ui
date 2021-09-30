@@ -207,7 +207,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   useEffect(() => {
     addDataToStore('task', task);
-  }, [task, addDataToStore]);
+  }, [task]); // eslint-disable-line
 
   return (
     <TaskContainer>

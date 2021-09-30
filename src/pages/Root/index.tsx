@@ -19,7 +19,7 @@ const RootPage: React.FC = () => {
 
   useEffect(() => {
     addDataToStore('appinfo', getVersionInfo());
-  }, [addDataToStore]);
+  }, []); // eslint-disable-line
 
   return (
     <>
