@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { Run } from '../../types';
+import { Run, RunParam } from '../../types';
 
 import StatusField from '../../components/Status';
 import { Link, useHistory } from 'react-router-dom';
@@ -16,6 +16,7 @@ import RunParameterTable from './RunParameterTable';
 import PluginGroup from '../../components/Plugins/PluginGroup';
 import AutoUpdating from '../../components/AutoUpdating';
 import DataHeader from '../../components/DataHeader';
+import useResource from '../../hooks/useResource';
 
 //
 // Typedef
@@ -60,13 +61,19 @@ const RunHeader: React.FC<Props> = ({ run }) => {
     },
   ];
 
+  const params = useResource<RunParam, RunParam>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/parameters`,
+    subscribeToEvents: true,
+    initialData: {},
+  });
+
   return (
     <RunHeaderContainer>
       <DataHeader items={headerItems} wide />
 
       <Collapsable title={t('run.run-details')}>
         <>
-          <RunParameterTable run={run} />
+          <RunParameterTable params={params} />
 
           <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
 

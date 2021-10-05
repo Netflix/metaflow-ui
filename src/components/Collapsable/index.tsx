@@ -50,7 +50,9 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title, animated = t
 
         {(animated || open) && (
           <ContentContainer data-testid="collapsable-content">
-            <Content open={open}>{children}</Content>
+            <Content open={open} visible={open || transitioning}>
+              {children}
+            </Content>
           </ContentContainer>
         )}
       </Container>
@@ -84,9 +86,10 @@ const ContentContainer = styled.div`
   position: relative;
 `;
 
-const Content = styled.div<{ open: boolean }>`
+const Content = styled.div<{ open: boolean; visible: boolean }>`
   position: ${(p) => (p.open ? 'static' : 'absolute')};
   width: 100%;
+  visibility: ${(p) => (p.visible ? 'visible' : 'hidden')};
 `;
 
 export default Collapsable;
