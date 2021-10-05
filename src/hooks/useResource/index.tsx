@@ -32,7 +32,7 @@ export interface HookConfig<T, U> {
   // By default we use same parameters for GET and websocket. With this function you can edit websocket params
   socketParamFilter?: (params: Record<string, string>) => Record<string, string>;
   // Function to trigger after every HTTP GET
-  postRequest?: (success: boolean, target: string) => void;
+  postRequest?: (success: boolean, target: string, result?: DataModel<T>) => void;
   // Is fetching funcs paused?
   pause?: boolean;
   // Return websocket updates in batches instead of real time (1sec interval).
@@ -224,7 +224,7 @@ export default function useResource<T, U>({
               }
 
               // Trigger postRequest after every request if given.
-              postRequest && postRequest(true, targetUrl);
+              postRequest && postRequest(true, targetUrl, result);
 
               // If we want all data and we are have next page available we fetch it.
               // Else this fetch is done and we call the callback

@@ -10,6 +10,7 @@ import {
   StepLineData,
   timepointsOfTasks,
 } from './taskdataUtils';
+import { apiHttp } from '../../constants';
 
 //
 // useTaskData hook is responsible of fetching all step and task data for given run. It automatically
@@ -243,20 +244,30 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
         data: items.map((item) => ({ ...item, status: item.status === 'unknown' ? 'refining' : item.status })),
       });
     },
-    postRequest: (success, target) => {
-      if (success) {
-        const urlWithPostProcessing = target.replace(/(postprocess=).*?(&|$)/, '$1true$2');
+    postRequest: (success, _target, result) => {
+      if (success && result) {
+        const tasksNeedingRefine = result.data
+          .filter((task) => task.status === 'unknown' && task.step_name !== '_parameters')
+          .map((task) => task.task_id);
 
-        fetch(urlWithPostProcessing)
-          .then((response) => response.json())
-          .then((response: DataModel<Task[]>) => {
-            if (response?.status === 200) {
-              dispatch({ type: 'fillTasks', data: response.data });
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+        if (tasksNeedingRefine.length > 0) {
+          const target = apiHttp(
+            `/flows/${flowId}/runs/${runNumber}/tasks?taskId=${tasksNeedingRefine.join(
+              ',',
+            )}&postprocess=true&_limit=500`,
+          );
+
+          fetch(target)
+            .then((response) => response.json())
+            .then((response: DataModel<Task[]>) => {
+              if (response?.status === 200) {
+                dispatch({ type: 'fillTasks', data: response.data });
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        }
       }
     },
     useBatching: true,
