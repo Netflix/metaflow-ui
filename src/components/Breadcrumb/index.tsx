@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useLocation, match, useHistory, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { takeLastSplitFromURL } from '../../utils/url';
 import { AutoCompleteLine } from '../AutoComplete';
 import HeightAnimatedContainer from '../HeightAnimatedContainer';
 import InputWrapper from '../Form/InputWrapper';
+import useOnKeyPress from '../../hooks/useOnKeyPress';
 
 //
 // Component
@@ -116,15 +117,7 @@ const Breadcrumb: React.FC = () => {
   // Esc listeners
   //
 
-  useEffect(() => {
-    const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        closeUp();
-      }
-    };
-    window.addEventListener('keydown', handleEsc);
-    return () => window.removeEventListener('keydown', handleEsc);
-  }, []);
+  useOnKeyPress('Escape', () => closeUp());
 
   return (
     <StyledBreadcrumb pad="md">

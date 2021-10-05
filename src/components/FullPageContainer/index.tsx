@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import logo from '../../assets/logo_dark_horizontal.svg';
 import Icon from '../Icon';
 import useComponentSize from '@rehooks/component-size';
+import useOnKeyPress from '../../hooks/useOnKeyPress';
 
 //
 // Typedef
@@ -32,6 +33,8 @@ const FullPageContainer: React.FC<FullPageContainerProps> = ({ children, onClose
     document.body.style.overflow = 'inherit';
     onClose();
   };
+
+  useOnKeyPress('Escape', onCloseEvent);
 
   return (
     <FullPageStyleContainer>

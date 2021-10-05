@@ -10,6 +10,7 @@ import VERSION_INFO from '../../utils/VERSION';
 import FEATURE_FLAGS from '../../utils/FEATURE';
 import LaunchIconBlack from '../../assets/launch_black.svg';
 import { Link } from 'react-router-dom';
+import useOnKeyPress from '../../hooks/useOnKeyPress';
 
 type HelpMenuLink = {
   href: string;
@@ -32,6 +33,8 @@ const HelpMenu: React.FC = () => {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 
+  useOnKeyPress('Escape', () => setOpen(false));
+
   useEffect(() => {
     fetch(apiHttp('/links'), {
       headers: {
@@ -51,6 +54,7 @@ const HelpMenu: React.FC = () => {
         console.log(e);
       });
   }, []);
+
   return (
     <HelpMenuContainer>
       <BigButton onClick={() => setOpen(!open)} size="sm" variant="primaryText" data-testid="helpmenu-toggle">

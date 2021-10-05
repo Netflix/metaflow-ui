@@ -13,6 +13,7 @@ import InputWrapper from './InputWrapper';
 import DateInput from './DateInput';
 import Dropdown from './Dropdown';
 import { getTimeFromPastByDays } from '../../utils/date';
+import useOnKeyPress from '../../hooks/useOnKeyPress';
 
 //
 // Typedef
@@ -41,6 +42,8 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
 
   const startValue = initialValues && initialValues[0];
   const endValue = initialValues && initialValues[1];
+
+  useOnKeyPress('Escape', () => setShow(false));
 
   useEffect(() => {
     setValues({ start: startValue || null, end: endValue || null });

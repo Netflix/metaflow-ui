@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import useOnKeyPress from '../../hooks/useOnKeyPress';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
 import { TitledSectionHeader } from '../TitledSection';
@@ -20,6 +21,7 @@ type ModalProps = {
 //
 
 const Modal: React.FC<ModalProps> = ({ show, title, actionbar, onClose, children }) => {
+  useOnKeyPress('Escape', onClose);
   if (!show) return null;
 
   return (

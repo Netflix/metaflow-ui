@@ -5,6 +5,7 @@ import Button from '../Button';
 import InputWrapper from './InputWrapper';
 import { InputLabel } from './InputLabel';
 import { PopoverWrapper } from '../Popover';
+import useOnKeyPress from '../../hooks/useOnKeyPress';
 
 type DropdownProps = {
   id?: string;
@@ -39,6 +40,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
   const [open, setOpen] = useState(false);
   const activeOption = getActiveOption(options, value);
   const acitveOptionId = activeOption[0];
+
+  useOnKeyPress('Escape', () => setOpen(false));
 
   useEffect(() => {
     setOpen(false);
@@ -94,6 +97,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
         {open && (
           <>
+            <PopupClickOverlay onClick={() => setOpen(false)} />
             <DropdownOptions show={open} alignment={optionsAlignment}>
               {children ||
                 options.map((o) => {
@@ -122,7 +126,6 @@ export const Dropdown: React.FC<DropdownProps> = ({
                   );
                 })}
             </DropdownOptions>
-            <PopupClickOverlay onClick={() => setOpen(false)} />
           </>
         )}
       </DropdownWrapper>
@@ -180,7 +183,7 @@ const DropdownOptions = styled(PopoverWrapper)`
   margin-top: 0.375rem;
 
   padding: 0.625rem;
-  z-index: 10;
+  z-index: 999;
   white-space: nowrap;
 
   max-height: 80vh;
@@ -190,12 +193,14 @@ const DropdownOptions = styled(PopoverWrapper)`
 export const DropdownOption = styled(Button)`
   width: 100%;
 `;
+
 const PopupClickOverlay = styled.div`
   position: fixed;
   height: 100%;
   width: 100%;
   left: 0;
   top: 0;
+  z-index: 999;
 `;
 
 export default Dropdown;

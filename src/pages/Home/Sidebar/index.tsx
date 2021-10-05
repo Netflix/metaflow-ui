@@ -198,8 +198,8 @@ const Sidebar = styled.div`
 `;
 
 const SidebarContent = styled.div`
-  margin-top: 0.25rem;
   width: 14rem;
+  padding-top: 0.5rem;
   padding-left: 0.25rem;
 `;
 
