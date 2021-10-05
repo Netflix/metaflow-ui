@@ -53,13 +53,19 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* USER NAME */}
         {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
         {/* STARTED AT */}
-        <TimeCell link={link}>{getRunStartTime(r, timezone)}</TimeCell>
+        <TDWithLink link={link}>
+          <WordBreak>{getRunStartTime(r, timezone)}</WordBreak>
+        </TDWithLink>
         {/* FINISHED AT */}
-        <TimeCell link={link}>{getRunEndTime(r, timezone)}</TimeCell>
+        <TDWithLink link={link}>
+          <WordBreak>{getRunEndTime(r, timezone)}</WordBreak>
+        </TDWithLink>
         {/* DURATION */}
-        <TimeCell link={link}>
-          <AutoUpdating enabled={r.status === 'running'} content={() => getRunDuration(r)} />
-        </TimeCell>
+        <TDWithLink link={link}>
+          <WordBreak>
+            <AutoUpdating enabled={r.status === 'running'} content={() => getRunDuration(r)} />
+          </WordBreak>
+        </TDWithLink>
         {/* USER TAGS */}
         {(r.tags || []).length > 0 ? (
           <ResultGroupTags tags={r.tags || []} updateListValue={updateListValue} />
@@ -112,7 +118,7 @@ const GhostLink = styled(Link)`
   top: 0;
 `;
 
-const TimeCell = styled(TDWithLink)`
+const WordBreak = styled.span`
   word-break: break-word;
 `;
 
