@@ -55,7 +55,11 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
   return (
     <InputWrapper active={open} size={size} data-testid="select-field">
-      {label && <InputLabel active={true}>{label}</InputLabel>}
+      {label && (
+        <InputLabel active={true} data-testid="select-label">
+          {label}
+        </InputLabel>
+      )}
       <DropdownWrapper>
         <select
           style={{ display: useNativeComponent ? 'inline' : 'none' }}
@@ -74,6 +78,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
         </select>
         {!useNativeComponent && (
           <DropdownButton
+            data-testid="select-open-button"
             className="dropdown-button"
             textOnly
             variant="text"
