@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
-import { Run as IRun, Task as ITask, Metadata, AsyncStatus, Artifact } from '../../types';
+import { Run as IRun, Task as ITask, AsyncStatus, Artifact } from '../../types';
 import useResource, { Resource } from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 
@@ -34,6 +34,7 @@ import { DAGModel } from '../../components/DAG/DAGUtils';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
 import useLogData, { LogData } from '../../hooks/useLogData';
 import { apiHttp } from '../../constants';
+import useTaskMetadata from './useTaskMetadata';
 
 //
 // Typedef
@@ -132,23 +133,10 @@ const Task: React.FC<TaskViewProps> = ({
   //
 
   // Metadata
-  const [metadata, setMetadata] = useState<Metadata[]>([]);
-  const metadataRes = useResource<Metadata[], Metadata>({
+  const metadata = useTaskMetadata({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/metadata`,
-    fetchAllData: true,
-    queryParams: {
-      _limit: '100',
-    },
-    subscribeToEvents: true,
-    initialData: [],
-    pause: !task,
-    onUpdate(items) {
-      setMetadata((oldItems) => {
-        const newSet = [...oldItems, ...items];
-        addDataToStore('metadata', newSet);
-        return newSet;
-      });
-    },
+    attemptId: attemptId,
+    paused: !task,
   });
 
   const logUrl = `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/logs/`;
@@ -188,16 +176,6 @@ const Task: React.FC<TaskViewProps> = ({
     },
     pause: !task || attemptId === null,
   });
-
-  useEffect(() => {
-    if (metadata && metadata.length !== 0) {
-      setMetadata([]);
-      addDataToStore('metadata', []);
-    }
-    return () => {
-      addDataToStore('metadata', []);
-    };
-  }, [stepName, taskId]); // eslint-disable-line
 
   useEffect(() => {
     setArtifacts([]);
@@ -275,8 +253,8 @@ const Task: React.FC<TaskViewProps> = ({
                       <TaskDetails
                         run={run}
                         task={task}
-                        metadata={metadata}
-                        metadataResource={metadataRes}
+                        metadata={metadata.data}
+                        metadataResource={metadata.taskMetadataResource}
                         developerNote={developerNote}
                       />
                     </>
