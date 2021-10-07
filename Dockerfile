@@ -22,5 +22,11 @@ FROM nginx
 ENV PORT=3000
 ENV METAFLOW_SERVICE=/api
 
+# nginx.conf.template environment variables
+# for injecting content to index.html during runtime
+ENV METAFLOW_HEAD=''
+ENV METAFLOW_BODY_BEFORE=''
+ENV METAFLOW_BODY_AFTER=''
+
 COPY --from=build /app/build /usr/share/nginx/html
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
