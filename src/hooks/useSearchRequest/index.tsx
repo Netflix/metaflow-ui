@@ -45,7 +45,7 @@ interface SearchKeyValuePair {
   value?: string;
 }
 
-const parseSearchValue = (searchValue: string): SearchKeyValuePair | null => {
+export const parseSearchValue = (searchValue: string): SearchKeyValuePair | null => {
   const components = (searchValue || '').trim().split(':').filter(Boolean);
   if (components.length > 0) {
     if (components[1]) {

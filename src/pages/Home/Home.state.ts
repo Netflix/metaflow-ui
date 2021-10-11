@@ -1,7 +1,7 @@
 import { Run } from '../../types';
 import { sortRuns } from './Home.utils';
 
-type HomeState = {
+export type HomeState = {
   initialised: boolean;
   // Loader that we show when we are about to replace existing data.
   showLoader: boolean;
@@ -114,7 +114,7 @@ const HomeReducer = (state: HomeState, action: HomeAction): HomeState => {
  * @param initialData Existing run groups
  * @param params
  */
-function mergeTo(
+export function mergeTo(
   runs: Run[],
   initialData: Record<string, Run[]>,
   params: Record<string, string>,
@@ -158,7 +158,11 @@ type DataAndNew = {
  * @param initialData Existing runs that are visible in UI and runs that are not visible, but are queued to be shown
  * @param params
  */
-function mergeWithSeparatePool(runs: Run[], initialData: DataAndNew, params: Record<string, string>): DataAndNew {
+export function mergeWithSeparatePool(
+  runs: Run[],
+  initialData: DataAndNew,
+  params: Record<string, string>,
+): DataAndNew {
   return runs.reduce((data, item): DataAndNew => {
     const groupKey = item[params._group as keyof Run] || 'undefined';
     if (typeof groupKey === 'string') {
