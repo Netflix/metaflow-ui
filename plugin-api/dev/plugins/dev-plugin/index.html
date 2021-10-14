@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      p {
+        line-height: 1.5rem;
+      }
+
+      p:first-child {
+        margin-top: 0px;
+      }
+
+      code {
+        background: #f8f8f8;
+        padding: 5px;
+        color: #333;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      This is example plugin for plugin development. You can find this file from
+      <code>plugin-api/dev/plugins/dev-plugin/index.html</code>. You can try making changes to this file and clicking
+      <code>R</code> in Cypress UI to see how plugin updates (To open Cypress UI for plugin development, run
+      <code>npm run dev:plugin</code> or <code>yarn dev:plugin</code> in project root).
+    </p>
+
+    <p>
+      Plugin contains at least one html file and manifest.json. HTML file contains everything plugin needs to render and
+      manifest file contains basic information about the plugin. In development tooling basic information is mocked in
+      test file instead.
+    </p>
+
+    <p>
+      We are using Cypress testing tool as our development environment for plugins. Cypress provides easy way to setup
+      only small part of application and mock requests. This plugin is setup in file
+      <code>plugin-api/dev/index.plugin-dev.tsx</code>. You can use this file, or make a new one like
+      <code>plugin-api/dev/brand-new-plugin.plugin-dev.tsx</code>, to develop your plugins. You could also use this
+      tooling to test your plugin if needed.
+    </p>
+
+    <p><code>plugin-api/dev/index.plugin-dev.tsx</code> file also defines all the mock data.</p>
+
+    <p><b>Recommended workflow</b></p>
+
+    <ol>
+      <li>Create new folder to <code>plugin-api/dev/plugins</code> and initialise it as repository to your version control.</li>
+      <li>Add <code>index.html</code> and <code>manifest.json</code></li>
+      <li>
+        Change <code>PLUGIN_DEFINITIONS[0].name from plugin-api/dev/index.plugin-dev.tsx</code> to be your folder name.
+      </li>
+      <li>Develop your plugin to index.html</li>
+      <li>
+        Plugin that are ready for real use are installed to Metaflow Metadata service. Head to
+        <a href="https://github.com/Netflix/metaflow-service/blob/ui/services/ui_backend_service/docs/plugins.md"
+          >Metadata service documentation</a
+        >
+        for deployment instructions. Remember to provide <code>MetaflowPluginAPI.js</code> to your plugin.
+      </li>
+    </ol>
+
+    <p>Here is some elements created after getting data from main application:</p>
+
+    <div id="init"></div>
+    <div id="config"></div>
+    <div id="version"></div>
+    <div id="run"></div>
+    <div id="task"></div>
+    <div id="metadata"></div>
+    <script src="../../MetaflowPluginAPI.js"></script>
+    <script>
+      (function () {
+        Metaflow.register({ slot: 'task-details', container: 'titled-container' }, (config) => {
+          document.getElementById('init').innerHTML = 'Plugin is up and ready!';
+          document.getElementById('config').innerHTML = 'Config Ready';
+
+          Metaflow.subscribe(['appinfo', 'run', 'task', 'metadata'], (message) => {
+            switch (message.path) {
+              case 'appinfo':
+                document.getElementById(
+                  'version',
+                ).innerHTML = `App version: <code>${message.data.release_version}</code>`;
+              case 'run':
+                document.getElementById('run').innerHTML = 'Run data ok!';
+              case 'task':
+                document.getElementById('task').innerHTML = 'Task data ok!';
+              case 'metadata':
+                document.getElementById('metadata').innerHTML = 'Metadata data ok!';
+            }
+            console.log(message.data);
+            Metaflow.setHeight();
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>

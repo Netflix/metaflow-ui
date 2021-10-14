@@ -8,7 +8,7 @@ import { PluginCommuncationsAPI, PluginManifest, pluginPath, PluginsContext } fr
 // from plugin. Here we can filter out plugins that doesnt work or does not register properly.
 //
 
-const PluginRegisterSystem: React.FC = () => {
+const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
   const [definitions, setDefinitions] = useState<PluginManifest[]>([]);
   const { plugins, register } = useContext(PluginsContext);
 
@@ -69,7 +69,7 @@ const PluginRegisterSystem: React.FC = () => {
           width="0"
           name={plg.name}
           title={plg.name}
-          src={pluginPath(plg)}
+          src={pluginPath(plg, baseurl)}
           sandbox="allow-scripts"
         />
       ))}

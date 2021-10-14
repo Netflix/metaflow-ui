@@ -14,6 +14,7 @@ type Props = {
   id: string;
   title: string;
   slot: string;
+  baseurl?: string;
 };
 
 const VALID_CONTAINERS = ['collapsable', 'titled-container'];
@@ -22,7 +23,7 @@ const VALID_CONTAINERS = ['collapsable', 'titled-container'];
 // Renders list of plugin to iframe in collapsable element.
 //
 
-const PluginGroup: React.FC<Props> = ({ id, slot }) => {
+const PluginGroup: React.FC<Props> = ({ id, slot, baseurl }) => {
   const [removed, setRemoved] = useState<string[]>([]);
   const { getPluginsBySlot } = useContext(PluginsContext);
   const plugins = getPluginsBySlot(slot).filter((item) => removed.indexOf(item.manifest.name) === -1);
@@ -39,7 +40,7 @@ const PluginGroup: React.FC<Props> = ({ id, slot }) => {
               <PluginSlot
                 id={id}
                 title={item.manifest.name}
-                url={pluginPath(item.manifest)}
+                url={pluginPath(item.manifest, baseurl)}
                 onRemove={() => setRemoved((st) => [...st, item.manifest.name])}
                 plugin={item}
               />
@@ -58,7 +59,7 @@ const PluginContainer: React.FC<{ plugin: RegisteredPlugin }> = ({ plugin, child
   const props = plugin.settings.containerProps || {};
   if (isCollapsableContainer(plugin.settings.container)) {
     return (
-      <Collapsable {...props} title={<PluginHeaderSection name={plugin.manifest.name} />}>
+      <Collapsable {...props} title={<PluginHeaderSection name={plugin.manifest.config.name} />}>
         {children}
       </Collapsable>
     );
@@ -67,7 +68,7 @@ const PluginContainer: React.FC<{ plugin: RegisteredPlugin }> = ({ plugin, child
   if (plugin.settings.container === 'titled-container') {
     return (
       <div>
-        <PluginHeaderSection name={plugin.manifest.name} />
+        <PluginHeaderSection name={plugin.manifest.config.name} />
         <div>{children}</div>
       </div>
     );

@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore plugins in development
+/plugin-api/dev/plugins/*
+# except dev-plugin which is used as example
+!/plugin-api/dev/plugins/dev-plugin

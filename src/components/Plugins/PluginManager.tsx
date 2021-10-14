@@ -57,8 +57,9 @@ const ALLOWED_SLOTS = ['run-header', 'task-details', 'headless'];
 // Utils
 //
 
-export function pluginPath(config: PluginManifest): string {
-  return apiHttp(`/plugin/${config.name}/${config.config.entrypoint}`);
+export function pluginPath(config: PluginManifest, baseurl?: string): string {
+  const path = `${config.name}/${config.config.entrypoint}`;
+  return baseurl ? `${baseurl}/${path}` : apiHttp(`/plugin/${path}`);
 }
 
 export function isVersionEqualOrHigher(version: string, compareToVersion: string): boolean {

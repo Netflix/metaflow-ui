@@ -1,8 +1,16 @@
 # Plugin system
 
-Metaflow UI has support for custom plugins. Plugins are limited on running in predefined slots within UI. Plugins are installed server side to Metaflow UI service by system admin.
+Metaflow UI has support for custom plugins. Plugins are limited on running in predefined slots within UI. Plugins are installed server side to Metaflow UI service.
 
 You can find plugin JS api and examples from [plugin-api](../plugin-api/README.md) folder.
+
+## Getting started with plugin development
+
+Easiest way to start developing plugins is to start up local plugin development environment:
+
+```sh
+yarn dev:plugin
+```
 
 ## How plugins works
 

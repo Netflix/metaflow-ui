@@ -13,6 +13,10 @@ Using Metaflow UI requires [Metaflow Metadata Service](https://github.com/Netfli
 
 See [docs/README.md](docs/README.md) to setup local development environment.
 
+### Plugin development
+
+See [docs/plugin-system.md](docs/plugin-system.md) to get started with plugin development.
+
 ### Installation to server
 
 Metaflow UI has separate backend service from Metaflow Metadata Service but it is using same Database. To setup UI service to your server follow instructions at [Metaflow UI Service](https://github.com/Netflix/metaflow-service/tree/ui).
