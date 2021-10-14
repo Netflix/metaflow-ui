@@ -55,7 +55,7 @@ const Metaflow = {
   },
   /**
    * Register application to be rendered in app.
-   * @param {("headless"|"run-header"|"task-details"|{slot:"headless"|"run-header"|"task-details",visible?:boolean})} settings 
+   * @param {("headless"|"run-header"|"task-details"|{slot:"headless"|"run-header"|"task-details",visible?:boolean, useApplicationStyles?: boolean})} settings 
    * @param {(manifest: {
   name: string;
   repository: string | null;

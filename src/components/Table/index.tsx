@@ -4,7 +4,7 @@ import { SortIcon } from '../Icon';
 import { parseOrderParam } from '../../utils/url';
 import { darken } from 'polished';
 
-const cell = css`
+export const CellStyle = css`
   padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.md}rem;
   font-size: 0.875rem;
   text-align: left;
@@ -16,13 +16,17 @@ export default styled.table`
   margin-bottom: ${(p) => p.theme.spacer.hg}rem;
 `;
 
-export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
+export const THBasicStyle = css`
   background: ${(p) => p.theme.color.bg.white};
   color: ${(p) => p.theme.color.text.light};
   font-weight: 400;
   white-space: nowrap;
+`;
+
+export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
+  ${THBasicStyle}
   cursor: ${(p) => (p.clickable ? 'pointer' : 'auto')};
-  ${cell};
+  ${CellStyle};
 
   .icon {
     color: ${(p) => darken(0.1, p.theme.color.icon.light)};
@@ -44,14 +48,18 @@ export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
     `}
 `;
 
-export const TD = styled.td`
+export const TDBasicStyle = css`
   transition: background 0.15s;
   background: ${(p) => p.theme.color.bg.light};
-  ${cell};
+  ${CellStyle};
 
   &:hover {
     background: ${(p) => p.theme.color.bg.blueLight};
   }
+`;
+
+export const TD = styled.td`
+  ${TDBasicStyle}
 `;
 
 const TRHoverStyle = css`

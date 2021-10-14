@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { PluginCommuncationsAPI, MESSAGE_NAME, PluginManifest, PluginsContext } from './PluginManager';
+import PLUGIN_STYLESHEET from './PluginDefaultStyleSheet';
+import { PluginCommuncationsAPI, MESSAGE_NAME, PluginsContext, RegisteredPlugin } from './PluginManager';
 
 //
 // Typedef
@@ -11,19 +12,18 @@ type Props = {
   url: string;
   title: string;
   onRemove?: () => void;
-  pluginDefinition: PluginManifest;
+  plugin: RegisteredPlugin;
 };
 
 //
 // Renders single plugin to iframe. Also handles communications with plugin
 //
 
-const PluginSlot: React.FC<Props> = ({ id, url, title, pluginDefinition }) => {
+const PluginSlot: React.FC<Props> = ({ id, url, title, plugin }) => {
   const [height, setHeight] = useState(150);
   const _iframe = useRef<HTMLIFrameElement>(null);
   const { subscribeToDatastore, unsubscribeFromDatastore, subscribeToEvent, callEvent, unsubscribeFromEvent } =
     useContext(PluginsContext);
-
   const VERY_UNIQUE_ID = id + title + url;
   //
   // Subscribe to messages from iframe
@@ -33,7 +33,13 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, pluginDefinition }) => {
       if (PluginCommuncationsAPI.isRegisterMessage(e) && e.data.name === title) {
         const w = _iframe.current?.contentWindow;
         if (w) {
-          w.postMessage({ type: 'ReadyToRender', config: pluginDefinition }, '*');
+          w.postMessage({ type: 'ReadyToRender', config: plugin.manifest }, '*');
+          if (plugin.settings.useApplicationStyles) {
+            const iframeContent = _iframe?.current?.contentDocument;
+            if (iframeContent) {
+              iframeContent.head.innerHTML = `<style>${PLUGIN_STYLESHEET}</style>` + iframeContent.head.innerHTML;
+            }
+          }
         } else {
           console.log('Register message happened when iframe wasnt ready');
         }
@@ -107,7 +113,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, pluginDefinition }) => {
         name={title}
         title={title}
         src={url}
-        sandbox={`allow-scripts ${pluginDefinition.parameters?.sandbox || ''}`}
+        sandbox={`allow-scripts ${plugin.manifest.parameters?.sandbox || ''}`}
       />
     </PluginSlotContainer>
   );

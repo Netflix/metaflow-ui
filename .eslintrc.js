@@ -19,6 +19,9 @@ module.exports = {
   rules: {
     'react/display-name': 0,
     'react/prop-types': 0,
+    "prettier/prettier": ["error",{
+      "endOfLine": "auto"}
+    ]
   },
   settings: {
     react: {

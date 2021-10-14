@@ -33,6 +33,7 @@ export type PluginSettings = {
   visible: boolean;
   container?: string; // Should be enum?
   containerProps?: Record<string, unknown>;
+  useApplicationStyles: boolean;
 };
 
 export type RegisteredPlugin = {
@@ -217,7 +218,7 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         console.warn(`Plugin '${manifest.name}' didn't provide plugin API version.`);
       }
 
-      const newPlugin = { settings: { visible: true, ...settings, slot }, manifest };
+      const newPlugin = { settings: { visible: true, useApplicationStyles: true, ...settings, slot }, manifest };
 
       setPlugins((items) => [...items, newPlugin]);
     }

@@ -41,7 +41,7 @@ const PluginGroup: React.FC<Props> = ({ id, slot }) => {
                 title={item.manifest.name}
                 url={pluginPath(item.manifest)}
                 onRemove={() => setRemoved((st) => [...st, item.manifest.name])}
-                pluginDefinition={item.manifest}
+                plugin={item}
               />
             </PluginContainer>
           </div>
