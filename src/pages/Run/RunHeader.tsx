@@ -72,6 +72,7 @@ const RunHeader: React.FC<Props> = ({ run }) => {
     url: `/flows/${run.flow_id}/runs/${run.run_number}/artifacts`,
     queryParams: {
       ds_type: 'local',
+      _limit: '1',
     },
     subscribeToEvents: true,
     initialData: [],
