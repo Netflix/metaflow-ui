@@ -1,0 +1,28 @@
+name: Build and test
+
+on:
+  push:
+    branches:
+      - '**'
+
+jobs:
+  build_and_test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    env:
+      CI: true
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - run: yarn --frozen-lockfile
+      - run: yarn build
+      - run: yarn lint
+      - run: yarn test:components:run

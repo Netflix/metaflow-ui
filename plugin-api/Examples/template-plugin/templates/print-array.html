@@ -1,0 +1,21 @@
+<table>
+  {{@if(it.headings)}}
+  <tr>
+    {{@each(it.headings) => heading}}
+    <th>
+      {{ heading }}
+    </th>
+    {{/each}}
+  </tr>
+  {{/if}}
+
+  {{@each(it.rows) => values}}
+  <tr class="data-row">
+    {{@foreach(obj) => key, value}}
+    <td>
+      {{ value }}
+    </td>
+    {{/foreach}}
+  </tr>
+  {{/each}}
+</table>

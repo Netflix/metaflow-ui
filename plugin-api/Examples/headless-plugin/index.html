@@ -1,0 +1,16 @@
+<!--  REMEMBER TO UPDATE THIS LINK TO ACTUAL METAFLOW JS API FILE. Check README for more info -->
+<script src="PATH_TO_METAFLOW_API/MetaflowPluginAPI.js"></script>
+<script>
+  (function () {
+    // Register plugin as headless so it will not be visibly rendered.
+    Metaflow.register('headless', () => {
+      // These plugins can contain some internal state.
+      let value = 0;
+      // Increment value every second and send custom event. Other plugins may listen to this event.
+      setInterval(() => {
+        value++;
+        Metaflow.call('customValueUpdate', value);
+      }, 1000);
+    });
+  })();
+</script>

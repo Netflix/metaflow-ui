@@ -1,0 +1,322 @@
+{
+  "data": {
+    "start": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "regular_step"
+      ],
+      "doc": ""
+    },
+    "regular_step": {
+      "type": "split-and",
+      "box_next": true,
+      "box_ends": "final_join",
+      "next": [
+        "prepare_foreach",
+        "prepare_foreach2",
+        "prepare_foreach3",
+        "prepare_foreach4",
+        "prepare_foreach5",
+        "prepare_foreach6",
+        "prepare_foreach7",
+        "prepare_foreach8",
+        "prepare_foreach9",
+        "prepare_foreach10"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join",
+      "next": [
+        "process_foreach"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach2": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join2",
+      "next": [
+        "process_foreach2"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach3": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join3",
+      "next": [
+        "process_foreach3"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach4": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join4",
+      "next": [
+        "process_foreach4"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach5": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join5",
+      "next": [
+        "process_foreach5"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach6": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join6",
+      "next": [
+        "process_foreach6"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach7": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join7",
+      "next": [
+        "process_foreach7"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach8": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join8",
+      "next": [
+        "process_foreach8"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach9": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join9",
+      "next": [
+        "process_foreach9"
+      ],
+      "doc": ""
+    },
+    "prepare_foreach10": {
+      "type": "foreach",
+      "box_next": true,
+      "box_ends": "join10",
+      "next": [
+        "process_foreach10"
+      ],
+      "doc": ""
+    },
+    "process_foreach": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join"
+      ],
+      "doc": ""
+    },
+    "process_foreach2": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join2"
+      ],
+      "doc": ""
+    },
+    "process_foreach3": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join3"
+      ],
+      "doc": ""
+    },
+    "process_foreach4": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join4"
+      ],
+      "doc": ""
+    },
+    "process_foreach5": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join5"
+      ],
+      "doc": ""
+    },
+    "process_foreach6": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join6"
+      ],
+      "doc": ""
+    },
+    "process_foreach7": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join7"
+      ],
+      "doc": ""
+    },
+    "process_foreach8": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join8"
+      ],
+      "doc": ""
+    },
+    "process_foreach9": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join9"
+      ],
+      "doc": ""
+    },
+    "process_foreach10": {
+      "type": "linear",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "join10"
+      ],
+      "doc": ""
+    },
+    "join": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "join2": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "join3": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "join4": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "join5": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "join6": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "join7": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "join8": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "join9": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "join10": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "final_join"
+      ],
+      "doc": ""
+    },
+    "final_join": {
+      "type": "join",
+      "box_next": false,
+      "box_ends": null,
+      "next": [
+        "end"
+      ],
+      "doc": ""
+    },
+    "end": {
+      "type": "end",
+      "box_next": true,
+      "box_ends": null,
+      "next": [],
+      "doc": ""
+    }
+  },
+  "status": 200,
+  "links": {
+    "self": "http://test.testing.com"
+  },
+  "query": {}
+}

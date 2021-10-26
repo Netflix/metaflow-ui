@@ -1,0 +1,18 @@
+<table>
+  <tr>
+    {{@foreach(it.rows[0]) => key, value}}
+    <th>
+      {{ key }}
+    </th>
+    {{/foreach}}
+  </tr>
+  {{@each(it.rows) => obj}}
+  <tr>
+    {{@foreach(obj) => key, value}}
+    <td>
+      {{ value }}
+    </td>
+    {{/foreach}}
+  </tr>
+  {{/each}}
+</table>

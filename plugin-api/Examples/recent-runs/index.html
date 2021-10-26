@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      display: flex;
+    }
+
+    .column {
+      padding: 0 15px;
+    }
+
+
+    .run {
+      display: flex;
+    }
+
+    .run a {
+      margin-right: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container" id="container">
+    <div class="column">
+      <div>Recent runs</div>
+      <div id="runs-list"></div>
+    </div>
+  </div>
+
+  <!--  REMEMBER TO UPDATE THIS LINK TO ACTUAL METAFLOW JS API FILE. Check README for more info -->
+  <script src="PATH_TO_METAFLOW_API/MetaflowPluginAPI.js"></script>
+  <script>
+    (function () {
+      // Register plugin to run header section
+      Metaflow.register('run-header', (config) => {
+        let isFetched = false;
+        let currentRun;
+
+        // Function to fetch and add runs to DOM
+        function getRuns() {
+          if (isFetched || !currentRun) return;
+          isFetched = true;
+          // Fetch recent runs from API
+          fetch(`/api/flows/${currentRun.flow_id}/runs?_order=-ts_epoch&_limit=6`)
+            .then(response => response.json())
+            .then(response => {
+              const newRows = []
+              let index = 0;
+              for (const item of response.data) {
+                // Create container element for row in runs list
+                let el = document.createElement('div');
+                el.id = 'run-' + index;
+                el.classList = ['run'];
+                // Create link element with run number
+                let linkEl = document.createElement('a');
+                linkEl.href = `/${currentRun.flow_id}/${item.run_number}`;
+                linkEl.target = '_parent';
+                linkEl.textContent = item.run_number;
+                // Show duration for run
+                let durationEl = document.createElement('div');
+                durationEl.textContent = `Duration: ${item.duration / 1000}s`;
+
+                el.appendChild(linkEl);
+                el.appendChild(durationEl);
+
+                document.getElementById('runs-list').appendChild(el);
+                index++;
+              }
+              Metaflow.setHeight();
+            })
+            .catch(e => console.log('Something went wrong'));
+        }
+
+        // Subscribe to run resrouce from app. When ever there is run update in application
+        // this callback will get triggered.
+        Metaflow.subscribe(['run'], (message) => {
+          if (message.path === 'run') {
+            currentRun = message.data;
+            getRuns();
+          }
+        })
+      });
+
+    })();
+  </script>
+</body>
+
+</html>

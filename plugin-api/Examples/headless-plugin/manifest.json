@@ -1,0 +1,5 @@
+{
+  "name": "Headless plugin",
+  "version": "0.0.1",
+  "entrypoint": "index.html"
+}

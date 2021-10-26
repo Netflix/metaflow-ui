@@ -1,0 +1,7 @@
+build/*
+public/*
+src/react-app-env.d.ts
+*.test.ts
+*.test.tsx
+*.spec.ts
+src/**/__tests__/*
