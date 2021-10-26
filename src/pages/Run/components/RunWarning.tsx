@@ -11,13 +11,14 @@ import { Run } from '../../../types';
 
 type Props = {
   run: Run;
+  usesLocalDataStore: boolean;
 };
 
 //
 // Component
 //
 
-const RunWarning: React.FC<Props> = ({ run }) => {
+const RunWarning: React.FC<Props> = ({ run, usesLocalDataStore }) => {
   const errors = [];
 
   if (!hasVersionTag(run)) {
@@ -26,6 +27,10 @@ const RunWarning: React.FC<Props> = ({ run }) => {
 
   if (isUsingTooOldVersion(run)) {
     errors.push('old-client');
+  }
+
+  if (usesLocalDataStore) {
+    errors.push('local-datastorage');
   }
 
   return errors.length > 0 ? (
@@ -62,8 +67,8 @@ const WarningAboutOldClient = () => {
   return (
     <div>
       <Trans t={t} i18nKey="error.old-metaflow-client-warning">
-        This run uses an old version of the Metaflow client. Due to this run information might be incorrect. Please
-        update your Metaflow client to the
+        Since this run was launched using a pretty old version of Metaflow, some information may be incomplete. Please
+        update your Metaflow to the
         <a href="https://docs.metaflow.org/getting-started/install#upgrading-metaflow" target="_blank" rel="noreferrer">
           latest version
         </a>

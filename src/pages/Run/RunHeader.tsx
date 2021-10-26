@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { Run, RunParam } from '../../types';
+import { Artifact, Run, RunParam } from '../../types';
 
 import StatusField from '../../components/Status';
 import { Link, useHistory } from 'react-router-dom';
@@ -68,10 +68,20 @@ const RunHeader: React.FC<Props> = ({ run }) => {
     initialData: {},
   });
 
+  const dstype = useResource<Artifact[], Artifact>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/artifacts`,
+    queryParams: {
+      ds_type: 'local',
+      _limit: '1',
+    },
+    subscribeToEvents: true,
+    initialData: [],
+  });
+
   return (
     <RunHeaderContainer>
       <DataHeader items={headerItems} wide />
-      <RunWarning run={run} />
+      <RunWarning run={run} usesLocalDataStore={(dstype.data && dstype.data.length > 0) || false} />
 
       <Collapsable title={t('run.run-details')}>
         <>
