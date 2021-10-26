@@ -329,7 +329,7 @@ const Task: React.FC<TaskViewProps> = ({
                               error={artifactError}
                               component={
                                 <ArtifactTable
-                                  artifacts={artifacts}
+                                  artifacts={artifacts.filter((art) => !art.name.startsWith('_'))}
                                   onOpenContentClick={(name, data) =>
                                     setFullscreen({ type: 'artifact', name, artifactdata: data })
                                   }
