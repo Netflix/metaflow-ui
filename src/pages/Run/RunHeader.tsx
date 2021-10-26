@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { Metadata, Run, RunParam } from '../../types';
+import { Artifact, Run, RunParam } from '../../types';
 
 import StatusField from '../../components/Status';
 import { Link, useHistory } from 'react-router-dom';
@@ -68,7 +68,7 @@ const RunHeader: React.FC<Props> = ({ run }) => {
     initialData: {},
   });
 
-  const dstype = useResource<Metadata[], Metadata>({
+  const dstype = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/artifacts`,
     queryParams: {
       ds_type: 'local',
