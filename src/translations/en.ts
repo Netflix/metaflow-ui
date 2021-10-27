@@ -263,11 +263,11 @@ const en = {
       'artifact-unknown-error': 'Unexpected error happened while loading artifacts.',
 
       'no-run-version-info':
-        'Since this run did not record Metaflow version, some information might be partially missing or incorrect.',
+        'Since this run did not record Metaflow version, some information may be incomplete.',
       'old-metaflow-client-warning':
         'Since this run uses an old version of Metaflow, some information may be incomplete.',
       'local-datastore-warning':
-        'Since this run uses local datastore instead of cloud services, some information might be partially missing or incorrect.',
+        'Since this run uses local datastore instead of cloud services, some information may be incomplete.',
     },
 
     notifications: {
