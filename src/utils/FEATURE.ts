@@ -2,12 +2,12 @@ import { apiHttp } from '../constants';
 
 const FEATURE_FLAGS = {
   DAG: (process.env.REACT_APP_FEATURE_DAG || '1') === '1',
-  RUN_GROUPS: (process.env.REACT_APP_FEATURE_RUN_GROUPS || '1') === '1',
+  RUN_GROUPS: (process.env.REACT_APP_FEATURE_RUN_GROUPS || '0') === '1',
   TASK_METADATA: (process.env.REACT_APP_FEATURE_TASK_METADATA || '1') === '1',
   TIMELINE_MINIMAP: (process.env.REACT_APP_FEATURE_TIMELINE_MINIMAP || '1') === '1',
   ARTIFACT_TABLE: (process.env.REACT_APP_FEATURE_ARTIFACT_TABLE || '0') === '1',
   ARTIFACT_SEARCH: (process.env.REACT_APP_FEATURE_ARTIFACT_SEARCH || '0') === '1',
-  DEBUG_VIEW: (process.env.REACT_APP_FEATURE_DEBUG_VIEW || '0') === '1',
+  DEBUG_VIEW: (process.env.REACT_APP_FEATURE_DEBUG_VIEW || '1') === '1',
   CACHE_DISABLE: false,
   DB_LISTEN_DISABLE: false,
   HEARTBEAT_DISABLE: false,
