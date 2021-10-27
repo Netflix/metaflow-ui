@@ -184,9 +184,13 @@ const LinkPopup: React.FC<{ link: PopupLink | null; onClose: () => void }> = ({ 
 const codeByType = {
   any: {
     python: (artifact: Artifact) =>
-      `Task('${artifact.flow_id}/${artifact.run_number}/${artifact.step_name}/${artifact.task_id}')['${artifact.name}'].data`,
+      `Task('${artifact.flow_id}/${artifact.run_id || artifact.run_number}/${artifact.step_name}/${
+        artifact.task_name || artifact.task_id
+      }'${typeof artifact.attempt_id === 'number' ? `, attempt=${artifact.attempt_id}` : ''})['${artifact.name}'].data`,
     r: (artifact: Artifact) =>
-      `flow$new("${artifact.flow_id}")$run("${artifact.run_number}")$step("${artifact.step_name}")$task("${artifact.task_id}")$artifact("${artifact.name}")$${artifact.name}`,
+      `flow$new("${artifact.flow_id}")$run("${artifact.run_id || artifact.run_number}")$step("${
+        artifact.step_name
+      }")$task("${artifact.task_name || artifact.task_id}")$artifact("${artifact.name}")$${artifact.name}`,
   },
 };
 
