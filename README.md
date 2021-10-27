@@ -17,7 +17,7 @@ To setup local development environment, see [docs/README.md](docs/README.md).
 
 ### Deploying the UI
 
-Deploying Metaflow UI requires setting up a UI service (which is different from the Metaflow service but uses the same backing database). To deploy the UI service, follow instructions at [Metaflow UI Service](https://github.com/Netflix/metaflow-service/tree/ui).
+Deploying Metaflow UI requires setting up a UI service (which is different from the Metaflow service but uses the same backing database). To deploy the UI service, follow instructions at [Metaflow UI Service](https://github.com/Netflix/metaflow-service).
 
 ### Docker support
 
