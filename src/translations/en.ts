@@ -262,8 +262,7 @@ const en = {
       'artifact-handle-failed': 'Reading the artifact content failed.',
       'artifact-unknown-error': 'Unexpected error happened while loading artifacts.',
 
-      'no-run-version-info':
-        'Since this run did not record Metaflow version, some information may be incomplete.',
+      'no-run-version-info': 'Since this run did not record Metaflow version, some information may be incomplete.',
       'old-metaflow-client-warning':
         'Since this run uses an old version of Metaflow, some information may be incomplete.',
       'local-datastore-warning':
