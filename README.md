@@ -1,5 +1,7 @@
+<p align="center">
+  <img src="docs/images/mfgui.gif" width="75%" height="75%"/>
+</p>
 
-![Dashboard UI workloads page](docs/images/mfgui.gif)
 
 # Metaflow UI
 

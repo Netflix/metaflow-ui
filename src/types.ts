@@ -62,8 +62,10 @@ export interface Metadata extends MetaDataBaseObject {
 
 export interface Artifact extends MetaDataBaseObject {
   run_number: number;
+  run_id?: string;
   step_name: string;
   task_id: number;
+  task_name?: string;
   name: string;
   location: string;
   ds_type: string;

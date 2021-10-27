@@ -68,6 +68,6 @@ describe('ArtifactTable', () => {
     gid('select-field').eq(0).click()
     cy.get('button').contains('Python').click()
     gid('modal-container')
-    gid('modal-content').contains("Task('LogTestFlow/968832/loglines/33632798')['FirstArtifact'].data")
+    gid('modal-content').contains("Task('LogTestFlow/968832/loglines/33632798', attempt=0)['FirstArtifact'].data")
   });
 });

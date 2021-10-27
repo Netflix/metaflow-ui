@@ -257,7 +257,7 @@ const en = {
       'task-error':
         'Task page encountered an unexpected error. This should not happen and might be caused by unexpected data.',
 
-      'artifact-too-large': 'File too large to display. Only available as download from location.',
+      'artifact-too-large': 'File too large to display, use the client to access this object.',
       'artifact-not-accessible': 'Artifact location is not accessible by the server.',
       'artifact-handle-failed': 'Reading the artifact content failed.',
       'artifact-unknown-error': 'Unexpected error happened while loading artifacts.',
