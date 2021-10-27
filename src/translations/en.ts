@@ -265,7 +265,7 @@ const en = {
       'no-run-version-info':
         'Since this run did not record Metaflow version, some information might be partially missing or incorrect.',
       'old-metaflow-client-warning':
-        'Since this run was launched using a pretty old version of Metaflow, some information may be incomplete. Please update your Metaflow to the <1>latest version</1>.',
+        'Since this run uses an old version of Metaflow, some information may be incomplete.',
       'local-datastore-warning':
         'Since this run uses local datastore instead of cloud services, some information might be partially missing or incorrect.',
     },

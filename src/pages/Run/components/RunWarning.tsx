@@ -1,5 +1,5 @@
 import React from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import Icon from '../../../components/Icon';
 import { isVersionEqualOrHigher } from '../../../components/Plugins/PluginManager';
@@ -64,18 +64,7 @@ const WarningNoVersionInfo = () => {
 
 const WarningAboutOldClient = () => {
   const { t } = useTranslation();
-  return (
-    <div>
-      <Trans t={t} i18nKey="error.old-metaflow-client-warning">
-        Since this run was launched using a pretty old version of Metaflow, some information may be incomplete. Please
-        update your Metaflow to the
-        <a href="https://docs.metaflow.org/getting-started/install#upgrading-metaflow" target="_blank" rel="noreferrer">
-          latest version
-        </a>
-        .
-      </Trans>
-    </div>
-  );
+  return <div>{t('error.old-metaflow-client-warning')}</div>;
 };
 
 const WarningLocalDatastore = () => {
