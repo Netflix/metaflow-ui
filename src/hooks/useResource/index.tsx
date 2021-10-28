@@ -70,6 +70,7 @@ export interface Resource<T> {
   getResult: () => DataModel<T> | null;
   target: string;
   status: AsyncStatus;
+  retry: () => void;
 }
 
 //
@@ -151,6 +152,8 @@ export default function useResource<T, U>({
   const [status, statusDispatch] = useReducer(StatusReducer, { id: 0, status: 'NotAsked' });
   const q = new URLSearchParams(queryParams).toString();
   const target = apiHttp(`${url}${q ? '?' + q : ''}`);
+  const [retryCounter, setRetryCounter] = useState(0);
+
   // Call batch update
   useInterval(() => {
     if (useBatching && onUpdate && updateBatcher[target] && (updateBatcher[target] as Array<U>).length > 0) {
@@ -299,9 +302,13 @@ export default function useResource<T, U>({
         abortCtrl.abort();
       }
     };
-  }, [target, pause]); // eslint-disable-line
+  }, [target, pause, retryCounter]); // eslint-disable-line
 
-  return { url, target, data, error, getResult: () => result, status: status.status };
+  function retry() {
+    setRetryCounter((val) => val + 1);
+  }
+
+  return { url, target, data, error, getResult: () => result, status: status.status, retry };
 }
 
 function getWebsocketUrl<T>(url: string, data: T | null, wsUrl?: string | ((result: T) => string)): string {
