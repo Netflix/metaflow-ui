@@ -62,7 +62,7 @@
       <li>Develop your plugin to index.html</li>
       <li>
         Plugin that are ready for real use are installed to Metaflow Metadata service. Head to
-        <a href="https://github.com/Netflix/metaflow-service/blob/ui/services/ui_backend_service/docs/plugins.md"
+        <a href="https://github.com/Netflix/metaflow-service/blob/master/services/ui_backend_service/docs/plugins.md"
           >Metadata service documentation</a
         >
         for deployment instructions. Remember to provide <code>MetaflowPluginAPI.js</code> to your plugin.
@@ -90,12 +90,16 @@
                 document.getElementById(
                   'version',
                 ).innerHTML = `App version: <code>${message.data.release_version}</code>`;
+                break;
               case 'run':
                 document.getElementById('run').innerHTML = 'Run data ok!';
+                break;
               case 'task':
                 document.getElementById('task').innerHTML = 'Task data ok!';
+                break;
               case 'metadata':
                 document.getElementById('metadata').innerHTML = 'Metadata data ok!';
+                break;
             }
             console.log(message.data);
             Metaflow.setHeight();

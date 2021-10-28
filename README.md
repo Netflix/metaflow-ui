@@ -32,7 +32,7 @@ $ docker run -p 3000:3000 metaflow-ui:latest
 $ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://custom-ui-backend/api metaflow-ui:latest
 ```
 
-For example when used with locally deployed [Metaflow UI Service](https://github.com/Netflix/metaflow-service/tree/ui), the UI can be launched with
+For example when used with locally deployed [Metaflow UI Service](https://github.com/Netflix/metaflow-service), the UI can be launched with
 
 ```sh
 $ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://localhost:8083/ metaflow-ui:latest
