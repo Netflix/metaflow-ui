@@ -21,6 +21,8 @@ export type LogDataSettings = {
 };
 
 const DEFAULT_PAGE_SIZE = 500;
+const PRELOAD_POLL_INTERVALL = 20000;
+const POSTLOAD_POLL_INTERVAL = 10000;
 
 function isOkResult(param: DataModel<Log[]> | APIError): param is DataModel<Log[]> {
   return 'data' in param;
@@ -38,6 +40,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
   const [status, setStatus] = useState<AsyncStatus>('NotAsked');
   const [preloadStatus, setPreloadStatus] = useState<AsyncStatus>('NotAsked');
   const [error, setError] = useState<APIError | null>(null);
+  const [postPoll, setPostPoll] = useState<boolean>(false);
   // Datastore
   const [logs, setLogs] = useState<LogItem[]>([]);
   const PAGE_SIZE = pagesize || DEFAULT_PAGE_SIZE;
@@ -65,6 +68,11 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
       .then((response) => response.json())
       .then((result: DataModel<Log[]> | APIError) => {
         if (isOkResult(result)) {
+          // Check if there was any new lines. If there wasnt, lets cancel post finish polling.
+          if (result.data.length > 0 && logs.length > 0 && result.data[0].row === logs.length - 1) {
+            setPostPoll(false);
+          }
+
           setLogs((array) => {
             const newarr = [...array];
             for (const item of result.data) {
@@ -107,6 +115,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     setPreloadStatus('NotAsked');
     setLogs([]);
     setError(null);
+    setPostPoll(false);
   }, [url]); // eslint-disable-line
 
   // Fetch logs when task gets completed
@@ -115,6 +124,8 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
       setStatus('Loading');
 
       fetchLogs(1, '-').then((result) => {
+        setPostPoll(true);
+
         if (result.type === 'error') {
           if (result.error.id === 'user-aborted') {
             return;
@@ -124,7 +135,6 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
           setError(result.error);
           return;
         }
-
         setStatus('Ok');
       });
     }
@@ -143,16 +153,31 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
 
   // Poller for auto updates when task is running
   useEffect(() => {
-    let t: ReturnType<typeof setTimeout>;
+    let t: number;
     if (['Ok', 'Error'].includes(preloadStatus) && paused) {
-      t = setTimeout(() => {
+      t = window.setTimeout(() => {
         fetchPreload();
-      }, 20000);
+      }, PRELOAD_POLL_INTERVALL);
     }
     return () => {
       clearTimeout(t);
     };
   }, [preloadStatus, paused]); // eslint-disable-line
+
+  // Post finish polling
+  // In some cases all logs might not be there after task finishes. For this, lets poll new logs every 10sec until
+  // there is no new lines
+  useEffect(() => {
+    let t: number;
+    if (status === 'Ok' && postPoll) {
+      t = window.setTimeout(() => {
+        fetchLogs(1, '-');
+      }, POSTLOAD_POLL_INTERVAL);
+    }
+    return () => {
+      clearTimeout(t);
+    };
+  }, [status, postPoll, logs]); // eslint-disable-line
 
   // loadMore gets triggered on all scrolling events on list.
   function loadMore(index: number) {
