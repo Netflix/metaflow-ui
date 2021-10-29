@@ -86,6 +86,7 @@ export interface RunParam {
 export interface Log {
   row: number;
   line: string;
+  timestamp?: number;
 }
 
 export interface Announcement {
