@@ -72,6 +72,7 @@ export function createResource<T>(data: T, props: Partial<Resource<T>>): Resourc
     getResult: () => null,
     target: '',
     status: 'Ok',
+    retry: () => null,
     ...props,
   };
 }

@@ -169,6 +169,12 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     subscribeToEvents: false,
     initialData: null,
   });
+  // Refetch dag on tab change if dag fetching failed
+  useEffect(() => {
+    if ((dagResult.status === 'Error' || dagResult.data === null) && tab === 'dag') {
+      dagResult.retry();
+    }
+  }, [tab]); //eslint-disable-line
 
   return (
     <>
