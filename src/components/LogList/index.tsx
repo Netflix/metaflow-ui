@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { LogData, LogItem } from '../../hooks/useLogData';
 import { useDebounce } from 'use-debounce/lib';
 import { AsyncStatus, Log } from '../../types';
+import { lighten } from 'polished';
 
 //
 // Typedef
@@ -20,6 +21,8 @@ type LogSearchResult = {
   line: number;
   char: [number, number];
 };
+
+type SearchState = { active: boolean; result: LogSearchResult[]; current: number };
 
 //
 // List large amount of logs in virtualised list.
@@ -89,14 +92,15 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
   // Search
   //
 
-  const [searchResult, setSearchResult] = useState<{ active: boolean; result: LogSearchResult[] }>({
+  const [searchResult, setSearchResult] = useState<SearchState>({
     active: false,
     result: [],
+    current: 0,
   });
 
   function search(str: string) {
     if (!str) {
-      return setSearchResult({ active: false, result: [] });
+      return setSearchResult({ active: false, result: [], current: 0 });
     }
     const results = logdata.logs
       .filter(filterbySearchTerm)
@@ -105,10 +109,22 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
         line: item.row,
         char: [item.line.indexOf(str), item.line.indexOf(str) + str.length] as [number, number],
       }));
-    setSearchResult({ active: true, result: results });
+    setSearchResult({ active: true, result: results, current: 0 });
 
     if (results.length > 0) {
       _list.current?.scrollToRow(results[0].line);
+    }
+  }
+
+  function handleInputKeyPress(key: string) {
+    if (key === 'Enter' && searchResult.active && searchResult.result.length > 0) {
+      if (searchResult.current === searchResult.result.length - 1) {
+        setSearchResult((cur) => ({ ...cur, current: 0 }));
+        _list.current?.scrollToRow(searchResult.result[0].line);
+      } else {
+        setSearchResult((cur) => ({ ...cur, current: cur.current + 1 }));
+        _list.current?.scrollToRow(searchResult.result[searchResult.current + 1].line);
+      }
     }
   }
 
@@ -124,8 +140,16 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
         <LogListContainer data-testid="loglist-container">
           <LogSearch>
             <LogInputContainer>
-              <LogSearchInput placeholder="Search" onChange={(e) => search(e.currentTarget.value)} />
-              <ResultNumber>{searchResult.active && searchResult.result.length}</ResultNumber>
+              <LogSearchInput
+                placeholder="Search"
+                onChange={(e) => search(e.currentTarget.value)}
+                onKeyPress={(e) => handleInputKeyPress(e.key)}
+              />
+              <ResultNumber>
+                {searchResult.active &&
+                  searchResult.result.length > 0 &&
+                  `${searchResult.current + 1}/${searchResult.result.length}`}
+              </ResultNumber>
             </LogInputContainer>
           </LogSearch>
           <AutoSizer disableHeight>
@@ -205,8 +229,8 @@ const LogSearchInput = styled.input`
   padding: 0 0.5rem;
 `;
 
-const MatchHighlight = styled.span`
-  background: ${(p) => p.theme.color.bg.yellow};
+const MatchHighlight = styled.span<{ active: boolean }>`
+  background: ${(p) => (p.active ? lighten(0.2, p.theme.color.bg.yellow) : p.theme.color.bg.yellow)};
 `;
 
 const ResultNumber = styled.div`
@@ -220,7 +244,7 @@ function filterbySearchTerm(item: LogItem): item is Log {
   return typeof item === 'object';
 }
 
-function getLineText(item: Log, searchResult: { active: boolean; result: LogSearchResult[] }) {
+function getLineText(item: Log, searchResult: SearchState) {
   if (!searchResult.active) {
     return item.line;
   }
@@ -228,10 +252,13 @@ function getLineText(item: Log, searchResult: { active: boolean; result: LogSear
   const match = searchResult.result.find((res) => res.line === item.row);
 
   if (match) {
+    const isCurrent = searchResult.result[searchResult.current]?.line === match?.line;
     return (
       <>
         {item.line.substr(0, match.char[0])}
-        <MatchHighlight>{item.line.substr(match.char[0], match.char[1] - match.char[0])}</MatchHighlight>
+        <MatchHighlight active={isCurrent}>
+          {item.line.substr(match.char[0], match.char[1] - match.char[0])}
+        </MatchHighlight>
         {item.line.substr(match.char[1])}
       </>
     );
