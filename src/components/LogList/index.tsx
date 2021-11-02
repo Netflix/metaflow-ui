@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
-import { LogData } from '../../hooks/useLogData';
+import { LogData, LogItem } from '../../hooks/useLogData';
 import { useDebounce } from 'use-debounce/lib';
-import { AsyncStatus } from '../../types';
+import { AsyncStatus, Log } from '../../types';
 
 //
 // Typedef
@@ -14,6 +14,11 @@ type LogProps = {
   logdata: LogData;
   onScroll?: (startIndex: number) => void;
   fixedHeight?: number;
+};
+
+type LogSearchResult = {
+  line: number;
+  char: [number, number];
 };
 
 //
@@ -80,6 +85,33 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
     }
   }, [debouncedIndex, onScroll]); // eslint-disable-line
 
+  //
+  // Search
+  //
+
+  const [searchResult, setSearchResult] = useState<{ active: boolean; result: LogSearchResult[] }>({
+    active: false,
+    result: [],
+  });
+
+  function search(str: string) {
+    if (!str) {
+      return setSearchResult({ active: false, result: [] });
+    }
+    const results = logdata.logs
+      .filter(filterbySearchTerm)
+      .filter((line) => line.line.indexOf(str) > -1)
+      .map((item) => ({
+        line: item.row,
+        char: [item.line.indexOf(str), item.line.indexOf(str) + str.length] as [number, number],
+      }));
+    setSearchResult({ active: true, result: results });
+
+    if (results.length > 0) {
+      _list.current?.scrollToRow(results[0].line);
+    }
+  }
+
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">
       {rows.length === 0 && ['Ok', 'Error'].includes(logdata.preloadStatus) && logdata.status === 'NotAsked' && (
@@ -91,7 +123,10 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
       {rows.length > 0 && (
         <LogListContainer data-testid="loglist-container">
           <LogSearch>
-            <LogSearchInput placeholder="Search" />
+            <LogInputContainer>
+              <LogSearchInput placeholder="Search" onChange={(e) => search(e.currentTarget.value)} />
+              <ResultNumber>{searchResult.active && searchResult.result.length}</ResultNumber>
+            </LogInputContainer>
           </LogSearch>
           <AutoSizer disableHeight>
             {({ width }) => (
@@ -121,7 +156,9 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
                       return (
                         <LogLine style={style} data-testid="log-line">
                           <LogLineNumber className="logline-number">{index}</LogLineNumber>
-                          <LogLineText>{typeof item === 'object' ? item.line : 'Loading...'}</LogLineText>
+                          <LogLineText>
+                            {typeof item === 'object' ? getLineText(item as Log, searchResult) : 'Loading...'}
+                          </LogLineText>
                         </LogLine>
                       );
                     }}
@@ -152,15 +189,56 @@ const LogSearch = styled.div`
   padding: 0.25rem 0.5rem;
 `;
 
-const LogSearchInput = styled.input`
-  border: none;
+const LogInputContainer = styled.div`
   background: #e9e9e9;
   border-radius: 4px;
+  width: 240px;
+  position: relative;
+`;
+
+const LogSearchInput = styled.input`
+  border: none;
   line-heigth: 49px;
   height: 28px;
-  width: 240px;
+  background: transparent;
+  width: 100%;
   padding: 0 0.5rem;
 `;
+
+const MatchHighlight = styled.span`
+  background: ${(p) => p.theme.color.bg.yellow};
+`;
+
+const ResultNumber = styled.div`
+  position: absolute;
+  right: 0.5rem;
+  top: 0;
+  line-height: 26px;
+`;
+
+function filterbySearchTerm(item: LogItem): item is Log {
+  return typeof item === 'object';
+}
+
+function getLineText(item: Log, searchResult: { active: boolean; result: LogSearchResult[] }) {
+  if (!searchResult.active) {
+    return item.line;
+  }
+
+  const match = searchResult.result.find((res) => res.line === item.row);
+
+  if (match) {
+    return (
+      <>
+        {item.line.substr(0, match.char[0])}
+        <MatchHighlight>{item.line.substr(match.char[0], match.char[1] - match.char[0])}</MatchHighlight>
+        {item.line.substr(match.char[1])}
+      </>
+    );
+  }
+
+  return item.line;
+}
 
 //
 // Poller indicator
