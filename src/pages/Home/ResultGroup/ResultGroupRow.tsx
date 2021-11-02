@@ -37,22 +37,9 @@ enum RowState {
 // Row component that will lock it's state when hovered or set active
 //
 const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue, run, timezone, cols }) => {
-  const [runToRender, setRunToRender] = useState(run);
   const [isHovering, setIsHovering] = useState(false);
   const [rowState, setRowState] = useState<RowState>(RowState.Closed);
   const visible = isVisible(rowState);
-
-  useEffect(() => {
-    if (!isHovering && !visible && run.run_number !== runToRender.run_number) {
-      setRunToRender(run);
-    }
-  }, [isHovering, visible]); // eslint-disable-line
-
-  useEffect(() => {
-    if ((!isHovering && !visible) || run.run_number === runToRender.run_number) {
-      setRunToRender(run);
-    }
-  }, [run]); // eslint-disable-line
 
   // Update state after 250 of closing or opening
   useEffect(() => {
@@ -87,10 +74,10 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
         }}
       >
         <ResultGroupCells
-          r={runToRender}
+          r={run}
           params={queryParams}
           updateListValue={updateListValue}
-          link={getPath.run(runToRender.flow_id, getRunId(runToRender))}
+          link={getPath.run(run.flow_id, getRunId(run))}
           timezone={timezone}
           infoOpen={visible}
         />
@@ -110,12 +97,12 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
       </StyledTR>
       {visible && (
         <tr>
-          <StatusColorCell status={runToRender.status} title={runToRender.status} hideBorderTop={true} />
+          <StatusColorCell status={run.status} title={run.status} hideBorderTop={true} />
           <StyledTD colSpan={cols.length}>
             <HeightAnimatedContainer active={isTransitioning(rowState)}>
               <StyledSection closing={rowState === RowState.Closing}>
-                <TimelinePreview run={runToRender} />
-                <ParametersPreview run={runToRender} />
+                <TimelinePreview run={run} />
+                <ParametersPreview run={run} />
               </StyledSection>
             </HeightAnimatedContainer>
           </StyledTD>

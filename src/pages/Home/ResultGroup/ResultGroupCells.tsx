@@ -81,7 +81,8 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
       previous.timezone === next.timezone &&
       previous.r.status === next.r.status &&
       previous.r.finished_at === next.r.finished_at &&
-      previous.infoOpen === next.infoOpen
+      previous.infoOpen === next.infoOpen &&
+      previous.r.tags === next.r.tags
     );
   },
 );
