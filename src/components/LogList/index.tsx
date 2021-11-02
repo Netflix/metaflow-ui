@@ -123,7 +123,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
                           <LogLineNumber className="logline-number">
                             <div>{index}</div>
                           </LogLineNumber>
-                          <LogLineNumber>{getTimestamp(item, timezone)}</LogLineNumber>
+                          {getTimestamp(item, timezone)}
                           <LogLineText>{typeof item === 'object' ? item.line : 'Loading...'}</LogLineText>
                         </LogLine>
                       );
@@ -150,7 +150,9 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
 };
 
 function getTimestamp(item: LogItem, timezone: string) {
-  return typeof item === 'object' && item.timestamp && getTimestampString(new Date(item.timestamp), timezone);
+  return typeof item === 'object' && item.timestamp ? (
+    <LogLineNumber>{getTimestampString(new Date(item.timestamp), timezone)}</LogLineNumber>
+  ) : null;
 }
 
 //
