@@ -90,6 +90,9 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
 
       {rows.length > 0 && (
         <LogListContainer data-testid="loglist-container">
+          <LogSearch>
+            <LogSearchInput placeholder="Search" />
+          </LogSearch>
           <AutoSizer disableHeight>
             {({ width }) => (
               <List
@@ -142,6 +145,22 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
     </div>
   );
 };
+
+const LogSearch = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.25rem 0.5rem;
+`;
+
+const LogSearchInput = styled.input`
+  border: none;
+  background: #e9e9e9;
+  border-radius: 4px;
+  line-heigth: 49px;
+  height: 28px;
+  width: 240px;
+  padding: 0 0.5rem;
+`;
 
 //
 // Poller indicator
