@@ -17,14 +17,14 @@ type LogActionBarProps = {
   downloadlink: string;
   data: LogItem[];
   search: LocalSearchType;
-  spaceAround: boolean;
+  spaceAround?: boolean;
 };
 
 //
 // Component
 //
 
-const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink, data, search, spaceAround }) => {
+const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink, data, search, spaceAround = false }) => {
   const { addNotification } = useNotifications();
   const { t } = useTranslation();
   return (
@@ -54,7 +54,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink
             />
           </SearchContainer>
 
-          <Buttons>
+          <Buttons data-testid="log-action-bar-buttons">
             <Button
               data-testid="log-action-button"
               title={t('task.copy-logs-to-clipboard')}

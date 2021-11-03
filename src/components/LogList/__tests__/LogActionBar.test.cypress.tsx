@@ -3,11 +3,22 @@ import React from 'react';
 import TestWrapper, { gid } from '../../../utils/testing';
 import LogActionBar from '../LogActionBar';
 
+const Search = {
+  search: (str: string) => null,
+  result: {
+    active: false,
+    result: [],
+    query: '',
+    current: 0,
+  },
+  nextResult: () => null,
+}
+
 describe('LogActionBar', () => {
   it('Should render empty action bar since there is no log data', () => {
     mount(
       <TestWrapper>
-        <LogActionBar downloadlink="" data={[]} />
+        <LogActionBar downloadlink="" data={[]} search={Search} />
       </TestWrapper>,
     );
 
@@ -17,20 +28,20 @@ describe('LogActionBar', () => {
   it('Should render action bar with two buttons', () => {
     mount(
       <TestWrapper>
-        <LogActionBar downloadlink="" data={[{ row: 0, line: 'Hello world' }]} />
+        <LogActionBar downloadlink="" data={[{ row: 0, line: 'Hello world' }]} search={Search} />
       </TestWrapper>,
     );
 
-    gid('log-action-bar').children().should('have.length', 2);
+    gid('log-action-bar-buttons').children().should('have.length', 2);
   });
 
   it('Should render action bar with three buttons', () => {
     mount(
       <TestWrapper>
-        <LogActionBar downloadlink="" data={[{ row: 0, line: 'Hello world' }]} setFullscreen={() => null} />
+        <LogActionBar downloadlink="" data={[{ row: 0, line: 'Hello world' }]} setFullscreen={() => null} search={Search} />
       </TestWrapper>,
     );
 
-    gid('log-action-bar').children().should('have.length', 3);
+    gid('log-action-bar-buttons').children().should('have.length', 3);
   });
 });

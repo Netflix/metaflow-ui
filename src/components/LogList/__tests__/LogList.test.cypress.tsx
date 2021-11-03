@@ -11,6 +11,16 @@ function createLogData(props: Partial<LogData>): LogData {
     status: 'NotAsked' as const,
     loadMore: (_index: number) => null,
     error: null,
+    localSearch: {
+      search: (str: string) => null,
+      result: {
+        active: false,
+        result: [],
+        query: '',
+        current: 0,
+      },
+      nextResult: () => null,
+    },
     ...props,
   };
 }
@@ -25,17 +35,17 @@ describe('LogActionBar', () => {
   it('Should render empty wrapper in initial situation', () => {
     mount(
       <TestWrapper>
-        <LogList logdata={createLogData({})} />
+        <LogList logdata={createLogData({})} downloadUrl="" />
       </TestWrapper>,
     );
 
-    gid('loglist-wrapper').children().should('have.length', 0);
+    gid('loglist-wrapper').children().should('have.length', 1);
   });
 
   it('Should render message about empty preload when preload was empty or error and final fetch is not started', () => {
     mount(
       <TestWrapper>
-        <LogList logdata={createLogData({ preloadStatus: 'Ok' })} />
+        <LogList logdata={createLogData({ preloadStatus: 'Ok' })} downloadUrl="" />
       </TestWrapper>,
     );
 
@@ -43,7 +53,7 @@ describe('LogActionBar', () => {
 
     mount(
       <TestWrapper>
-        <LogList logdata={createLogData({ preloadStatus: 'Error' })} />
+        <LogList logdata={createLogData({ preloadStatus: 'Error' })} downloadUrl="" />
       </TestWrapper>,
     );
 
@@ -53,7 +63,7 @@ describe('LogActionBar', () => {
   it('Should render message about empty when fetch is ok and results are empty', () => {
     mount(
       <TestWrapper>
-        <LogList logdata={createLogData({ status: 'Ok' })} />
+        <LogList logdata={createLogData({ status: 'Ok' })} downloadUrl="" />
       </TestWrapper>,
     );
 
@@ -70,6 +80,7 @@ describe('LogActionBar', () => {
               { row: 1, line: 'Maailma' },
             ],
           })}
+          downloadUrl=""
         />
       </TestWrapper>,
     );
@@ -81,7 +92,7 @@ describe('LogActionBar', () => {
   it('Should render only part of rows when there is lot of them', () => {
     mount(
       <TestWrapper>
-        <LogList logdata={createLogData({ logs: generateLines(100) })} />
+        <LogList logdata={createLogData({ logs: generateLines(100) })} downloadUrl="" />
       </TestWrapper>,
     );
 
@@ -92,13 +103,13 @@ describe('LogActionBar', () => {
   it('Should render stick to bottom button only after scroll events by user', () => {
     mount(
       <TestWrapper>
-        <LogList logdata={createLogData({ logs: generateLines(100) })} />
+        <LogList logdata={createLogData({ logs: generateLines(100) })} downloadUrl="" />
       </TestWrapper>,
     );
 
     // by default list should stick to bottom and button to go down should not exist
     gid('loglist-stick-bottom').should('not.exist');
-    
+
     // Scroll a bit and button should appear
     cy.get(`.${LIST_CONTAINER_CLASS}`).scrollTo(0, 100);
     gid('loglist-stick-bottom');
