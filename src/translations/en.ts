@@ -181,6 +181,8 @@ const en = {
       'poll-loader-msg': 'New logs are fetched in 20 seconds intervals',
       'ui-content': 'UI Content',
       'unable-to-find-status': 'Unable to find status for this task',
+      'log-search': 'Search',
+      'log-search-tip': 'Searching only from locally available lines',
     },
 
     breadcrumb: {

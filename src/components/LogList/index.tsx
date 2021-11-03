@@ -96,7 +96,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     if (searchActive && search.result.result[searchCurrent]) {
       _list.current?.scrollToRow(search.result.result[searchCurrent].line);
     }
-  }, [searchActive, searchCurrent, searchQuery]);
+  }, [searchActive, searchCurrent, searchQuery]); //eslint-disable-line
 
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">
@@ -105,6 +105,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
         downloadlink={downloadUrl}
         setFullscreen={setFullscreen}
         search={logdata.localSearch}
+        spaceAround={!!fixedHeight}
       />
 
       {rows.length === 0 && ['Ok', 'Error'].includes(logdata.preloadStatus) && logdata.status === 'NotAsked' && (

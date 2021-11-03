@@ -245,12 +245,14 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
 
   // Clean up on url change
   useEffect(() => {
-    setStatus('NotAsked');
-    setPreloadStatus('NotAsked');
-    setLogs([]);
-    setError(null);
-    setPostPoll(false);
-    setSearchResult({ active: false, result: [], current: 0, query: '' });
+    return () => {
+      setStatus('NotAsked');
+      setPreloadStatus('NotAsked');
+      setLogs([]);
+      setError(null);
+      setPostPoll(false);
+      setSearchResult({ active: false, result: [], current: 0, query: '' });
+    };
   }, [url]); // eslint-disable-line
 
   return { logs, status, preloadStatus, error, loadMore, localSearch: { search, nextResult, result: searchResult } };

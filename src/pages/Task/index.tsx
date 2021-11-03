@@ -8,7 +8,6 @@ import { SearchFieldReturnType } from '../../hooks/useSearchField';
 
 import Spinner from '../../components/Spinner';
 import LogList from '../../components/LogList';
-import LogActionBar from '../../components/LogList/LogActionBar';
 import FullPageContainer from '../../components/FullPageContainer';
 import TaskListingHeader from '../../components/TaskListingHeader';
 import { Row } from '../../components/Timeline/VirtualizedTimeline';
@@ -350,15 +349,7 @@ const Task: React.FC<TaskViewProps> = ({
         <FullPageContainer
           onClose={() => setFullscreen(null)}
           actionbar={
-            fullscreen.type === 'logs' ? (
-              <LogActionBar
-                data={fullscreen.logtype === 'stdout' ? stdout.logs : stderr.logs}
-                downloadlink={apiHttp(
-                  `${logUrl}${fullscreen.logtype === 'stdout' ? 'out' : 'err'}/download?attempt_id=${task.attempt_id}`,
-                )}
-                search={fullscreen.logtype === 'stdout' ? stdout.localSearch : stderr.localSearch}
-              />
-            ) : (
+            fullscreen.type === 'logs' ? null : (
               <ArtifactActionBar
                 data={fullscreen.artifactdata}
                 name={`${fullscreen.name}-${task.ts_epoch}-${getTaskId(task)}-attempt${task.attempt_id}`}
@@ -372,7 +363,7 @@ const Task: React.FC<TaskViewProps> = ({
                 <LogList
                   logdata={fullscreen.logtype === 'stdout' ? stdout : stderr}
                   onScroll={fullscreen.logtype === 'stdout' ? stdout.loadMore : stderr.loadMore}
-                  fixedHeight={height}
+                  fixedHeight={height - 56}
                   downloadUrl={apiHttp(
                     `${logUrl}/${fullscreen.logtype === 'stdout' ? 'out' : 'err'}/download?attempt_id=${
                       task.attempt_id

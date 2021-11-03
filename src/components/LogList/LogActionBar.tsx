@@ -17,22 +17,23 @@ type LogActionBarProps = {
   downloadlink: string;
   data: LogItem[];
   search: LocalSearchType;
+  spaceAround: boolean;
 };
 
 //
 // Component
 //
 
-const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink, data, search }) => {
+const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink, data, search, spaceAround }) => {
   const { addNotification } = useNotifications();
   const { t } = useTranslation();
   return (
-    <LogActionBarContainer data-testid="log-action-bar">
+    <LogActionBarContainer spaceAround={spaceAround} data-testid="log-action-bar">
       {data && data.length > 0 && (
         <>
           <SearchContainer>
             <FilterInput
-              sectionLabel="Search"
+              sectionLabel={t('task.log-search')}
               onChange={(e) => {
                 search.search(e);
               }}
@@ -49,7 +50,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink
                   </ResultElement>
                 )
               }
-              infoMsg="Searching only from locally available lines"
+              infoMsg={t('task.log-search-tip')}
             />
           </SearchContainer>
 
@@ -104,10 +105,11 @@ const SearchContainer = styled.div`
   widht: 19rem;
 `;
 
-const LogActionBarContainer = styled.div`
+const LogActionBarContainer = styled.div<{ spaceAround: boolean }>`
   display: flex;
   justify-content: space-between;
   margin-bottom: 1rem;
+  padding: ${(p) => (p.spaceAround ? '0 1rem' : '0')};
 `;
 
 const Buttons = styled.div`
