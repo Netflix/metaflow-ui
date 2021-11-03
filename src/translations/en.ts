@@ -148,7 +148,6 @@ const en = {
     task: {
       'no-metadata': 'No task metadata found.',
       'metadata-not-available': 'Metadata not available for this attempt.',
-      'failed-to-load-metadata': 'Failed to load task metadata',
       'task-details': 'Task details',
       loading: 'Loading task data',
       'no-task-selected': 'No task selected',
