@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
-import { LogData, SearchState } from '../../hooks/useLogData';
+import { LogData, LogItem, SearchState } from '../../hooks/useLogData';
 import { useDebounce } from 'use-debounce/lib';
 import { AsyncStatus, Log } from '../../types';
 import { lighten } from 'polished';
 import LogActionBar from './LogActionBar';
+import { getTimestampString } from '../../utils/date';
+import { TimezoneContext } from '../TimezoneProvider';
 
 //
 // Typedef
@@ -27,6 +29,7 @@ type LogProps = {
 const LIST_MAX_HEIGHT = 400;
 
 const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadUrl, setFullscreen }) => {
+  const { timezone } = useContext(TimezoneContext);
   const { t } = useTranslation();
   const rows = logdata.logs;
   const [stickBottom, setStickBottom] = useState(true);
@@ -144,6 +147,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
                       return (
                         <LogLine style={style} data-testid="log-line">
                           <LogLineNumber className="logline-number">{index}</LogLineNumber>
+                          {getTimestamp(item, timezone)}
                           <LogLineText>
                             {typeof item === 'object' ? getLineText(item as Log, search.result) : 'Loading...'}
                           </LogLineText>
@@ -196,6 +200,12 @@ function getLineText(item: Log, searchResult: SearchState) {
   }
 
   return item.line;
+}
+
+function getTimestamp(item: LogItem, timezone: string) {
+  return typeof item === 'object' && item.timestamp ? (
+    <LogLineNumber>{getTimestampString(new Date(item.timestamp), timezone)}</LogLineNumber>
+  ) : null;
 }
 
 //
@@ -301,12 +311,13 @@ const LogLineNumber = styled.div`
   font-size: 0.75rem;
   line-height: 1rem;
   padding-right: 0.5rem;
-  min-width: 3rem;
   user-select: none;
 `;
 
 const LogLineText = styled.div`
   word-break: break-all;
+  flex: 1;
+  padding-right: 0.5rem;
 `;
 
 const ScrollToBottomButton = styled.div`

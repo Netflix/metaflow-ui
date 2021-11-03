@@ -43,7 +43,15 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     HomeStateCache.active = false;
-  }, []);
+
+    // Try to use same params as last time when on frontpage. But only try this if
+    // user is coming to default frontpage. We don't want to interrupt direct links from working
+    const fromLS = localStorage.getItem('home-params');
+    const lastUsedParams = fromLS ? JSON.parse(fromLS) : false;
+    if (lastUsedParams && isDefaultParams(rawParams, false)) {
+      setQp(lastUsedParams);
+    }
+  }, []); // eslint-disable-line
 
   //
   // QueryParams
@@ -59,8 +67,9 @@ const Home: React.FC = () => {
     dispatch({
       type: 'setParams',
       params: rawParams,
-      cachedResult: historyAction === 'POP' && !HomeStateCache.active && HomeStateCache.scroll > 0,
+      cachedResult: shouldUseCachedResult(historyAction),
     });
+    localStorage.setItem('home-params', JSON.stringify(rawParams));
   }, [rawParamsString]); // eslint-disable-line
 
   //
@@ -81,31 +90,6 @@ const Home: React.FC = () => {
     placeHolderParameters: null,
     isScrolledFromTop: historyAction === 'POP' && HomeStateCache.scroll > 100,
   });
-
-  //
-  // Cache
-  //
-
-  useEffect(() => {
-    const scrollValue = HomeStateCache.scroll;
-    if (historyAction === 'POP' && scrollValue > 0 && initialised) {
-      HomeStateCache.active = true;
-    } else if (historyAction !== 'POP' || scrollValue === 0) {
-      HomeStateCache.active = true;
-    }
-
-    if (historyAction !== 'POP') {
-      // We want to add timerange filter if we are rolling with default params
-      // but not in back event. In back event we should keep state we had
-      if (isDefaultParams(rawParams, false, timezone)) {
-        setQp({ timerange_start: getTimeFromPastByDays(30, timezone).toString() });
-      }
-    }
-  }, [historyAction, initialised]); // eslint-disable-line
-
-  useEffect(() => {
-    HomeStateCache.page = page;
-  }, [page]);
 
   //
   // Data
@@ -149,6 +133,33 @@ const Home: React.FC = () => {
     },
   });
 
+  //
+  // Cache
+  //
+
+  useEffect(() => {
+    const scrollValue = HomeStateCache.scroll;
+    if (historyAction === 'POP' && scrollValue > 0 && initialised) {
+      HomeStateCache.active = true;
+    } else if (historyAction !== 'POP' || scrollValue === 0) {
+      HomeStateCache.active = true;
+    }
+
+    if (historyAction !== 'POP' && initialised) {
+      if (isDefaultParams(rawParams, false, timezone)) {
+        // We want to add timerange filter if we are rolling with default params
+        // but not in back event. In back event we should keep state we had
+        setQp({ timerange_start: getTimeFromPastByDays(30, timezone).toString() });
+      }
+    }
+  }, [historyAction, initialised]); // eslint-disable-line
+
+  // Update cache page on page change
+  useEffect(() => {
+    HomeStateCache.page = page;
+  }, [page]);
+
+  // Update cache data on data changes
   useEffect(() => {
     HomeStateCache.data = rungroups;
   }, [rungroups]);
@@ -266,5 +277,11 @@ const Home: React.FC = () => {
     </div>
   );
 };
+
+function shouldUseCachedResult(historyAction: string) {
+  // We should use cached result on init if route action was POP (back), we haven't yet used cache and cache scroll is
+  // creater than 0. If scroll state of cache is 0, we might as well load new results.
+  return historyAction === 'POP' && !HomeStateCache.active && HomeStateCache.scroll > 0;
+}
 
 export default Home;

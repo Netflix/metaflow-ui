@@ -91,7 +91,9 @@ export function isDefaultParams(params: Record<string, string>, checkTimerange: 
     if (
       params._order === defaultHomeParameters._order &&
       params._limit === defaultHomeParameters._limit &&
-      params.status === defaultHomeParameters.status &&
+      params.status?.indexOf('completed') > -1 &&
+      params.status?.indexOf('running') > -1 &&
+      params.status?.indexOf('failed') > -1 &&
       (checkTimerange ? params.timerange_start === getTimeFromPastByDays(30, timezone).toString() : true)
     ) {
       return true;

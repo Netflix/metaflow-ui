@@ -146,6 +146,8 @@ const en = {
     },
 
     task: {
+      'no-metadata': 'No task metadata found.',
+      'metadata-not-available': 'Metadata not available for this attempt.',
       'task-details': 'Task details',
       loading: 'Loading task data',
       'no-task-selected': 'No task selected',
@@ -259,10 +261,10 @@ const en = {
       'task-error':
         'Task page encountered an unexpected error. This should not happen and might be caused by unexpected data.',
 
-      'artifact-too-large': 'File too large to display, use the client to access this object.',
-      'artifact-not-accessible': 'Artifact location is not accessible by the server.',
-      'artifact-handle-failed': 'Reading the artifact content failed.',
-      'artifact-unknown-error': 'Unexpected error happened while loading artifacts.',
+      'artifact-too-large': 'Artifact too large to display, use the client to access it.',
+      'artifact-not-accessible': 'Artifact location is not accessible by the server (local artifact).',
+      'artifact-handle-failed': 'Artifact not currently displayable in the UI, use the client to access it.',
+      'artifact-unknown-error': 'Artifact not currently displayable in the UI, use the client to access it.',
 
       'no-run-version-info': 'Since this run did not record Metaflow version, some information may be incomplete.',
       'old-metaflow-client-warning':
