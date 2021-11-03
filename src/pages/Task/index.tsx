@@ -270,20 +270,20 @@ const Task: React.FC<TaskViewProps> = ({
                   key: 'stdout',
                   order: 2,
                   label: t('task.std-out'),
-                  actionbar: (
-                    <LogActionBar
-                      data={stdout.logs}
-                      downloadlink={apiHttp(`${logUrl}/out/download?attempt_id=${task.attempt_id}`)}
-                      setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stdout' })}
-                    />
-                  ),
                   component: (
                     <>
                       <SectionLoader
                         minHeight={110}
                         status={getLogSectionStatus(stdout)}
                         error={stdout.error}
-                        component={<LogList onScroll={stdout.loadMore} logdata={stdout} />}
+                        component={
+                          <LogList
+                            onScroll={stdout.loadMore}
+                            logdata={stdout}
+                            downloadUrl={apiHttp(`${logUrl}/out/download?attempt_id=${task.attempt_id}`)}
+                            setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stdout' })}
+                          />
+                        }
                       />
                       {task.status === 'pending' && t('task.waiting-for-task-to-start')}
                     </>
@@ -296,20 +296,20 @@ const Task: React.FC<TaskViewProps> = ({
                   key: 'stderr',
                   order: 3,
                   label: t('task.std-err'),
-                  actionbar: (
-                    <LogActionBar
-                      data={stderr.logs}
-                      downloadlink={apiHttp(`${logUrl}/err/download?attempt_id=${task.attempt_id}`)}
-                      setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stderr' })}
-                    />
-                  ),
                   component: (
                     <>
                       <SectionLoader
                         minHeight={110}
                         status={getLogSectionStatus(stderr)}
                         error={stderr.error}
-                        component={<LogList onScroll={stderr.loadMore} logdata={stderr} />}
+                        component={
+                          <LogList
+                            onScroll={stderr.loadMore}
+                            logdata={stderr}
+                            downloadUrl={apiHttp(`${logUrl}/err/download?attempt_id=${task.attempt_id}`)}
+                            setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stderr' })}
+                          />
+                        }
                       />
                       {task.status === 'pending' && t('task.waiting-for-task-to-start')}
                     </>
@@ -356,6 +356,7 @@ const Task: React.FC<TaskViewProps> = ({
                 downloadlink={apiHttp(
                   `${logUrl}${fullscreen.logtype === 'stdout' ? 'out' : 'err'}/download?attempt_id=${task.attempt_id}`,
                 )}
+                search={fullscreen.logtype === 'stdout' ? stdout.localSearch : stderr.localSearch}
               />
             ) : (
               <ArtifactActionBar
@@ -372,6 +373,11 @@ const Task: React.FC<TaskViewProps> = ({
                   logdata={fullscreen.logtype === 'stdout' ? stdout : stderr}
                   onScroll={fullscreen.logtype === 'stdout' ? stdout.loadMore : stderr.loadMore}
                   fixedHeight={height}
+                  downloadUrl={apiHttp(
+                    `${logUrl}/${fullscreen.logtype === 'stdout' ? 'out' : 'err'}/download?attempt_id=${
+                      task.attempt_id
+                    }`,
+                  )}
                 />
               );
             } else if (fullscreen.type === 'artifact') {

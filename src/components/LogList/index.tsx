@@ -2,10 +2,11 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
-import { LogData, LogItem } from '../../hooks/useLogData';
+import { LogData, SearchState } from '../../hooks/useLogData';
 import { useDebounce } from 'use-debounce/lib';
 import { AsyncStatus, Log } from '../../types';
 import { lighten } from 'polished';
+import LogActionBar from './LogActionBar';
 
 //
 // Typedef
@@ -15,14 +16,9 @@ type LogProps = {
   logdata: LogData;
   onScroll?: (startIndex: number) => void;
   fixedHeight?: number;
+  downloadUrl: string;
+  setFullscreen?: () => void;
 };
-
-type LogSearchResult = {
-  line: number;
-  char: [number, number];
-};
-
-type SearchState = { active: boolean; result: LogSearchResult[]; current: number };
 
 //
 // List large amount of logs in virtualised list.
@@ -30,7 +26,7 @@ type SearchState = { active: boolean; result: LogSearchResult[]; current: number
 
 const LIST_MAX_HEIGHT = 400;
 
-const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
+const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadUrl, setFullscreen }) => {
   const { t } = useTranslation();
   const rows = logdata.logs;
   const [stickBottom, setStickBottom] = useState(true);
@@ -41,7 +37,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
     }),
   );
   const _list = useRef<List>(null);
-
+  const search = logdata.localSearch;
   const count = rows.length;
 
   const okCount = rows.reduce((okAmount, item) => {
@@ -89,47 +85,28 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
   }, [debouncedIndex, onScroll]); // eslint-disable-line
 
   //
-  // Search
+  // Search features
   //
 
-  const [searchResult, setSearchResult] = useState<SearchState>({
-    active: false,
-    result: [],
-    current: 0,
-  });
+  const searchActive = search.result.active;
+  const searchCurrent = search.result.current;
+  const searchQuery = search.result.query;
 
-  function search(str: string) {
-    if (!str) {
-      return setSearchResult({ active: false, result: [], current: 0 });
+  useEffect(() => {
+    if (searchActive && search.result.result[searchCurrent]) {
+      _list.current?.scrollToRow(search.result.result[searchCurrent].line);
     }
-    const results = logdata.logs
-      .filter(filterbySearchTerm)
-      .filter((line) => line.line.indexOf(str) > -1)
-      .map((item) => ({
-        line: item.row,
-        char: [item.line.indexOf(str), item.line.indexOf(str) + str.length] as [number, number],
-      }));
-    setSearchResult({ active: true, result: results, current: 0 });
-
-    if (results.length > 0) {
-      _list.current?.scrollToRow(results[0].line);
-    }
-  }
-
-  function handleInputKeyPress(key: string) {
-    if (key === 'Enter' && searchResult.active && searchResult.result.length > 0) {
-      if (searchResult.current === searchResult.result.length - 1) {
-        setSearchResult((cur) => ({ ...cur, current: 0 }));
-        _list.current?.scrollToRow(searchResult.result[0].line);
-      } else {
-        setSearchResult((cur) => ({ ...cur, current: cur.current + 1 }));
-        _list.current?.scrollToRow(searchResult.result[searchResult.current + 1].line);
-      }
-    }
-  }
+  }, [searchActive, searchCurrent, searchQuery]);
 
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">
+      <LogActionBar
+        data={logdata.logs}
+        downloadlink={downloadUrl}
+        setFullscreen={setFullscreen}
+        search={logdata.localSearch}
+      />
+
       {rows.length === 0 && ['Ok', 'Error'].includes(logdata.preloadStatus) && logdata.status === 'NotAsked' && (
         <div data-testid="loglist-preload-empty">{t('task.no-preload-logs')}</div>
       )}
@@ -138,20 +115,6 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
 
       {rows.length > 0 && (
         <LogListContainer data-testid="loglist-container">
-          <LogSearch>
-            <LogInputContainer>
-              <LogSearchInput
-                placeholder="Search"
-                onChange={(e) => search(e.currentTarget.value)}
-                onKeyPress={(e) => handleInputKeyPress(e.key)}
-              />
-              <ResultNumber>
-                {searchResult.active &&
-                  searchResult.result.length > 0 &&
-                  `${searchResult.current + 1}/${searchResult.result.length}`}
-              </ResultNumber>
-            </LogInputContainer>
-          </LogSearch>
           <AutoSizer disableHeight>
             {({ width }) => (
               <List
@@ -181,7 +144,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
                         <LogLine style={style} data-testid="log-line">
                           <LogLineNumber className="logline-number">{index}</LogLineNumber>
                           <LogLineText>
-                            {typeof item === 'object' ? getLineText(item as Log, searchResult) : 'Loading...'}
+                            {typeof item === 'object' ? getLineText(item as Log, search.result) : 'Loading...'}
                           </LogLineText>
                         </LogLine>
                       );
@@ -207,42 +170,9 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
   );
 };
 
-const LogSearch = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  padding: 0.25rem 0.5rem;
-`;
-
-const LogInputContainer = styled.div`
-  background: #e9e9e9;
-  border-radius: 4px;
-  width: 240px;
-  position: relative;
-`;
-
-const LogSearchInput = styled.input`
-  border: none;
-  line-heigth: 49px;
-  height: 28px;
-  background: transparent;
-  width: 100%;
-  padding: 0 0.5rem;
-`;
-
 const MatchHighlight = styled.span<{ active: boolean }>`
   background: ${(p) => (p.active ? lighten(0.2, p.theme.color.bg.yellow) : p.theme.color.bg.yellow)};
 `;
-
-const ResultNumber = styled.div`
-  position: absolute;
-  right: 0.5rem;
-  top: 0;
-  line-height: 26px;
-`;
-
-function filterbySearchTerm(item: LogItem): item is Log {
-  return typeof item === 'object';
-}
 
 function getLineText(item: Log, searchResult: SearchState) {
   if (!searchResult.active) {

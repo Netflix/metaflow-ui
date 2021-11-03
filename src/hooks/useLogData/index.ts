@@ -11,6 +11,7 @@ export type LogData = {
   status: AsyncStatus;
   loadMore: (index: number) => void;
   error: APIError | null;
+  localSearch: LocalSearchType;
 };
 
 export type LogDataSettings = {
@@ -18,6 +19,19 @@ export type LogDataSettings = {
   paused: boolean;
   url: string;
   pagesize?: number;
+};
+
+type LogSearchResult = {
+  line: number;
+  char: [number, number];
+};
+
+export type SearchState = { active: boolean; result: LogSearchResult[]; current: number; query: string };
+
+export type LocalSearchType = {
+  search: (str: string) => void;
+  result: SearchState;
+  nextResult: () => void;
 };
 
 const DEFAULT_PAGE_SIZE = 500;
@@ -109,15 +123,6 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     });
   }
 
-  // Clean up on url change
-  useEffect(() => {
-    setStatus('NotAsked');
-    setPreloadStatus('NotAsked');
-    setLogs([]);
-    setError(null);
-    setPostPoll(false);
-  }, [url]); // eslint-disable-line
-
   // Fetch logs when task gets completed
   useEffect(() => {
     if (status === 'NotAsked' && !paused) {
@@ -205,7 +210,54 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     }
   }
 
-  return { logs, status, preloadStatus, error, loadMore };
+  const [searchResult, setSearchResult] = useState<SearchState>({
+    active: false,
+    result: [],
+    current: 0,
+    query: '',
+  });
+
+  function search(str: string) {
+    if (!str) {
+      return setSearchResult({ active: false, result: [], current: 0, query: '' });
+    }
+    const query = str.toLowerCase();
+    const results = logs
+      .filter(filterbySearchTerm)
+      .filter((line) => line.line.toLowerCase().indexOf(query) > -1)
+      .map((item) => {
+        const index = item.line.toLowerCase().indexOf(query);
+        return {
+          line: item.row,
+          char: [index, index + str.length] as [number, number],
+        };
+      });
+    setSearchResult({ active: true, result: results, current: 0, query: str });
+  }
+
+  function nextResult() {
+    if (searchResult.current === searchResult.result.length - 1) {
+      setSearchResult((cur) => ({ ...cur, current: 0 }));
+    } else {
+      setSearchResult((cur) => ({ ...cur, current: cur.current + 1 }));
+    }
+  }
+
+  // Clean up on url change
+  useEffect(() => {
+    setStatus('NotAsked');
+    setPreloadStatus('NotAsked');
+    setLogs([]);
+    setError(null);
+    setPostPoll(false);
+    setSearchResult({ active: false, result: [], current: 0, query: '' });
+  }, [url]); // eslint-disable-line
+
+  return { logs, status, preloadStatus, error, loadMore, localSearch: { search, nextResult, result: searchResult } };
 };
+
+function filterbySearchTerm(item: LogItem): item is Log {
+  return typeof item === 'object';
+}
 
 export default useLogData;
