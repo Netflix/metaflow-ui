@@ -24,7 +24,13 @@ type LogActionBarProps = {
 // Component
 //
 
-const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink, data, search, spaceAround = false }) => {
+const LogActionBar: React.FC<LogActionBarProps> = ({
+  setFullscreen,
+  downloadlink,
+  data,
+  search,
+  spaceAround = false,
+}) => {
   const { addNotification } = useNotifications();
   const { t } = useTranslation();
   return (
