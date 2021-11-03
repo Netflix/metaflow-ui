@@ -6,6 +6,7 @@ import { NotificationType, useNotifications } from '../Notifications';
 import copy from 'copy-to-clipboard';
 import Icon from '../Icon';
 import { LocalSearchType, LogItem } from '../../hooks/useLogData';
+import FilterInput from '../FilterInput';
 
 //
 // Typedef
@@ -29,24 +30,28 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink
     <LogActionBarContainer data-testid="log-action-bar">
       {data && data.length > 0 && (
         <>
-          <LogSearch>
-            <LogInputContainer>
-              <LogSearchInput
-                placeholder="Search"
-                onChange={(e) => search.search(e.currentTarget.value)}
-                onKeyPress={(e) => {
-                  if (search.result.active && e.key === 'Enter') {
-                    search.nextResult();
-                  }
-                }}
-              />
-              <ResultNumber>
-                {search.result.active &&
-                  search.result.result.length > 0 &&
-                  `${search.result.current + 1}/${search.result.result.length}`}
-              </ResultNumber>
-            </LogInputContainer>
-          </LogSearch>
+          <SearchContainer>
+            <FilterInput
+              sectionLabel="Search"
+              onChange={(e) => {
+                search.search(e);
+              }}
+              onSubmit={() => {
+                search.nextResult();
+              }}
+              noClear
+              customIcon={['search', 'sm']}
+              customIconElement={
+                search.result.active &&
+                search.result.result.length > 0 && (
+                  <ResultElement>
+                    {search.result.current + 1}/{search.result.result.length}
+                  </ResultElement>
+                )
+              }
+              infoMsg="Searching only from locally available lines"
+            />
+          </SearchContainer>
 
           <Buttons>
             <Button
@@ -61,7 +66,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink
                 });
               }}
             >
-              <Icon name="copy" />
+              <Icon name="copy" customSize="1.25rem" />
             </Button>
 
             <a title={t('task.download-logs')} href={downloadlink} download data-testid="log-action-button">
@@ -74,7 +79,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink
                 }}
                 iconOnly
               >
-                <Icon name="download" />
+                <Icon name="download" customSize="1.25rem" />
               </Button>
             </a>
 
@@ -85,7 +90,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink
                 withIcon
                 data-testid="log-action-button"
               >
-                <Icon name="maximize" />
+                <Icon name="maximize" customSize="1.25rem" />
               </Button>
             )}
           </Buttons>
@@ -95,42 +100,34 @@ const LogActionBar: React.FC<LogActionBarProps> = ({ setFullscreen, downloadlink
   );
 };
 
+const SearchContainer = styled.div`
+  widht: 19rem;
+`;
+
 const LogActionBarContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-bottom: 1rem;
 `;
 
 const Buttons = styled.div`
   display: flex;
   flex: 0;
+
+  button {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin-left: 0.5rem;
+
+    i {
+      margin: 0 auto;
+    }
+  }
 `;
 
-const LogSearch = styled.div`
-  padding: 0.25rem 0.5rem;
-`;
-
-const LogInputContainer = styled.div`
-  background: #e9e9e9;
-  border-radius: 4px;
-  width: 240px;
-  position: relative;
-`;
-
-const LogSearchInput = styled.input`
-  border: none;
-  outline: none;
-  line-heigth: 49px;
-  height: 28px;
-  background: transparent;
-  width: 100%;
-  padding: 0 0.5rem;
-`;
-
-const ResultNumber = styled.div`
-  position: absolute;
-  right: 0.5rem;
-  top: 0;
-  line-height: 26px;
+const ResultElement = styled.div`
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 `;
 
 export default LogActionBar;

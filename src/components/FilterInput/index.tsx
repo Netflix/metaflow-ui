@@ -28,6 +28,7 @@ type FilterInputProps = {
   initialValue?: string;
   autoFocus?: boolean;
   customIcon?: [IconKeys, IconSizes];
+  customIconElement?: React.ReactNode;
   noIcon?: boolean;
   noClear?: boolean;
   status?: AsyncStatus;
@@ -51,6 +52,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
   autoFocus = false,
   noIcon = false,
   customIcon,
+  customIconElement,
   noClear = false,
   status = 'Ok',
   tip,
@@ -154,6 +156,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
             setHasFocus(false);
           }}
         />
+
         <SubmitIconHolder
           data-testid="filter-input-submit-button"
           status={status}
@@ -167,12 +170,14 @@ const FilterInput: React.FC<FilterInputProps> = ({
             }
           }}
         >
-          {!noIcon && (
-            <Icon
-              name={hasFocus ? 'enter' : status === 'Error' ? 'danger' : customIcon ? customIcon[0] : 'plus'}
-              size={hasFocus || !customIcon ? 'xs' : customIcon[1]}
-            />
-          )}
+          {customIconElement
+            ? customIconElement
+            : !noIcon && (
+                <Icon
+                  name={hasFocus ? 'enter' : status === 'Error' ? 'danger' : customIcon ? customIcon[0] : 'plus'}
+                  size={hasFocus || !customIcon ? 'xs' : customIcon[1]}
+                />
+              )}
         </SubmitIconHolder>
 
         {tip && <InputTip visible={hasFocus && val === ''}>{tip}</InputTip>}
