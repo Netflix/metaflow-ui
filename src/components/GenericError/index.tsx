@@ -44,15 +44,14 @@ const GenericErrorContainer = styled.div`
 `;
 
 export const knownErrorIds = [
-  's3-access-denied',
-  's3-not-found',
-  's3-bad-url',
   's3-missing-credentials',
-  's3-generic-error',
-  'dag-processing-error',
-  'dag-unsupported-flow-language',
+  'MetaflowS3AccessDenied',
+  'MetaflowS3NotFound',
+  'MetaflowS3URLException',
+  'MetaflowS3Exception',
+  'DAGParsingFailed',
+  'DAGUnsupportedFlowLanguage',
   'not-found',
-  'log-error-s3',
   'log-error',
 ];
 
