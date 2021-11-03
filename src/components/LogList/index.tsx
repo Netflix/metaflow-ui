@@ -1,10 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
-import { LogData } from '../../hooks/useLogData';
+import { LogData, LogItem } from '../../hooks/useLogData';
 import { useDebounce } from 'use-debounce/lib';
 import { AsyncStatus } from '../../types';
+import { getTimestampString } from '../../utils/date';
+import { TimezoneContext } from '../TimezoneProvider';
 
 //
 // Typedef
@@ -23,6 +25,7 @@ type LogProps = {
 const LIST_MAX_HEIGHT = 400;
 
 const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
+  const { timezone } = useContext(TimezoneContext);
   const { t } = useTranslation();
   const rows = logdata.logs;
   const [stickBottom, setStickBottom] = useState(true);
@@ -117,7 +120,10 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
 
                       return (
                         <LogLine style={style} data-testid="log-line">
-                          <LogLineNumber className="logline-number">{index}</LogLineNumber>
+                          <LogLineNumber className="logline-number">
+                            <div>{index}</div>
+                          </LogLineNumber>
+                          {getTimestamp(item, timezone)}
                           <LogLineText>{typeof item === 'object' ? item.line : 'Loading...'}</LogLineText>
                         </LogLine>
                       );
@@ -142,6 +148,12 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
     </div>
   );
 };
+
+function getTimestamp(item: LogItem, timezone: string) {
+  return typeof item === 'object' && item.timestamp ? (
+    <LogLineNumber>{getTimestampString(new Date(item.timestamp), timezone)}</LogLineNumber>
+  ) : null;
+}
 
 //
 // Poller indicator
@@ -246,12 +258,13 @@ const LogLineNumber = styled.div`
   font-size: 0.75rem;
   line-height: 1rem;
   padding-right: 0.5rem;
-  min-width: 3rem;
   user-select: none;
 `;
 
 const LogLineText = styled.div`
   word-break: break-all;
+  flex: 1;
+  padding-right: 0.5rem;
 `;
 
 const ScrollToBottomButton = styled.div`

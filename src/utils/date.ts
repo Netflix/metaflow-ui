@@ -7,6 +7,13 @@ export const getISOString = (date: Date, timezone?: string): string => {
   return spacetime(date, 'GMT+0').unixFmt('MM-dd-yyyy HH:mm:ss');
 };
 
+export const getTimestampString = (date: Date, timezone?: string): string => {
+  if (timezone) {
+    return spacetime(date, 'GMT+0').goto(`${timezone}`).unixFmt('HH:mm:ss');
+  }
+  return spacetime(date, 'GMT+0').unixFmt('HH:mm:ss');
+};
+
 export const getTimeRangeString = (date: Date, timezone?: string): string => {
   if (timezone) {
     return spacetime(date, 'GMT+0').goto(`${timezone}`).unixFmt('yyyy-MM-dd HH:mm');
