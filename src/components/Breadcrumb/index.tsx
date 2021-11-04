@@ -56,6 +56,7 @@ const Breadcrumb: React.FC = () => {
     const path = pathFromString(str);
 
     if (path) {
+      localStorage.removeItem('home-params');
       history.push(path);
       closeUp();
     } else {
