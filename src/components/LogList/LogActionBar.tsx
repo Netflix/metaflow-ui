@@ -73,7 +73,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({
                 });
               }}
             >
-              <Icon name="copy" customSize="1.25rem" />
+              <Icon name="copy" size="sm" />
             </Button>
 
             <a title={t('task.download-logs')} href={downloadlink} download data-testid="log-action-button">
@@ -86,7 +86,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({
                 }}
                 iconOnly
               >
-                <Icon name="download" customSize="1.25rem" />
+                <Icon name="download" size="sm" />
               </Button>
             </a>
 
@@ -97,7 +97,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({
                 withIcon
                 data-testid="log-action-button"
               >
-                <Icon name="maximize" customSize="1.25rem" />
+                <Icon name="maximize" size="sm" />
               </Button>
             )}
           </Buttons>
