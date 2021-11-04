@@ -122,7 +122,13 @@ const Breadcrumb: React.FC = () => {
 
   return (
     <StyledBreadcrumb pad="md">
-      <ButtonLink to={'/'} tabIndex={0} data-testid={'home-button'} variant="primaryText">
+      <ButtonLink
+        to={'/'}
+        tabIndex={0}
+        data-testid={'home-button'}
+        variant="primaryText"
+        disabled={location.pathname === '/'}
+      >
         {t('home.home')}
       </ButtonLink>
 
