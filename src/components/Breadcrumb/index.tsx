@@ -119,8 +119,6 @@ const Breadcrumb: React.FC = () => {
 
   useOnKeyPress('Escape', () => closeUp());
 
-  console.log(location);
-
   return (
     <StyledBreadcrumb pad="md">
       <ButtonLink
