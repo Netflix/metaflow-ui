@@ -2,9 +2,11 @@ import React, { useState, useRef, useEffect, useContext } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
-import { LogData, LogItem } from '../../hooks/useLogData';
+import { LogData, LogItem, SearchState } from '../../hooks/useLogData';
 import { useDebounce } from 'use-debounce/lib';
-import { AsyncStatus } from '../../types';
+import { AsyncStatus, Log } from '../../types';
+import { lighten } from 'polished';
+import LogActionBar from './LogActionBar';
 import { getTimestampString } from '../../utils/date';
 import { TimezoneContext } from '../TimezoneProvider';
 
@@ -16,6 +18,8 @@ type LogProps = {
   logdata: LogData;
   onScroll?: (startIndex: number) => void;
   fixedHeight?: number;
+  downloadUrl: string;
+  setFullscreen?: () => void;
 };
 
 //
@@ -24,7 +28,7 @@ type LogProps = {
 
 const LIST_MAX_HEIGHT = 400;
 
-const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
+const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadUrl, setFullscreen }) => {
   const { timezone } = useContext(TimezoneContext);
   const { t } = useTranslation();
   const rows = logdata.logs;
@@ -36,7 +40,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
     }),
   );
   const _list = useRef<List>(null);
-
+  const search = logdata.localSearch;
   const count = rows.length;
 
   const okCount = rows.reduce((okAmount, item) => {
@@ -83,8 +87,30 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
     }
   }, [debouncedIndex, onScroll]); // eslint-disable-line
 
+  //
+  // Search features
+  //
+
+  const searchActive = search.result.active;
+  const searchCurrent = search.result.current;
+  const searchQuery = search.result.query;
+
+  useEffect(() => {
+    if (searchActive && search.result.result[searchCurrent]) {
+      _list.current?.scrollToRow(search.result.result[searchCurrent].line);
+    }
+  }, [searchActive, searchCurrent, searchQuery]); //eslint-disable-line
+
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">
+      <LogActionBar
+        data={logdata.logs}
+        downloadlink={downloadUrl}
+        setFullscreen={setFullscreen}
+        search={logdata.localSearch}
+        spaceAround={!!fixedHeight}
+      />
+
       {rows.length === 0 && ['Ok', 'Error'].includes(logdata.preloadStatus) && logdata.status === 'NotAsked' && (
         <div data-testid="loglist-preload-empty">{t('task.no-preload-logs')}</div>
       )}
@@ -120,11 +146,11 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
 
                       return (
                         <LogLine style={style} data-testid="log-line">
-                          <LogLineNumber className="logline-number">
-                            <div>{index}</div>
-                          </LogLineNumber>
+                          <LogLineNumber className="logline-number">{index}</LogLineNumber>
                           {getTimestamp(item, timezone)}
-                          <LogLineText>{typeof item === 'object' ? item.line : 'Loading...'}</LogLineText>
+                          <LogLineText>
+                            {typeof item === 'object' ? getLineText(item as Log, search.result) : 'Loading...'}
+                          </LogLineText>
                         </LogLine>
                       );
                     }}
@@ -148,6 +174,33 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
     </div>
   );
 };
+
+const MatchHighlight = styled.span<{ active: boolean }>`
+  background: ${(p) => (p.active ? lighten(0.2, p.theme.color.bg.yellow) : p.theme.color.bg.yellow)};
+`;
+
+function getLineText(item: Log, searchResult: SearchState) {
+  if (!searchResult.active) {
+    return item.line;
+  }
+
+  const match = searchResult.result.find((res) => res.line === item.row);
+
+  if (match) {
+    const isCurrent = searchResult.result[searchResult.current]?.line === match?.line;
+    return (
+      <>
+        {item.line.substr(0, match.char[0])}
+        <MatchHighlight active={isCurrent}>
+          {item.line.substr(match.char[0], match.char[1] - match.char[0])}
+        </MatchHighlight>
+        {item.line.substr(match.char[1])}
+      </>
+    );
+  }
+
+  return item.line;
+}
 
 function getTimestamp(item: LogItem, timezone: string) {
   return typeof item === 'object' && item.timestamp ? (
