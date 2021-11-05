@@ -84,13 +84,12 @@ const ArtifactTable: React.FC<Props> = ({ artifacts, onOpenContentClick }) => {
 // Utils
 //
 const knownErrorIds = [
-  's3-access-denied',
-  's3-not-found',
-  's3-bad-url',
-  's3-missing-credentials',
-  's3-generic-error',
+  'DataException',
+  'MetaflowS3AccessDenied',
+  'MetaflowS3NotFound',
+  'MetaflowS3URLException',
+  'MetaflowS3Exception',
   'artifact-too-large',
-  'artifact-not-accessible',
   'artifact-handle-failed',
 ];
 

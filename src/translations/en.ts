@@ -260,7 +260,6 @@ const en = {
         'Task page encountered an unexpected error. This should not happen and might be caused by unexpected data.',
 
       'artifact-too-large': 'Artifact too large to display, use the client to access it.',
-      'artifact-not-accessible': 'Artifact location is not accessible by the server (local artifact).',
       'artifact-handle-failed': 'Artifact not currently displayable in the UI, use the client to access it.',
       'artifact-unknown-error': 'Artifact not currently displayable in the UI, use the client to access it.',
 
