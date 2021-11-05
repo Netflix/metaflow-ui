@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import FilterInput, { InputAutocompleteSettings } from '../FilterInput';
 import { SearchResultModel } from '../../hooks/useSearchField';
+import Icon from '../Icon';
 
 type SearchFieldProps = {
   initialValue?: string;
@@ -40,6 +41,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
         }}
         noClear
         customIcon={['search', 'sm']}
+        customIconElement={results.status === 'Loading' ? <Icon name="rowLoader" spin /> : null}
         autoCompleteSettings={autoCompleteSettings}
         autoCompleteEnabled={autoCompleteEnabled}
         tip="key:value"
