@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello world plugin</title>
+</head>
+
+<body>
+  <div class="container" id="container">
+    Hello world!
+  </div>
+  <!-- MetaflowPluginAPI.js Must be used to register plugin for the UI -->
+  <!-- REMEMBER TO UPDATE THIS LINK TO ACTUAL METAFLOW JS API FILE. Check README for more info -->
+  <script src="MetaflowPluginAPI.js"></script>
+  <script>
+    (function () {
+      // Call register function to tell UI where application should be rendered. Callback will be called after
+      // plugin is placed to correct spot in UI.
+      Metaflow.register({ slot: 'run-header', container: 'titled-container'}, () => {
+        // Set fixed height for plugin
+        Metaflow.setHeight(40);
+        // Subscribe to any update on run data and show run number in plugin.
+        Metaflow.subscribe(['run'], (event) => {
+          document.getElementById('container').innerHTML = `Hello World! Run number is ${event.data.run_number}`;
+        });
+      })
+    })();
+  </script>
+</body>
+
+</html>

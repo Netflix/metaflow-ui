@@ -11,6 +11,7 @@
     body {
       margin: 0;
       padding: 0;
+      font-family: sans-serif;
     }
 
     .container {
@@ -21,13 +22,20 @@
       padding: 0 15px;
     }
 
+    #runs-list {
+      display: flex;
+    }
 
     .run {
-      display: flex;
+      background: #f7f7f7;
+      padding: 1rem;
+      border-radius: 4px;
+      margin-right: 1rem;
     }
 
     .run a {
       margin-right: 15px;
+      color: #000;
     }
   </style>
 </head>
@@ -35,13 +43,12 @@
 <body>
   <div class="container" id="container">
     <div class="column">
-      <div>Recent runs</div>
       <div id="runs-list"></div>
     </div>
   </div>
 
   <!--  REMEMBER TO UPDATE THIS LINK TO ACTUAL METAFLOW JS API FILE. Check README for more info -->
-  <script src="PATH_TO_METAFLOW_API/MetaflowPluginAPI.js"></script>
+  <script src="MetaflowPluginAPI.js"></script>
   <script>
     (function () {
       // Register plugin to run header section
