@@ -1,5 +1,5 @@
 {
-  "name": "Template plugin",
+  "name": "Hello world",
   "version": "0.0.1",
   "entrypoint": "plugin.html"
 }
