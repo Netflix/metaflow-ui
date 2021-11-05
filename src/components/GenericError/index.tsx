@@ -44,7 +44,7 @@ const GenericErrorContainer = styled.div`
 `;
 
 export const knownErrorIds = [
-  's3-missing-credentials',
+  'DataException',
   'MetaflowS3AccessDenied',
   'MetaflowS3NotFound',
   'MetaflowS3URLException',

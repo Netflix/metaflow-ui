@@ -235,7 +235,7 @@ const en = {
       'download-stack-trace': 'Download stack trace',
 
       'failed-to-load-dag': 'Failed to load DAG.',
-      's3-missing-credentials': 'Server is missing AWS credentials.',
+      DataException: 'There was a problem accessing data with the Metaflow client.',
       MetaflowS3AccessDenied: 'Access denied. There was a problem with AWS credentials.',
       MetaflowS3NotFound: 'S3 bucket was not found.',
       MetaflowS3URLException: 'Error in S3 URL.',
