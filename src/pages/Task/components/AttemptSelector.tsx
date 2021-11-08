@@ -29,7 +29,7 @@ const AttemptSelector: React.FC<Props> = ({ tasks, currentAttempt, onSelect }) =
           active={item.attempt_id === currentAttempt}
           data-testid={`attempt-tab-${index}`}
         >
-          {t('task.attempt')} {item.attempt_id + 1}
+          {t('task.attempt')} {item.attempt_id}
         </TabsHeadingItem>
       ))}
     </TabsHeading>
