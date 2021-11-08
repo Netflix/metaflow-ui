@@ -41,7 +41,7 @@ const ArtifactTable: React.FC<Props> = ({ artifacts, onOpenContentClick }) => {
         if (item.postprocess_error) {
           return (
             <ItemRow justify="flex-start" data-testid="artifact-post-error">
-              <Icon name="warningThick" customSize="auto" />
+              <Icon name="warningThick" customSize="auto" title={item.postprocess_error.detail} />
               <span>{t(getErrorString(item.postprocess_error.id))}</span>
             </ItemRow>
           );
