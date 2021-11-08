@@ -16,8 +16,8 @@ describe('AttemptSelector component', () => {
         />
       </TestWrapper>,
     );
-    gid('attempt-tab-0').contains('1');
-    gid('attempt-tab-1').contains('2');
+    gid('attempt-tab-0').contains('0');
+    gid('attempt-tab-1').contains('1');
 
     gid('attempt-tab-1')
       .click()
