@@ -65,6 +65,10 @@ There is three implemented plugin slots. run-header, task-details and headless. 
 
 run-header plugin will be rendered below run details to collapsable element.
 
+### run-tab
+
+run-tab plugin will be rendered as a new tab in runs view. Next to DAG, Timeline and Task tabs. Better for plugins that needs more screen space.
+
 ## task-details
 
 task-details plugin will be rendered below task details to collapsable element.
