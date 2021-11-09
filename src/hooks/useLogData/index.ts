@@ -65,6 +65,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
   function fetchLogs(
     page: number,
     order: '+' | '-' = '+',
+    isPostPoll = false,
   ): Promise<{ type: 'error'; error: APIError } | { type: 'ok'; data: Log[] }> {
     const requestUrl = url;
     const fullUrl = `${requestUrl}${requestUrl.indexOf('?') > -1 ? '&' : '?'}_limit=${PAGE_SIZE}${
@@ -83,7 +84,11 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
       .then((result: DataModel<Log[]> | APIError) => {
         if (isOkResult(result)) {
           // Check if there was any new lines. If there wasnt, lets cancel post finish polling.
-          if (result.data.length > 0 && logs.length > 0 && result.data[0].row === logs.length - 1) {
+          // Or if was postpoll and we didnt get any results
+          if (
+            (result.data.length > 0 && logs.length > 0 && result.data[0].row === logs.length - 1) ||
+            (isPostPoll && result.data.length === 0)
+          ) {
             setPostPoll(false);
           }
 
@@ -176,7 +181,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     let t: number;
     if (status === 'Ok' && postPoll) {
       t = window.setTimeout(() => {
-        fetchLogs(1, '-');
+        fetchLogs(1, '-', true);
       }, POSTLOAD_POLL_INTERVAL);
     }
     return () => {
