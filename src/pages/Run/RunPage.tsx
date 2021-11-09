@@ -48,8 +48,8 @@ type RunPageProps = {
 
 const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
-  const stuff = useContext(PluginsContext);
-  const plugins = stuff.getPluginsBySlot('run-tab');
+  const plContext = useContext(PluginsContext);
+  const plugins = plContext.getPluginsBySlot('run-tab');
 
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(hasViewTypeParam(params.viewType) ? params.viewType : 'timeline');
@@ -180,7 +180,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       dagResult.retry();
     }
   }, [tab]); //eslint-disable-line
-  console.log(plugins);
+  
   return (
     <>
       <RunPageContainer visible={visible}>
