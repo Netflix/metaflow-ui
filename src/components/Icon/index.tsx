@@ -111,6 +111,7 @@ interface IconProps {
   padLeft?: boolean;
   padRight?: boolean;
   spin?: boolean;
+  title?: string;
   onClick?: () => void;
 }
 
@@ -132,6 +133,7 @@ const Wrapper = styled.i<{
   spin?: boolean;
   padLeft?: boolean;
   padRight?: boolean;
+  title?: string;
 }>`
   vertical-align: text-top;
   display: inline-flex;

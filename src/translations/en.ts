@@ -234,16 +234,14 @@ const en = {
       'stack-trace-copied': 'Stack trace copied',
       'download-stack-trace': 'Download stack trace',
 
-      'failed-to-load-dag': 'Failed to load DAG.',
-      's3-access-denied': 'Access denied. There was a problem with AWS credentials.',
-      's3-not-found': 'S3 bucket was not found.',
-      's3-bad-url': 'Error in S3 URL.',
-      's3-missing-credentials': 'Server is missing AWS credentials.',
-      's3-generic-error': 'There was an error on S3 access.',
-      'dag-unsupported-flow-language': 'Unsupported language. DAG is only supported for flows ran with Python.',
-      'dag-processing-error': 'DAG was found but something went wrong with processing the data.',
+      DataException: 'There was a problem accessing data with the Metaflow client.',
+      MetaflowS3AccessDenied: 'Access denied. There was a problem with AWS credentials.',
+      MetaflowS3NotFound: 'S3 bucket was not found.',
+      MetaflowS3URLException: 'Error in S3 URL.',
+      MetaflowS3Exception: 'There was an error with S3 access.',
+      DAGUnsupportedFlowLanguage: 'Unsupported language. DAG is only supported for flows ran with Python.',
+      DAGParsingFailed: 'DAG was found but something went wrong with processing the data.',
 
-      'log-error-s3': 'There was a problem loading logs from AWS',
       'log-error': 'There was a problem loading logs.',
 
       'application-error':
@@ -262,7 +260,6 @@ const en = {
         'Task page encountered an unexpected error. This should not happen and might be caused by unexpected data.',
 
       'artifact-too-large': 'Artifact too large to display, use the client to access it.',
-      'artifact-not-accessible': 'Artifact location is not accessible by the server (local artifact).',
       'artifact-handle-failed': 'Artifact not currently displayable in the UI, use the client to access it.',
       'artifact-unknown-error': 'Artifact not currently displayable in the UI, use the client to access it.',
 
