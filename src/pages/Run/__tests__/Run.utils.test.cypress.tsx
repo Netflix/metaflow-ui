@@ -22,10 +22,7 @@ import {
 describe('Run utils test set', () => {
   it('hasViewTypeParam', () => {
     expect(hasViewTypeParam(undefined)).to.equal(false);
-    expect(hasViewTypeParam('hello world')).to.equal(false);
-    expect(hasViewTypeParam('dag')).to.equal(true);
-    expect(hasViewTypeParam('timeline')).to.equal(true);
-    expect(hasViewTypeParam('task')).to.equal(true);
+    expect(hasViewTypeParam('hello world')).to.equal(true);
   });
 
   it('getTaskPageLink', () => {
