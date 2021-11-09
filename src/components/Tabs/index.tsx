@@ -6,7 +6,7 @@ export interface TabDefinition {
   // Unique key
   key: string;
   // Label to be shown
-  label: string;
+  label: React.ReactNode;
   // If linkTo is given, click elements will be links instead
   linkTo?: string;
   // Component to be rendered when active

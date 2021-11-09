@@ -125,6 +125,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin }) => {
 
 const PluginSlotContainer = styled.div`
   padding: 0.5rem 0 1rem 0;
+  height: 100%;
 
   iframe {
     border: none;

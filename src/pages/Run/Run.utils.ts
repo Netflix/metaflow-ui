@@ -23,7 +23,7 @@ export function cleanParametersMap(params: DecodedValueMap<TaskSettingsQueryPara
  * @param viewType Possible viewType string from url
  */
 export function hasViewTypeParam(viewType?: string): viewType is string {
-  return !!(viewType && ['dag', 'timeline', 'task'].indexOf(viewType) > -1);
+  return !!viewType;
 }
 
 /**

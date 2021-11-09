@@ -51,7 +51,7 @@ type PluginVersionInfo = {
 
 const SUPPORTED_PLUGIN_API_VERSION = '0.13.0';
 const RECOMMENDED_PLUGIN_API_VERSION = '0.13.0';
-const ALLOWED_SLOTS = ['run-header', 'task-details', 'headless'];
+const ALLOWED_SLOTS = ['run-header', 'run-tab', 'task-details', 'headless'];
 
 //
 // Utils

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import useRowData from '../../components/Timeline/useTaskData';
 import { getPath } from '../../utils/routing';
@@ -29,6 +29,9 @@ import { FixedContent } from '../../components/Structure';
 import useTaskListSettings from '../../components/Timeline/useTaskListSettings';
 import useResource from '../../hooks/useResource';
 import { DAGModel } from '../../components/DAG/DAGUtils';
+import { pluginPath, PluginsContext } from '../../components/Plugins/PluginManager';
+import PluginSlot from '../../components/Plugins/PluginSlot';
+import Icon from '../../components/Icon';
 
 //
 // Typedef
@@ -45,6 +48,8 @@ type RunPageProps = {
 
 const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
+  const stuff = useContext(PluginsContext);
+  const plugins = stuff.getPluginsBySlot('run-tab');
 
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(hasViewTypeParam(params.viewType) ? params.viewType : 'timeline');
@@ -175,7 +180,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       dagResult.retry();
     }
   }, [tab]); //eslint-disable-line
-
+  console.log(plugins);
   return (
     <>
       <RunPageContainer visible={visible}>
@@ -240,6 +245,21 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                 </ErrorBoundary>
               ),
             },
+            ...plugins.map((pl) => ({
+              key: pl.manifest.identifier,
+              label: <><Icon name="plugin" /> {pl.manifest.name}</>,
+              linkTo: getPath.runSubView(params.flowId, params.runNumber, pl.manifest.identifier),
+              component: (
+                <TabPluginContainer>
+                  <PluginSlot
+                    id={pl.manifest.identifier}
+                    plugin={pl}
+                    url={pluginPath(pl.manifest)}
+                    title={pl.manifest.name}
+                  />
+                </TabPluginContainer>
+              ),
+            })),
           ]}
         />
       </RunPageContainer>
@@ -251,6 +271,15 @@ const RunPageContainer = styled(FixedContent)<{ visible: boolean }>`
   transition: 0.5s opacity;
   opacity: ${(p) => (p.visible ? '1' : '0')};
   height: calc(100vh - 9rem);
+`;
+
+const TabPluginContainer = styled.div`
+  width: 100%;
+  height: 100%;
+
+  iframe {
+    min-height: 100%;
+  }
 `;
 
 export default RunPage;

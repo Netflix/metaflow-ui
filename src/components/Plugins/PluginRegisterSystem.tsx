@@ -64,7 +64,7 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
     <HidingElement>
       {toRegister.map((plg) => (
         <iframe
-          key={plg.name}
+          key={plg.identifier}
           height="0"
           width="0"
           name={plg.name}
