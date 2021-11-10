@@ -36,11 +36,7 @@ const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ tags, updateListValue
       </TagContainer>
 
       {tags.length > 3 && (
-        <AllTagsContainer
-          open={open}
-          onMouseEnter={() => setOpen(true)}
-          onMouseLeave={() => setOpen(false)}
-        >
+        <AllTagsContainer open={open} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
           {(open ? tags : tags.slice(0, 3)).map((tag, index) => (
             <span key={tag} onClick={() => updateListValue('_tags', tag)}>
               {tag}
@@ -79,7 +75,7 @@ const AllTagsContainer = styled.div<{ open: boolean }>`
   position: absolute;
   top: 0;
   background: #e4f0ff;
-  
+
   width: 100%;
   left: 0;
   padding: 0.5rem 1rem;
