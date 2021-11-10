@@ -92,8 +92,6 @@ export default function useSeachField(flowID: string, runNumber: string): Search
         updateSearchResults({ result: event.matches || [], status: 'Ok' });
       } else if (event.type === 'error' && event.message) {
         updateSearchResults({ status: 'Error', errorMsg: event.message, result: [] });
-      } else {
-        updateSearchResults({ result: [], status: 'Ok' });
       }
     },
     onConnecting: () => {
