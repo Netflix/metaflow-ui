@@ -10,7 +10,6 @@ import {
 import {
   getTaskFromList,
   getTaskPageLink,
-  hasViewTypeParam,
   makeVisibleRows,
   shouldApplySearchFilter,
   getRowStartTime,
@@ -20,11 +19,6 @@ import {
 } from '../Run.utils';
 
 describe('Run utils test set', () => {
-  it('hasViewTypeParam', () => {
-    expect(hasViewTypeParam(undefined)).to.equal(false);
-    expect(hasViewTypeParam('hello world')).to.equal(true);
-  });
-
   it('getTaskPageLink', () => {
     // with previous task info and no params
     expect(getTaskPageLink('flow', 'run', 'prevStep', 'prevTask', '', {})).to.equal('/flow/run/prevStep/prevTask');
