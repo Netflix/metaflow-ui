@@ -19,14 +19,6 @@ export function cleanParametersMap(params: DecodedValueMap<TaskSettingsQueryPara
 }
 
 /**
- * See if viewType parameter matches actual view types
- * @param viewType Possible viewType string from url
- */
-export function hasViewTypeParam(viewType?: string): viewType is string {
-  return !!viewType;
-}
-
-/**
  * Merge two strings separated with ?
  * @param url
  * @param params

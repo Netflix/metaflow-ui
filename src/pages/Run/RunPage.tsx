@@ -20,7 +20,6 @@ import {
   cleanParametersMap,
   getTaskFromList,
   getTaskPageLink,
-  hasViewTypeParam,
   makeVisibleRows,
   sortRows,
 } from './Run.utils';
@@ -52,9 +51,9 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const plugins = plContext.getPluginsBySlot('run-tab');
 
   // Store active tab. Is defined by URL
-  const [tab, setTab] = useState(hasViewTypeParam(params.viewType) ? params.viewType : 'timeline');
+  const [tab, setTab] = useState(params.viewType ? params.viewType : 'timeline');
   useEffect(() => {
-    if (hasViewTypeParam(params.viewType)) {
+    if (params.viewType) {
       setTab(params.viewType);
     } else if (params.stepName && params.taskId) {
       setTab('task');
