@@ -183,7 +183,7 @@ const SettingsRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 0;
+  padding: 0 0 1rem 0;
   width: 100%;
 `;
 

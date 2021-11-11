@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 
 export interface TabDefinition {
   // Unique key
@@ -35,32 +36,34 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, widen }) => {
 
   return (
     <TabsContainer>
-      <TabsHeading widen={widen}>
-        {tabs.map((tab) =>
-          tab.linkTo ? (
-            <Link
-              to={tab.linkTo}
-              key={tab.key}
-              className={tab.key === active ? 'active' : ''}
-              data-testid="tab-heading-item"
-            >
-              <TabsHeadingItem active={tab.key === active} temporary={tab.temporary}>
+      <Scrollbars style={{ height: '2.875rem', width: '100%' }} autoHide>
+        <TabsHeading widen={widen}>
+          {tabs.map((tab) =>
+            tab.linkTo ? (
+              <Link
+                to={tab.linkTo}
+                key={tab.key}
+                className={tab.key === active ? 'active' : ''}
+                data-testid="tab-heading-item"
+              >
+                <TabsHeadingItem active={tab.key === active} temporary={tab.temporary}>
+                  {tab.label}
+                </TabsHeadingItem>
+              </Link>
+            ) : (
+              <TabsHeadingItem
+                active={tab.key === active}
+                onClick={() => tab.component && setActive(tab.key)}
+                key={tab.key}
+                temporary={tab.temporary}
+                data-testid="tab-heading-item"
+              >
                 {tab.label}
               </TabsHeadingItem>
-            </Link>
-          ) : (
-            <TabsHeadingItem
-              active={tab.key === active}
-              onClick={() => tab.component && setActive(tab.key)}
-              key={tab.key}
-              temporary={tab.temporary}
-              data-testid="tab-heading-item"
-            >
-              {tab.label}
-            </TabsHeadingItem>
-          ),
-        )}
-      </TabsHeading>
+            ),
+          )}
+        </TabsHeading>
+      </Scrollbars>
 
       <ActiveTab data-testid="tab-active-content">{activeDef && activeDef.component}</ActiveTab>
     </TabsContainer>
