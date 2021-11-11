@@ -16,13 +16,7 @@ import { logWarning } from '../../utils/errorlogger';
 
 import FEATURE from '../../utils/FEATURE';
 import { RunPageParams } from '.';
-import {
-  cleanParametersMap,
-  getTaskFromList,
-  getTaskPageLink,
-  makeVisibleRows,
-  sortRows,
-} from './Run.utils';
+import { cleanParametersMap, getTaskFromList, getTaskPageLink, makeVisibleRows, sortRows } from './Run.utils';
 import styled from 'styled-components';
 import { FixedContent } from '../../components/Structure';
 import useTaskListSettings from '../../components/Timeline/useTaskListSettings';
@@ -179,7 +173,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       dagResult.retry();
     }
   }, [tab]); //eslint-disable-line
-  
+
   return (
     <>
       <RunPageContainer visible={visible}>
@@ -246,7 +240,11 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
             },
             ...plugins.map((pl) => ({
               key: pl.manifest.identifier,
-              label: <><Icon name="plugin" /> {pl.manifest.name}</>,
+              label: (
+                <>
+                  <Icon name="plugin" /> {pl.manifest.name}
+                </>
+              ),
               linkTo: getPath.runSubView(params.flowId, params.runNumber, pl.manifest.identifier),
               component: (
                 <TabPluginContainer>
