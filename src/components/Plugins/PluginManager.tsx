@@ -49,7 +49,7 @@ type PluginVersionInfo = {
 // Constants. Plugin will not render if it doesn't satisfy SUPPORTED_PLUGIN_API_VERSION.
 //
 
-type AllowedSlot = 'run-header' | 'run-tab' | 'task-details' | 'headless';
+export type AllowedSlot = 'run-header' | 'run-tab' | 'task-details' | 'headless';
 
 const SUPPORTED_PLUGIN_API_VERSION = '0.13.0';
 const RECOMMENDED_PLUGIN_API_VERSION = '0.13.0';
@@ -118,11 +118,12 @@ export const PluginCommuncationsAPI = {
   },
   isRegisterMessage(
     event: MessageEvent,
-  ): ({ name: string; slot: string; version: { api: string } } & Record<string, unknown>) | false {
+  ): ({ name: string; slot: AllowedSlot; version: { api: string } } & Record<string, unknown>) | false {
     if (
       event.data?.type === MESSAGE_NAME.REGISTER &&
       typeof event.data?.name === 'string' &&
       typeof event.data?.slot === 'string' &&
+      ALLOWED_SLOTS.includes(event.data.slot) &&
       typeof event.data?.version === 'object' &&
       typeof event.data?.version?.api === 'string'
     ) {
