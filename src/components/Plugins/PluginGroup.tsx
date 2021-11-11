@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import Collapsable from '../Collapsable';
 import Icon from '../Icon';
 
-import { pluginPath, PluginsContext, RegisteredPlugin } from './PluginManager';
+import { AllowedSlot, pluginPath, PluginsContext, RegisteredPlugin } from './PluginManager';
 import PluginSlot from './PluginSlot';
 
 //
@@ -13,7 +13,7 @@ import PluginSlot from './PluginSlot';
 type Props = {
   id: string;
   title: string;
-  slot: string;
+  slot: AllowedSlot;
   baseurl?: string;
 };
 

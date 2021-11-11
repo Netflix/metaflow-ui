@@ -29,7 +29,7 @@ export type PluginManifest = {
 };
 
 export type PluginSettings = {
-  slot: string;
+  slot: AllowedSlot;
   visible: boolean;
   container?: string; // Should be enum?
   containerProps?: Record<string, unknown>;
@@ -49,9 +49,11 @@ type PluginVersionInfo = {
 // Constants. Plugin will not render if it doesn't satisfy SUPPORTED_PLUGIN_API_VERSION.
 //
 
+export type AllowedSlot = 'run-header' | 'run-tab' | 'task-details' | 'headless';
+
 const SUPPORTED_PLUGIN_API_VERSION = '0.13.0';
 const RECOMMENDED_PLUGIN_API_VERSION = '0.13.0';
-const ALLOWED_SLOTS = ['run-header', 'task-details', 'headless'];
+const ALLOWED_SLOTS: AllowedSlot[] = ['run-header', 'run-tab', 'task-details', 'headless'];
 
 //
 // Utils
@@ -116,11 +118,12 @@ export const PluginCommuncationsAPI = {
   },
   isRegisterMessage(
     event: MessageEvent,
-  ): ({ name: string; slot: string; version: { api: string } } & Record<string, unknown>) | false {
+  ): ({ name: string; slot: AllowedSlot; version: { api: string } } & Record<string, unknown>) | false {
     if (
       event.data?.type === MESSAGE_NAME.REGISTER &&
       typeof event.data?.name === 'string' &&
       typeof event.data?.slot === 'string' &&
+      ALLOWED_SLOTS.includes(event.data.slot) &&
       typeof event.data?.version === 'object' &&
       typeof event.data?.version?.api === 'string'
     ) {
@@ -147,7 +150,7 @@ export const PluginCommuncationsAPI = {
 
 type PluginsContextProps = {
   plugins: RegisteredPlugin[];
-  getPluginsBySlot: (str: string) => RegisteredPlugin[];
+  getPluginsBySlot: (str: AllowedSlot) => RegisteredPlugin[];
   register: (settings: Partial<PluginSettings>, manifest: PluginManifest, version: PluginVersionInfo) => void;
   subscribeToDatastore: (key: string, path: string, fn: (data: unknown) => void) => void;
   unsubscribeFromDatastore: (key: string) => void;

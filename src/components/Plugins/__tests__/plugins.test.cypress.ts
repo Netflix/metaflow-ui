@@ -131,7 +131,7 @@ describe('Plugins utils', () => {
 
     // Correct message
     const correctMessage = {
-      data: { type: 'PluginRegisterEvent', name: 'test', slot: 'test', version: { api: '1.0.0' } },
+      data: { type: 'PluginRegisterEvent', name: 'test', slot: 'task-details', version: { api: '1.0.0' } },
     };
     const result = PluginCommuncationsAPI.isRegisterMessage(correctMessage as MessageEvent);
     expect((result as any).type).to.equal(correctMessage.data.type);

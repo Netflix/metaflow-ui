@@ -6,7 +6,7 @@ export interface TabDefinition {
   // Unique key
   key: string;
   // Label to be shown
-  label: string;
+  label: React.ReactNode;
   // If linkTo is given, click elements will be links instead
   linkTo?: string;
   // Component to be rendered when active
@@ -107,6 +107,7 @@ export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean
   font-weight: ${(p) => (p.active ? '500' : '400')};
   cursor: pointer;
   transition: 0.15s border;
+  white-space: nowrap;
 
   &:hover {
     border-bottom-color: ${(p) => p.theme.color.bg.blue};
