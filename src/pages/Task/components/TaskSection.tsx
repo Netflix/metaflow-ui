@@ -50,7 +50,7 @@ const TaskSectionContainer = styled.div<{ last: boolean }>`
 `;
 
 const TaskSectionContent = styled.div`
-  padding-top: 1rem;
+  padding-top: 0.325rem;
 `;
 
 export default TaskSection;
