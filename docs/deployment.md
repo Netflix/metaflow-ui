@@ -1,8 +1,10 @@
 # Metaflow UI deployment
 
-There are 3 recommended ways to deploy Metaflow UI:
+For a complete Metaflow UI production stack deployment (frontend + service + database) please refer to [Cloudformation templates](https://github.com/Netflix/metaflow-tools/tree/master/aws/cloudformation) and [Admin docs](https://admin-docs.metaflow.org/). This is the preferred way to deploy Metaflow UI.
 
-1. [Docker container (preferred method)](#1-docker)
+Alternative way is to deploy static frontend separately while connecting to an external backend service:
+
+1. [Docker container](#1-docker)
 2. [Static distribution (e.g. AWS S3 bucket)](#2-static-distribution)
 3. [Reverse proxy](#3-reverse-proxy)
 
