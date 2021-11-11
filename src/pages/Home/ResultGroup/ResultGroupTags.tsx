@@ -20,11 +20,9 @@ const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ tags, updateListValue
 
   return (
     <TagsCell
-      onMouseLeave={() => setOpen(false)}
       onClick={(e) => {
         e.stopPropagation();
       }}
-      onMouseOver={() => setOpen(true)}
     >
       <TagContainer>
         {tags.slice(0, 3).map((tag, index) => (
@@ -38,7 +36,7 @@ const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ tags, updateListValue
       </TagContainer>
 
       {tags.length > 3 && (
-        <AllTagsContainer open={open}>
+        <AllTagsContainer open={open} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
           {(open ? tags : tags.slice(0, 3)).map((tag, index) => (
             <span key={tag} onClick={() => updateListValue('_tags', tag)}>
               {tag}
@@ -63,6 +61,10 @@ const TagsCell = styled(TD)`
   span:hover {
     text-decoration: underline;
   }
+
+  &:hover {
+    z-index: 9;
+  }
 `;
 
 const TagContainer = styled.div`
@@ -73,7 +75,7 @@ const AllTagsContainer = styled.div<{ open: boolean }>`
   position: absolute;
   top: 0;
   background: #e4f0ff;
-  z-index: 1;
+
   width: 100%;
   left: 0;
   padding: 0.5rem 1rem;

@@ -64,7 +64,7 @@ const Button: React.FC<ButtonProps> = ({
 export const ButtonLink: React.FC<Omit<ButtonProps, 'onClick'> & { to: string }> = ({ to, disabled, ...rest }) => {
   return (
     <StyledButtonLink to={to} style={{ pointerEvents: disabled ? 'none' : 'all' }}>
-      <BigButton {...rest} onClick={() => null} />
+      <BigButton {...rest} disabled={disabled} onClick={() => null} />
     </StyledButtonLink>
   );
 };

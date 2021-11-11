@@ -221,7 +221,7 @@ const en = {
       details: 'Details',
       'show-more-details': 'Show error details',
       'hide-more-details': 'Hide error details',
-      'generic-error': 'Error happened',
+      'generic-error': 'An error occurred',
       'load-error': 'Error loading data',
       'no-results': 'No results found',
       'no-runs': 'No runs found',
