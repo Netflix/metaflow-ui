@@ -29,7 +29,7 @@ export type PluginManifest = {
 };
 
 export type PluginSettings = {
-  slot: string;
+  slot: AllowedSlot;
   visible: boolean;
   container?: string; // Should be enum?
   containerProps?: Record<string, unknown>;
@@ -49,9 +49,11 @@ type PluginVersionInfo = {
 // Constants. Plugin will not render if it doesn't satisfy SUPPORTED_PLUGIN_API_VERSION.
 //
 
+type AllowedSlot = 'run-header' | 'run-tab' | 'task-details' | 'headless';
+
 const SUPPORTED_PLUGIN_API_VERSION = '0.13.0';
 const RECOMMENDED_PLUGIN_API_VERSION = '0.13.0';
-const ALLOWED_SLOTS = ['run-header', 'run-tab', 'task-details', 'headless'];
+const ALLOWED_SLOTS: AllowedSlot[] = ['run-header', 'run-tab', 'task-details', 'headless'];
 
 //
 // Utils
@@ -147,7 +149,7 @@ export const PluginCommuncationsAPI = {
 
 type PluginsContextProps = {
   plugins: RegisteredPlugin[];
-  getPluginsBySlot: (str: string) => RegisteredPlugin[];
+  getPluginsBySlot: (str: AllowedSlot) => RegisteredPlugin[];
   register: (settings: Partial<PluginSettings>, manifest: PluginManifest, version: PluginVersionInfo) => void;
   subscribeToDatastore: (key: string, path: string, fn: (data: unknown) => void) => void;
   unsubscribeFromDatastore: (key: string) => void;
