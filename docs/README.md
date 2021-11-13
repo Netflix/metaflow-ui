@@ -77,7 +77,7 @@ $ METAFLOW_SERVICE_URL=http://localhost:8080/ METAFLOW_DEFAULT_METADATA=service 
 ```
 or
 
-```json
+```sh
 # save this in ~/.metaflowconfig/config.json
 {
   "METAFLOW_DEFAULT_METADATA": "service",
