@@ -1,5 +1,12 @@
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="check">
-<path id="Vector 6" d="M15.5 31.2222L28.7222 44.4444L49.5 18" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
+  <g id="check">
+    <path
+      id="Vector 6"
+      d="M15.5 31.2222L28.7222 44.4444L49.5 18"
+      stroke="currentColor"
+      strokeWidth="7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </g>
 </svg>
