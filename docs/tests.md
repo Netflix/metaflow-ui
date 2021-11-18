@@ -1,11 +1,17 @@
 # Tests
 
-## Units tests
+## Unit & Component tests
 
 Launch the test runner in the interactive watch mode.
 
 ```bash
 $ yarn test
+```
+
+Run test on command line only.
+
+```bash
+$ yarn test:ci
 ```
 
 ## UI Tests
