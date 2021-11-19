@@ -55,3 +55,37 @@ $ docker run -p 3000:3000 metaflow-ui:latest
 # Run Docker container using custom API endpoint
 $ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://custom-ui-backend/api metaflow-ui:latest
 ```
+
+## Runing metaflow, metaflow-service and metaflow-ui locally
+
+```sh
+# Set up metaflow service
+$ git clone https://github.com/Netflix/metaflow-service.git && cd metaflow-service
+# Running docker-compose.development.yml (recommended during development):
+$ docker-compose -f docker-compose.development.yml up
+```
+
+```sh
+# Run docker container using custom default API endpoint
+$ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://localhost:8083/ metaflow-ui:latest
+
+```
+
+```sh
+# Run the metaflow code with the following custom METAFLOW_SERVICE_URL and METAFLOW_SERVICE_URL
+$ METAFLOW_SERVICE_URL=http://localhost:8080/ METAFLOW_DEFAULT_METADATA=service python helloworld.py run
+```
+or
+
+```sh
+# save this in ~/.metaflowconfig/config.json
+{
+  "METAFLOW_DEFAULT_METADATA": "service",
+  "METAFLOW_SERVICE_URL": "http://localhost:8080/"
+}
+```
+
+```sh
+# And run like a normal metaflow script
+$ python helloworld.py run 
+```
