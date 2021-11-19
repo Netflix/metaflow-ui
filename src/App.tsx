@@ -23,7 +23,6 @@ import { fetchServiceVersion } from './utils/VERSION';
 import { fetchFeaturesConfig } from './utils/FEATURE';
 import Announcements from './components/Announcement';
 import { PluginsProvider } from './components/Plugins/PluginManager';
-import HeadlessPluginSlot from './components/Plugins/HeadlessPluginSlot';
 import PluginRegisterSystem from './components/Plugins/PluginRegisterSystem';
 
 const App: React.FC = () => {
@@ -66,7 +65,6 @@ const App: React.FC = () => {
                 </Router>
               </LoggingProvider>
               <PluginRegisterSystem />
-              <HeadlessPluginSlot />
             </PluginsProvider>
           </TimezoneProvider>
         </NotificationsProvider>

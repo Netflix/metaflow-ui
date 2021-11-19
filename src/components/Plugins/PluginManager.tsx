@@ -49,11 +49,11 @@ type PluginVersionInfo = {
 // Constants. Plugin will not render if it doesn't satisfy SUPPORTED_PLUGIN_API_VERSION.
 //
 
-export type AllowedSlot = 'run-header' | 'run-tab' | 'task-details' | 'headless';
+export type AllowedSlot = 'run-tab' | 'task-details' | 'run-header';
 
 const SUPPORTED_PLUGIN_API_VERSION = '0.13.0';
 const RECOMMENDED_PLUGIN_API_VERSION = '0.13.0';
-const ALLOWED_SLOTS: AllowedSlot[] = ['run-header', 'run-tab', 'task-details', 'headless'];
+const ALLOWED_SLOTS: AllowedSlot[] = ['run-tab', 'task-details', 'run-header'];
 
 //
 // Utils

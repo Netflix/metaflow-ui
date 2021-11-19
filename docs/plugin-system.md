@@ -59,7 +59,7 @@ This plugin is registered to be rendered in run header section (path /FLOW_ID/RU
 
 ## Plugin slots
 
-There is three implemented plugin slots. run-header, task-details and headless. Wanted slot must be given as parameter to plugin API register message
+There is three implemented plugin slots. run-header, run-tab, task-details. Wanted slot must be given as parameter to plugin API register message
 
 ### run-header
 
@@ -69,13 +69,9 @@ run-header plugin will be rendered below run details to collapsable element.
 
 run-tab plugin will be rendered as a new tab in runs view. Next to DAG, Timeline and Task tabs. Better for plugins that needs more screen space.
 
-## task-details
+### task-details
 
 task-details plugin will be rendered below task details to collapsable element.
-
-## headless
-
-headless plugin will not have any visible content but it can be used to send and receive events.
 
 ## Plugin configurations
 
