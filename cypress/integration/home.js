@@ -32,7 +32,7 @@ const MOCK_RUNS = [
 ]
 
 describe("Home", () => {
-  it('Home - Default settings', () => {
+  it('Default settings', () => {
     cy.intercept({ method: 'GET', url: '**/runs*' }, (req) => {
       req.reply({
         statusCode: 200,

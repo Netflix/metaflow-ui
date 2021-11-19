@@ -85,7 +85,7 @@ describe('Rundetails', () => {
     cy.get('[data-testid="result-group"]').should('have.length', 1);
   });
 
-  it('Run details - Navigate to Run Details/DAG with an error response', () => {
+  it('Navigate to Run Details/DAG with an error response', () => {
     // set intercept for /dag GET and insert mock response for error
     cy.intercept({ method: 'GET', url: '**/dag*' }, (req) => {
       req.reply({
@@ -98,7 +98,7 @@ describe('Rundetails', () => {
     cy.get('[data-testid="collapsable-header"]').contains('Details');
   });
 
-  it('Run details - Navigate to Run Details/DAG with a succesful response', () => {
+  it('Navigate to Run Details/DAG with a succesful response', () => {
     // set intercept for /dag GET and insert mock response for success
     cy.intercept({ method: 'GET', url: '**/dag*' }, (req) => {
       req.reply({
@@ -118,7 +118,7 @@ describe('Rundetails', () => {
     cy.get('[data-testid="dag-normalitem"]').first().scrollIntoView({ duration: 500 }).should('be.visible');
   });
 
-  it('Run details - Test Timeline controls', () => {
+  it('Test Timeline controls', () => {
 
     // click on the first run item on the list
     cy.get('[data-testid="result-group-row"]').first().click();

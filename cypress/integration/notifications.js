@@ -5,7 +5,7 @@ describe("Notifications", () => {
     cy.visit('/');
   });
   
-  it('Nofitifications - Mock empty response', () => {
+  it('With empty response', () => {
     cy.get('[data-testid="helpmenu-toggle"]')
       .click()
       .then(() => {
@@ -22,7 +22,7 @@ describe("Notifications", () => {
       });
   });
   
-  it('Nofitifications - Mock response', () => {
+  it('With notifications', () => {
     cy.get('[data-testid="helpmenu-toggle"]')
       .click()
       .then(() => {

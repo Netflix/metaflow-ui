@@ -9,7 +9,7 @@ describe("Debug", () => {
       });
   });
   
-  it('Debug - Test that feature flags are rendered', () => {
+  it('Feature flags are rendered', () => {
     cy.get('[data-testid="debug_column"]')
       .eq(0)
       .then(($column) => {
@@ -23,7 +23,7 @@ describe("Debug", () => {
       });
   });
   
-  it('Debug - Test network logging and discard logs', () => {
+  it('Network logging and discard logs', () => {
     cy.get('[data-testid="debug_column"]')
       .eq(1)
       .then(($column) => {
@@ -49,7 +49,7 @@ describe("Debug", () => {
       });
   });
   
-  it('Debug - Test network logging and download logs', () => {
+  it('Network logging and download logs', () => {
     cy.get('[data-testid="debug_column"]')
       .eq(1)
       .then(($column) => {
