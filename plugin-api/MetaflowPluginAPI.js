@@ -1,5 +1,5 @@
 const VERSION_INFO = {
-  api: '0.13.0'
+  api: '0.13.1'
 }
 
 const Listeners = [];
