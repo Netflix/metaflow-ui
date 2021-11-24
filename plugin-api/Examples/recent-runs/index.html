@@ -93,9 +93,9 @@
 
         // Subscribe to run resrouce from app. When ever there is run update in application
         // this callback will get triggered.
-        Metaflow.subscribe(['run'], (message) => {
-          if (message.path === 'run') {
-            currentRun = message.data;
+        Metaflow.subscribe(['metadata'], (message) => {
+          if (message.data && message.data.length > 0) {
+            currentRun = message.data[0];
             getRuns();
           }
         })

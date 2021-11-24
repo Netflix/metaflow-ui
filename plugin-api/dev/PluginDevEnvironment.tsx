@@ -18,9 +18,6 @@ const PluginContent = ({ slot = 'task-details', baseurl = 'http://localhost:5000
   const { addDataToStore } = useContext(PluginsContext);
 
   useEffect(() => {
-    addDataToStore('appinfo', data.appinfo);
-    addDataToStore('run', data.run)
-    addDataToStore('task', data.task)
     addDataToStore('metadata', data.metadata)
   }, []);
 

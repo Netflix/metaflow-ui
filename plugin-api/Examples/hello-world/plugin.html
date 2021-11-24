@@ -22,9 +22,9 @@
       Metaflow.register({ slot: 'run-header', container: 'titled-container'}, () => {
         // Set fixed height for plugin
         Metaflow.setHeight(40);
-        // Subscribe to any update on run data and show run number in plugin.
-        Metaflow.subscribe(['run'], (event) => {
-          document.getElementById('container').innerHTML = `Hello World! Run number is ${event.data.run_number}`;
+        // Subscribe to any update on metadata updated and show amount of metadata in plugin.
+        Metaflow.subscribe(['metadata'], (event) => {
+          document.getElementById('container').innerHTML = `Hello World! Got ${event.data ? event.data.length : 0} metadata entities`;
         });
       })
     })();
