@@ -1,10 +1,10 @@
 # Metaflow UI Plugin API
 
-This folder contains necessary JS API for making UI plugin to Metaflow UI. There is few ways to use this API. Entrypoint for plugin is single HTML file.
+This folder contains the JS API for making UI plugins for Metaflow UI. There are a few ways to use this API. The Entrypoint for a plugin is a single HTML file.
 
 ## API
 
-Plugins will use JS API to communicate with host application. Plugin must call at least register function from API to get rendered.
+Plugins will use JS API to communicate with the host application. Plugins must call at least the `register` function from the API to get rendered.
 
 | function         | type                                                                                                                                                                                                                      | description                                                                                                               |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -18,7 +18,7 @@ Plugins will use JS API to communicate with host application. Plugin must call a
 
 ## How to
 
-Here is 3 different ways to use plugin API file.
+Here are three different ways to use the plugin API file.
 
 1. Add MetaflowPluginAPI.js to your plugin folder. Don't forget to refer to it like:
 
@@ -26,7 +26,7 @@ Here is 3 different ways to use plugin API file.
 <script src="MetaflowPluginAPI.js"></script>
 ```
 
-2. Store API to CDN and use it from there. This might be good option when you have lot of plugins and dont want to add js file to every single one. Don't forget to refer to it like:
+2. Store the API to a CDN and use it from there. This might be a good option when you have lots of plugins and don't want to add the JS file to every single one. Don't forget to refer to it like:
 
 ```html
 <script src="PATH_TO_YOUR_CDN/MetaflowPluginAPI.js"></script>
