@@ -36,6 +36,7 @@ import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
 import { getTagOfType } from '../../utils/run';
 import useTaskCards from '../../components/MFCard/useTaskCards';
+import CardIframe from '../../components/MFCard/CardIframe';
 
 //
 // Typedef
@@ -353,19 +354,9 @@ const Task: React.FC<TaskViewProps> = ({
                       order: 99,
                       label: def.type,
                       component: (
-                        <div>
-                          <iframe
-                            style={{
-                              width: '100%',
-                              minHeight: '400px',
-                              border: 'none',
-                              background: 'rgba(0,0,0,0.03)',
-                            }}
-                            src={apiHttp(
-                              `/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.id}`,
-                            )}
-                          />
-                        </div>
+                        <CardIframe
+                          path={`/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.id}`}
+                        />
                       ),
                     }))
                   : []),
