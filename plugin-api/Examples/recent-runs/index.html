@@ -54,14 +54,15 @@
       // Register plugin to run header section
       Metaflow.register('run-header', (config) => {
         let isFetched = false;
-        let currentRun;
+        let metadata;
 
         // Function to fetch and add runs to DOM
         function getRuns() {
-          if (isFetched || !currentRun) return;
+          const flowId = metadata && metadata.length > 0 && metadata[0].flow_id;
+          if (isFetched || !flowId) return;
           isFetched = true;
           // Fetch recent runs from API
-          fetch(`/api/flows/${currentRun.flow_id}/runs?_order=-ts_epoch&_limit=6`)
+          fetch(`/api/flows/${flowId}/runs?_order=-ts_epoch&_limit=6`)
             .then(response => response.json())
             .then(response => {
               const newRows = []
@@ -73,7 +74,7 @@
                 el.classList = ['run'];
                 // Create link element with run number
                 let linkEl = document.createElement('a');
-                linkEl.href = `/${currentRun.flow_id}/${item.run_number}`;
+                linkEl.href = `/${item.flow_id}/${item.run_number}`;
                 linkEl.target = '_parent';
                 linkEl.textContent = item.run_number;
                 // Show duration for run
@@ -94,8 +95,8 @@
         // Subscribe to run resrouce from app. When ever there is run update in application
         // this callback will get triggered.
         Metaflow.subscribe(['metadata'], (message) => {
-          if (message.data && message.data.length > 0) {
-            currentRun = message.data[0];
+          if (message.data) {
+            metadata = message.data;
             getRuns();
           }
         })
