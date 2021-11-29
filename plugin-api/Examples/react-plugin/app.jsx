@@ -28,7 +28,7 @@ function App() {
 }
 
 
-Metaflow.register('run-header', () => {
+Metaflow.register('task-details', () => {
   ReactDOM.render(
     <React.StrictMode>
       <App />

@@ -19,13 +19,11 @@
     (function () {
       // Call register function to tell UI where application should be rendered. Callback will be called after
       // plugin is placed to correct spot in UI.
-      Metaflow.register({ slot: 'run-header', container: 'titled-container'}, () => {
+      Metaflow.register({ slot: 'run-header', container: 'titled-container'}, (config, resource) => {
         // Set fixed height for plugin
         Metaflow.setHeight(40);
-        // Subscribe to any update on metadata updated and show amount of metadata in plugin.
-        Metaflow.subscribe(['metadata'], (event) => {
-          document.getElementById('container').innerHTML = `Hello World! Got ${event.data ? event.data.length : 0} metadata entities`;
-        });
+        // Show run id from URL.
+        document.getElementById('container').innerHTML = `Hello World! Run number is ${resource.run_number}`;
       })
     })();
   </script>

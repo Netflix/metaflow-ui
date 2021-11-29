@@ -15,6 +15,8 @@ type Props = {
   title: string;
   slot: AllowedSlot;
   baseurl?: string;
+  // Way to override url params. Used for tests and plugin development
+  resourceParams?: Record<string, string>;
 };
 
 const VALID_CONTAINERS = ['collapsable', 'titled-container'];
@@ -23,7 +25,7 @@ const VALID_CONTAINERS = ['collapsable', 'titled-container'];
 // Renders list of plugin to iframe in collapsable element.
 //
 
-const PluginGroup: React.FC<Props> = ({ id, slot, baseurl }) => {
+const PluginGroup: React.FC<Props> = ({ id, slot, baseurl, resourceParams }) => {
   const [removed, setRemoved] = useState<string[]>([]);
   const { getPluginsBySlot } = useContext(PluginsContext);
   const plugins = getPluginsBySlot(slot).filter((item) => removed.indexOf(item.manifest.name) === -1);
@@ -43,6 +45,7 @@ const PluginGroup: React.FC<Props> = ({ id, slot, baseurl }) => {
                 url={pluginPath(item.manifest, baseurl)}
                 onRemove={() => setRemoved((st) => [...st, item.manifest.name])}
                 plugin={item}
+                resourceParams={resourceParams}
               />
             </PluginContainer>
           </div>

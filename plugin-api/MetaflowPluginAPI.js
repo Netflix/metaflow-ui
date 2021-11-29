@@ -1,5 +1,5 @@
 const VERSION_INFO = {
-  api: '0.13.1'
+  api: '0.13.2'
 }
 
 const Listeners = [];
@@ -17,7 +17,7 @@ function messageHandler(event) {
     switch (event.data.type) {
       case 'ReadyToRender': {
         if (!initialised) {
-          onReadyFn(event.data.config);
+          onReadyFn(event.data.config, event.data.resource);
           initialised = true;
           PluginInfo.manifest = event.data.config;
         }

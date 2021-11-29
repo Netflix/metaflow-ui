@@ -26,46 +26,6 @@ const PLUGIN_DEFINITIONS = [
 
 // Mock data as you need for your plugin. This data will be available in plugin with Metaflow.subscribe(['key-here'], callback)
 const DATA = {
-  appinfo: {
-    commit: 'abcdwfg',
-    release_version: '0.17.1',
-    service_version: '2.0.5',
-    env: 'development',
-  },
-
-  run: {
-    flow_id: 'PluginDevFlow',
-    user_name: 'dev-user',
-    ts_epoch: 1634036924920,
-    tags: [],
-    system_tags: ['metaflow-version:1'],
-    run_number: 1,
-    run_id: '1',
-    run: '1',
-    status: 'completed',
-    user: 'dev-user',
-    finished_at: 1634036996077,
-    duration: 71157,
-  },
-
-  task: {
-    flow_id: 'PluginDevFlow',
-    user_name: 'dev-user',
-    ts_epoch: 1634036924930,
-    tags: [],
-    system_tags: ['metaflow-version:1'],
-    run_number: 1,
-    run_id: '1',
-    step_name: 'start',
-    task_id: 123,
-    task_name: '123',
-    attempt_id: 0,
-    started_at: 1634036924930,
-    finished_at: 1634036996077,
-    duration: 71147,
-    status: 'completed',
-  },
-
   metadata: [
     {
       flow_id: 'PluginDevFlow',
