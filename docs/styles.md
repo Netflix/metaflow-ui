@@ -4,7 +4,7 @@ Styles are implemented with [styled-components](https://styled-components.com/).
 
 ## Theme
 
-Theme includes mostly colors and some component specific styles. Colors should mostly be used from the theme eg.
+The theme mostly includes colors and some component-specific styles. Colors should mostly be used from the theme e.g.
 
 ```javascript
 import styled from 'styled-components';
@@ -19,4 +19,4 @@ const StyledElement = styled.div`
 
 ## Notes
 
-- Use REM instead of PX where ever possible. This will make sure that styles still works if custom browser settings are in user.
+- Use REM instead of PX where ever possible. This will make sure that styles still work if custom browser settings are set by the user.

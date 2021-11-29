@@ -2,13 +2,13 @@
 
 ![Metaflow UI Plugin system](images/metaflow-ui-plugins.png)
 
-Metaflow UI has support for custom plugins. Plugins are limited on running in predefined slots within UI. Plugins are installed server side to Metaflow UI service.
+Metaflow UI has support for custom plugins. Plugins are limited to running in predefined slots within UI. Plugins are installed server-side on the Metaflow UI service.
 
-You can find plugin JS api and examples from [plugin-api](../plugin-api/README.md) folder.
+You can find the plugin JS API and examples from the [plugin-api](../plugin-api/README.md) folder.
 
 ## Getting started with plugin development
 
-Easiest way to start developing plugins is to start up local plugin development environment:
+The easiest way to start developing plugins is to start up a local plugin development environment:
 
 ```sh
 yarn dev:plugin
@@ -16,9 +16,9 @@ yarn dev:plugin
 
 ## How plugins works
 
-Each plugin must have html file as an entrypoint. This html is rendered to iframe to certain spot within UI. Plugin can also have javascript and css files.
+Each plugin must have an HTML file as an entrypoint. This HTML is rendered to an iframe at a certain spot within the UI. Plugins can also have javascript and CSS files.
 
-Basic plugin could be something like
+A basic plugin could be something like
 
 ```html
 <!DOCTYPE html>
@@ -55,39 +55,39 @@ Basic plugin could be something like
 </html>
 ```
 
-This plugin is registered to be rendered in run header section (path /FLOW_ID/RUN_NUMBER in application). It subscribes to custom event "customEvent" and is prepared to send other custom event "customEvent" on button click.
+This plugin is registered to be rendered in the run header section (path /FLOW_ID/RUN_NUMBER in application). It subscribes to a custom event "customEvent" and is prepared to send another custom event "customEvent" on button click.
 
 ## Plugin slots
 
-There is three implemented plugin slots. run-header, task-details and headless. Wanted slot must be given as parameter to plugin API register message
+There are three implemented plugin slots. `run-header`, `task-details`, and `headless`. The desired slot must be given as a parameter to a plugin API register message.
 
 ### run-header
 
-run-header plugin will be rendered below run details to collapsable element.
+The `run-header` plugin will be rendered below run details in a collapsable element.
 
 ### run-tab
 
-run-tab plugin will be rendered as a new tab in runs view. Next to DAG, Timeline and Task tabs. Better for plugins that needs more screen space.
+The `run-tab` plugin will be rendered as a new tab in the run's view, next to the DAG, Timeline, and Task tabs. This slot is better for plugins that need more screen space.
 
 ## task-details
 
-task-details plugin will be rendered below task details to collapsable element.
+The `task-details` plugin will be rendered below task details in a collapsable element.
 
 ## headless
 
-headless plugin will not have any visible content but it can be used to send and receive events.
+The `headless` plugin will not have any visible content, but it can be used to send and receive events.
 
 ## Plugin configurations
 
-Plugin can be given custom parameters server side. These parameters will be passed to plugin with onReady callback call.
+Plugins can be given custom parameters from the server-side. These parameters will be passed to the plugin with the `onReady` callback call.
 
 ### Iframe sandbox
 
 ![Metaflow UI Plugin system sandbox](images/metaflow-ui-plugins-sandbox.png)
 
-Since plugins are running within iframe, they must comply to browser safety features. By default we only give plugin "allow-scripts" right. If your plugin required more, you need to define it server side with parameters.sandbox property.
+Since plugins are running within an iframe, they must comply with browser safety features. By default, we only give plugins "allow-scripts" rights. If your plugin requires more, you need to define them server-side with the `parameters.sandbox` property.
 
-For example, we could allow plugin to take main application to other url by giving it "allow-top-navigation" flag.
+For example, we could allow plugins to take the main application to other URLs by giving them the "allow-top-navigation" flag.
 
 ```JSON
 {
@@ -99,4 +99,4 @@ For example, we could allow plugin to take main application to other url by givi
 }
 ```
 
-You can read more about Iframe sandbox from [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox)
+You can read more about iframe sandboxes in the [MDN web docs](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe#attr-sandbox)

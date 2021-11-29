@@ -1,3 +1,3 @@
 # Recent runs plugin
 
-Plugin that fetches most recent runs for current flow and shows up their durations.
+A plugin that fetches the most recent runs for the current flow and shows their durations.
