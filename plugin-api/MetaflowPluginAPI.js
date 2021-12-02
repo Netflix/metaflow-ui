@@ -1,16 +1,16 @@
 const VERSION_INFO = {
-  api: '0.13.2'
-}
+  api: '0.13.3',
+};
 
 const Listeners = [];
 const EventListeners = [];
 let initialised = false;
-let onReadyFn = () => null
+let onReadyFn = () => null;
 
 const PluginInfo = {
   slot: null,
-  manifest: null
-}
+  manifest: null,
+};
 
 function messageHandler(event) {
   if (event.data && event.data.type) {
@@ -25,13 +25,13 @@ function messageHandler(event) {
       }
       case 'DataUpdate': {
         for (const listener of Listeners) {
-          listener(event.data)
+          listener(event.data);
         }
         return;
       }
       case 'EventUpdate': {
         for (const listener of EventListeners) {
-          listener(event.data)
+          listener(event.data);
         }
         return;
       }
@@ -73,73 +73,93 @@ const Metaflow = {
   register(settings, onReady) {
     onReadyFn = onReady;
     PluginInfo.slot = typeof settings === 'string' ? settings : settings.slot;
-    window.parent.postMessage({
-      name: window.name,
-      type: 'PluginRegisterEvent',
-      slot: typeof settings === 'string' ? settings : settings.slot,
-      ...(typeof settings === 'object' ? settings : {}),
-      version: VERSION_INFO
-    }, '*')
+    window.parent.postMessage(
+      {
+        name: window.name,
+        type: 'PluginRegisterEvent',
+        slot: typeof settings === 'string' ? settings : settings.slot,
+        ...(typeof settings === 'object' ? settings : {}),
+        version: VERSION_INFO,
+      },
+      '*',
+    );
     window.addEventListener('message', messageHandler);
   },
   /**
-   * Subscribe to data 
-   * @param {string[]} paths 
-   * @param {(event: { path: string, data: * }) => void} fn 
+   * Subscribe to data
+   * @param {string[]} paths
+   * @param {(event: { path: string, data: * }) => void} fn
    */
   subscribe(paths, fn) {
     Listeners.push(fn);
-    window.parent.postMessage({ name: window.name, type: 'PluginSubscribeToData', paths: paths }, '*')
+    window.parent.postMessage({ name: window.name, type: 'PluginSubscribeToData', paths: paths }, '*');
   },
   /**
-   * Subsribe to events 
+   * Subsribe to events
    * @param {string[]} events List of event name to subscribe to
    * @param {(event: { type: string, data: * }) => void} fn Callback to trigger in case of event
    */
   on(events, fn) {
     EventListeners.push(fn);
-    window.parent.postMessage({ name: window.name, type: 'PluginSubscribeToEvent', events: events }, '*')
+    window.parent.postMessage({ name: window.name, type: 'PluginSubscribeToEvent', events: events }, '*');
   },
   /**
    * Call event with any name and payload. Other plugins or systems in app might subscribe to these events.
    * @param {string} event
-   * @param {*} data 
+   * @param {*} data
    */
   call(event, data) {
-    window.parent.postMessage({ name: window.name, type: 'PluginCallEvent', event: event, data: data }, '*')
+    window.parent.postMessage({ name: window.name, type: 'PluginCallEvent', event: event, data: data }, '*');
   },
   /**
    * Send notification on main application
-   * @param {string | {type: string, message: string}} message 
+   * @param {string | {type: string, message: string}} message
    */
   sendNotification(message) {
-    window.parent.postMessage({ name: window.name, type: 'PluginCallEvent', event: 'SEND_NOTIFICATION', data: message }, '*')
+    window.parent.postMessage(
+      { name: window.name, type: 'PluginCallEvent', event: 'SEND_NOTIFICATION', data: message },
+      '*',
+    );
   },
   /**
    * Update visibility of plugin. It will remain in DOM either way.
-   * @param {boolean} visible 
+   * @param {boolean} visible
    */
   setVisibility(visible) {
-    window.parent.postMessage({
-      name: window.name, type: 'PluginCallEvent', event: 'UPDATE_PLUGIN', data: {
-        slot: PluginInfo.slot,
-        name: PluginInfo.manifest.name,
-        visible: visible
-      }
-    }, '*')
+    window.parent.postMessage(
+      {
+        name: window.name,
+        type: 'PluginCallEvent',
+        event: 'UPDATE_PLUGIN',
+        data: {
+          slot: PluginInfo.slot,
+          name: PluginInfo.manifest.name,
+          visible: visible,
+        },
+      },
+      '*',
+    );
   },
   //
   // Request to be removed?
   //
   remove(fn) {
-    window.parent.postMessage({ name: window.name, type: 'PluginRemoveRequest' }, '*')
+    window.parent.postMessage({ name: window.name, type: 'PluginRemoveRequest' }, '*');
   },
+
+  subscribeToMetadata(fn) {
+    this.subscribe(['metadata'], fn);
+  },
+
+  subscribeToRunMetadata(fn) {
+    this.subscribe(['run-metadata'], fn);
+  },
+};
+
+if (typeof exports !== 'undefined') {
+  exports.Metaflow = Metaflow;
 }
 
-if (typeof exports !== "undefined") {
-  exports.Metaflow = Metaflow
-}
-
-if (typeof window !== "undefined") {
+if (typeof window !== 'undefined') {
   window.Metaflow = Metaflow;
 }
