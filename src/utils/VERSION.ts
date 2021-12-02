@@ -43,6 +43,9 @@ export function fetchServiceVersion(): void {
       if (value) {
         setServiceVersion(value);
       }
+    })
+    .catch(() => {
+      console.warn('Failed to fetch service version');
     });
 }
 
