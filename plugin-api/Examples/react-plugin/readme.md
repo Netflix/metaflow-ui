@@ -1,6 +1,6 @@
 # React example
 
-This example shows how to create plugin with React library.
+This example shows how to create plugins with the React library.
 
 ## Setup
 
@@ -11,7 +11,7 @@ npm install
 npm run dev
 ```
 
-To actually use plugin with Metaflow UI, you'll need to build it. Running following command creates package to dist folder. You still need to add manifest.json manually (There is example manifest on dist.example folder).
+To actually use plugins with Metaflow UI, you'll need to build it. Running the following command creates a package in the `dist` folder. You still need to add manifest.json manually (There is an example manifest in the `dist.example` folder).
 
 ```sh
 npm run build

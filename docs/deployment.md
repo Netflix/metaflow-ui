@@ -2,7 +2,7 @@
 
 For a complete Metaflow UI production stack deployment (frontend + service + database) please refer to [Cloudformation templates](https://github.com/Netflix/metaflow-tools/tree/master/aws/cloudformation) and [Admin docs](https://admin-docs.metaflow.org/). This is the preferred way to deploy Metaflow UI.
 
-Alternative way is to deploy static frontend separately while connecting to an external backend service:
+An alternative way is to deploy static frontend separately while connecting to an external backend service:
 
 1. [Docker container](#1-docker)
 2. [Static distribution (e.g. AWS S3 bucket)](#2-static-distribution)
@@ -10,7 +10,7 @@ Alternative way is to deploy static frontend separately while connecting to an e
 
 ## 1. Docker
 
-Fastest and preferred way to deploy Metaflow UI.
+The fastest and preferred way to deploy Metaflow UI.
 Static distribution files are served via NGINX reverse proxy inside the container.
 
 ### Prerequisites:
@@ -57,15 +57,15 @@ $ aws s3 sync ./build s3://bucket-name
 ```
 
 ```sh
-# Alternatively build using custom API endpoint (this cannot be changed without rebuild)
+# Alternatively build using a custom API endpoint (this cannot be changed without a rebuild)
 $ REACT_APP_METAFLOW_SERVICE=http://custom-ui-backend/api yarn build
 ```
 
 Available environment variables:
 
-| Environment variable         | Description                                                 | Default |
-| ---------------------------- | ----------------------------------------------------------- | ------- |
-| `REACT_APP_METAFLOW_SERVICE` | UI service API endpoint (cannot be changed without rebuild) | `/api`  |
+| Environment variable         | Description                                                   | Default |
+| ---------------------------- | ------------------------------------------------------------- | ------- |
+| `REACT_APP_METAFLOW_SERVICE` | UI service API endpoint (cannot be changed without a rebuild) | `/api`  |
 
 ## 3. Reverse proxy
 
@@ -74,7 +74,7 @@ Available environment variables:
 - Your own custom reverse proxy or HTTP server
 - Pre-built static distribution (Option 2.)
 
-See [NGINX template](../nginx.conf.template) for example (this is used in Docker image).
-Refer to this configuration template on how to change API endpoint during runtime `index.html`.
+See [NGINX template](../nginx.conf.template) for an example (this is used in the Docker image).
+Refer to this configuration template on how to change the API endpoint during runtime `index.html`.
 
-API endpoint can also be changed during a build step (see [2. Static distribution](#2-static-distribution)).
+The API endpoint can also be changed during a build step (see [2. Static distribution](#2-static-distribution)).

@@ -43,7 +43,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ## Docker support
 
-Dockerfile provides support for nginx container hosting the production build of the application.
+Dockerfile provides support for an `nginx` container hosting the production build of the application.
 
 ```sh
 # Build Docker image
