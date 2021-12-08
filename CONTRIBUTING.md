@@ -20,7 +20,7 @@ contact us via [email](mailto:help@metaflow.org).
 We follow [Git Feature Branch workflow](https://www.atlassian.com/git/tutorials/comparing-workflows/feature-branch-workflow).
 <br/>In short, do all of your development in a feature branch that will be merged into the master after a peer review.
 
-We follow commit message conventions by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+We follow the commit message conventions by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
 ### Suggested branch types:
 
@@ -30,7 +30,7 @@ We follow commit message conventions by [Conventional Commits](https://www.conve
 - docs (changes to documentation)
 - refactor (refactoring production code)
 - test (adding missing tests, refactoring tests; no production code change)
-- chore (updating grunt tasks etc; no production code change)
+- chore (updating grunt tasks etc.; no production code change)
 
 ### Examples for branch naming:
 
