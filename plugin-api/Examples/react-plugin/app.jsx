@@ -8,7 +8,7 @@ function App() {
 
   // subscribe to listen metadata resource.
   useEffect(() => {
-    Metaflow.subscribe(['metadata'], (event) => {
+    Metaflow.subscribeToMetadata((event) => {
       setMetadata(event.data);
     });
     Metaflow.setHeight()
@@ -28,7 +28,7 @@ function App() {
 }
 
 
-Metaflow.register('task-details', () => {
+Metaflow.onReady(() => {
   ReactDOM.render(
     <React.StrictMode>
       <App />

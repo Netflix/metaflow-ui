@@ -78,17 +78,13 @@
     <script src="../../MetaflowPluginAPI.js"></script>
     <script>
       (function () {
-        Metaflow.register({ slot: 'task-details', container: 'titled-container' }, (config, resource) => {
+        Metaflow.onReady((config, resource) => {
           document.getElementById('init').innerHTML = 'Plugin is up and ready!';
           document.getElementById('resource').innerHTML = 'Resource Info: ' + JSON.stringify(resource);
 
 
-          Metaflow.subscribe(['metadata'], (message) => {
-            switch (message.path) {
-              case 'metadata':
-                document.getElementById('metadata').innerHTML = 'Metadata data ok!';
-                break;
-            }
+          Metaflow.subscribeToMetadata((message) => {
+            document.getElementById('metadata').innerHTML = 'Metadata: ' + JSON.stringify(message.data, 0, 2);
             Metaflow.setHeight();
           });
         });

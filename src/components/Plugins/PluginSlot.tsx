@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useLocation } from 'react-router';
 import styled from 'styled-components';
 import PLUGIN_STYLESHEET from './PluginDefaultStyleSheet';
-import { PluginCommuncationsAPI, MESSAGE_NAME, PluginsContext, RegisteredPlugin } from './PluginManager';
+import { PluginCommuncationsAPI, MESSAGE_NAME, PluginsContext, Plugin } from './PluginManager';
 import { getRouteMatch, KnownURLParams } from '../../utils/routing';
 
 //
@@ -14,7 +14,7 @@ type Props = {
   url: string;
   title: string;
   onRemove?: () => void;
-  plugin: RegisteredPlugin;
+  plugin: Plugin;
   // Way to override url params. Used for tests and plugin development
   resourceParams?: Record<string, string>;
 };
@@ -43,12 +43,12 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
           w.postMessage(
             {
               type: 'ReadyToRender',
-              config: plugin.manifest,
+              config: plugin,
               resource: resourceParams ? resourceParams : route ? convertParams(route.params) : {},
             },
             '*',
           );
-          if (plugin.settings.useApplicationStyles) {
+          if (plugin.config.useApplicationStyles) {
             const iframeContent = _iframe?.current?.contentDocument;
             if (iframeContent) {
               iframeContent.head.innerHTML = `<style>${PLUGIN_STYLESHEET}</style>` + iframeContent.head.innerHTML;
@@ -127,7 +127,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
         name={title}
         title={title}
         src={url}
-        sandbox={`allow-scripts ${plugin.manifest.parameters?.sandbox || ''}`}
+        sandbox={`allow-scripts ${plugin.parameters?.sandbox || ''}`}
       />
     </PluginSlotContainer>
   );

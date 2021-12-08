@@ -50,48 +50,48 @@
     <script src="MetaflowPluginAPI.js"></script>
     <script>
       (function () {
-        // Register plugin to run header section
-        Metaflow.register("run-header", (config, resource) => {
+        function actions(config, resource) {
           let currentRun;
 
           // Function to fetch and add runs to DOM
           function getRuns() {
             if (!resource.run_number) return;
             // Fetch recent runs from API
-            fetch(
-              `/api/flows/${resource.flow_id}/runs?_order=-ts_epoch&_limit=6`
-            )
+            fetch(`/api/flows/${resource.flow_id}/runs?_order=-ts_epoch&_limit=6`)
               .then((response) => response.json())
               .then((response) => {
                 const newRows = [];
                 let index = 0;
                 for (const item of response.data) {
                   // Create container element for row in runs list
-                  let el = document.createElement("div");
-                  el.id = "run-" + index;
-                  el.classList = ["run"];
+                  let el = document.createElement('div');
+                  el.id = 'run-' + index;
+                  el.classList = ['run'];
                   // Create link element with run number
-                  let linkEl = document.createElement("a");
+                  let linkEl = document.createElement('a');
                   linkEl.href = `/${resource.flow_id}/${item.run_number}`;
-                  linkEl.target = "_parent";
+                  linkEl.target = '_parent';
                   linkEl.textContent = item.run_number;
                   // Show duration for run
-                  let durationEl = document.createElement("div");
+                  let durationEl = document.createElement('div');
                   durationEl.textContent = `Duration: ${item.duration / 1000}s`;
 
                   el.appendChild(linkEl);
                   el.appendChild(durationEl);
 
-                  document.getElementById("runs-list").appendChild(el);
+                  document.getElementById('runs-list').appendChild(el);
                   index++;
                 }
                 Metaflow.setHeight();
               })
-              .catch((e) => console.log("Something went wrong"));
+              .catch((e) => console.log('Something went wrong'));
           }
 
           getRuns();
-        });
+        }
+
+        // Register plugin to run header section
+        Metaflow.onReady(actions);
       })();
     </script>
   </body>

@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { apiHttp } from '../../constants';
-import { PluginCommuncationsAPI, PluginManifest, pluginPath, PluginsContext } from './PluginManager';
+import { Plugin, PluginCommuncationsAPI, pluginPath, PluginsContext } from './PluginManager';
 
 //
 // Plugin register system will add iframes to DOM until it gets register message
@@ -9,7 +9,7 @@ import { PluginCommuncationsAPI, PluginManifest, pluginPath, PluginsContext } fr
 //
 
 const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
-  const [definitions, setDefinitions] = useState<PluginManifest[]>([]);
+  const [definitions, setDefinitions] = useState<Plugin[]>([]);
   const { plugins, register } = useContext(PluginsContext);
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
       .then((response) => {
         return response.json();
       })
-      .then((plugins: PluginManifest[]) => {
+      .then((plugins: Plugin[]) => {
         setDefinitions(plugins);
       })
       .catch((e) => console.log(e));
@@ -31,19 +31,7 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
         const definition = definitions.find((item) => item.name === msg.name);
         if (definition) {
           // Register plugin to specific slot
-          register(
-            {
-              slot: msg.slot,
-              visible: typeof msg.visible === 'boolean' ? (msg.visibile as boolean) : true,
-              container: typeof msg.container === 'string' ? msg.container : 'collapsable',
-              containerProps:
-                msg.containerProps && typeof msg.containerProps === 'object'
-                  ? (msg.containerProps as Record<string, unknown>)
-                  : undefined,
-            },
-            definition,
-            msg.version,
-          );
+          register(definition, msg.version);
         }
       }
     },
@@ -57,7 +45,7 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
   }, [messageListener]);
 
   // Filter out already registered plugin so their iframes will be destroyed.
-  const registeredPlugins = plugins.map((item) => item.manifest.name);
+  const registeredPlugins = plugins.map((item) => item.name);
   const toRegister = definitions.filter((item) => registeredPlugins.indexOf(item.name) === -1);
 
   return (

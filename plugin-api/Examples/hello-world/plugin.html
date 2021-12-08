@@ -17,9 +17,8 @@
   <script src="MetaflowPluginAPI.js"></script>
   <script>
     (function () {
-      // Call register function to tell UI where application should be rendered. Callback will be called after
-      // plugin is placed to correct spot in UI.
-      Metaflow.register({ slot: 'run-header', container: 'titled-container'}, (config, resource) => {
+      // Execute plugin code on Metaflow.onReady to make sure that it has required configuration and resource info.
+      Metaflow.onReady((config, resource) => {
         // Set fixed height for plugin
         Metaflow.setHeight(40);
         // Show run id from URL.
