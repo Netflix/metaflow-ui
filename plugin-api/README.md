@@ -39,7 +39,7 @@ Here are three different ways to use the plugin API file.
 ```js
 import { Metaflow } from 'MetaflowPluginAPI.js'
 ...
-Metaflow.onReady('run-header', () => ReactDOM.render(<App />, root));
+Metaflow.onReady(() => ReactDOM.render(<App />, root));
 ```
 
 ## Configuration

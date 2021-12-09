@@ -36,13 +36,13 @@ A basic plugin could be something like
     <script src="MetaflowPluginAPI.js"></script>
     <script>
       (function () {
-        Metaflow.register('run-header', () => {
+        Metaflow.onReady((configuration, resource) => {
           Metaflow.on(['customEventB'], (message) => {
             document.getElementById('received').textContent = 'Got message: ' + message.data;
           });
 
-          Metaflow.subscribe(['metadata'], (message) => {
-            console.log(`Run ${message.data.run_number} got updated!`);
+          Metaflow.subscribeToMetadata((message) => {
+            console.log(`Meatadata for ${resource.run_number} got updated!`);
           });
         });
 
