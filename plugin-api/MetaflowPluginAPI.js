@@ -109,7 +109,7 @@ const Metaflow = {
     );
   },
   /**
-   * Subsribe to events
+   * Subscribe to events
    * @param {string[]} events List of event name to subscribe to
    * @param {(event: { type: string, data: * }) => void} fn Callback to trigger in case of event
    */
