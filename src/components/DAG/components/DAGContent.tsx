@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import useComponentSize, { ComponentSize } from '@rehooks/component-size';
 import useWindowSize from '../../../hooks/useWindowSize';
 import { Run, TaskStatus } from '../../../types';
-import { DAGStructureTree, DAGTreeNode, StepTree } from '../DAGUtils';
+import { GraphModel, DAGModelItem, StepStructureModel } from '../DAGUtils';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../../utils/routing';
 import { StepLineData } from '../../Timeline/taskdataUtils';
@@ -11,6 +11,7 @@ import Icon from '../../Icon';
 import { useTranslation } from 'react-i18next';
 import Tooltip, { TooltipTitle } from '../../Tooltip';
 import { mix } from 'polished';
+import { render } from 'react-dom';
 
 //
 // DAG Content section for when we have dag data
@@ -18,16 +19,67 @@ import { mix } from 'polished';
 
 type DAGContentProps = {
   showFullscreen: boolean;
-  dagTree: DAGStructureTree;
+  graphData: GraphModel;
   run: Run;
   stepData: StepLineData[];
 };
 
-const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, stepData }) => {
+const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run, stepData }) => {
   const _container = useRef(null);
   const ContainerSize = useComponentSize(_container);
   const WindowSize = useWindowSize();
 
+  function componentForStructure(elem: StepStructureModel, index: number) {
+    if (Array.isArray(elem)) {
+      // we are in a nested step, unnest first.
+      // if first step is another split, we are in a parallel split
+      // otherwise check if first step is of type foreach
+      const tail = elem.slice(1);
+      // if first step is string, we should render immediately with children instead of recursively calling further.
+      if (!Array.isArray(elem[0]) && !!tail.length) {
+        const dataItem = graphData.steps_info[elem[0]];
+        return (
+          <RenderStep
+            step_name={elem[0]}
+            run={run}
+            item={dataItem}
+            key={index}
+            isFirst={index === 0}
+            isLast={index + 1 === graphData.steps_structure.length}
+            stepData={stepData}
+          >
+            {tail.map((child, index) => componentForStructure(child, index))}
+          </RenderStep>
+        );
+      } else {
+        const type =
+          Array.isArray(elem[0]) &&
+          Array.isArray(elem[0][0]) &&
+          !Array.isArray(elem[0][0][0]) &&
+          graphData.steps_info[elem[0][0][0]].type === 'foreach'
+            ? 'foreach'
+            : 'parallel';
+        return (
+          <ContainerElement containerType={type}>
+            {elem.map((elem, index) => componentForStructure(elem, index))}
+          </ContainerElement>
+        );
+      }
+    }
+    // return component for single step
+    const dataItem = graphData.steps_info[elem];
+    return (
+      <RenderStep
+        step_name={elem}
+        run={run}
+        item={dataItem}
+        key={index}
+        isFirst={index === 0}
+        isLast={index + 1 === graphData.steps_structure.length}
+        stepData={stepData}
+      />
+    );
+  }
   return (
     <DAGRenderingContainer
       showFullscreen={showFullscreen}
@@ -38,16 +90,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, dagTree, run, s
     >
       <div style={{ display: 'flex', padding: '1rem' }}>
         <NormalItemContainer isFirst isLast>
-          {dagTree.map((elem, index) => (
-            <RenderStep
-              run={run}
-              item={elem}
-              key={index}
-              isFirst={index === 0}
-              isLast={index + 1 === dagTree.length}
-              stepData={stepData}
-            />
-          ))}
+          {graphData.steps_structure.map((elem, index) => componentForStructure(elem, index))}
         </NormalItemContainer>
       </div>
     </DAGRenderingContainer>
@@ -81,56 +124,33 @@ function getGraphScale(
 }
 
 export const RenderStep: React.FC<{
-  item: DAGTreeNode;
+  step_name: string;
+  item: DAGModelItem;
   isFirst?: boolean;
   isLast?: boolean;
-  inContainer?: boolean;
   stepData: StepLineData[];
   run: Run;
-}> = ({ item, isFirst, isLast, stepData, run }) => {
+}> = ({ step_name, item, isFirst, isLast, stepData, run, children }) => {
   const history = useHistory();
-  if (item.node_type === 'normal') {
-    const stepState = stateOfStep(item, stepData);
+  const stepState = stateOfStep(step_name, stepData);
 
-    return (
-      <NormalItemContainer isFirst={isFirst} isLast={isLast} data-testid="dag-normalitem">
-        <NormalItem
-          data-testid="dag-normalitem-box"
-          state={stepState}
-          onClick={() => {
-            history.push(getPath.step(run.flow_id, run.run_number, item.step_name));
-          }}
-        >
-          {item.step_name}
-          {item.original?.doc && <DocstringTooltip stepName={item.step_name} docs={item.original.doc} />}
-        </NormalItem>
-        {item.children && item.children.length > 0 && (
-          <NormalItemChildContainer data-testid="dag-normalitem-children">
-            {item.children.map((child, index) => {
-              return (
-                <RenderStep
-                  run={run}
-                  item={child}
-                  isLast={index + 1 === item.children?.length}
-                  key={index}
-                  stepData={stepData}
-                />
-              );
-            })}
-          </NormalItemChildContainer>
-        )}
-      </NormalItemContainer>
-    );
-  } else {
-    return (
-      <ContainerElement containerType={item.container_type}>
-        {item.steps &&
-          item.steps.map((child, index) => (
-            <RenderStep run={run} item={child} key={index} inContainer={true} stepData={stepData} />
-          ))}
-      </ContainerElement>
-    );
-  }
+  return (
+    <NormalItemContainer isFirst={isFirst} isLast={isLast} data-testid="dag-normalitem">
+      <NormalItem
+        data-testid="dag-normalitem-box"
+        state={stepState}
+        onClick={() => {
+          history.push(getPath.step(run.flow_id, run.run_number, step_name));
+        }}
+      >
+        {step_name}
+        {item?.doc && <DocstringTooltip stepName={step_name} docs={item.doc} />}
+      </NormalItem>
+      {children && (
+        <NormalItemChildContainer data-testid="dag-normalitem-children">{children}</NormalItemChildContainer>
+      )}
+    </NormalItemContainer>
+  );
 };
 
 export const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' }> = ({ containerType, children }) => {
@@ -149,8 +169,8 @@ export const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' 
 // Find out correct state for a step. Step doesn't have status field so we need to figure it out ourselves
 //
 
-export function stateOfStep(item: StepTree, stepData: StepLineData[]): TaskStatus {
-  const data = stepData.find((s) => s.step_name === item.step_name);
+export function stateOfStep(step_name: string, stepData: StepLineData[]): TaskStatus {
+  const data = stepData.find((s) => s.step_name === step_name);
 
   if (data) {
     return data.status;
