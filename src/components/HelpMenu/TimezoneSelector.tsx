@@ -1,17 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import spacetime from 'spacetime';
 import styled from 'styled-components';
 import DropdownField, { DropdownOption } from '../Form/Dropdown';
-import { TimezoneContext } from '../TimezoneProvider';
+import { findTimezone, localTimeZone, TimezoneContext, TIMEZONES } from '../TimezoneProvider';
 import FilterInput from '../FilterInput';
-
-const tZones = makeTZData();
-// used for displaying users local timezone
-const localTimeZone = tZones.find(
-  (tz) =>
-    tz[1].includes(spacetime().timezone().current.offset.toString()) && tz[1].includes(spacetime().timezone().name),
-);
 
 //
 // Show and select used timezone. Works hand in hand with timezone context
@@ -22,14 +14,14 @@ const TimezoneSelector: React.FC = () => {
   const { timezone, updateTimezone } = useContext(TimezoneContext);
   const { t } = useTranslation();
   // used for displaying the users selected timezone
-  const userTimezone = userSelectedTimezoneFunc(timezone);
+  const userTimezone = findTimezone(timezone);
 
   return (
     <div>
       <TimezoneRow>
         <DropdownField
           label={t('help.timezone')}
-          options={tZones.map((o) => [o[0], o[1]])}
+          options={TIMEZONES.map((o) => [o[0], o[1]])}
           value={(timezone || 0).toString()}
           onChange={(e) => e && updateTimezone(e.currentTarget.value)}
           onClose={() => setFilter('')}
@@ -63,7 +55,9 @@ const TimezoneSelector: React.FC = () => {
                 variant={'text'}
                 size="sm"
                 onClick={() => {
-                  updateTimezone(localTimeZone[0]);
+                  if (localTimeZone) {
+                    updateTimezone(localTimeZone[0]);
+                  }
                 }}
               >
                 {localTimeZone[1]}
@@ -86,72 +80,27 @@ const TimezoneSelector: React.FC = () => {
             </>
           )}
           <label>{t('help.timezones')}</label>
-          {(filter !== '' ? tZones.filter((item) => item[1].toLowerCase().includes(filter.toLowerCase())) : tZones).map(
-            (o, index) => (
-              <TimezoneOption
-                key={o[0] + index}
-                textOnly
-                variant={timezone === o[0] ? 'primaryText' : 'text'}
-                size="sm"
-                onClick={() => {
-                  updateTimezone(o[0]);
-                }}
-              >
-                {o[1]}
-              </TimezoneOption>
-            ),
-          )}
+          {(filter !== ''
+            ? TIMEZONES.filter((item) => item[1].toLowerCase().includes(filter.toLowerCase()))
+            : TIMEZONES
+          ).map((o, index) => (
+            <TimezoneOption
+              key={o[0] + index}
+              textOnly
+              variant={timezone === o[0] ? 'primaryText' : 'text'}
+              size="sm"
+              onClick={() => {
+                updateTimezone(o[0]);
+              }}
+            >
+              {o[1]}
+            </TimezoneOption>
+          ))}
         </DropdownField>
       </TimezoneRow>
     </div>
   );
 };
-
-//
-// Utils
-//
-
-function makeTZData() {
-  const timezoneData = Object.entries(spacetime().timezones).filter(
-    (key) => !key[0].includes('etc') && !key[0].includes('utc'),
-  );
-
-  // [string, string] = [value, label]
-  const tzs: [string, string][] = [];
-  timezoneData.forEach(([key, value], index) => {
-    const parseHour = (value: number) => {
-      if (value < -9.5 || value > 9.5) {
-        return value > 9 ? `+${Math.floor(value)}` : value;
-      } else {
-        return value < 0 ? `-0${Math.floor(value * -1)}` : `+0${Math.floor(value)}`;
-      }
-    };
-
-    // offsets end section can be 00, 15, 30, or 45
-    const offset = `${parseHour(spacetime().goto(key).timezone().current.offset)}:${
-      Number.isInteger(value.offset) ? '00' : `${60 * (value.offset - Math.floor(value.offset))}`
-    }`;
-
-    let region = key.split('/')[0];
-    region = `${region[0].toUpperCase()}${region.slice(1)}`;
-    let city = key.split('/')[1].replace(/_/g, ' ');
-    city = `${city[0].toUpperCase()}${city.slice(1)}`;
-
-    // we need to add index to diffrentiate the offsets from one another
-    tzs.push([`${offset}|${index}`, `(GMT${offset}) ${region}/${city}`]);
-  });
-
-  const getOffset = (a: string) => parseFloat(a.split('|')[0]);
-  tzs.sort((a, b) =>
-    getOffset(a[0]) === getOffset(b[0]) ? a[1].localeCompare(b[1]) : getOffset(a[0]) - getOffset(b[0]),
-  );
-
-  return tzs;
-}
-
-function userSelectedTimezoneFunc(userTz: string) {
-  return tZones.find((tz) => tz[0] === userTz);
-}
 
 //
 // Style
