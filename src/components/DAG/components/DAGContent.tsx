@@ -11,7 +11,6 @@ import Icon from '../../Icon';
 import { useTranslation } from 'react-i18next';
 import Tooltip, { TooltipTitle } from '../../Tooltip';
 import { mix } from 'polished';
-import { render } from 'react-dom';
 
 //
 // DAG Content section for when we have dag data
@@ -29,56 +28,88 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run,
   const ContainerSize = useComponentSize(_container);
   const WindowSize = useWindowSize();
 
-  function componentForStructure(elem: StepStructureModel, index: number) {
-    if (Array.isArray(elem)) {
-      // we are in a nested step, unnest first.
-      // if first step is another split, we are in a parallel split
-      // otherwise check if first step is of type foreach
-      const tail = elem.slice(1);
-      // if first step is string, we should render immediately with children instead of recursively calling further.
-      if (!Array.isArray(elem[0]) && !!tail.length) {
-        const dataItem = graphData.steps_info[elem[0]];
-        return (
+  function StepsFromStructure(structure: Array<StepStructureModel>, nested?: boolean) {
+    const components = [];
+    for (const [index, step] of structure.entries()) {
+      if (Array.isArray(step)) {
+        // skip arrays, these are handled by passing next_step recursively.
+        continue;
+      }
+      const dataItem = graphData.steps_info[step];
+      const data = graphData.steps_info[step];
+      const next_step = structure[index + 1]; // TODO: guard against OOB if needed.
+      const type = data.type;
+      if (Array.isArray(next_step) && (type === 'foreach' || type === 'split')) {
+        // if step is a splitting one, wrap next_step in a suitable container
+        // before continuing recursively for the branch
+        const wrapped_next_step = (
+          <ContainerElement containerType={type}>
+            {next_step.map((step) => StepsFromStructure(step, true))}
+          </ContainerElement>
+        );
+        if (nested) {
+          components.push(
+            <RenderStep
+              step_name={step}
+              run={run}
+              item={dataItem}
+              key={index}
+              isFirst={index === 0}
+              isLast={index + 1 === structure.length}
+              stepData={stepData}
+            >
+              {wrapped_next_step}
+            </RenderStep>,
+          );
+        } else {
+          components.push(
+            <RenderStep
+              step_name={step}
+              run={run}
+              item={dataItem}
+              key={index}
+              isFirst={index === 0}
+              isLast={index + 1 === structure.length}
+              stepData={stepData}
+            />,
+            wrapped_next_step,
+          );
+        }
+        continue;
+      }
+      if (nested) {
+        // for nested branches, the tail needs to be wrapped as children so break
+        // the current iteration and continue recursively.
+        const tail = structure.slice(index + 1);
+        components.push(
           <RenderStep
-            step_name={elem[0]}
+            step_name={step}
             run={run}
             item={dataItem}
             key={index}
             isFirst={index === 0}
-            isLast={index + 1 === graphData.steps_structure.length}
+            isLast={index + 1 === structure.length}
             stepData={stepData}
           >
-            {tail.map((child, index) => componentForStructure(child, index))}
-          </RenderStep>
+            {!!tail.length && StepsFromStructure(tail)}
+          </RenderStep>,
         );
+        break;
       } else {
-        const type =
-          Array.isArray(elem[0]) &&
-          Array.isArray(elem[0][0]) &&
-          !Array.isArray(elem[0][0][0]) &&
-          graphData.steps_info[elem[0][0][0]].type === 'foreach'
-            ? 'foreach'
-            : 'parallel';
-        return (
-          <ContainerElement containerType={type}>
-            {elem.map((elem, index) => componentForStructure(elem, index))}
-          </ContainerElement>
+        components.push(
+          <RenderStep
+            step_name={step}
+            run={run}
+            item={dataItem}
+            key={index}
+            isFirst={index === 0}
+            isLast={index + 1 === structure.length}
+            stepData={stepData}
+          />,
         );
       }
     }
-    // return component for single step
-    const dataItem = graphData.steps_info[elem];
-    return (
-      <RenderStep
-        step_name={elem}
-        run={run}
-        item={dataItem}
-        key={index}
-        isFirst={index === 0}
-        isLast={index + 1 === graphData.steps_structure.length}
-        stepData={stepData}
-      />
-    );
+    return components;
   }
   return (
     <DAGRenderingContainer
@@ -90,7 +121,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run,
     >
       <div style={{ display: 'flex', padding: '1rem' }}>
         <NormalItemContainer isFirst isLast>
-          {graphData.steps_structure.map((elem, index) => componentForStructure(elem, index))}
+          {StepsFromStructure(graphData.steps_structure)}
         </NormalItemContainer>
       </div>
     </DAGRenderingContainer>
@@ -153,8 +184,8 @@ export const RenderStep: React.FC<{
   );
 };
 
-export const ContainerElement: React.FC<{ containerType: 'parallel' | 'foreach' }> = ({ containerType, children }) => {
-  if (containerType === 'parallel') {
+export const ContainerElement: React.FC<{ containerType: 'split' | 'foreach' }> = ({ containerType, children }) => {
+  if (containerType === 'split') {
     return <ContainerItem data-testid="dag-parallel-container">{children}</ContainerItem>;
   } else {
     return (
