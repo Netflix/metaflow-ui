@@ -54,8 +54,8 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run,
               run={run}
               item={dataItem}
               key={index}
-              isFirst={index === 0}
-              isLast={index + 1 === structure.length}
+              isFirst={false}
+              isLast={false}
               stepData={stepData}
             >
               {wrapped_next_step}
@@ -87,8 +87,8 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run,
             run={run}
             item={dataItem}
             key={index}
-            isFirst={index === 0}
-            isLast={index + 1 === structure.length}
+            isFirst={false}
+            isLast={false}
             stepData={stepData}
           >
             {!!tail.length && StepsFromStructure(tail)}
@@ -119,11 +119,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run,
         transform: 'scale(' + getGraphScale(showFullscreen, ContainerSize, WindowSize) + ')',
       }}
     >
-      <div style={{ display: 'flex', padding: '1rem' }}>
-        <NormalItemContainer isFirst isLast>
-          {StepsFromStructure(graphData.steps_structure)}
-        </NormalItemContainer>
-      </div>
+      <NormalItemContainer isRoot>{StepsFromStructure(graphData.steps_structure)}</NormalItemContainer>
     </DAGRenderingContainer>
   );
 };
@@ -256,7 +252,10 @@ const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; is
   padding-bottom: ${(p) => (p.isLast ? '0' : '1rem')};
   width: 100%;
 
-  &::before {
+  ${(p) =>
+    p.isRoot
+      ? ''
+      : css`&::before {
     content: '';
     z-index: -1;
     position: absolute;
@@ -264,8 +263,7 @@ const NormalItemContainer = styled.div<{ isRoot?: boolean; isFirst?: boolean; is
     width: 1px;
     height: 100%;
     background: #d0d0d0;
-    left: 50%;
-  }
+    left: 50%;`}}
 `;
 
 const StatusColorStyles = css<{ state: TaskStatus }>`
@@ -306,7 +304,6 @@ const BaseContainerStyle = css`
   border: ${(p) => p.theme.border.thinMid};
   background: #f6f6f6;
   display: flex;
-  margin: 1rem;
   border-radius: 0.5rem;
   position: relative;
   z-index: 1;
@@ -320,7 +317,7 @@ const ForeachContainer = styled.div`
   ${BaseContainerStyle}
   background: rgba(192, 192, 192, 0.3);
   transform: translateX(-0.275rem) translateY(-0.275rem);
-  margin-top: 1.1875rem;
+  margin-top: 0.1875rem;
   &::before {
     content: '';
     z-index: -1;

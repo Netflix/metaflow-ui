@@ -9,6 +9,10 @@ export type DAGModelItem = {
   next: string[];
   // docstring from step
   doc?: string;
+  name: string;
+  line: number;
+  decorators: string[];
+  foreach_artifact: string | null;
 };
 
 export type StepInfoModel = Record<string, DAGModelItem>;
@@ -16,12 +20,10 @@ export type StepStructureModel = string | Array<StepStructureModel>;
 
 export type GraphModel = {
   file: string;
-  parameters: [
-    {
-      name: string;
-      type: 'Parameter';
-    },
-  ];
+  parameters: {
+    name: string;
+    type: string;
+  }[];
   constants: Array<string>;
   steps_info: StepInfoModel;
   steps_structure: Array<StepStructureModel>;

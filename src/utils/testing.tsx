@@ -2,6 +2,8 @@ import React from 'react';
 import { ThemeProvider } from 'styled-components';
 import { MemoryRouter, Route } from 'react-router-dom';
 import './i18n';
+import '../theme/font/roboto.css';
+import GlobalStyle from '../GlobalStyle';
 import theme from '../theme';
 import { QueryParamProvider } from 'use-query-params';
 
@@ -12,6 +14,7 @@ import { QueryParamProvider } from 'use-query-params';
 const TestWrapper: React.FC<{ route?: string }> = ({ children, route = '/' }) => {
   return (
     <ThemeProvider theme={theme}>
+      <GlobalStyle />
       <MemoryRouter initialEntries={[route]}>
         <QueryParamProvider ReactRouterRoute={Route}>{children}</QueryParamProvider>
       </MemoryRouter>
