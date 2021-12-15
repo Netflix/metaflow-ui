@@ -4,8 +4,6 @@ import useComponentSize, { ComponentSize } from '@rehooks/component-size';
 import useWindowSize from '../../../hooks/useWindowSize';
 import { Run, TaskStatus } from '../../../types';
 import { GraphModel, DAGModelItem, StepStructureModel } from '../DAGUtils';
-// import { useHistory } from 'react-router-dom';
-// import { getPath } from '../../../utils/routing';
 import { StepLineData } from '../../Timeline/taskdataUtils';
 import Icon from '../../Icon';
 import { useTranslation } from 'react-i18next';
@@ -24,10 +22,6 @@ type DAGContentProps = {
   run: Run;
   stepData: StepLineData[];
 };
-
-//
-// TODO NEXT ADD STATUSES
-//
 
 const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run, stepData }) => {
   const _container = useRef(null);
