@@ -35,7 +35,7 @@ $ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://custom-ui-backend/api metaf
 For example, when used with a locally deployed [Metaflow UI Service](https://github.com/Netflix/metaflow-service), the UI can be launched with
 
 ```sh
-$ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://localhost:8083/ metaflow-ui:latest
+docker run -p 3000:3000 -e METAFLOW_SERVICE=http://localhost:8083/ metaflow-ui:latest
 ```
 
 Dockerfile also supports the following environment variables to inject content into the UI's index.html:
