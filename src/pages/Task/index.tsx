@@ -29,12 +29,12 @@ import {
   TaskSettingsState,
 } from '../../components/Timeline/useTaskListSettings';
 import FEATURE_FLAGS from '../../utils/FEATURE';
-import { DAGModel } from '../../components/DAG/DAGUtils';
 import { isVersionEqualOrHigher, PluginsContext } from '../../components/Plugins/PluginManager';
 import useLogData, { LogData } from '../../hooks/useLogData';
 import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
 import { getTagOfType } from '../../utils/run';
+import { GraphModel } from '../../components/DAG/DAGUtils';
 
 //
 // Typedef
@@ -55,7 +55,7 @@ type TaskViewProps = {
   isAnyGroupOpen: boolean;
   setQueryParam: SetQuery<TaskSettingsQueryParameters>;
   onModeSelect: (mode: TaskListMode) => void;
-  dagResult: Resource<DAGModel>;
+  dagResult: Resource<GraphModel>;
 };
 
 type FullScreenData =
@@ -386,9 +386,9 @@ const Task: React.FC<TaskViewProps> = ({
 // Utils
 //
 
-function getDocString(dagResult: Resource<DAGModel>, stepName: string): string | null {
+function getDocString(dagResult: Resource<GraphModel>, stepName: string): string | null {
   if (dagResult.data) {
-    const dagItem = dagResult.data[stepName];
+    const dagItem = dagResult.data.steps_info[stepName];
 
     if (dagItem && dagItem.doc) {
       return dagItem.doc;
