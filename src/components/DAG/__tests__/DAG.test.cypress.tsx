@@ -31,29 +31,33 @@ describe('DAG test', () => {
   });
 
   it('isDAGError', () => {
-    expect(isDAGError('Error', [])).to.be.true;
-    expect(isDAGError('Ok', [])).to.be.true;
-    expect(isDAGError('Loading', [])).to.be.false;
-    expect(isDAGError('NotAsked', [])).to.be.false;
+    expect(isDAGError('Error', null)).to.be.true;
+    expect(isDAGError('Ok', null)).to.be.true;
+    expect(isDAGError('Loading', null)).to.be.false;
+    expect(isDAGError('NotAsked', null)).to.be.false;
 
     expect(
-      isDAGError('Error', [
-        {
-          node_type: 'container',
-          container_type: 'parallel',
-          steps: [],
-        },
-      ]),
+      isDAGError('Error', {
+        file: 'string',
+        parameters: [],
+        constants: [],
+        steps_info: {},
+        steps_structure: [],
+        doc: 'string',
+        decorators: [],
+      }),
     ).to.be.false;
 
     expect(
-      isDAGError('Ok', [
-        {
-          node_type: 'container',
-          container_type: 'parallel',
-          steps: [],
-        },
-      ]),
+      isDAGError('Ok', {
+        file: 'string',
+        parameters: [],
+        constants: [],
+        steps_info: {},
+        steps_structure: [],
+        doc: 'string',
+        decorators: [],
+      }),
     ).to.be.false;
   });
 });
