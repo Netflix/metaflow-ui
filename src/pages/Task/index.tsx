@@ -355,7 +355,7 @@ const Task: React.FC<TaskViewProps> = ({
                       label: def.type,
                       component: (
                         <CardIframe
-                          path={`/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.id}`}
+                          path={`/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.hash}`}
                         />
                       ),
                     }))

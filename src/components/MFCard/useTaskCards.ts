@@ -4,7 +4,6 @@ import { Task } from '../../types';
 export type CardDefinition = {
   type: string;
   hash: string;
-  id: string;
 };
 
 export default function useTaskCards(task: Task | null): Resource<CardDefinition[]> {
