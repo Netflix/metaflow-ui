@@ -43,7 +43,7 @@ It correctly bundles React in production mode and optimizes the build for the be
 
 ## Docker support
 
-Dockerfile provides support for nginx container hosting the production build of the application.
+Dockerfile provides support for an `nginx` container hosting the production build of the application.
 
 ```sh
 # Build Docker image
@@ -56,7 +56,7 @@ $ docker run -p 3000:3000 metaflow-ui:latest
 $ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://custom-ui-backend/api metaflow-ui:latest
 ```
 
-## Runing metaflow, metaflow-service and metaflow-ui locally
+## Running metaflow, metaflow-service and metaflow-ui locally
 
 ```sh
 # Set up metaflow service

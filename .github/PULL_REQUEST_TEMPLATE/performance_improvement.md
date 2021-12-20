@@ -1,7 +1,7 @@
 ### Requirements for Contributing a Performance Improvement
 
 - Fill out the template below. Any pull request that does not include enough information to be reviewed in a timely manner may be closed at the maintainers' discretion.
-- The pull request must only affect performance of existing functionality. To contribute other changes, you must use a different template.
+- The pull request must only affect the performance of existing functionality. To contribute other changes, you must use a different template.
 - After you create the pull request, all status checks must be passed before a maintainer reviews your contribution. For more details, please see <https://github.com/Netflix/metaflow-ui/blob/master/CONTRIBUTING.md>.
 
 ### Description of the Change

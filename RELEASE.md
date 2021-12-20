@@ -12,7 +12,7 @@ Additional labels for pre-release and build metadata are available as extensions
 
 ## Shipping a new version
 
-Release process is mostly automated via Github Actions, however few manual steps are required:
+The release process is mostly automated via Github Actions, however a few manual steps are required:
 
 - [ ] [Edit `package.json`](https://github.com/Netflix/metaflow-ui/edit/master/package.json) version in `master` branch (e.g. `"version": "1.0.0"`)
 - [ ] Create new tag from `master` branch (e.g. `git tag v1.0.0`, note the `v` -prefix)

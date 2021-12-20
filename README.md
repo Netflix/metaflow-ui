@@ -13,7 +13,7 @@ Metaflow UI is a tool to monitor [Metaflow](https://github.com/Netflix/metaflow)
 
 Using Metaflow UI requires [Metaflow Service](https://github.com/Netflix/metaflow-service) for now.
 
-To setup local development environment, see [docs/README.md](docs/README.md).
+To setup a local development environment, see [docs/README.md](docs/README.md).
 
 ### Deploying the UI
 
@@ -21,7 +21,7 @@ Deploying Metaflow UI requires setting up a UI service (which is different from 
 
 ### Docker support
 
-Dockerfile provides support for nginx container hosting the production build of the application.
+Dockerfile provides support for an `nginx` container hosting the production build of the application.
 
 ```sh
 # Build Docker image
@@ -32,21 +32,21 @@ $ docker run -p 3000:3000 metaflow-ui:latest
 $ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://custom-ui-backend/api metaflow-ui:latest
 ```
 
-For example when used with locally deployed [Metaflow UI Service](https://github.com/Netflix/metaflow-service), the UI can be launched with
+For example, when used with a locally deployed [Metaflow UI Service](https://github.com/Netflix/metaflow-service), the UI can be launched with
 
 ```sh
-$ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://localhost:8083/ metaflow-ui:latest
+docker run -p 3000:3000 -e METAFLOW_SERVICE=http://localhost:8083/ metaflow-ui:latest
 ```
 
-Dockerfile also supports following environment variables to inject content into the UI's index.html:
+Dockerfile also supports the following environment variables to inject content into the UI's index.html:
 
 - `METAFLOW_HEAD` - Inject content to `head` element
 - `METAFLOW_BODY_BEFORE` - Inject content at the beginning of `body` element
 - `METAFLOW_BODY_AFTER` - Inject content at the end of `body` element
 
-Use cases for these variables ranges from additional meta tags to analytics script injection.
+Use cases for these variables range from additional meta tags to analytics script injection.
 
-Example on how to add keyword meta tag to Metaflow UI:
+Example on how to add a keyword meta tag to Metaflow UI:
 
 ```
 METAFLOW_HEAD='<meta name="keywords" content="metaflow" />'
