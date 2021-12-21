@@ -352,7 +352,7 @@ const Task: React.FC<TaskViewProps> = ({
                   ? cards.data.map((def) => ({
                       key: def.hash,
                       order: 99,
-                      label: def.type,
+                      label: `${t('card.card_title')}: ${def.type}`,
                       component: (
                         <CardIframe
                           path={`/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.hash}`}
