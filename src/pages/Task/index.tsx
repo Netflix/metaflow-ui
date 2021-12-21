@@ -37,6 +37,8 @@ import useTaskMetadata from './useTaskMetadata';
 import { getTagOfType } from '../../utils/run';
 import useTaskCards from '../../components/MFCard/useTaskCards';
 import CardIframe from '../../components/MFCard/CardIframe';
+import Button from '../../components/Button';
+import Icon from '../../components/Icon';
 
 //
 // Typedef
@@ -353,6 +355,20 @@ const Task: React.FC<TaskViewProps> = ({
                       key: def.hash,
                       order: 99,
                       label: `${t('card.card_title')}: ${def.type}`,
+                      actionbar: (
+                        <>
+                          <a
+                            title={t('card.download_card')}
+                            href={apiHttp(`/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.hash}`)}
+                            download
+                            data-testid="card-download"
+                          >
+                            <Button onClick={() => {}} iconOnly>
+                              <Icon name="download" size="sm" />
+                            </Button>
+                          </a>
+                        </>
+                      ),
                       component: (
                         <CardIframe
                           path={`/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.hash}`}
