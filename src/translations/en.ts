@@ -324,7 +324,7 @@ const en = {
 
     card: {
       card_title: 'Card',
-      download_card: 'Download Card HTML file'
+      download_card: 'Download Card HTML file',
     },
   },
 };

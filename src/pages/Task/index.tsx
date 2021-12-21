@@ -359,11 +359,18 @@ const Task: React.FC<TaskViewProps> = ({
                         <>
                           <a
                             title={t('card.download_card')}
-                            href={apiHttp(`/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.hash}`)}
+                            href={apiHttp(
+                              `/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.hash}`,
+                            )}
                             download
                             data-testid="card-download"
                           >
-                            <Button onClick={() => {}} iconOnly>
+                            <Button
+                              onClick={() => {
+                                /*intentional*/
+                              }}
+                              iconOnly
+                            >
                               <Icon name="download" size="sm" />
                             </Button>
                           </a>
