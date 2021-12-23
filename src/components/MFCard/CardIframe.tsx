@@ -43,7 +43,7 @@ const CardIframe: React.FC<Props> = ({ path }) => {
 const StyledCardIframe = styled.iframe`
   width: 100%;
   border: none;
-  background: rgba(0,0,0,0.03);
-`
+  background: rgba(0, 0, 0, 0.03);
+`;
 
 export default CardIframe;

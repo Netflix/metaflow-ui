@@ -351,7 +351,7 @@ const Task: React.FC<TaskViewProps> = ({
                       },
                     ]
                   : []),
-                  // Render cards at the end of sections if enabled.
+                // Render cards at the end of sections if enabled.
                 ...(FEATURE_FLAGS.CARDS && cards.status === 'Ok' && cards.data
                   ? cards.data.map((def) => ({
                       key: def.hash,
