@@ -324,6 +324,7 @@ const Task: React.FC<TaskViewProps> = ({
                     </>
                   ),
                 },
+                // Render artifacts only if enables
                 ...(FEATURE_FLAGS.ARTIFACT_TABLE
                   ? [
                       {
@@ -350,7 +351,8 @@ const Task: React.FC<TaskViewProps> = ({
                       },
                     ]
                   : []),
-                ...(cards.status === 'Ok' && cards.data
+                  // Render cards at the end of sections if enabled.
+                ...(FEATURE_FLAGS.CARDS && cards.status === 'Ok' && cards.data
                   ? cards.data.map((def) => ({
                       key: def.hash,
                       order: 99,

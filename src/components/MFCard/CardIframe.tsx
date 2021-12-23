@@ -1,14 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 import { apiHttp } from '../../constants';
 
 type Props = {
   path: string;
 };
 
+//
+// Render single card in iframe.
+//
+
 const CardIframe: React.FC<Props> = ({ path }) => {
   const ref = useRef<HTMLIFrameElement>(null);
   const [elementHeight, setElementHeight] = useState(0);
 
+  // Check iframe height every second in case it changes somehow.
   useEffect(() => {
     setInterval(() => {
       if (ref.current) {
@@ -22,13 +28,10 @@ const CardIframe: React.FC<Props> = ({ path }) => {
 
   return (
     <div>
-      <iframe
+      <StyledCardIframe
         ref={ref}
-        title={'xd'}
+        title="Card"
         style={{
-          width: '100%',
-          border: 'none',
-          background: 'rgba(0,0,0,0.03)',
           height: elementHeight + 'px',
         }}
         src={apiHttp(path)}
@@ -36,4 +39,11 @@ const CardIframe: React.FC<Props> = ({ path }) => {
     </div>
   );
 };
+
+const StyledCardIframe = styled.iframe`
+  width: 100%;
+  border: none;
+  background: rgba(0,0,0,0.03);
+`
+
 export default CardIframe;
