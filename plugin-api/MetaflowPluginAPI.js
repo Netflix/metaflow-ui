@@ -179,7 +179,7 @@ const Metaflow = {
     this.subscribe(["metadata"], fn);
   },
 
-  subscribeToRunMetadata() {
+  subscribeToRunMetadata(fn) {
     this.subscribe(["run-metadata"], fn);
   },
 };
