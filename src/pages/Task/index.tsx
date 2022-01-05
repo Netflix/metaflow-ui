@@ -187,10 +187,6 @@ const Task: React.FC<TaskViewProps> = ({
 
   const developerNote = getDocString(dagResult, stepName);
 
-  useEffect(() => {
-    addDataToStore('task', task);
-  }, [task]); // eslint-disable-line
-
   //
   // Cards
   //
