@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
-import { Run as IRun, Task as ITask, AsyncStatus, Artifact, Task } from '../../types';
+import { Run as IRun, Task as ITask, AsyncStatus, Artifact } from '../../types';
 import useResource, { Resource } from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 
