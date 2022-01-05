@@ -35,6 +35,10 @@ import useLogData, { LogData } from '../../hooks/useLogData';
 import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
 import { getTagOfType } from '../../utils/run';
+import useTaskCards, { taskCardPath } from '../../components/MFCard/useTaskCards';
+import CardIframe from '../../components/MFCard/CardIframe';
+import Button from '../../components/Button';
+import Icon from '../../components/Icon';
 
 //
 // Typedef
@@ -183,6 +187,16 @@ const Task: React.FC<TaskViewProps> = ({
 
   const developerNote = getDocString(dagResult, stepName);
 
+  useEffect(() => {
+    addDataToStore('task', task);
+  }, [task]); // eslint-disable-line
+
+  //
+  // Cards
+  //
+
+  const cards = useTaskCards(task);
+
   return (
     <TaskContainer>
       <TaskListingHeader
@@ -309,6 +323,7 @@ const Task: React.FC<TaskViewProps> = ({
                     </>
                   ),
                 },
+                // Render artifacts if enabled by feature flags.
                 ...(FEATURE_FLAGS.ARTIFACT_TABLE
                   ? [
                       {
@@ -334,6 +349,32 @@ const Task: React.FC<TaskViewProps> = ({
                         ),
                       },
                     ]
+                  : []),
+                // Render cards at the end of sections if enabled by feature flags.
+                ...(FEATURE_FLAGS.CARDS && cards.status === 'Ok' && cards.data
+                  ? cards.data.map((def) => ({
+                      key: def.hash,
+                      order: 99,
+                      label: `${t('card.card_title')}: ${def.type}`,
+                      actionbar: (
+                        <a
+                          title={t('card.download_card')}
+                          href={apiHttp(taskCardPath(task, def.hash))}
+                          download
+                          data-testid="card-download"
+                        >
+                          <Button
+                            onClick={() => {
+                              /*intentional*/
+                            }}
+                            iconOnly
+                          >
+                            <Icon name="download" size="sm" />
+                          </Button>
+                        </a>
+                      ),
+                      component: <CardIframe path={`${taskCardPath(task, def.hash)}?embed=true`} />,
+                    }))
                   : []),
               ].sort((a, b) => a.order - b.order)}
             />

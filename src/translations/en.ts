@@ -293,6 +293,7 @@ const en = {
       yesterday: 'Yesterday',
       today: 'Today',
     },
+
     debug: {
       title: 'Debug',
       feature_flags: 'Feature flags',
@@ -319,6 +320,11 @@ const en = {
       generic_msg: 'Value of feature flag can be changed server side.',
       logging_msg:
         'Logging can be used to gather information in problem situations. Logging will record all HTTP and websocket traffic which can then be downloaded as text files even in case of application crash.',
+    },
+
+    card: {
+      card_title: 'Card',
+      download_card: 'Download Card HTML file',
     },
   },
 };
