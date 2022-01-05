@@ -8,7 +8,7 @@ const FEATURE_FLAGS = {
   ARTIFACT_TABLE: (process.env.REACT_APP_FEATURE_ARTIFACT_TABLE || '0') === '1',
   ARTIFACT_SEARCH: (process.env.REACT_APP_FEATURE_ARTIFACT_SEARCH || '0') === '1',
   DEBUG_VIEW: (process.env.REACT_APP_FEATURE_DEBUG_VIEW || '1') === '1',
-  CARDS: (process.env.REACT_APP_FEATURE_CARDS || '0') === '1',
+  CARDS: (process.env.REACT_APP_FEATURE_CARDS || '1') === '1',
   CACHE_DISABLE: false,
   DB_LISTEN_DISABLE: false,
   HEARTBEAT_DISABLE: false,

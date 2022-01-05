@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
-import { Run as IRun, Task as ITask, AsyncStatus, Artifact } from '../../types';
+import { Run as IRun, Task as ITask, AsyncStatus, Artifact, Task } from '../../types';
 import useResource, { Resource } from '../../hooks/useResource';
 import { SearchFieldReturnType } from '../../hooks/useSearchField';
 
@@ -324,7 +324,7 @@ const Task: React.FC<TaskViewProps> = ({
                     </>
                   ),
                 },
-                // Render artifacts only if enables
+                // Render artifacts if enabled by feature flags.
                 ...(FEATURE_FLAGS.ARTIFACT_TABLE
                   ? [
                       {
@@ -351,36 +351,32 @@ const Task: React.FC<TaskViewProps> = ({
                       },
                     ]
                   : []),
-                // Render cards at the end of sections if enabled.
+                // Render cards at the end of sections if enabled by feature flags.
                 ...(FEATURE_FLAGS.CARDS && cards.status === 'Ok' && cards.data
                   ? cards.data.map((def) => ({
                       key: def.hash,
                       order: 99,
                       label: `${t('card.card_title')}: ${def.type}`,
                       actionbar: (
-                        <>
-                          <a
-                            title={t('card.download_card')}
-                            href={apiHttp(
-                              `/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.hash}`,
-                            )}
-                            download
-                            data-testid="card-download"
+                        <a
+                          title={t('card.download_card')}
+                          href={apiHttp(taskCardUrl(task, def.hash))}
+                          download
+                          data-testid="card-download"
+                        >
+                          <Button
+                            onClick={() => {
+                              /*intentional*/
+                            }}
+                            iconOnly
                           >
-                            <Button
-                              onClick={() => {
-                                /*intentional*/
-                              }}
-                              iconOnly
-                            >
-                              <Icon name="download" size="sm" />
-                            </Button>
-                          </a>
-                        </>
+                            <Icon name="download" size="sm" />
+                          </Button>
+                        </a>
                       ),
                       component: (
                         <CardIframe
-                          path={`/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${def.hash}?embed=true`}
+                          path={`${taskCardUrl(task, def.hash)}?embed=true`}
                         />
                       ),
                     }))
@@ -445,6 +441,10 @@ function getDocString(dagResult: Resource<DAGModel>, stepName: string): string |
 
 function getLogSectionStatus(logdata: LogData): AsyncStatus {
   return logdata.logs.length > 0 ? 'Ok' : logdata.preloadStatus === 'Loading' ? 'Loading' : logdata.status;
+}
+
+function taskCardUrl(task: Task, hash: string) {
+  return `/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${hash}`
 }
 
 function shouldShowMetadata(run: IRun) {
