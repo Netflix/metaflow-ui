@@ -35,7 +35,7 @@ import useLogData, { LogData } from '../../hooks/useLogData';
 import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
 import { getTagOfType } from '../../utils/run';
-import useTaskCards from '../../components/MFCard/useTaskCards';
+import useTaskCards, { taskCardPath } from '../../components/MFCard/useTaskCards';
 import CardIframe from '../../components/MFCard/CardIframe';
 import Button from '../../components/Button';
 import Icon from '../../components/Icon';
@@ -360,7 +360,7 @@ const Task: React.FC<TaskViewProps> = ({
                       actionbar: (
                         <a
                           title={t('card.download_card')}
-                          href={apiHttp(taskCardUrl(task, def.hash))}
+                          href={apiHttp(taskCardPath(task, def.hash))}
                           download
                           data-testid="card-download"
                         >
@@ -374,11 +374,7 @@ const Task: React.FC<TaskViewProps> = ({
                           </Button>
                         </a>
                       ),
-                      component: (
-                        <CardIframe
-                          path={`${taskCardUrl(task, def.hash)}?embed=true`}
-                        />
-                      ),
+                      component: <CardIframe path={`${taskCardPath(task, def.hash)}?embed=true`} />,
                     }))
                   : []),
               ].sort((a, b) => a.order - b.order)}
@@ -441,10 +437,6 @@ function getDocString(dagResult: Resource<DAGModel>, stepName: string): string |
 
 function getLogSectionStatus(logdata: LogData): AsyncStatus {
   return logdata.logs.length > 0 ? 'Ok' : logdata.preloadStatus === 'Loading' ? 'Loading' : logdata.status;
-}
-
-function taskCardUrl(task: Task, hash: string) {
-  return `/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards/${hash}`
 }
 
 function shouldShowMetadata(run: IRun) {
