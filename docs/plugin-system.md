@@ -16,7 +16,7 @@ yarn dev:plugin
 
 ## How plugins works
 
-Each plugin must have an HTML file as an entry point. This HTML is rendered to an iframe at a certain spot within the UI. Plugins can also have javascript and CSS files.
+Each plugin must have an HTML file as an entry point and manifest.json file for configurations. This HTML is rendered to an iframe at a certain spot within the UI. Plugins can also have javascript and CSS files.
 
 A basic plugin could be something like
 
@@ -59,7 +59,7 @@ This plugin is registered to be rendered in the run header section (path /FLOW_I
 
 ## Plugin slots
 
-There are two implemented plugin slots, `run-header` and `task-details`. The desired slot must be given as parameter to a plugin API register message.
+There are two implemented plugin slots, `run-header` and `task-details`. The desired slot must be defined in manifest.json file.
 
 ### run-header
 
