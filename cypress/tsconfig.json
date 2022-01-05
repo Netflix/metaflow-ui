@@ -3,5 +3,5 @@
     "allowJs": true,
     "types": ["cypress"]
   },
-  "include": ["**/*.*"]
+  "include": ["**/*.*", "../plugin-api/__tests__/*"]
 }

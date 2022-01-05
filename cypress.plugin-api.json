@@ -1,0 +1,12 @@
+{
+  "baseUrl": "http://localhost:3000/",
+  "component": {
+    "testFiles": "**/*.test.cypress.{js,ts,jsx,tsx}",
+    "componentFolder": "plugin-api"
+  },
+  "supportFile": "cypress/support/commands.js",
+  "screenshotOnRunFailure": false,
+  "video": false,
+  "viewportWidth": 700,
+  "viewportHeight": 700
+}

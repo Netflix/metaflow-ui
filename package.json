@@ -44,6 +44,8 @@
     "cypress:run": "cypress run",
     "test": "cypress open-ct",
     "test:ci": "cypress run-ct --config watchForFileChanges=false",
+    "test:pluginapi": "cypress open-ct --config-file ./cypress.plugin-api.json",
+    "test:pluginapi:ci": "cypress run-ct --config-file ./cypress.plugin-api.json",
     "lint": "eslint \"./src/**/*.{ts,tsx}\"",
     "eject": "react-scripts eject",
     "format": "prettier --write src",

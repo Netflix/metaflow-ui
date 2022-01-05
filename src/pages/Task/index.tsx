@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
@@ -30,7 +30,7 @@ import {
 } from '../../components/Timeline/useTaskListSettings';
 import FEATURE_FLAGS from '../../utils/FEATURE';
 import { DAGModel } from '../../components/DAG/DAGUtils';
-import { isVersionEqualOrHigher, PluginsContext } from '../../components/Plugins/PluginManager';
+import { isVersionEqualOrHigher } from '../../components/Plugins/PluginManager';
 import useLogData, { LogData } from '../../hooks/useLogData';
 import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
@@ -89,7 +89,6 @@ const Task: React.FC<TaskViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | FullScreenData>(null);
-  const { addDataToStore } = useContext(PluginsContext);
 
   //
   // Query params
@@ -187,10 +186,6 @@ const Task: React.FC<TaskViewProps> = ({
   }, [stepName, taskId, attemptId]);
 
   const developerNote = getDocString(dagResult, stepName);
-
-  useEffect(() => {
-    addDataToStore('task', task);
-  }, [task]); // eslint-disable-line
 
   //
   // Cards

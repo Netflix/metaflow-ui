@@ -1,7 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router';
 import styled from 'styled-components';
 import PLUGIN_STYLESHEET from './PluginDefaultStyleSheet';
-import { PluginCommuncationsAPI, MESSAGE_NAME, PluginsContext, RegisteredPlugin } from './PluginManager';
+import { PluginCommuncationsAPI, MESSAGE_NAME, PluginsContext, Plugin } from './PluginManager';
+import { getRouteMatch, KnownURLParams } from '../../utils/routing';
 
 //
 // Typedef
@@ -12,19 +14,24 @@ type Props = {
   url: string;
   title: string;
   onRemove?: () => void;
-  plugin: RegisteredPlugin;
+  plugin: Plugin;
+  // Way to override url params. Used for tests and plugin development
+  resourceParams?: Record<string, string>;
 };
 
 //
 // Renders single plugin to iframe. Also handles communications with plugin
 //
 
-const PluginSlot: React.FC<Props> = ({ id, url, title, plugin }) => {
+const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams }) => {
   const [height, setHeight] = useState(150);
   const _iframe = useRef<HTMLIFrameElement>(null);
   const { subscribeToDatastore, unsubscribeFromDatastore, subscribeToEvent, callEvent, unsubscribeFromEvent } =
     useContext(PluginsContext);
+  const loc = useLocation();
   const VERY_UNIQUE_ID = id + title + url;
+  const route = getRouteMatch(loc.pathname);
+
   //
   // Subscribe to messages from iframe
   //
@@ -33,8 +40,15 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin }) => {
       if (PluginCommuncationsAPI.isRegisterMessage(e) && e.data.name === title) {
         const w = _iframe.current?.contentWindow;
         if (w) {
-          w.postMessage({ type: 'ReadyToRender', config: plugin.manifest }, '*');
-          if (plugin.settings.useApplicationStyles) {
+          w.postMessage(
+            {
+              type: 'ReadyToRender',
+              config: plugin,
+              resource: resourceParams ? resourceParams : route ? convertParams(route.params) : {},
+            },
+            '*',
+          );
+          if (plugin.config.useApplicationStyles) {
             const iframeContent = _iframe?.current?.contentDocument;
             if (iframeContent) {
               iframeContent.head.innerHTML = `<style>${PLUGIN_STYLESHEET}</style>` + iframeContent.head.innerHTML;
@@ -113,11 +127,42 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin }) => {
         name={title}
         title={title}
         src={url}
-        sandbox={`allow-scripts ${plugin.manifest.parameters?.sandbox || ''}`}
+        sandbox={`allow-scripts ${plugin.parameters?.sandbox || ''}`}
       />
     </PluginSlotContainer>
   );
 };
+
+//
+//
+//
+
+type Params = {
+  flow_id: string;
+  run_number: string;
+  step_name: string;
+  task_id: string;
+};
+
+function convertParams(params: KnownURLParams | null): Partial<Params> {
+  if (!params) return {};
+
+  return Object.keys(params).reduce((obj: Partial<Params>, key) => {
+    if (key === 'flowId') {
+      obj.flow_id = params[key];
+    }
+    if (key === 'runNumber') {
+      obj.run_number = params[key];
+    }
+    if (key === 'stepName') {
+      obj.step_name = params[key];
+    }
+    if (key === 'taskId') {
+      obj.task_id = params[key];
+    }
+    return obj;
+  }, {});
+}
 
 //
 // Styles

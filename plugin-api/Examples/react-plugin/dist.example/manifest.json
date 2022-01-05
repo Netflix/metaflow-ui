@@ -1,5 +1,6 @@
 {
   "name": "React plugin",
   "version": "0.0.1",
-  "entrypoint": "index.html"
+  "entrypoint": "index.html",
+  "slot": "task-details"
 }

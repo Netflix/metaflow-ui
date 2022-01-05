@@ -73,35 +73,18 @@
 
     <div id="init"></div>
     <div id="config"></div>
-    <div id="version"></div>
-    <div id="run"></div>
-    <div id="task"></div>
+    <div id="resource"></div>
     <div id="metadata"></div>
     <script src="../../MetaflowPluginAPI.js"></script>
     <script>
       (function () {
-        Metaflow.register({ slot: 'task-details', container: 'titled-container' }, (config) => {
+        Metaflow.onReady((config, resource) => {
           document.getElementById('init').innerHTML = 'Plugin is up and ready!';
-          document.getElementById('config').innerHTML = 'Config Ready';
+          document.getElementById('resource').innerHTML = 'Resource Info: ' + JSON.stringify(resource);
 
-          Metaflow.subscribe(['appinfo', 'run', 'task', 'metadata'], (message) => {
-            switch (message.path) {
-              case 'appinfo':
-                document.getElementById(
-                  'version',
-                ).innerHTML = `App version: <code>${message.data.release_version}</code>`;
-                break;
-              case 'run':
-                document.getElementById('run').innerHTML = 'Run data ok!';
-                break;
-              case 'task':
-                document.getElementById('task').innerHTML = 'Task data ok!';
-                break;
-              case 'metadata':
-                document.getElementById('metadata').innerHTML = 'Metadata data ok!';
-                break;
-            }
-            console.log(message.data);
+
+          Metaflow.subscribeToMetadata((message) => {
+            document.getElementById('metadata').innerHTML = 'Metadata: ' + JSON.stringify(message.data, 0, 2);
             Metaflow.setHeight();
           });
         });

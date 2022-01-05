@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react';
 import TestWrapper from '../../src/utils/testing';
 import PluginGroup from '../../src/components/Plugins/PluginGroup';
-import { PluginsContext, PluginsProvider } from '../../src/components/Plugins/PluginManager';
+import { AllowedSlot, PluginsContext, PluginsProvider } from '../../src/components/Plugins/PluginManager';
 import PluginRegisterSystem from '../../src/components/Plugins/PluginRegisterSystem';
 
 const PluginDevEnvironment = (props) => {
@@ -14,14 +14,21 @@ const PluginDevEnvironment = (props) => {
   );
 };
 
-const PluginContent = ({ slot = 'task-details', baseurl = 'http://localhost:5000/dev/plugins/', data }) => {
+type Props = {
+  slot: AllowedSlot;
+  baseurl: string;
+  data: Record<string, any>;
+};
+
+const PluginContent: React.FC<Props> = ({
+  slot = 'task-details',
+  baseurl = 'http://localhost:5000/dev/plugins/',
+  data,
+}) => {
   const { addDataToStore } = useContext(PluginsContext);
 
   useEffect(() => {
-    addDataToStore('appinfo', data.appinfo);
-    addDataToStore('run', data.run)
-    addDataToStore('task', data.task)
-    addDataToStore('metadata', data.metadata)
+    addDataToStore('metadata', data.metadata);
   }, []);
 
   // NOTE: You could add some more complex interactions here to test different things like data updates for plugin.
@@ -29,7 +36,18 @@ const PluginContent = ({ slot = 'task-details', baseurl = 'http://localhost:5000
 
   return (
     <>
-      <PluginGroup id="dev-group" title="Plugin dev environment" slot={slot} baseurl={baseurl} />
+      <PluginGroup
+        id="dev-group"
+        title="Plugin dev environment"
+        slot={slot}
+        baseurl={baseurl}
+        resourceParams={{
+          flow_id: 'Dev flow',
+          run_number: '1',
+          step_name: 'start',
+          task_id: '1',
+        }}
+      />
       <PluginRegisterSystem baseurl={baseurl} />
     </>
   );

@@ -2,7 +2,7 @@
 
 ![Metaflow UI Plugin system](images/metaflow-ui-plugins.png)
 
-Metaflow UI has support for custom plugins. Plugins are limited to running in predefined slots within UI. Plugins are installed server-side on the Metaflow UI service.
+Metaflow UI has support for custom plugins. Plugins are limited to running in predefined slots within the UI. Plugins are installed server-side on the Metaflow UI service.
 
 You can find the plugin JS API and examples from the [plugin-api](../plugin-api/README.md) folder.
 
@@ -16,7 +16,7 @@ yarn dev:plugin
 
 ## How plugins works
 
-Each plugin must have an HTML file as an entrypoint. This HTML is rendered to an iframe at a certain spot within the UI. Plugins can also have javascript and CSS files.
+Each plugin must have an HTML file as an entry point and manifest.json file for configurations. This HTML is rendered to an iframe at a certain spot within the UI. Plugins can also have javascript and CSS files.
 
 A basic plugin could be something like
 
@@ -36,13 +36,13 @@ A basic plugin could be something like
     <script src="MetaflowPluginAPI.js"></script>
     <script>
       (function () {
-        Metaflow.register('run-header', () => {
+        Metaflow.onReady((configuration, resource) => {
           Metaflow.on(['customEventB'], (message) => {
             document.getElementById('received').textContent = 'Got message: ' + message.data;
           });
 
-          Metaflow.subscribe(['run'], (message) => {
-            console.log(`Run ${message.data.run_number} got update!`);
+          Metaflow.subscribeToMetadata((message) => {
+            console.log(`Meatadata for ${resource.run_number} got updated!`);
           });
         });
 
@@ -59,23 +59,15 @@ This plugin is registered to be rendered in the run header section (path /FLOW_I
 
 ## Plugin slots
 
-There are three implemented plugin slots. `run-header`, `task-details`, and `headless`. The desired slot must be given as a parameter to a plugin API register message.
+There are two implemented plugin slots, `run-header` and `task-details`. The desired slot must be defined in manifest.json file.
 
 ### run-header
 
 The `run-header` plugin will be rendered below run details in a collapsable element.
 
-### run-tab
-
-The `run-tab` plugin will be rendered as a new tab in the run's view, next to the DAG, Timeline, and Task tabs. This slot is better for plugins that need more screen space.
-
-## task-details
+### task-details
 
 The `task-details` plugin will be rendered below task details in a collapsable element.
-
-## headless
-
-The `headless` plugin will not have any visible content, but it can be used to send and receive events.
 
 ## Plugin configurations
 

@@ -4,7 +4,7 @@ import { apiHttp } from '../../constants';
 /**
  * How plugins works:
  *
- * 1) UI fetches list of plugin definitions (see type PluginManifest) from server /api/plugins.
+ * 1) UI fetches list of plugin definitions (see type Plugin) from server /api/plugins.
  * 2) UI renders all plugins to PluginRegisterSystem.
  * 3) Plugin calls register message from iframe and if everything is good plugin will be registered to be rendered on actual slot.
  *
@@ -14,7 +14,7 @@ import { apiHttp } from '../../constants';
 // Typedef
 //
 
-export type PluginManifest = {
+export type Plugin = {
   name: string;
   repository: string | null;
   ref: string | null;
@@ -23,22 +23,17 @@ export type PluginManifest = {
     name: string;
     version: string;
     entrypoint: string;
-  };
+  } & PluginSettings;
   identifier: string;
   files: string[];
 };
 
 export type PluginSettings = {
   slot: AllowedSlot;
-  visible: boolean;
+  visible?: boolean;
   container?: string; // Should be enum?
   containerProps?: Record<string, unknown>;
-  useApplicationStyles: boolean;
-};
-
-export type RegisteredPlugin = {
-  settings: PluginSettings;
-  manifest: PluginManifest;
+  useApplicationStyles?: boolean;
 };
 
 type PluginVersionInfo = {
@@ -49,17 +44,17 @@ type PluginVersionInfo = {
 // Constants. Plugin will not render if it doesn't satisfy SUPPORTED_PLUGIN_API_VERSION.
 //
 
-export type AllowedSlot = 'run-header' | 'run-tab' | 'task-details' | 'headless';
+export type AllowedSlot = 'task-details' | 'run-header';
 
 const SUPPORTED_PLUGIN_API_VERSION = '0.13.0';
-const RECOMMENDED_PLUGIN_API_VERSION = '0.13.0';
-const ALLOWED_SLOTS: AllowedSlot[] = ['run-header', 'run-tab', 'task-details', 'headless'];
+const RECOMMENDED_PLUGIN_API_VERSION = '1.0.0';
+const ALLOWED_SLOTS: AllowedSlot[] = ['task-details', 'run-header'];
 
 //
 // Utils
 //
 
-export function pluginPath(config: PluginManifest, baseurl?: string): string {
+export function pluginPath(config: Plugin, baseurl?: string): string {
   const path = `${config.name}/${config.config.entrypoint}`;
   return baseurl ? `${baseurl}/${path}` : apiHttp(`/plugin/${path}`);
 }
@@ -118,16 +113,14 @@ export const PluginCommuncationsAPI = {
   },
   isRegisterMessage(
     event: MessageEvent,
-  ): ({ name: string; slot: AllowedSlot; version: { api: string } } & Record<string, unknown>) | false {
+  ): ({ name: string; version: { api: string } } & Record<string, unknown>) | false {
     if (
       event.data?.type === MESSAGE_NAME.REGISTER &&
       typeof event.data?.name === 'string' &&
-      typeof event.data?.slot === 'string' &&
-      ALLOWED_SLOTS.includes(event.data.slot) &&
       typeof event.data?.version === 'object' &&
       typeof event.data?.version?.api === 'string'
     ) {
-      return { name: event.data.name, slot: event.data.slot, version: event.data.version, ...event.data };
+      return { name: event.data.name, version: event.data.version, ...event.data };
     }
     return false;
   },
@@ -149,9 +142,9 @@ export const PluginCommuncationsAPI = {
 //
 
 type PluginsContextProps = {
-  plugins: RegisteredPlugin[];
-  getPluginsBySlot: (str: AllowedSlot) => RegisteredPlugin[];
-  register: (settings: Partial<PluginSettings>, manifest: PluginManifest, version: PluginVersionInfo) => void;
+  plugins: Plugin[];
+  getPluginsBySlot: (str: AllowedSlot) => Plugin[];
+  register: (manifest: Plugin, version: PluginVersionInfo) => void;
   subscribeToDatastore: (key: string, path: string, fn: (data: unknown) => void) => void;
   unsubscribeFromDatastore: (key: string) => void;
   addDataToStore: (path: string, data: unknown) => void;
@@ -196,17 +189,17 @@ export const PluginsContext = React.createContext<PluginsContextProps>({} as Plu
 //
 
 export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [plugins, setPlugins] = useState<RegisteredPlugin[]>([]);
+  const [plugins, setPlugins] = useState<Plugin[]>([]);
 
   function getPluginsBySlot(slot: string) {
-    return plugins.filter((item) => item.settings.slot === slot);
+    return plugins.filter((item) => item.config.slot === slot);
   }
 
-  function register(settings: Partial<PluginSettings>, manifest: PluginManifest, version: PluginVersionInfo) {
+  function register(manifest: Plugin, version: PluginVersionInfo) {
     const alreadyRegistered =
-      plugins.findIndex((p) => p.manifest.name === manifest.name && p.settings.slot === settings.slot) > -1;
+      plugins.findIndex((p) => p.name === manifest.name && p.config.slot === manifest.config.slot) > -1;
 
-    const slot = settings.slot;
+    const slot = manifest.config.slot;
 
     if (!slot || ALLOWED_SLOTS.indexOf(slot) === -1) {
       console.warn(`Plugin '${manifest.name}' did not give valid slot to register.`);
@@ -231,7 +224,7 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
         console.warn(`Plugin '${manifest.name}' didn't provide plugin API version.`);
       }
 
-      const newPlugin = { settings: { visible: true, useApplicationStyles: true, ...settings, slot }, manifest };
+      const newPlugin = { ...manifest, config: { visible: true, useApplicationStyles: true, ...manifest.config } };
 
       setPlugins((items) => [...items, newPlugin]);
     }
@@ -286,8 +279,8 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (PluginCommuncationsAPI.isUpdatePluginMessage(data)) {
         setPlugins((items) =>
           items.map((pl) =>
-            pl.manifest.name === data.name && pl.settings.slot === data.slot
-              ? { ...pl, settings: { ...pl.settings, visible: data.visible } }
+            pl.name === data.name && pl.config.slot === data.slot
+              ? { ...pl, config: { ...pl.config, visible: data.visible } }
               : pl,
           ),
         );
