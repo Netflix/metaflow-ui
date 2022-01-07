@@ -323,6 +323,7 @@ const en = {
     },
 
     card: {
+      card_id_title: 'Card ID',
       card_title: 'Card',
       download_card: 'Download Card HTML file',
     },

@@ -351,7 +351,7 @@ const Task: React.FC<TaskViewProps> = ({
                   ? cards.data.map((def) => ({
                       key: def.hash,
                       order: 99,
-                      label: `${t('card.card_title')}: ${def.type}`,
+                      label: def.id ? `${t('card.card_id_title')}: ${def.id}` : `${t('card.card_title')}: ${def.type}`,
                       actionbar: (
                         <a
                           title={t('card.download_card')}
