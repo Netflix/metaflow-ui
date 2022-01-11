@@ -18,6 +18,25 @@ Plugins will use JS API to communicate with the host application. Plugins must c
 | setHeight              | (height: number \| undefined) => void                                          | Update height of iframe container for plugin. |
 | setVisibility          | (visibility: boolean) => void                                                  | Update visibility of the plugin. Note that if will stay in iframe even if visibility is set false. |
 
+Type of metadata is 
+
+```typescript
+type Metadata = {
+  flow_id: string;
+  run_number: string;
+  step_name: string;
+  task_id: string;
+  user_name: string;
+  ts_epoch: number;
+  tags?: string[];
+  system_tags: string[];
+  id: number;
+  field_name: string;
+  value: string;
+  type: string;
+}
+```
+
 ## How to
 
 Here are three different ways to use the plugin API file.
