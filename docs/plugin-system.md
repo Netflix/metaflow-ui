@@ -18,7 +18,7 @@ yarn dev:plugin
 
 Each plugin must have an HTML file as an entry point and manifest.json file for configurations. This HTML is rendered to an iframe at a certain spot within the UI. Plugins can also have javascript and CSS files.
 
-A basic plugin could be something like
+Example of basic plugin HTML:
 
 ```html
 <!DOCTYPE html>
@@ -42,7 +42,7 @@ A basic plugin could be something like
           });
 
           Metaflow.subscribeToMetadata((message) => {
-            console.log(`Meatadata for ${resource.run_number} got updated!`);
+            console.log(`Metadata for ${resource.run_number} got updated! Metadata array for the task is ${JSON.stringify(message.data)}`);
           });
         });
 
@@ -55,7 +55,20 @@ A basic plugin could be something like
 </html>
 ```
 
-This plugin is registered to be rendered in the run header section (path /FLOW_ID/RUN_NUMBER in application). It subscribes to a custom event "customEvent" and is prepared to send another custom event "customEvent" on button click.
+Example of manifest.json
+
+```json
+{
+  "name": "Hello world plugin",
+  "version": "0.0.1",
+  "entrypoint": "plugin.html",
+  "slot": "task-details", 
+  "container": "collapsable"
+}
+```
+
+
+This plugin is registered to be rendered in the task details section (path /FLOW_ID/RUN_NUMBER/STEP_NAME/TASK_ID in application). It subscribes to a custom event "customEvent" and is prepared to send another custom event "customEvent" on button click. It also subscribes for updates about task Metadata.
 
 ## Plugin slots
 
