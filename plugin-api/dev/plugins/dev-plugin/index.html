@@ -37,8 +37,8 @@
 
     <p>
       Plugin contains at least one html file and manifest.json. HTML file contains everything plugin needs to render and
-      manifest file contains configurations for the plugin. In development tooling basic information is mocked in
-      test file instead.
+      manifest file contains configurations for the plugin. In development tooling basic information is mocked in test
+      file instead.
     </p>
 
     <p>
@@ -54,7 +54,10 @@
     <p><b>Recommended workflow</b></p>
 
     <ol>
-      <li>Create new folder to <code>plugin-api/dev/plugins</code> and initialise it as repository to your version control.</li>
+      <li>
+        Create new folder to <code>plugin-api/dev/plugins</code> and initialise it as repository to your version
+        control.
+      </li>
       <li>Add <code>index.html</code> and <code>manifest.json</code></li>
       <li>
         Change <code>PLUGIN_DEFINITIONS[0].name from plugin-api/dev/index.plugin-dev.tsx</code> to be your folder name.
@@ -82,9 +85,8 @@
           document.getElementById('init').innerHTML = 'Plugin is up and ready!';
           document.getElementById('resource').innerHTML = 'Resource Info: ' + JSON.stringify(resource);
 
-
           Metaflow.subscribeToMetadata((message) => {
-            document.getElementById('metadata').innerHTML = 'Metadata: ' + JSON.stringify(message.data, 0, 2);
+            document.getElementById('metadata').innerHTML = 'Metadata: ' + JSON.stringify(message, 0, 2);
             Metaflow.setHeight();
           });
         });

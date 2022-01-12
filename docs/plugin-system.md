@@ -42,7 +42,7 @@ Example of basic plugin HTML:
           });
 
           Metaflow.subscribeToMetadata((message) => {
-            console.log(`Metadata for ${resource.run_number} got updated! Metadata array for the task is ${JSON.stringify(message.data)}`);
+            console.log(`Metadata for ${resource.run_number} got updated! Metadata object for the task is ${JSON.stringify(message.data)}`);
           });
         });
 

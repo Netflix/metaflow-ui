@@ -23,6 +23,7 @@ import useTaskListSettings from '../../components/Timeline/useTaskListSettings';
 import useResource from '../../hooks/useResource';
 import { DAGModel } from '../../components/DAG/DAGUtils';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
+import { metadataToRecord } from '../../utils/metadata';
 
 //
 // Typedef
@@ -82,7 +83,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       step_name: '_parameters',
     },
     onUpdate(items) {
-      plContext.addDataToStore('run-metadata', items);
+      plContext.addDataToStore('run-metadata', metadataToRecord(items));
     },
   });
 
@@ -250,7 +251,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                   )}
                 </ErrorBoundary>
               ),
-            }
+            },
           ]}
         />
       </RunPageContainer>
