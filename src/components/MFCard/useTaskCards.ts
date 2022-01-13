@@ -2,9 +2,11 @@ import useResource, { Resource } from '../../hooks/useResource';
 import { Task } from '../../types';
 
 export type CardDefinition = {
+  // ID of custom card
+  id?: string;
   // Name of card
   type: string;
-  // Id of card, used for fetching card HTML
+  // Used for fetching card HTML
   hash: string;
 };
 
