@@ -14,6 +14,8 @@ The easiest way to start developing plugins is to start up a local plugin develo
 yarn dev:plugin
 ```
 
+See detailed guide for plugin development [here](./plugin-guide.md).
+
 ## How plugins works
 
 Each plugin must have an HTML file as an entry point and manifest.json file for configurations. This HTML is rendered to an iframe at a certain spot within the UI. Plugins can also have javascript and CSS files.
