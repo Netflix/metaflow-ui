@@ -4,22 +4,22 @@ import { Metaflow } from '../../MetaflowPluginAPI'
 import './style.css';
 
 function App() {
-  const [run, setRun] = useState(null)
+  const [metadata, setMetadata] = useState(null)
 
-  // subscribe to listen run resource.
+  // subscribe to listen metadata resource.
   useEffect(() => {
-    Metaflow.subscribe(['run'], (event) => {
-      setRun(event.data);
+    Metaflow.subscribeToMetadata((event) => {
+      setMetadata(event.data);
     });
-    Metaflow.setHeight(100)
+    Metaflow.setHeight()
   }, []);
 
   return (
     <div className="App">
       <div>
-        {run ? (
+        {metadata ? (
           <div>
-            <div>{run.flow_id}/{run.run_number}</div>
+            <div>{metadata.length}</div>
           </div>
         ) : 'Waiting for data'}
       </div>
@@ -28,7 +28,7 @@ function App() {
 }
 
 
-Metaflow.register('run-header', () => {
+Metaflow.onReady(() => {
   ReactDOM.render(
     <React.StrictMode>
       <App />

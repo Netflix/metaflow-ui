@@ -2,12 +2,12 @@ import {
   cleanupVersionNumber,
   isVersionEqualOrHigher,
   MESSAGE_NAME,
+  Plugin,
   PluginCommuncationsAPI,
-  PluginManifest,
   pluginPath,
 } from '../PluginManager';
 
-function createPluginManifest(d: Partial<PluginManifest> = {}): PluginManifest {
+function createPluginManifest(d: Partial<Plugin> = {}): Plugin {
   return {
     name: 'Plugin name',
     repository: null,
@@ -17,6 +17,7 @@ function createPluginManifest(d: Partial<PluginManifest> = {}): PluginManifest {
       name: 'Plugin name',
       version: '1.0.0',
       entrypoint: 'index.html',
+      slot: 'run-header',
     },
     identifier: 'id',
     files: ['index.html'],
@@ -67,7 +68,7 @@ describe('Plugins utils', () => {
       pluginPath(
         createPluginManifest({
           name: 'another_name',
-          config: { name: 'another_name', entrypoint: 'plugin.html', version: '0' },
+          config: { name: 'another_name', entrypoint: 'plugin.html', version: '0', slot: 'run-header' },
         }),
       ),
     ).to.equal(`http://${window.location.host}/api/plugin/another_name/plugin.html`);
@@ -123,15 +124,10 @@ describe('Plugins utils', () => {
     expect(
       PluginCommuncationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent', name: 'test' } } as MessageEvent),
     ).to.equal(false);
-    expect(
-      PluginCommuncationsAPI.isRegisterMessage({
-        data: { type: 'PluginRegisterEvent', name: 'test', slot: 'test' },
-      } as MessageEvent),
-    ).to.equal(false);
 
     // Correct message
     const correctMessage = {
-      data: { type: 'PluginRegisterEvent', name: 'test', slot: 'task-details', version: { api: '1.0.0' } },
+      data: { type: 'PluginRegisterEvent', name: 'test', version: { api: '1.0.0' } },
     };
     const result = PluginCommuncationsAPI.isRegisterMessage(correctMessage as MessageEvent);
     expect((result as any).type).to.equal(correctMessage.data.type);
@@ -145,11 +141,6 @@ describe('Plugins utils', () => {
     expect(
       PluginCommuncationsAPI.isRegisterMessage({
         data: { ...correctMessage.data, name: 123 },
-      } as MessageEvent),
-    ).to.equal(false);
-    expect(
-      PluginCommuncationsAPI.isRegisterMessage({
-        data: { ...correctMessage.data, slot: 123 },
       } as MessageEvent),
     ).to.equal(false);
   });

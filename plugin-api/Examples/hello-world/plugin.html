@@ -17,15 +17,12 @@
   <script src="MetaflowPluginAPI.js"></script>
   <script>
     (function () {
-      // Call register function to tell UI where application should be rendered. Callback will be called after
-      // plugin is placed to correct spot in UI.
-      Metaflow.register({ slot: 'run-header', container: 'titled-container'}, () => {
+      // Execute plugin code on Metaflow.onReady to make sure that it has required configuration and resource info.
+      Metaflow.onReady((config, resource) => {
         // Set fixed height for plugin
         Metaflow.setHeight(40);
-        // Subscribe to any update on run data and show run number in plugin.
-        Metaflow.subscribe(['run'], (event) => {
-          document.getElementById('container').innerHTML = `Hello World! Run number is ${event.data.run_number}`;
-        });
+        // Show run id from URL.
+        document.getElementById('container').innerHTML = `Hello World! Run number is ${resource.run_number}`;
       })
     })();
   </script>

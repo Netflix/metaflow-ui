@@ -1,5 +1,7 @@
 {
   "name": "Hello world",
   "version": "0.0.1",
-  "entrypoint": "plugin.html"
+  "entrypoint": "plugin.html",
+  "slot": "run-header", 
+  "container": "titled-container"
 }

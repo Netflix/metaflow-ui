@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import useRowData from '../../components/Timeline/useTaskData';
 import { getPath } from '../../utils/routing';
-import { Run as IRun } from '../../types';
+import { Metadata, Run as IRun } from '../../types';
 
 import TaskViewContainer from '../Task';
 import { APIErrorRenderer } from '../../components/GenericError';
@@ -21,9 +21,7 @@ import styled from 'styled-components';
 import { FixedContent } from '../../components/Structure';
 import useTaskListSettings from '../../components/Timeline/useTaskListSettings';
 import useResource from '../../hooks/useResource';
-import { pluginPath, PluginsContext } from '../../components/Plugins/PluginManager';
-import PluginSlot from '../../components/Plugins/PluginSlot';
-import Icon from '../../components/Icon';
+import { PluginsContext } from '../../components/Plugins/PluginManager';
 import { GraphModel } from '../../components/DAG/DAGUtils';
 
 //
@@ -42,7 +40,6 @@ type RunPageProps = {
 const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
   const plContext = useContext(PluginsContext);
-  const plugins = plContext.getPluginsBySlot('run-tab');
 
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(params.viewType ? params.viewType : 'timeline');
@@ -72,6 +69,22 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     params.flowId,
     run.run_number.toString(),
   );
+
+  //
+  // Metadata for plugins
+  //
+
+  useResource<Metadata[], Metadata>({
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/metadata`,
+    initialData: [],
+    subscribeToEvents: true,
+    queryParams: {
+      step_name: '_parameters',
+    },
+    onUpdate(items) {
+      plContext.addDataToStore('run-metadata', items);
+    },
+  });
 
   //
   // Search API
@@ -237,26 +250,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                   )}
                 </ErrorBoundary>
               ),
-            },
-            ...plugins.map((pl) => ({
-              key: pl.manifest.identifier,
-              label: (
-                <>
-                  <Icon name="plugin" /> {pl.manifest.name}
-                </>
-              ),
-              linkTo: getPath.runSubView(params.flowId, params.runNumber, pl.manifest.identifier),
-              component: (
-                <TabPluginContainer>
-                  <PluginSlot
-                    id={pl.manifest.identifier}
-                    plugin={pl}
-                    url={pluginPath(pl.manifest)}
-                    title={pl.manifest.name}
-                  />
-                </TabPluginContainer>
-              ),
-            })),
+            }
           ]}
         />
       </RunPageContainer>
@@ -268,15 +262,6 @@ const RunPageContainer = styled(FixedContent)<{ visible: boolean }>`
   transition: 0.5s opacity;
   opacity: ${(p) => (p.visible ? '1' : '0')};
   height: calc(100vh - 9rem);
-`;
-
-const TabPluginContainer = styled.div`
-  width: 100%;
-  height: 100%;
-
-  iframe {
-    min-height: 100%;
-  }
 `;
 
 export default RunPage;

@@ -1,70 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-    }
+      .container {
+        display: flex;
+      }
 
-    .container {
-      display: flex;
-    }
+      .column {
+        padding: 0 15px;
+      }
 
-    .column {
-      padding: 0 15px;
-    }
+      #runs-list {
+        display: flex;
+      }
 
-    #runs-list {
-      display: flex;
-    }
+      .run {
+        background: #f7f7f7;
+        padding: 1rem;
+        border-radius: 4px;
+        margin-right: 1rem;
+      }
 
-    .run {
-      background: #f7f7f7;
-      padding: 1rem;
-      border-radius: 4px;
-      margin-right: 1rem;
-    }
+      .run a {
+        margin-right: 15px;
+        color: #000;
+      }
+    </style>
+  </head>
 
-    .run a {
-      margin-right: 15px;
-      color: #000;
-    }
-  </style>
-</head>
-
-<body>
-  <div class="container" id="container">
-    <div class="column">
-      <div id="runs-list"></div>
+  <body>
+    <div class="container" id="container">
+      <div class="column">
+        <div id="runs-list"></div>
+      </div>
     </div>
-  </div>
 
-  <!--  REMEMBER TO UPDATE THIS LINK TO ACTUAL METAFLOW JS API FILE. Check README for more info -->
-  <script src="MetaflowPluginAPI.js"></script>
-  <script>
-    (function () {
-      // Register plugin to run header section
-      Metaflow.register('run-header', (config) => {
-        let isFetched = false;
-        let currentRun;
-
-        // Function to fetch and add runs to DOM
-        function getRuns() {
-          if (isFetched || !currentRun) return;
-          isFetched = true;
+    <!--  REMEMBER TO UPDATE THIS LINK TO ACTUAL METAFLOW JS API FILE. Check README for more info -->
+    <script src="MetaflowPluginAPI.js"></script>
+    <script>
+      (function () {
+        function getRuns(config, resource) {
+          if (!resource.run_number) return;
           // Fetch recent runs from API
-          fetch(`/api/flows/${currentRun.flow_id}/runs?_order=-ts_epoch&_limit=6`)
-            .then(response => response.json())
-            .then(response => {
-              const newRows = []
+          fetch(`/api/flows/${resource.flow_id}/runs?_order=-ts_epoch&_limit=6`)
+            .then((response) => response.json())
+            .then((response) => {
+              const newRows = [];
               let index = 0;
               for (const item of response.data) {
                 // Create container element for row in runs list
@@ -73,7 +65,7 @@
                 el.classList = ['run'];
                 // Create link element with run number
                 let linkEl = document.createElement('a');
-                linkEl.href = `/${currentRun.flow_id}/${item.run_number}`;
+                linkEl.href = `/${resource.flow_id}/${item.run_number}`;
                 linkEl.target = '_parent';
                 linkEl.textContent = item.run_number;
                 // Show duration for run
@@ -88,21 +80,12 @@
               }
               Metaflow.setHeight();
             })
-            .catch(e => console.log('Something went wrong'));
+            .catch((e) => console.log('Something went wrong'));
         }
 
-        // Subscribe to run resrouce from app. When ever there is run update in application
-        // this callback will get triggered.
-        Metaflow.subscribe(['run'], (message) => {
-          if (message.path === 'run') {
-            currentRun = message.data;
-            getRuns();
-          }
-        })
-      });
-
-    })();
-  </script>
-</body>
-
+        // Register plugin to run header section
+        Metaflow.onReady(getRuns);
+      })();
+    </script>
+  </body>
 </html>
