@@ -16,7 +16,7 @@ export type DAGModelItem = {
 };
 
 export type StepInfoModel = Record<string, DAGModelItem>;
-export type StepStructureModel = string | Array<StepStructureModel>;
+export type GraphStructureModel = string | Array<GraphStructureModel>;
 
 export type GraphModel = {
   file: string;
@@ -25,8 +25,8 @@ export type GraphModel = {
     type: string;
   }[];
   constants: Array<string>;
-  steps_info: StepInfoModel;
-  steps_structure: Array<StepStructureModel>;
+  steps: StepInfoModel;
+  graph_structure: Array<GraphStructureModel>;
   doc?: string;
   decorators: Array<string>;
 };

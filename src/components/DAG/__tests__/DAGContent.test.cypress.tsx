@@ -13,7 +13,7 @@ const data = {
     },
   ],
   constants: [],
-  steps_info: {
+  steps: {
     start: {
       name: 'start',
       type: 'start' as const,
@@ -69,7 +69,7 @@ const data = {
       foreach_artifact: null,
     },
   },
-  steps_structure: ['start', 'regular_step', 'prepare_foreach', [['process_foreach']], 'join', 'end'],
+  graph_structure: ['start', 'regular_step', 'prepare_foreach', [['process_foreach']], 'join', 'end'],
   doc: '',
   decorators: [],
 };
@@ -83,7 +83,7 @@ const data2 = {
     },
   ],
   constants: [],
-  steps_info: {
+  steps: {
     start: {
       name: 'start',
       type: 'split' as const,
@@ -175,7 +175,7 @@ const data2 = {
       foreach_artifact: null,
     },
   },
-  steps_structure: [
+  graph_structure: [
     'start',
     [
       ['regular_step', 'prepare_another_foreach', [['another_foreach']], 'join_another_foreach'],
