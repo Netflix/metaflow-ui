@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import useComponentSize, { ComponentSize } from '@rehooks/component-size';
 import useWindowSize from '../../../hooks/useWindowSize';
 import { Run, TaskStatus } from '../../../types';
-import { GraphModel, DAGModelItem, StepStructureModel } from '../DAGUtils';
+import { GraphModel, DAGModelItem, GraphStructureModel } from '../DAGUtils';
 import { StepLineData } from '../../Timeline/taskdataUtils';
 import Icon from '../../Icon';
 import { useTranslation } from 'react-i18next';
@@ -29,9 +29,9 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run,
   const WindowSize = useWindowSize();
   const history = useHistory();
 
-  const stepsWithStatus: StepInfoModelWithStatus = Object.keys(graphData.steps_info).reduce((obj, key) => {
+  const stepsWithStatus: StepInfoModelWithStatus = Object.keys(graphData.steps).reduce((obj, key) => {
     const addedStatus = {
-      ...graphData.steps_info[key],
+      ...graphData.steps[key],
       status: stepData.find((sd) => sd.step_name === key)?.status || ('unknown' as const),
     };
 
@@ -54,7 +54,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run,
       }}
     >
       <ElementContainer variant="root" lined={false}>
-        <DAGBranch steps={stepsWithStatus} structure={graphData.steps_structure} goToStep={goToStep} />
+        <DAGBranch steps={stepsWithStatus} structure={graphData.graph_structure} goToStep={goToStep} />
       </ElementContainer>
     </DAGRenderingContainer>
   );
@@ -69,7 +69,7 @@ type StepInfoModelWithStatus = Record<string, DAGModelItemWithStatus>;
 
 type DAGBranchProps = {
   steps: StepInfoModelWithStatus;
-  structure: Array<StepStructureModel>;
+  structure: Array<GraphStructureModel>;
   goToStep: (step: string) => void;
 };
 
@@ -107,14 +107,14 @@ const DAGBranch: React.FC<DAGBranchProps> = ({ steps, structure, goToStep }) => 
 type DAGContainerItemProps = {
   steps: StepInfoModelWithStatus;
   type: 'split' | 'foreach';
-  branch: StepStructureModel[];
+  branch: GraphStructureModel[];
   goToStep: (step: string) => void;
 };
 
 const DAGContainerItem: React.FC<DAGContainerItemProps> = ({ steps, type, branch, goToStep }) => {
   const content = Array.isArray(branch) ? (
     branch.map((b, index) => (
-      <DAGBranch key={`branch-${index}`} steps={steps} structure={b as StepStructureModel[]} goToStep={goToStep} />
+      <DAGBranch key={`branch-${index}`} steps={steps} structure={b as GraphStructureModel[]} goToStep={goToStep} />
     ))
   ) : (
     <DAGBranch steps={steps} structure={branch} goToStep={goToStep} />
