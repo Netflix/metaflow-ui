@@ -65,7 +65,6 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
     let t: number;
 
     if (poll) {
-      console.log(expectedCards, data, fetchTime);
       if (expectedCards.length === data.length || fetchTime + POLLING_TIMEOUT < Date.now()) {
         setPoll(false);
       } else {
