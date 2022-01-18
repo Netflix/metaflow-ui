@@ -38,6 +38,8 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
   const aborter = useRef<AbortController>();
 
   function fetchCards(path: string) {
+    setPoll(false);
+
     if (aborter.current) {
       aborter.current.abort();
     }
@@ -63,8 +65,9 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
   // Poll for new cards
   useEffect(() => {
     let t: number;
-
+    // Check if polling is activated (activated after finished requests).
     if (poll) {
+      // if we have enough cards (as presented by decorators list) or timeout has passed, skip request.
       if (expectedCards.length === data.length || fetchTime + POLLING_TIMEOUT < Date.now()) {
         setPoll(false);
       } else {
