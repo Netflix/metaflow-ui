@@ -18,6 +18,8 @@ export type DAGModelItem = {
 export type StepInfoModel = Record<string, DAGModelItem>;
 export type GraphStructureModel = string | Array<GraphStructureModel>;
 
+export type Decorator = { name: string, attributes: Record<string, string>, statically_defined: boolean };
+
 export type GraphModel = {
   file: string;
   parameters: {
@@ -28,5 +30,5 @@ export type GraphModel = {
   steps: StepInfoModel;
   graph_structure: Array<GraphStructureModel>;
   doc?: string;
-  decorators: Array<string>;
+  decorators: Array<Decorator>;
 };
