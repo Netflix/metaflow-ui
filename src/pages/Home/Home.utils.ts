@@ -87,7 +87,11 @@ export function makeWebsocketParameters(
 // Check if current parameters are default params
 //
 export function isDefaultParams(params: Record<string, string>, checkTimerange: boolean, timezone?: string): boolean {
-  if (Object.keys(params).length === 4 || Object.keys(params).length === 5) {
+  const keys = Object.keys(params);
+  if (
+    (keys.length === 4 || keys.length === 5) &&
+    isAllowedValues(keys, ['_order', '_limit', '_group_limit', 'status', 'timerange_start'])
+  ) {
     if (
       params._order === defaultHomeParameters._order &&
       params._limit === defaultHomeParameters._limit &&
@@ -100,6 +104,10 @@ export function isDefaultParams(params: Record<string, string>, checkTimerange: 
     }
   }
   return false;
+}
+
+function isAllowedValues(source: string[], values: string[]): boolean {
+  return source.every((val) => values.includes(val));
 }
 
 //
