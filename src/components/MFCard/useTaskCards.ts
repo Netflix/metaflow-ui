@@ -37,8 +37,6 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
     return timeout;
   }, 0);
   const [data, setData] = useState<CardDefinition[]>([]);
-  // Time of initial request
-  const [fetchTime, setFetchTime] = useState(Date.now());
   const [poll, setPoll] = useState(false);
 
   const aborter = useRef<AbortController>();
@@ -60,23 +58,24 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
           setData(result.data);
         }
       })
-      .catch((e) => {
-        console.warn(e);
+      .catch(() => {
+        console.warn('Cards request failed');
       })
       .finally(() => {
         setPoll(true);
       });
   }
 
+  const taskFinishedAt = task?.finished_at;
   // Poll for new cards
   useEffect(() => {
     let t: number;
     // Check if polling is activated (activated after finished requests).
     if (poll) {
-      // Timeout timer is: time of first request + timeout from decorator attributes + 30seconds extra time.
-      const timeout = fetchTime + (maxTimeout + 30) * 1000;
+      // Timeout timer is: task.finished_at + timeout from decorator attributes + 30seconds extra time.
+      const timeout = taskFinishedAt ? taskFinishedAt + (maxTimeout + 30) * 1000 : false;
       // if we have enough cards (as presented by decorators list) or timeout has passed, skip request.
-      if (expectedCards.length === data.length || timeout < Date.now()) {
+      if (expectedCards.length <= data.length || (timeout && timeout < Date.now())) {
         setPoll(false);
       } else {
         t = window.setTimeout(() => {
@@ -88,11 +87,10 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
     return () => {
       clearTimeout(t);
     };
-  }, [url, poll, data, expectedCards, fetchTime, maxTimeout]);
+  }, [url, poll, data, expectedCards, maxTimeout, taskFinishedAt]);
 
   // Initial fetch
   useEffect(() => {
-    setFetchTime(Date.now());
     fetchCards(url);
 
     return () => {

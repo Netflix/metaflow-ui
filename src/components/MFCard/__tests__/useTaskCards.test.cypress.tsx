@@ -12,7 +12,7 @@ const MockComponent: React.FC<{ task?: Task | null; decos?: Decorator[] }> = ({ 
   return (
     <div data-testid="cardslist">
       {cards.map((value) => (
-        <div data-testid="card">{JSON.stringify(value)}</div>
+        <div key={value.hash} data-testid="card">{JSON.stringify(value)}</div>
       ))}
     </div>
   );
@@ -46,7 +46,7 @@ describe('useTaskCards', () => {
 
   it('should return 1 card definition first and second after a while', () => {
     cy.intercept('**/cards', createDataModel([{ id: '123', type: 'xd', hash: 'unique1' }], {}))
-    mount(<MockComponent task={createTask({})} decos={[
+    mount(<MockComponent task={createTask({ finished_at: Date.now() })} decos={[
       { name: 'card', attributes: {}, statically_defined: false },
       { name: 'card', attributes: {}, statically_defined: false }
     ]} />);
