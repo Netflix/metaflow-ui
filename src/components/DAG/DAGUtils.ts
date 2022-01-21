@@ -11,12 +11,14 @@ export type DAGModelItem = {
   doc?: string;
   name: string;
   line: number;
-  decorators: string[];
+  decorators?: Array<Decorator>;
   foreach_artifact: string | null;
 };
 
 export type StepInfoModel = Record<string, DAGModelItem>;
 export type GraphStructureModel = string | Array<GraphStructureModel>;
+
+export type Decorator = { name: string; attributes: Record<string, string | number>; statically_defined: boolean };
 
 export type GraphModel = {
   file: string;
@@ -28,5 +30,4 @@ export type GraphModel = {
   steps: StepInfoModel;
   graph_structure: Array<GraphStructureModel>;
   doc?: string;
-  decorators: Array<string>;
 };
