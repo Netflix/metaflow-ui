@@ -21,9 +21,9 @@ import styled from 'styled-components';
 import { FixedContent } from '../../components/Structure';
 import useTaskListSettings from '../../components/Timeline/useTaskListSettings';
 import useResource from '../../hooks/useResource';
-import { DAGModel } from '../../components/DAG/DAGUtils';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
 import { metadataToRecord } from '../../utils/metadata';
+import { GraphModel } from '../../components/DAG/DAGUtils';
 
 //
 // Typedef
@@ -176,7 +176,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   //
   // DAG data, fetch here to prevent multiple fetches when switching tabs
   //
-  const dagResult = useResource<DAGModel, DAGModel>({
+  const dagResult = useResource<GraphModel, GraphModel>({
     url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
     subscribeToEvents: false,
     initialData: null,

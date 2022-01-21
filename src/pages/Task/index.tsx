@@ -29,8 +29,8 @@ import {
   TaskSettingsState,
 } from '../../components/Timeline/useTaskListSettings';
 import FEATURE_FLAGS from '../../utils/FEATURE';
-import { DAGModel } from '../../components/DAG/DAGUtils';
 import { isVersionEqualOrHigher } from '../../components/Plugins/PluginManager';
+import { GraphModel } from '../../components/DAG/DAGUtils';
 import useLogData, { LogData } from '../../hooks/useLogData';
 import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
@@ -59,7 +59,7 @@ type TaskViewProps = {
   isAnyGroupOpen: boolean;
   setQueryParam: SetQuery<TaskSettingsQueryParameters>;
   onModeSelect: (mode: TaskListMode) => void;
-  dagResult: Resource<DAGModel>;
+  dagResult: Resource<GraphModel>;
 };
 
 type FullScreenData =
@@ -191,7 +191,10 @@ const Task: React.FC<TaskViewProps> = ({
   // Cards
   //
 
-  const cards = useTaskCards(task);
+  const cards = useTaskCards(
+    task,
+    task && dagResult.data ? dagResult.data.steps[task.step_name]?.decorators || [] : [],
+  );
 
   return (
     <TaskContainer>
@@ -347,11 +350,11 @@ const Task: React.FC<TaskViewProps> = ({
                     ]
                   : []),
                 // Render cards at the end of sections if enabled by feature flags.
-                ...(FEATURE_FLAGS.CARDS && cards.status === 'Ok' && cards.data
-                  ? cards.data.map((def) => ({
+                ...(FEATURE_FLAGS.CARDS
+                  ? cards.map((def) => ({
                       key: def.hash,
                       order: 99,
-                      label: `${t('card.card_title')}: ${def.type}`,
+                      label: def.id ? `${t('card.card_id_title')}: ${def.id}` : `${t('card.card_title')}: ${def.type}`,
                       actionbar: (
                         <a
                           title={t('card.download_card')}
@@ -418,9 +421,9 @@ const Task: React.FC<TaskViewProps> = ({
 // Utils
 //
 
-function getDocString(dagResult: Resource<DAGModel>, stepName: string): string | null {
+function getDocString(dagResult: Resource<GraphModel>, stepName: string): string | null {
   if (dagResult.data) {
-    const dagItem = dagResult.data[stepName];
+    const dagItem = dagResult.data.steps[stepName];
 
     if (dagItem && dagItem.doc) {
       return dagItem.doc;
