@@ -9,7 +9,7 @@ This way uses mock data and does not require other services for development.
 3. Open plugin development environment `yarn dev:plugin`. Cypress UI will open in browser in a while.
 4. Click `index.plugin-dev.tsx` on left side of the screen. This is will show up the plugin example.
 5. Open up `plugin-api/dev/plugins/dev-plugin/index.html` with your code editor and start developing your plugin here.
-> Alternatively you can make new folder (`plugin-api/dev/plugins/new-plugin`) and add `index.html` and `manifest.json` like in dev-plugin. Also make copy of `index.plugin-dev.tsx` and update `PLUGIN_DEFINITIONS`. This is recommended so you can easily initialise this new folder as git repo.
+> Alternatively you can make a new folder (`plugin-api/dev/plugins/new-plugin`) and add `index.html` and `manifest.json` like in dev-plugin. Also make copy of `index.plugin-dev.tsx` and update `PLUGIN_DEFINITIONS`. This is recommended so you can easily initialize this new folder as a git repo.
 6. Before deployment add a copy of MetaflowPluginAPI.js with the plugin and make sure that index.html refers to it correctly.
 7. See `Deployment guide` from below
 
@@ -31,7 +31,7 @@ This way requires the use of the UI application and Metaflow Metadata services.
 
 # Deployment
 
-Production stage plugins lives on the server side. Detailed instructions at [Metaflow Service docs](https://github.com/Netflix/metaflow-service/blob/master/services/ui_backend_service/docs/plugins.md).
+Production stage plugins live on the server side. Detailed instructions at [Metaflow Service docs](https://github.com/Netflix/metaflow-service/blob/master/services/ui_backend_service/docs/plugins.md).
 
 ## Way 1: GIT
 
@@ -55,7 +55,7 @@ or (all possible settings are described in Metaflow Service docs)
 > }
 >```
 
-3. Start up service and plugin is fetched and installed.
+3. Start up the service and the plugin is fetched and installed.
 
 ## Way 2: Manual
 
@@ -66,4 +66,4 @@ or (all possible settings are described in Metaflow Service docs)
 >  "plugin-folder-name": {}
 > }
 > ```
-3. Start up service
+3. Start up the service
