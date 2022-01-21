@@ -45,7 +45,7 @@ describe('useTaskCards', () => {
   });
 
   it('should return 1 card definition first and second after a while', () => {
-    cy.intercept('**/cards', createDataModel([{ id: '123', type: 'xd', hash: 'unique1' }], {}))
+    cy.intercept('**/cards*', createDataModel([{ id: '123', type: 'xd', hash: 'unique1' }], {}))
     mount(<MockComponent task={createTask({ finished_at: Date.now() })} decos={[
       { name: 'card', attributes: {}, statically_defined: false },
       { name: 'card', attributes: {}, statically_defined: false }
@@ -53,7 +53,7 @@ describe('useTaskCards', () => {
     gid('cardslist').children().should('have.length', 1);
 
     // Lets mock so that second request will return two results
-    cy.intercept('**/cards', createDataModel([
+    cy.intercept('**/cards*', createDataModel([
       { id: '123', type: 'xd', hash: 'unique1' },
       { id: '321', type: 'xd', hash: 'unique2' }
     ], {}));
