@@ -11,7 +11,7 @@ export type DAGModelItem = {
   doc?: string;
   name: string;
   line: number;
-  decorators: Array<Decorator>;
+  decorators?: Array<Decorator>;
   foreach_artifact: string | null;
 };
 
