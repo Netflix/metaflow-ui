@@ -43,7 +43,7 @@ Production stage plugins lives on the server side. Detailed instructions at [Met
 > }
 > ```
 
-or (all possible settings are described at Metaflow Service docs)
+or (all possible settings are described in Metaflow Service docs)
 
 >```
 > {
