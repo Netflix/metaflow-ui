@@ -41,7 +41,7 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
 
   const aborter = useRef<AbortController>();
 
-  function fetchCards(path: string) {
+  function fetchCards(path: string, invalidate: boolean = false) {
     setPoll(false);
 
     if (aborter.current) {
@@ -50,8 +50,10 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
 
     const currentAborter = new AbortController();
     aborter.current = currentAborter;
-
-    fetch(apiHttp(path))
+    // We want to invalidate cache when polling since cache would return old results.
+    // First request will be iwthout invalidate and if that returns us all expected cards
+    // we dont need to poll and invalidate.
+    fetch(`${apiHttp(path)}${invalidate ? '?invalidate=true' : ''}`)
       .then((result) => result.json())
       .then((result: DataModel<CardDefinition[]>) => {
         if (result.status === 200) {
@@ -79,7 +81,7 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
         setPoll(false);
       } else {
         t = window.setTimeout(() => {
-          fetchCards(url);
+          fetchCards(url, true);
         }, POSTLOAD_POLL_INTERVAL);
       }
     }
