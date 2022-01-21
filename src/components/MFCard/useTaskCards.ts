@@ -41,7 +41,7 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
 
   const aborter = useRef<AbortController>();
 
-  function fetchCards(path: string, invalidate: boolean = false) {
+  function fetchCards(path: string, invalidate = false) {
     setPoll(false);
 
     if (aborter.current) {
