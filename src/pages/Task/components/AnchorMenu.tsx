@@ -8,7 +8,7 @@ import { HEADER_SIZE_PX } from '../../../constants';
 
 type AnchorItem = {
   key: string;
-  label: string;
+  label: React.ReactNode | string;
   position?: number;
 };
 

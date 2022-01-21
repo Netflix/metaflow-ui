@@ -388,6 +388,7 @@ const Task: React.FC<TaskViewProps> = ({
                               <Spinner sm />
                             </>
                           ),
+                          component: <></>,
                         },
                       ]
                     : []
@@ -400,6 +401,7 @@ const Task: React.FC<TaskViewProps> = ({
                           key: 'card_timeout',
                           order: 99,
                           label: t('card.card_timeout'),
+                          component: <></>,
                         },
                       ]
                     : []

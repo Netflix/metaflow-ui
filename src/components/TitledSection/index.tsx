@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 
 type HeaderProps = {
-  label?: string;
+  label?: React.ReactNode | string;
   actionbar?: React.ReactNode;
 };
 
