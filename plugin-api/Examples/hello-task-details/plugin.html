@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hello world plugin</title>
+  <title>Hello task details</title>
 </head>
 
 <body>
@@ -21,11 +21,11 @@
       Metaflow.onReady((config, resource) => {
         // Set fixed height for plugin
         Metaflow.setHeight(40);
-        // Show run id from URL.
-        document.getElementById('container').innerHTML = `Hello World! Run number is ${resource.run_number}`;
-        // Subscribe to run metadata
-        Metaflow.subscribeToRunMetadata((event) => {
-          console.log("Run metadata update received. ", event.data);
+        // Show task id from URL.
+        document.getElementById('container').innerHTML = `Hello World! task id is ${resource.task_id}`;
+        // Subscribe to task metadata
+        Metaflow.subscribeToMetadata((event) => {
+          console.log("Task metadata update received. ", event.data);
         });
       })
     })();
