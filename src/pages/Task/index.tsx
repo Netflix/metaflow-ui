@@ -191,7 +191,7 @@ const Task: React.FC<TaskViewProps> = ({
   // Cards
   //
 
-  const cards = useTaskCards(task, dagResult.data?.decorators || []);
+  const cards = useTaskCards(task, task && dagResult.data ? dagResult.data.steps[task.step_name]?.decorators || [] : []);
 
   return (
     <TaskContainer>

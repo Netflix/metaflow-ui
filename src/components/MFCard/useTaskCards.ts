@@ -22,16 +22,22 @@ export function taskCardPath(task: Task, hash: string): string {
 }
 
 const POSTLOAD_POLL_INTERVAL = 5000;
-// We poll for 10minutes if all cards have not arrived.
-const POLLING_TIMEOUT = 1000 * 60 * 10;
 
 //
-// Fetch list of card definitions for given task according decorators.
+// Fetch list of card definitions for given task according to the decorators.
 //
 export default function useTaskCards(task: Task | null, decorators: Decorator[]): CardDefinition[] {
   const url = task ? taskCardsPath(task) : '';
   const expectedCards = decorators.filter((item) => item.name === 'card');
+  // timeout in seconds
+  const maxTimeout: number = expectedCards.reduce((timeout, decorator) => {
+    if (typeof decorator.attributes.timeout === 'number' && decorator.attributes.timeout > timeout) {
+      return decorator.attributes.timeout;
+    }
+    return timeout;
+  }, 0);
   const [data, setData] = useState<CardDefinition[]>([]);
+  // Time of initial request
   const [fetchTime, setFetchTime] = useState(Date.now());
   const [poll, setPoll] = useState(false);
 
@@ -67,8 +73,10 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
     let t: number;
     // Check if polling is activated (activated after finished requests).
     if (poll) {
+      // Timeout timer is: time of first request + timeout from decorator attributes + 30seconds extra time.
+      const timeout = fetchTime + (maxTimeout + 30) * 1000;
       // if we have enough cards (as presented by decorators list) or timeout has passed, skip request.
-      if (expectedCards.length === data.length || fetchTime + POLLING_TIMEOUT < Date.now()) {
+      if (expectedCards.length === data.length || timeout < Date.now()) {
         setPoll(false);
       } else {
         t = window.setTimeout(() => {
@@ -80,7 +88,7 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
     return () => {
       clearTimeout(t);
     };
-  }, [url, poll, data, expectedCards, fetchTime]);
+  }, [url, poll, data, expectedCards, fetchTime, maxTimeout]);
 
   // Initial fetch
   useEffect(() => {
