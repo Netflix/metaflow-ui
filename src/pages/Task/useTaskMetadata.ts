@@ -2,6 +2,7 @@ import { useContext, useEffect } from 'react';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
 import useResource, { Resource } from '../../hooks/useResource';
 import { Metadata } from '../../types';
+import { metadataToRecord } from '../../utils/metadata';
 
 type TaskMetadataConfig = {
   url: string;
@@ -55,11 +56,11 @@ function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMe
 
   // Update metadata to plugin store
   useEffect(() => {
-    addDataToStore('metadata', data);
+    addDataToStore('metadata', metadataToRecord(data));
   }, [dataCount]); //eslint-disable-line
 
   useEffect(() => {
-    return () => addDataToStore('metadata', []);
+    return () => addDataToStore('metadata', {});
   }, [url, attemptId]); //eslint-disable-line
 
   return { data, taskMetadataResource, attemptMetadataResource };

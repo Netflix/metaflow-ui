@@ -22,6 +22,7 @@ import { FixedContent } from '../../components/Structure';
 import useTaskListSettings from '../../components/Timeline/useTaskListSettings';
 import useResource from '../../hooks/useResource';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
+import { metadataToRecord } from '../../utils/metadata';
 import { GraphModel } from '../../components/DAG/DAGUtils';
 
 //
@@ -82,7 +83,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       step_name: '_parameters',
     },
     onUpdate(items) {
-      plContext.addDataToStore('run-metadata', items);
+      plContext.addDataToStore('run-metadata', metadataToRecord(items));
     },
   });
 
@@ -250,7 +251,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                   )}
                 </ErrorBoundary>
               ),
-            }
+            },
           ]}
         />
       </RunPageContainer>

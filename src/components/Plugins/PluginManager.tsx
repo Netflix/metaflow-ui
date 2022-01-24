@@ -47,7 +47,7 @@ type PluginVersionInfo = {
 export type AllowedSlot = 'task-details' | 'run-header';
 
 const SUPPORTED_PLUGIN_API_VERSION = '0.13.0';
-const RECOMMENDED_PLUGIN_API_VERSION = '1.0.0';
+const RECOMMENDED_PLUGIN_API_VERSION = '1.1.0';
 const ALLOWED_SLOTS: AllowedSlot[] = ['task-details', 'run-header'];
 
 //

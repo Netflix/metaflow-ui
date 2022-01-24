@@ -19,7 +19,7 @@ function App() {
       <div>
         {metadata ? (
           <div>
-            <div>{metadata.length}</div>
+            <div>{JSON.stringify(metadata)}</div>
           </div>
         ) : 'Waiting for data'}
       </div>

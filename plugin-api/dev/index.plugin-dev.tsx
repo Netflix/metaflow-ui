@@ -28,22 +28,10 @@ const PLUGIN_DEFINITIONS = [
 
 // Mock data as you need for your plugin. This data will be available in plugin with Metaflow.subscribe(['key-here'], callback)
 const DATA = {
-  metadata: [
-    {
-      flow_id: 'PluginDevFlow',
-      user_name: 'dev-user',
-      ts_epoch: 1634036924920,
-      tags: [],
-      system_tags: ['metaflow-version:1'],
-      id: 1,
-      run_number: 1,
-      step_name: 'start',
-      task_id: '123',
-      field_name: 'datafield',
-      value: 'value',
-      type: 'aws-batch-job-id',
-    },
-  ],
+  metadata: {
+    field: 'value',
+    is_plugin_test: 'true',
+  },
 };
 
 describe('Testing', () => {
