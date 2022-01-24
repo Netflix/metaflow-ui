@@ -8,7 +8,7 @@ import { TitledSectionHeader } from '../../../components/TitledSection';
 
 type Props = {
   // Visible title for the section
-  label: string;
+  label: React.ReactNode | string;
   sectionkey: string;
   // Should title be hidden?
   noTitle?: boolean;

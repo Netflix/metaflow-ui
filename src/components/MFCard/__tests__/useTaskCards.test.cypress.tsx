@@ -7,11 +7,11 @@ import { Task } from '../../../types';
 import { Decorator } from '../../DAG/DAGUtils';
 
 const MockComponent: React.FC<{ task?: Task | null; decos?: Decorator[] }> = ({ task = null, decos = [] }) => {
-  const cards = useTaskCards(task, decos);
+  const cardsResult = useTaskCards(task, decos);
 
   return (
-    <div data-testid="cardslist">
-      {cards.map((value) => (
+    <div data-testid="cardslist" className={cardsResult.status}>
+      {cardsResult.cards.map((value) => (
         <div key={value.hash} data-testid="card">{JSON.stringify(value)}</div>
       ))}
     </div>
@@ -51,6 +51,7 @@ describe('useTaskCards', () => {
       { name: 'card', attributes: {}, statically_defined: false }
     ]} />);
     gid('cardslist').children().should('have.length', 1);
+    cy.get('.loading').should('have.length', 1);
 
     // Lets mock so that second request will return two results
     cy.intercept('**/cards*', createDataModel([
@@ -58,5 +59,6 @@ describe('useTaskCards', () => {
       { id: '321', type: 'xd', hash: 'unique2' }
     ], {}));
     gid('cardslist').children({ timeout: 6000 }).should('have.length', 2); 
+    cy.get('.success').should('have.length', 1);
   });
 });

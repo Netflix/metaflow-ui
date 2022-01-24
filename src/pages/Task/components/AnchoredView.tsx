@@ -10,7 +10,7 @@ import TaskSection from './TaskSection';
 
 type AnchoredViewSection = {
   key: string;
-  label: string;
+  label: React.ReactNode | string;
   order: number;
   noTitle?: boolean;
   actionbar?: React.ReactNode;

@@ -191,7 +191,7 @@ const Task: React.FC<TaskViewProps> = ({
   // Cards
   //
 
-  const cards = useTaskCards(
+  const cardsResult = useTaskCards(
     task,
     task && dagResult.data ? dagResult.data.steps[task.step_name]?.decorators || [] : [],
   );
@@ -351,7 +351,7 @@ const Task: React.FC<TaskViewProps> = ({
                   : []),
                 // Render cards at the end of sections if enabled by feature flags.
                 ...(FEATURE_FLAGS.CARDS
-                  ? cards.map((def) => ({
+                  ? cardsResult.cards.map((def) => ({
                       key: def.hash,
                       order: 99,
                       label: def.id ? `${t('card.card_id_title')}: ${def.id}` : `${t('card.card_title')}: ${def.type}`,
@@ -374,6 +374,37 @@ const Task: React.FC<TaskViewProps> = ({
                       ),
                       component: <CardIframe path={`${taskCardPath(task, def.hash)}?embed=true`} />,
                     }))
+                  : []),
+                // Show spinner if any cards are still loading
+                ...(FEATURE_FLAGS.CARDS
+                  ? cardsResult.status === 'loading'
+                    ? [
+                        {
+                          key: 'card_loading',
+                          order: 99,
+                          label: (
+                            <>
+                              <span>{t('card.card_loading')} </span>
+                              <Spinner sm />
+                            </>
+                          ),
+                          component: <></>,
+                        },
+                      ]
+                    : []
+                  : []),
+                // Show error if cards were not fetched before timeout
+                ...(FEATURE_FLAGS.CARDS
+                  ? cardsResult.status === 'timeout'
+                    ? [
+                        {
+                          key: 'card_timeout',
+                          order: 99,
+                          label: t('card.card_timeout'),
+                          component: <></>,
+                        },
+                      ]
+                    : []
                   : []),
               ].sort((a, b) => a.order - b.order)}
             />
