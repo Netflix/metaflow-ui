@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import useComponentSize, { ComponentSize } from '@rehooks/component-size';
 import useWindowSize from '../../../hooks/useWindowSize';
 import { Run, TaskStatus } from '../../../types';
-import { GraphModel, DAGModelItem, GraphStructureModel } from '../DAGUtils';
+import { GraphModel, DAGModelItem, GraphStructureModel, DAGNodeTypes } from '../DAGUtils';
 import { StepLineData } from '../../Timeline/taskdataUtils';
 import Icon from '../../Icon';
 import { useTranslation } from 'react-i18next';
@@ -83,24 +83,23 @@ const DAGBranch: React.FC<DAGBranchProps> = ({ steps, structure, goToStep }) => 
           // Because its actually previous step that contains info about the split, we need
           // to check it here.
           const previousStep = index === 0 ? null : structure[index - 1];
-          const containerType = typeof previousStep === 'string' ? steps[previousStep].type : 'split-static';
+          const containerType =
+            typeof previousStep === 'string' ? getSplitContainerType(steps[previousStep].type) : 'split-static';
 
           return (
-            <DAGContainerItem
-              key={index}
-              type={
-                containerType === 'split-foreach' || containerType === 'split-static' ? containerType : 'split-static'
-              }
-              steps={steps}
-              branch={branch}
-              goToStep={goToStep}
-            />
+            <DAGContainerItem key={index} type={containerType} steps={steps} branch={branch} goToStep={goToStep} />
           );
         }
       })}
     </ElementContainer>
   );
 };
+
+function getSplitContainerType(previousStepType: DAGNodeTypes) {
+  return 'split-foreach' === previousStepType || 'split-parallel' === previousStepType
+    ? previousStepType
+    : 'split-static';
+}
 
 //
 // Container renders foreach element or split element

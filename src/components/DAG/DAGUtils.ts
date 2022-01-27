@@ -2,9 +2,19 @@
 // Types
 //
 
+export type DAGNodeTypes =
+  | 'start'
+  | 'join'
+  | 'linear'
+  | 'split-static'
+  | 'split-foreach'
+  | 'split-parallel'
+  | 'end'
+  | 'unknown';
+
 export type DAGModelItem = {
   // Type of step
-  type: 'join' | 'split-foreach' | 'split-parallel' | 'linear' | 'end' | 'start' | 'split-static' | 'unknown';
+  type: DAGNodeTypes;
   // Next step(s)
   next: string[];
   // docstring from step
