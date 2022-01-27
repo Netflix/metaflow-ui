@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { apiHttp } from '../../constants';
 
+const CHECK_HEIGHT_INTERVAL = 1000;
+
 type Props = {
   path: string;
 };
@@ -18,12 +20,13 @@ const CardIframe: React.FC<Props> = ({ path }) => {
   useEffect(() => {
     setInterval(() => {
       if (ref.current) {
-        const h = ref.current.contentDocument?.documentElement.offsetHeight;
+        const body = ref.current.contentWindow?.document.body;
+        const h = Math.max(body?.scrollHeight ?? 0, body?.clientHeight ?? 0, body?.offsetHeight ?? 0);
         if (h) {
           setElementHeight(h);
         }
       }
-    }, 1000);
+    }, CHECK_HEIGHT_INTERVAL);
   }, []);
 
   return (
