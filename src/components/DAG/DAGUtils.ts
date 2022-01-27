@@ -4,7 +4,7 @@
 
 export type DAGModelItem = {
   // Type of step
-  type: 'join' | 'foreach' | 'linear' | 'end' | 'start' | 'split';
+  type: 'join' | 'split-foreach' | 'split-parallel' | 'linear' | 'end' | 'start' | 'split-static' | 'unknown';
   // Next step(s)
   next: string[];
   // docstring from step

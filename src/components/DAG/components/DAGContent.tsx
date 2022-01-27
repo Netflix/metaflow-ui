@@ -83,12 +83,14 @@ const DAGBranch: React.FC<DAGBranchProps> = ({ steps, structure, goToStep }) => 
           // Because its actually previous step that contains info about the split, we need
           // to check it here.
           const previousStep = index === 0 ? null : structure[index - 1];
-          const containerType = typeof previousStep === 'string' ? steps[previousStep].type : 'split';
+          const containerType = typeof previousStep === 'string' ? steps[previousStep].type : 'split-static';
 
           return (
             <DAGContainerItem
               key={index}
-              type={containerType === 'foreach' || containerType === 'split' ? containerType : 'split'}
+              type={
+                containerType === 'split-foreach' || containerType === 'split-static' ? containerType : 'split-static'
+              }
               steps={steps}
               branch={branch}
               goToStep={goToStep}
@@ -106,7 +108,7 @@ const DAGBranch: React.FC<DAGBranchProps> = ({ steps, structure, goToStep }) => 
 
 type DAGContainerItemProps = {
   steps: StepInfoModelWithStatus;
-  type: 'split' | 'foreach';
+  type: 'split-static' | 'split-foreach' | 'split-parallel';
   branch: GraphStructureModel[];
   goToStep: (step: string) => void;
 };
@@ -120,7 +122,7 @@ const DAGContainerItem: React.FC<DAGContainerItemProps> = ({ steps, type, branch
     <DAGBranch steps={steps} structure={branch} goToStep={goToStep} />
   );
 
-  if (type === 'split') {
+  if (type === 'split-static') {
     return <ContainerItem data-testid="dag-parallel-container">{content}</ContainerItem>;
   } else {
     return (

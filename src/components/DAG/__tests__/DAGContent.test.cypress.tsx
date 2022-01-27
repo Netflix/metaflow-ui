@@ -34,7 +34,7 @@ const data = {
     },
     prepare_foreach: {
       name: 'prepare_foreach',
-      type: 'foreach' as const,
+      type: 'split-foreach' as const,
       line: 18,
       doc: '',
       decorators: [],
@@ -86,7 +86,7 @@ const data2 = {
   steps: {
     start: {
       name: 'start',
-      type: 'split' as const,
+      type: 'split-static' as const,
       line: 10,
       doc: '',
       decorators: [],
@@ -104,7 +104,7 @@ const data2 = {
     },
     prepare_another_foreach: {
       name: 'prepare_another_foreach',
-      type: 'foreach' as const,
+      type: 'split-foreach' as const,
       line: 19,
       doc: '',
       decorators: [],
@@ -131,7 +131,7 @@ const data2 = {
     },
     prepare_foreach: {
       name: 'prepare_foreach',
-      type: 'foreach' as const,
+      type: 'split-foreach' as const,
       line: 33,
       doc: '',
       decorators: [],
