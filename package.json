@@ -12,7 +12,6 @@
     "@types/styled-components": "^5.1.9",
     "@types/uuid": "^8.0.0",
     "copy-to-clipboard": "^3.3.1",
-    "cypress": "^7.7.0",
     "i18next": "^19.5.2",
     "idb": "^5.0.8",
     "markdown-to-jsx": "^7.1.2",
@@ -64,8 +63,9 @@
     ]
   },
   "devDependencies": {
-    "@cypress/react": "^5.9.1",
-    "@cypress/webpack-dev-server": "^1.4.0",
+    "cypress": "^9.3.1",
+    "@cypress/react": "^5.12.1",
+    "@cypress/webpack-dev-server": "^1.8.0",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
     "concurrently": "^6.3.0",
