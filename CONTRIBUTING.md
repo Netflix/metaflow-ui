@@ -43,3 +43,7 @@ We follow the commit message conventions by [Conventional Commits](https://www.c
 `docs: correct spelling of CHANGELOG`
 <br/>`feat: enabled hidden feature flags`
 <br/>`fix: removed small typos from translations`
+
+## Release
+
+Follow the [release docs](RELEASE.md)
