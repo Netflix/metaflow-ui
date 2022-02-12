@@ -27,6 +27,7 @@ ENV METAFLOW_SERVICE=/api
 ENV METAFLOW_HEAD=''
 ENV METAFLOW_BODY_BEFORE=''
 ENV METAFLOW_BODY_AFTER=''
+ENV MF_DEFAULT_TIME_FILTER_DAYS=''
 
 COPY --from=build /app/build /usr/share/nginx/html
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
