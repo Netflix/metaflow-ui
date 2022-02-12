@@ -20,6 +20,7 @@ import {
 import ScrollToTop from './ScrollToTop';
 import { useHistory } from 'react-router';
 import { TimezoneContext } from '../../components/TimezoneProvider';
+import { NUM_DAYS } from '../../constants';
 
 type HomeCache = {
   active: boolean;
@@ -149,7 +150,7 @@ const Home: React.FC = () => {
       if (isDefaultParams(rawParams, false, timezone)) {
         // We want to add timerange filter if we are rolling with default params
         // but not in back event. In back event we should keep state we had
-        setQp({ timerange_start: getTimeFromPastByDays(30, timezone).toString() });
+        setQp({ timerange_start: getTimeFromPastByDays(NUM_DAYS, timezone).toString() });
       }
     }
   }, [historyAction, initialised]); // eslint-disable-line

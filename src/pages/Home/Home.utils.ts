@@ -1,3 +1,4 @@
+import { NUM_DAYS } from '../../constants';
 import { QueryParam, Run } from '../../types';
 import { getTimeFromPastByDays } from '../../utils/date';
 import { omit } from '../../utils/object';
@@ -98,7 +99,7 @@ export function isDefaultParams(params: Record<string, string>, checkTimerange: 
       params.status?.indexOf('completed') > -1 &&
       params.status?.indexOf('running') > -1 &&
       params.status?.indexOf('failed') > -1 &&
-      (checkTimerange ? params.timerange_start === getTimeFromPastByDays(30, timezone).toString() : true)
+      (checkTimerange ? params.timerange_start === getTimeFromPastByDays(NUM_DAYS, timezone).toString() : true)
     ) {
       return true;
     }
