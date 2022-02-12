@@ -61,7 +61,10 @@ const Home: React.FC = () => {
   const { setQp, params: rawParams } = useHomeParameters();
   const resetAllFilters = useCallback(() => {
     // Reseting filter still keeps grouping settings as before.
-    setQp({ ...defaultHomeParameters, timerange_start: getTimeFromPastByDays(30, timezone).toString() }, 'replace');
+    setQp(
+      { ...defaultHomeParameters, timerange_start: getTimeFromPastByDays(NUM_DAYS, timezone).toString() },
+      'replace',
+    );
   }, [setQp, timezone]);
   const rawParamsString = JSON.stringify(rawParams);
   useEffect(() => {
