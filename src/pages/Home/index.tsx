@@ -20,7 +20,7 @@ import {
 import ScrollToTop from './ScrollToTop';
 import { useHistory } from 'react-router';
 import { TimezoneContext } from '../../components/TimezoneProvider';
-import { NUM_DAYS } from '../../constants';
+import { DEFAULT_TIME_FILTER_DAYS } from '../../constants';
 
 type HomeCache = {
   active: boolean;
@@ -62,7 +62,10 @@ const Home: React.FC = () => {
   const resetAllFilters = useCallback(() => {
     // Reseting filter still keeps grouping settings as before.
     setQp(
-      { ...defaultHomeParameters, timerange_start: getTimeFromPastByDays(NUM_DAYS, timezone).toString() },
+      {
+        ...defaultHomeParameters,
+        timerange_start: getTimeFromPastByDays(DEFAULT_TIME_FILTER_DAYS, timezone).toString(),
+      },
       'replace',
     );
   }, [setQp, timezone]);
@@ -153,7 +156,7 @@ const Home: React.FC = () => {
       if (isDefaultParams(rawParams, false, timezone)) {
         // We want to add timerange filter if we are rolling with default params
         // but not in back event. In back event we should keep state we had
-        setQp({ timerange_start: getTimeFromPastByDays(NUM_DAYS, timezone).toString() });
+        setQp({ timerange_start: getTimeFromPastByDays(DEFAULT_TIME_FILTER_DAYS, timezone).toString() });
       }
     }
   }, [historyAction, initialised]); // eslint-disable-line
