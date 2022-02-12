@@ -14,7 +14,7 @@ server {
     }
     location /index.html {
         sub_filter_once on;
-        sub_filter '</head>' '<script>window.METAFLOW_SERVICE="${METAFLOW_SERVICE}";</script>${METAFLOW_HEAD}</head>';
+        sub_filter '</head>' '<script>window.METAFLOW_SERVICE="${METAFLOW_SERVICE}";window.MF_DEFAULT_TIME_FILTER_DAYS="${MF_DEFAULT_TIME_FILTER_DAYS}";</script>${METAFLOW_HEAD}</head>';
         sub_filter '<body>' '<body>${METAFLOW_BODY_BEFORE}';
         sub_filter '</body>' '${METAFLOW_BODY_AFTER}</body>';
         add_header Cache-Control max-age=300;
