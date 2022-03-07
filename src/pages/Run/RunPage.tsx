@@ -80,7 +80,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     initialData: [],
     subscribeToEvents: true,
     queryParams: {
-      step_name: '_parameters',
+      step_name: 'start',
     },
     onUpdate(items) {
       plContext.addDataToStore('run-metadata', metadataToRecord(items));
