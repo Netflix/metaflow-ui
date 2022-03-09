@@ -1,5 +1,5 @@
 const VERSION_INFO = {
-  api: '1.1.0',
+  api: '1.1.1',
 };
 
 const Listeners = [];
@@ -20,6 +20,7 @@ function messageHandler(event) {
           Metaflow.parameters = event.data.config;
           Metaflow.resource = event.data.resource;
           PluginInfo.manifest = event.data.config;
+          PluginInfo.slot = event.data.config?.config?.slot;
           initialised = true;
           if (onReadyFn) {
             onReadyFn(Metaflow.parameters, Metaflow.resource);
@@ -139,7 +140,7 @@ const Metaflow = {
         event: 'UPDATE_PLUGIN',
         data: {
           slot: PluginInfo.slot,
-          name: PluginInfo.manifest.name,
+          name: PluginInfo.manifest?.name,
           visible: visible,
         },
       },
