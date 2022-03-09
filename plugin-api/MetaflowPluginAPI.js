@@ -20,7 +20,7 @@ function messageHandler(event) {
           Metaflow.parameters = event.data.config;
           Metaflow.resource = event.data.resource;
           PluginInfo.manifest = event.data.config;
-          PluginInfo.slot = event.data.config.config.slot;
+          PluginInfo.slot = event.data.config?.config?.slot;
           initialised = true;
           if (onReadyFn) {
             onReadyFn(Metaflow.parameters, Metaflow.resource);

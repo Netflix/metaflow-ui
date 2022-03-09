@@ -4,17 +4,15 @@ function removeRequireCacheEntry() {
   delete require.cache[require.resolve('../MetaflowPluginAPI.js')];
 }
 
-
 /**
- * Most of the tests in this file follows same pattern. Metaflow Plugin API functions
- * calls postmessage of parent window, so we need to listen if parent actually gets messages.
- * Also part of functions has callbacks as arguments so we need to call postMessage of
- * current window to see if these subscribes works.
- * 
- * Also need to have cy.waitUntil in tests so we make sure all expects are listened.
+ * Most of the tests in this file follow the same pattern. Metaflow Plugin API functions
+ * call postmessage of parent window, so we need to listen if parent actually gets messages.
+ * Also some functions have callbacks as arguments so we need to call postMessage of
+ * current window to see if these subscribes work.
+ *
+ * We also need to have cy.waitUntil in tests so we make sure all expects are listened to.
  */
 describe('PluginAPITests', () => {
-
   afterEach(() => {
     removeRequireCacheEntry();
   });
@@ -26,7 +24,7 @@ describe('PluginAPITests', () => {
     // Add event listener to parent window.
     const listener = (event) => {
       expect(event.data.type).to.equal('PluginRegisterEvent');
-    }
+    };
     window.parent.addEventListener('message', listener);
 
     // Set onReady callback
@@ -63,7 +61,7 @@ describe('PluginAPITests', () => {
     const listener = (event) => {
       called = true;
       heightlistener(event.data.height);
-    }
+    };
     window.parent.addEventListener('message', listener);
 
     Metaflow.setHeight();
@@ -88,7 +86,7 @@ describe('PluginAPITests', () => {
     const listener = (event) => {
       expect(event.data.type).to.equal('PluginSubscribeToData');
       paths = event.data.paths;
-    }
+    };
     window.parent.addEventListener('message', listener);
 
     // Susbcribe to 'somepath' data
@@ -116,19 +114,19 @@ describe('PluginAPITests', () => {
     const listener = (event) => {
       expect(event.data.type).to.equal('PluginSubscribeToEvent');
       receivedEvent = event.data.events;
-    }
+    };
     window.parent.addEventListener('message', listener);
 
     // Susbcribe to HELLO_WORLD event
     Metaflow.on('HELLO_WORLD', callback);
-    
-    // Call event 
+
+    // Call event
     const EventMessage = { name: window.name, type: 'EventUpdate', data: { type: 'HELLO_WORLD', data: '123' } };
     window.postMessage(EventMessage);
 
     cy.waitUntil(() => !!receivedEvent).then(() => {
       expect(receivedEvent).to.equal('HELLO_WORLD');
-      expect(callback).to.have.been.calledWith(EventMessage)
+      expect(callback).to.have.been.calledWith(EventMessage);
       // Remove Event listener so we dont trigger it in upcoming tests
       window.parent.removeEventListener('message', listener);
     });
@@ -142,12 +140,12 @@ describe('PluginAPITests', () => {
     const listener = (event) => {
       expect(event.data.type).to.equal('PluginCallEvent');
       receivedEvent = event.data.data;
-    }
+    };
     window.parent.addEventListener('message', listener);
 
     // call custom HELLO_WORLD event
     Metaflow.call('HELLO_WORLD', 12345);
-  
+
     cy.waitUntil(() => !!receivedEvent).then(() => {
       expect(receivedEvent).to.equal(12345);
       // Remove Event listener so we dont trigger it in upcoming tests
@@ -162,19 +160,18 @@ describe('PluginAPITests', () => {
     // Add event listener to parent window.
     const listener = (event) => {
       receivedEvent = event.data;
-    }
+    };
     window.parent.addEventListener('message', listener);
 
     // call custom HELLO_WORLD event
     Metaflow.sendNotification('HELLO_WORLD');
-    
-    cy.waitUntil(() => !!receivedEvent)
-      .then(() => {
-        expect(receivedEvent.type).to.equal('PluginCallEvent');
-        expect(receivedEvent.event).to.equal('SEND_NOTIFICATION');
-        expect(receivedEvent.data).to.equal('HELLO_WORLD');
-        window.parent.removeEventListener('message', listener);
-      })
+
+    cy.waitUntil(() => !!receivedEvent).then(() => {
+      expect(receivedEvent.type).to.equal('PluginCallEvent');
+      expect(receivedEvent.event).to.equal('SEND_NOTIFICATION');
+      expect(receivedEvent.data).to.equal('HELLO_WORLD');
+      window.parent.removeEventListener('message', listener);
+    });
   });
 
   it('Metaflow.subscribeToMetadata', () => {
@@ -185,7 +182,7 @@ describe('PluginAPITests', () => {
     const listener = (event) => {
       expect(event.data.type).to.equal('PluginSubscribeToData');
       paths = event.data.paths;
-    }
+    };
     window.parent.addEventListener('message', listener);
 
     // Susbcribe to 'somepath' data
@@ -207,7 +204,7 @@ describe('PluginAPITests', () => {
     const listener = (event) => {
       expect(event.data.type).to.equal('PluginSubscribeToData');
       paths = event.data.paths;
-    }
+    };
     window.parent.addEventListener('message', listener);
 
     // Susbcribe to 'somepath' data
