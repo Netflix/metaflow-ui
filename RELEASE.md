@@ -26,6 +26,8 @@ The release process is mostly automated via Github Actions, however a few manual
   - [ ] Make sure release artifact is uploaded
 - [ ] Publish release draft
 
+- [ ] Follow the [metaflow-service release docs](https://github.com/Netflix/metaflow-service/blob/master/RELEASE.md) to set the UI version and publish to dockerhub
+
 ## Preview release notes
 
 You can use `release-notes.sh` locally to preview generated release notes before pushing a tag to remote:
