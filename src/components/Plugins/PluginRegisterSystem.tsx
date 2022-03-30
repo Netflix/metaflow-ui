@@ -22,7 +22,7 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
         setDefinitions(plugins);
       })
       .catch((e) => console.log(e));
-  }, []); // eslint-disable-line
+  }, []);
 
   const messageListener = useCallback(
     (event: MessageEvent) => {
@@ -50,17 +50,19 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
 
   return (
     <HidingElement>
-      {toRegister.map((plg) => (
-        <iframe
-          key={plg.identifier}
-          height="0"
-          width="0"
-          name={plg.name}
-          title={plg.name}
-          src={pluginPath(plg, baseurl)}
-          sandbox="allow-scripts"
-        />
-      ))}
+      {toRegister.map((plg) => {
+        return (
+          <iframe
+            key={plg.name}
+            height="0"
+            width="0"
+            name={plg.name}
+            title={plg.name}
+            src={pluginPath(plg, baseurl)}
+            sandbox="allow-scripts"
+          />
+        );
+      })}
     </HidingElement>
   );
 };
