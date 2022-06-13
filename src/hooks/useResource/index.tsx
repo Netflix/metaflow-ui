@@ -305,19 +305,7 @@ export default function useResource<T, U>({
         abortCtrl.abort();
       }
     };
-  }, [
-    target,
-    pause,
-    retryCounter,
-    error,
-    fetchData,
-    statusDispatch,
-    setData,
-    setError,
-    setResult,
-    initialData,
-    onUpdate,
-  ]);
+  }, [target, pause, retryCounter, error, onUpdate, fetchData, initialData]);
 
   function retry() {
     setRetryCounter((val) => val + 1);
