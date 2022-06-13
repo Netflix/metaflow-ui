@@ -202,7 +202,14 @@ export default function useTaskListSettings(): TaskSettingsHook {
         localStorage.setItem('custom-settings', JSON.stringify(rest));
       }
     }
-  }, [q, dispatch]); // eslint-disable-line
+  }, [
+    q,
+    dispatch,
+    taskListSettings.isCustomEnabled,
+    taskListSettings.group,
+    taskListSettings.statusFilter,
+    taskListSettings.sort,
+  ]);
 
   useEffect(() => {
     dispatch({ type: 'setSteps', steps: q.steps });

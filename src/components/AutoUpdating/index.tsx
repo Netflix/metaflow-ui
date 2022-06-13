@@ -16,7 +16,7 @@ const AutoUpdating: React.FC<{ enabled: boolean; content: () => React.ReactNode 
       }, 1000);
     }
     return () => window.clearInterval(t);
-  }, [enabled]); // eslint-disable-line
+  }, [enabled, rerender]);
 
   return <>{content()}</>;
 };

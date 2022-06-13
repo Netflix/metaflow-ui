@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Log, AsyncStatus, APIError } from '../../types';
 import { DataModel, defaultError } from '../../hooks/useResource';
 import { apiHttp } from '../../constants';
@@ -62,57 +62,60 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
   const aborter = useRef<AbortController>();
 
   // generic log fetcher
-  function fetchLogs(
-    page: number,
-    order: '+' | '-' = '+',
-    isPostPoll = false,
-  ): Promise<{ type: 'error'; error: APIError } | { type: 'ok'; data: Log[] }> {
-    const requestUrl = url;
-    const fullUrl = `${requestUrl}${requestUrl.indexOf('?') > -1 ? '&' : '?'}_limit=${PAGE_SIZE}${
-      page ? `&_page=${page}` : ''
-    }&_order=${order}row`;
+  const fetchLogs = useCallback(
+    (
+      page: number,
+      order: '+' | '-' = '+',
+      isPostPoll = false,
+    ): Promise<{ type: 'error'; error: APIError } | { type: 'ok'; data: Log[] }> => {
+      const requestUrl = url;
+      const fullUrl = `${requestUrl}${requestUrl.indexOf('?') > -1 ? '&' : '?'}_limit=${PAGE_SIZE}${
+        page ? `&_page=${page}` : ''
+      }&_order=${order}row`;
 
-    if (aborter.current) {
-      aborter.current.abort();
-    }
+      if (aborter.current) {
+        aborter.current.abort();
+      }
 
-    const currentAborter = new AbortController();
-    aborter.current = currentAborter;
+      const currentAborter = new AbortController();
+      aborter.current = currentAborter;
 
-    return fetch(apiHttp(fullUrl), { signal: currentAborter.signal })
-      .then((response) => response.json())
-      .then((result: DataModel<Log[]> | APIError) => {
-        if (isOkResult(result)) {
-          // Check if there was any new lines. If there wasnt, lets cancel post finish polling.
-          // Or if was postpoll and we didnt get any results
-          if (
-            (result.data.length > 0 && logs.length > 0 && result.data[0].row === logs.length - 1) ||
-            (isPostPoll && result.data.length === 0)
-          ) {
-            setPostPoll(false);
-          }
-
-          setLogs((array) => {
-            const newarr = [...array];
-            for (const item of result.data) {
-              newarr[item.row] = item;
+      return fetch(apiHttp(fullUrl), { signal: currentAborter.signal })
+        .then((response) => response.json())
+        .then((result: DataModel<Log[]> | APIError) => {
+          if (isOkResult(result)) {
+            // Check if there was any new lines. If there wasnt, lets cancel post finish polling.
+            // Or if was postpoll and we didnt get any results
+            if (
+              (result.data.length > 0 && logs.length > 0 && result.data[0].row === logs.length - 1) ||
+              (isPostPoll && result.data.length === 0)
+            ) {
+              setPostPoll(false);
             }
-            return newarr;
-          });
-          return { type: 'ok' as const, data: result.data };
-        } else {
-          return { type: 'error' as const, error: result };
-        }
-      })
-      .catch((e) => {
-        if (e instanceof DOMException) {
-          return { type: 'error', error: { ...defaultError, id: 'user-aborted' } };
-        }
-        return { type: 'error', error: defaultError };
-      });
-  }
 
-  function fetchPreload() {
+            setLogs((array) => {
+              const newarr = [...array];
+              for (const item of result.data) {
+                newarr[item.row] = item;
+              }
+              return newarr;
+            });
+            return { type: 'ok' as const, data: result.data };
+          } else {
+            return { type: 'error' as const, error: result };
+          }
+        })
+        .catch((e) => {
+          if (e instanceof DOMException) {
+            return { type: 'error', error: { ...defaultError, id: 'user-aborted' } };
+          }
+          return { type: 'error', error: defaultError };
+        });
+    },
+    [PAGE_SIZE, logs.length, url],
+  );
+
+  const fetchPreload = useCallback(() => {
     setPreloadStatus('Loading');
     fetchLogs(1, '-').then((result) => {
       if (result.type === 'error') {
@@ -126,7 +129,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
 
       setPreloadStatus('Ok');
     });
-  }
+  }, [fetchLogs]);
 
   // Fetch logs when task gets completed
   useEffect(() => {
@@ -148,7 +151,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
         setStatus('Ok');
       });
     }
-  }, [paused, url, status]); // eslint-disable-line
+  }, [paused, url, status, fetchLogs]);
 
   useEffect(() => {
     // For preload to happen following rules has to be matched
@@ -159,7 +162,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     if (paused && status === 'NotAsked' && preload && preloadStatus === 'NotAsked') {
       fetchPreload();
     }
-  }, [paused, preload, preloadStatus, status, url]); // eslint-disable-line
+  }, [paused, preload, preloadStatus, status, url, fetchPreload]);
 
   // Poller for auto updates when task is running
   useEffect(() => {
@@ -172,7 +175,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     return () => {
       clearTimeout(t);
     };
-  }, [preloadStatus, paused]); // eslint-disable-line
+  }, [preloadStatus, paused, fetchPreload]);
 
   // Post finish polling
   // In some cases all logs might not be there after task finishes. For this, lets poll new logs every 10sec until
@@ -187,7 +190,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     return () => {
       clearTimeout(t);
     };
-  }, [status, postPoll, logs]); // eslint-disable-line
+  }, [status, postPoll, logs, fetchLogs]);
 
   // loadMore gets triggered on all scrolling events on list.
   function loadMore(index: number) {
@@ -258,7 +261,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
       setPostPoll(false);
       setSearchResult({ active: false, result: [], current: 0, query: '' });
     };
-  }, [url]); // eslint-disable-line
+  }, [url]);
 
   return { logs, status, preloadStatus, error, loadMore, localSearch: { search, nextResult, result: searchResult } };
 };

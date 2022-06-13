@@ -42,6 +42,8 @@ const Home: React.FC = () => {
   const { action: historyAction } = useHistory();
   const { timezone } = useContext(TimezoneContext);
 
+  const { setQp, params: rawParams } = useHomeParameters();
+
   useEffect(() => {
     HomeStateCache.active = false;
 
@@ -52,13 +54,12 @@ const Home: React.FC = () => {
     if (lastUsedParams && isDefaultParams(rawParams, false)) {
       setQp(lastUsedParams);
     }
-  }, []); // eslint-disable-line
+  }, [rawParams, setQp]);
 
   //
   // QueryParams
   //
 
-  const { setQp, params: rawParams } = useHomeParameters();
   const resetAllFilters = useCallback(() => {
     // Reseting filter still keeps grouping settings as before.
     setQp(
@@ -77,7 +78,7 @@ const Home: React.FC = () => {
       cachedResult: shouldUseCachedResult(historyAction),
     });
     localStorage.setItem('home-params', JSON.stringify(rawParams));
-  }, [rawParamsString]); // eslint-disable-line
+  }, [rawParamsString, historyAction, rawParams]);
 
   //
   // State
@@ -159,7 +160,7 @@ const Home: React.FC = () => {
         setQp({ timerange_start: getTimeFromPastByDays(DEFAULT_TIME_FILTER_DAYS, timezone).toString() });
       }
     }
-  }, [historyAction, initialised]); // eslint-disable-line
+  }, [historyAction, initialised, rawParams, setQp, timezone]);
 
   // Update cache page on page change
   useEffect(() => {

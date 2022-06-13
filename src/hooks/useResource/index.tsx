@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer } from 'react';
+import { useState, useEffect, useReducer, useCallback } from 'react';
 import { apiHttp } from '../../constants';
 import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
@@ -208,62 +208,65 @@ export default function useResource<T, U>({
     logWarning(`HTTP error id: ${err.id}, url: ${targetUrl}`);
   }
 
-  function fetchData(targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, requestid: number) {
-    setLogItem(`GET SENT ${targetUrl}`);
+  const fetchData = useCallback(
+    (targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, requestid: number) => {
+      setLogItem(`GET SENT ${targetUrl}`);
 
-    fetch(targetUrl, { signal })
-      .then((response) => {
-        if (response.status === 200) {
-          response
-            .json()
-            .then((result: DataModel<T>) => {
-              setLogItem(`GET ${response.status} ${targetUrl} ${JSON.stringify(result)}`);
-              // If onUpdate, dont store data in stateful data object
-              if (onUpdate) {
-                onUpdate(result.data as T, result);
-              } else {
-                setData(result.data);
-                setResult(result);
-              }
+      fetch(targetUrl, { signal })
+        .then((response) => {
+          if (response.status === 200) {
+            response
+              .json()
+              .then((result: DataModel<T>) => {
+                setLogItem(`GET ${response.status} ${targetUrl} ${JSON.stringify(result)}`);
+                // If onUpdate, dont store data in stateful data object
+                if (onUpdate) {
+                  onUpdate(result.data as T, result);
+                } else {
+                  setData(result.data);
+                  setResult(result);
+                }
 
-              // Trigger postRequest after every request if given.
-              postRequest && postRequest(true, targetUrl, result);
+                // Trigger postRequest after every request if given.
+                postRequest && postRequest(true, targetUrl, result);
 
-              // If we want all data and we are have next page available we fetch it.
-              // Else this fetch is done and we call the callback
-              if (fetchAllData && result.links.next !== null && result.links.next !== targetUrl) {
-                fetchData(result.links.next || targetUrl, signal, cb, requestid);
-              } else {
-                cb(true);
-              }
-            })
-            .catch(() => {
-              newError(targetUrl, defaultError, requestid);
-            });
-        } else {
-          response
-            .json()
-            .then((result) => {
-              if (typeof result === 'object' && result.id) {
-                newError(targetUrl, result, requestid);
-              } else if (response.status === 404) {
-                newError(targetUrl, notFoundError, requestid);
-              } else {
+                // If we want all data and we are have next page available we fetch it.
+                // Else this fetch is done and we call the callback
+                if (fetchAllData && result.links.next !== null && result.links.next !== targetUrl) {
+                  fetchData(result.links.next || targetUrl, signal, cb, requestid);
+                } else {
+                  cb(true);
+                }
+              })
+              .catch(() => {
                 newError(targetUrl, defaultError, requestid);
-              }
-              postRequest && postRequest(false, targetUrl);
-            })
-            .catch(() => {
-              newError(targetUrl, defaultError, requestid);
-              postRequest && postRequest(false, targetUrl);
-            });
-        }
-      })
-      .catch((_e) => {
-        newError(targetUrl, defaultError, requestid);
-        postRequest && postRequest(false, targetUrl);
-      });
-  }
+              });
+          } else {
+            response
+              .json()
+              .then((result) => {
+                if (typeof result === 'object' && result.id) {
+                  newError(targetUrl, result, requestid);
+                } else if (response.status === 404) {
+                  newError(targetUrl, notFoundError, requestid);
+                } else {
+                  newError(targetUrl, defaultError, requestid);
+                }
+                postRequest && postRequest(false, targetUrl);
+              })
+              .catch(() => {
+                newError(targetUrl, defaultError, requestid);
+                postRequest && postRequest(false, targetUrl);
+              });
+          }
+        })
+        .catch((_e) => {
+          newError(targetUrl, defaultError, requestid);
+          postRequest && postRequest(false, targetUrl);
+        });
+    },
+    [fetchAllData, onUpdate, postRequest, setData, setResult],
+  );
 
   useEffect(() => {
     const abortCtrl = new AbortController();
@@ -302,7 +305,19 @@ export default function useResource<T, U>({
         abortCtrl.abort();
       }
     };
-  }, [target, pause, retryCounter]); // eslint-disable-line
+  }, [
+    target,
+    pause,
+    retryCounter,
+    error,
+    fetchData,
+    statusDispatch,
+    setData,
+    setError,
+    setResult,
+    initialData,
+    onUpdate,
+  ]);
 
   function retry() {
     setRetryCounter((val) => val + 1);

@@ -114,7 +114,7 @@ export default function useSeachField(flowID: string, runNumber: string): Search
       cache.text = qp.q;
       cache.id = flowID + runNumber;
     }
-  }, []); // eslint-disable-line
+  }, [qp.q, flowID, runNumber]);
 
   return {
     results: searchResults,

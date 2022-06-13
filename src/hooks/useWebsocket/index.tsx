@@ -53,5 +53,5 @@ export default function useWebsocket<T>({
     return () => {
       unsubWebsocket && unsubWebsocket();
     };
-  }, [url, qs, enabled]); // eslint-disable-line
+  }, [url, qs, enabled, uniqueId, resource, queryParams, onUpdate]);
 }

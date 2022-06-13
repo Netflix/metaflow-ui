@@ -58,7 +58,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     };
     window.addEventListener('resize', listener);
     return () => window.removeEventListener('resize', listener);
-  }, []); // eslint-disable-line
+  }, [cache]);
 
   // Force row height calculations after fetch ok
 
@@ -67,7 +67,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
       cache.clearAll();
       _list.current.recomputeRowHeights();
     }
-  }, [okCount]); // eslint-disable-line
+  }, [okCount, cache]);
 
   useEffect(() => {
     if (stickBottom && _list) {
@@ -85,8 +85,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     if (onScroll && !stickBottom) {
       onScroll(debouncedIndex);
     }
-  }, [debouncedIndex, onScroll]); // eslint-disable-line
-
+  }, [debouncedIndex, onScroll, stickBottom]);
   //
   // Search features
   //
@@ -99,7 +98,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     if (searchActive && search.result.result[searchCurrent]) {
       _list.current?.scrollToRow(search.result.result[searchCurrent].line);
     }
-  }, [searchActive, searchCurrent, searchQuery]); //eslint-disable-line
+  }, [searchActive, searchCurrent, searchQuery, search.result.result]);
 
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">

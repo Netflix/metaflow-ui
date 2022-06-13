@@ -114,7 +114,16 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
         setMode('error-tracker');
       }
     }
-  }, [params.runNumber]); // eslint-disable-line
+  }, [
+    params.runNumber,
+    listParams.direction,
+    listParams.order,
+    listParams.status,
+    params.stepName,
+    params.taskId,
+    run.status,
+    setMode,
+  ]);
   //
   // Graph measurements and rendering logic
   //
@@ -148,8 +157,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     } catch (e) {
       logWarning('Unexpected error while contructing task rows: ', e);
     }
-    /* eslint-disable */
-  }, [rows, settings.stepFilter, settings.sort, settings.statusFilter, settings.group, searchField.results]);
+  }, [rows, settings.stepFilter, settings.sort, settings.statusFilter, settings.group, searchField.results, settings]);
 
   const [visible, setVisible] = useState(false);
 
@@ -186,7 +194,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     if ((dagResult.status === 'Error' || dagResult.data === null) && tab === 'dag') {
       dagResult.retry();
     }
-  }, [tab]); //eslint-disable-line
+  }, [tab, dagResult]);
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
 import useResource, { Resource } from '../../hooks/useResource';
 import { Metadata } from '../../types';
@@ -47,21 +47,23 @@ function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMe
   });
 
   // Merge task and attempt data.
-  const data =
-    taskMetadataResource.data && attemptMetadataResource.data
+  const data = useMemo<Metadata[]>(() => {
+    return taskMetadataResource.data && attemptMetadataResource.data
       ? [...taskMetadataResource.data, ...attemptMetadataResource.data]
       : [];
+  }, [attemptMetadataResource.data, taskMetadataResource.data]);
 
   const dataCount = data.length;
 
   // Update metadata to plugin store
   useEffect(() => {
+    console.log('Got task metadata: ', data);
     addDataToStore('metadata', metadataToRecord(data));
-  }, [dataCount]); //eslint-disable-line
+  }, [dataCount, addDataToStore, data]);
 
   useEffect(() => {
     return () => addDataToStore('metadata', {});
-  }, [url, attemptId]); //eslint-disable-line
+  }, [url, attemptId, addDataToStore]);
 
   return { data, taskMetadataResource, attemptMetadataResource };
 }
