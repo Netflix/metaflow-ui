@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback, useReducer, useContext } from 'react';
 
 import { Run as IRun } from '../../types';
-import useResource from '../../hooks/useResource';
+import useResource, { DataModel } from '../../hooks/useResource';
 import { parseOrderParam, directionFromText, swapDirection } from '../../utils/url';
 import { getTimeFromPastByDays } from '../../utils/date';
 import HomeSidebar from './Sidebar';
@@ -36,6 +36,8 @@ const HomeStateCache: HomeCache = {
   page: 1,
 };
 
+const emptyArray: IRun[] = [];
+
 const Home: React.FC = () => {
   const { t } = useTranslation();
 
@@ -43,6 +45,8 @@ const Home: React.FC = () => {
   const { timezone } = useContext(TimezoneContext);
 
   const { setQp, params: rawParams } = useHomeParameters();
+
+  // const rawParams = useMemo(() => arawParams, []);
 
   useEffect(() => {
     HomeStateCache.active = false;
@@ -99,6 +103,26 @@ const Home: React.FC = () => {
     isScrolledFromTop: historyAction === 'POP' && HomeStateCache.scroll > 100,
   });
 
+  const onUpdate = useCallback(
+    (items: IRun[], result: DataModel<IRun[]> | undefined) => {
+      // Remove old data if we are in first page/we handle fake params
+      const replaceOld = page === 1 || !!placeHolderParameters;
+      // Check if we just got last page so we can disable auto loader
+      const lastPage = typeof result?.pages?.next !== 'number';
+      dispatch({ type: 'data', data: items, replace: replaceOld, isLastPage: lastPage });
+    },
+    [page, placeHolderParameters],
+  );
+
+  const postRequest = useCallback(
+    (success: boolean) => {
+      if (!success && (page === 1 || placeHolderParameters)) {
+        dispatch({ type: 'data', data: [], replace: true });
+      }
+    },
+    [page, placeHolderParameters],
+  );
+
   //
   // Data
   //
@@ -111,20 +135,14 @@ const Home: React.FC = () => {
 
   const { error, status } = useResource<IRun[], IRun>({
     url: `/runs`,
-    initialData: [],
+    initialData: emptyArray,
     pause: !initialised,
     // If we are showing big loader, it means we are replacing all the data in view. In that case
     // we dont want websocket messages until we get the first response.
     subscribeToEvents: !showLoader,
     queryParams: requestParameters,
     websocketParams: makeWebsocketParameters(requestParameters, rungroups, isLastPage),
-    onUpdate: (items, result) => {
-      // Remove old data if we are in first page/we handle fake params
-      const replaceOld = page === 1 || !!placeHolderParameters;
-      // Check if we just got last page so we can disable auto loader
-      const lastPage = typeof result?.pages?.next !== 'number';
-      dispatch({ type: 'data', data: items, replace: replaceOld, isLastPage: lastPage });
-    },
+    onUpdate,
     //
     // On websocket update just add items to new groups
     //
@@ -134,11 +152,7 @@ const Home: React.FC = () => {
     //
     // Make sure that we dont have loader anymore after request
     //
-    postRequest(success) {
-      if (!success && (page === 1 || placeHolderParameters)) {
-        dispatch({ type: 'data', data: [], replace: true });
-      }
-    },
+    postRequest,
   });
 
   //
@@ -176,50 +190,62 @@ const Home: React.FC = () => {
   // Event Handlers
   //
 
-  const changeParameter = (key: string, value: string) => {
-    setQp({ [key]: value || undefined });
-  };
+  const changeParameter = useCallback(
+    (key: string, value: string) => {
+      setQp({ [key]: value || undefined });
+    },
+    [setQp],
+  );
 
   // Update parameter list
-  const updateListValue = (key: string, val: string) => {
-    const vals = new Set(paramList(params[key]));
-    const value = val === 'None' ? 'null' : val;
+  const updateListValue = useCallback(
+    (key: string, val: string) => {
+      const vals = new Set(paramList(params[key]));
+      const value = val === 'None' ? 'null' : val;
 
-    if (!vals.has(value)) {
-      vals.add(value);
-    } else {
-      vals.delete(value);
-    }
-
-    changeParameter(key, [...vals.values()].join(','));
-  };
-
-  const handleGroupTitleClick = (title: string) => {
-    if (['flow_id', 'user'].indexOf(params._group) > -1) {
-      dispatch({ type: 'groupReset' });
-
-      if (params._group === 'flow_id') {
-        setQp({ flow_id: title });
-      } else if (params._group === 'user') {
-        const param = title === 'None' ? 'null' : title;
-        // Remove other user tags
-        const newtags = params._tags
-          ? params._tags
-              .split(',')
-              .filter((str) => !str.startsWith('user:'))
-              .join(',')
-          : '';
-
-        setQp({ _tags: newtags, user: param });
+      if (!vals.has(value)) {
+        vals.add(value);
+      } else {
+        vals.delete(value);
       }
-    }
-  };
 
-  const handleOrderChange = (orderProp: string) => {
-    const [currentDirection, currentOrderProp] = parseOrderParam(params._order);
-    const nextOrder = `${directionFromText(currentDirection)}${orderProp}`;
-    changeParameter('_order', currentOrderProp === orderProp ? swapDirection(nextOrder) : nextOrder);
-  };
+      changeParameter(key, [...vals.values()].join(','));
+    },
+    [changeParameter, params],
+  );
+
+  const handleGroupTitleClick = useCallback(
+    (title: string) => {
+      if (['flow_id', 'user'].indexOf(params._group) > -1) {
+        dispatch({ type: 'groupReset' });
+
+        if (params._group === 'flow_id') {
+          setQp({ flow_id: title });
+        } else if (params._group === 'user') {
+          const param = title === 'None' ? 'null' : title;
+          // Remove other user tags
+          const newtags = params._tags
+            ? params._tags
+                .split(',')
+                .filter((str) => !str.startsWith('user:'))
+                .join(',')
+            : '';
+
+          setQp({ _tags: newtags, user: param });
+        }
+      }
+    },
+    [params._group, params._tags, setQp],
+  );
+
+  const handleOrderChange = useCallback(
+    (orderProp: string) => {
+      const [currentDirection, currentOrderProp] = parseOrderParam(params._order);
+      const nextOrder = `${directionFromText(currentDirection)}${orderProp}`;
+      changeParameter('_order', currentOrderProp === orderProp ? swapDirection(nextOrder) : nextOrder);
+    },
+    [changeParameter, params._order],
+  );
 
   const handleLoadMore = () => {
     if (isLastPage || showLoader) return;

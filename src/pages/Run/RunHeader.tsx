@@ -27,6 +27,9 @@ type Props = {
   run: Run;
 };
 
+const emptyObj = {};
+const emptyArray: Artifact[] = [];
+
 //
 // Component
 //
@@ -65,7 +68,7 @@ const RunHeader: React.FC<Props> = ({ run }) => {
   const params = useResource<RunParam, RunParam>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/parameters`,
     subscribeToEvents: true,
-    initialData: {},
+    initialData: emptyObj,
   });
 
   const dstype = useResource<Artifact[], Artifact>({
@@ -75,7 +78,7 @@ const RunHeader: React.FC<Props> = ({ run }) => {
       _limit: '1',
     },
     subscribeToEvents: true,
-    initialData: [],
+    initialData: emptyArray,
   });
 
   return (

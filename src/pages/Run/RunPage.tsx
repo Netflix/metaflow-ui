@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import useRowData from '../../components/Timeline/useTaskData';
 import { getPath } from '../../utils/routing';
@@ -33,6 +33,8 @@ type RunPageProps = {
   run: IRun;
   params: RunPageParams;
 };
+
+const emptyArray: Metadata[] = [];
 
 //
 // Component
@@ -75,16 +77,20 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Metadata for plugins
   //
 
+  debugger;
+
+  const onUpdate = useCallback((items: Metadata[]) => {
+    plContext.addDataToStore('run-metadata', metadataToRecord(items));
+  }, []);
+
   useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/metadata`,
-    initialData: [],
+    initialData: emptyArray,
     subscribeToEvents: true,
     queryParams: {
       step_name: 'start',
     },
-    onUpdate(items) {
-      plContext.addDataToStore('run-metadata', metadataToRecord(items));
-    },
+    onUpdate,
   });
 
   //
@@ -153,11 +159,18 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       const newRows: Row[] = makeVisibleRows(rows, settings, visibleSteps, searchField.results);
       // If no grouping, sort tasks here.
       const rowsToUpdate = !settings.group ? newRows.sort(sortRows(settings.sort[0], settings.sort[1])) : newRows;
-      setVisibleRows(rowsToUpdate);
+      console.log('visibleRows', visibleRows, 'rowsToUpdate', rowsToUpdate);
+      if (!(visibleRows.length === 0 && rowsToUpdate.length === 0)) {
+        setVisibleRows(rowsToUpdate);
+      }
     } catch (e) {
       logWarning('Unexpected error while contructing task rows: ', e);
     }
   }, [rows, settings.stepFilter, settings.sort, settings.statusFilter, settings.group, searchField.results, settings]);
+
+  useEffect(() => {
+    console.log('visibleRows', visibleRows);
+  }, [visibleRows]);
 
   const [visible, setVisible] = useState(false);
 
@@ -272,5 +285,7 @@ const RunPageContainer = styled(FixedContent)<{ visible: boolean }>`
   opacity: ${(p) => (p.visible ? '1' : '0')};
   height: calc(100vh - 9rem);
 `;
+
+RunPage.whyDidYouRender = true;
 
 export default RunPage;

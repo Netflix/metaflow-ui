@@ -5,12 +5,14 @@ import useResource from '../../../hooks/useResource';
 import { Run, RunParam } from '../../../types';
 import RunParameterTable from '../../Run/RunParameterTable';
 
+const emptyObj = {};
+
 const ParametersPreview: React.FC<{ run: Run }> = ({ run }) => {
   const { t } = useTranslation();
   const params = useResource<RunParam, RunParam>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/parameters`,
     subscribeToEvents: true,
-    initialData: {},
+    initialData: emptyObj,
   });
 
   return (

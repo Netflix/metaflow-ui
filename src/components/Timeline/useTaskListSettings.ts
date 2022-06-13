@@ -40,6 +40,7 @@ export type TaskSettingsAction =
   | { type: 'setCustom'; value: boolean };
 
 export function taskListSettingsReducer(state: TaskSettingsState, action: TaskSettingsAction): TaskSettingsState {
+  console.log('taskListSettingsReducer', state, action);
   switch (action.type) {
     case 'sort':
       return {
@@ -61,8 +62,10 @@ export function taskListSettingsReducer(state: TaskSettingsState, action: TaskSe
 
     case 'setCustom':
       return { ...state, isCustomEnabled: action.value };
+
+    default:
+      return state;
   }
-  return state;
 }
 
 type PossibleParameterValue = string | number | undefined | null;
@@ -159,6 +162,8 @@ export default function useTaskListSettings(): TaskSettingsHook {
   });
 
   useEffect(() => {
+    console.log('useEffect1');
+
     // Check sort direction param, only update if is valid and changed
     const sortDir = validatedParameter<'asc' | 'desc'>(q.direction, taskListSettings.sort[0], ['asc', 'desc'], 'asc');
     // Check sort by param, only update if is valid and changed
@@ -212,6 +217,7 @@ export default function useTaskListSettings(): TaskSettingsHook {
   ]);
 
   useEffect(() => {
+    console.log('useEffect2');
     dispatch({ type: 'setSteps', steps: q.steps });
   }, [q.steps]);
 
