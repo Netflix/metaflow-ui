@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Step, Task, AsyncStatus, Run } from '../../types';
 import styled from 'styled-components';
 import { StepRowData, RowDataAction } from './useTaskData';
@@ -61,7 +61,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   // Event handling
   //
 
-  const footerHandleUpdate = (which: 'left' | 'right', to: number) => {
+  const footerHandleUpdate = useCallback((which: 'left' | 'right', to: number) => {
     if (which === 'left') {
       timelineControlDispatch({
         type: 'setZoom',
@@ -85,7 +85,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
             : to,
       });
     }
-  };
+  }, []);
 
   const zoom = (type: 'in' | 'out' | 'reset') => {
     if (type === 'in') {
@@ -96,6 +96,10 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
       timelineControlDispatch({ type: 'resetZoom' });
     }
   };
+
+  const handleStepRowClick = useCallback((stepid) => rowDataDispatch({ type: 'toggle', id: stepid }), []);
+
+  const handleMove = useCallback((value: number) => timelineControlDispatch({ type: 'move', value: value }), []);
 
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
@@ -130,8 +134,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
             paramsString={paramsString}
             searchStatus={searchField.results.status}
             onHandleMove={footerHandleUpdate}
-            onMove={(value) => timelineControlDispatch({ type: 'move', value: value })}
-            onStepRowClick={(stepid) => rowDataDispatch({ type: 'toggle', id: stepid })}
+            onMove={handleMove}
+            onStepRowClick={handleStepRowClick}
           />
         )}
 

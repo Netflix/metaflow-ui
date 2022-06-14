@@ -175,11 +175,14 @@ export default function useTaskListSettings(): TaskSettingsHook {
     );
 
     if (sortDir || sortBy) {
+      console.log('dispatch1');
       dispatch({ type: 'sort', sort: [sortBy || taskListSettings.sort[0], sortDir || taskListSettings.sort[1]] });
     }
 
     // Check status param, only update if is valid and changed
     if (q.status !== taskListSettings.statusFilter) {
+      console.log('dispatch2');
+
       dispatch({ type: 'setStatus', status: q.status });
     }
 
@@ -191,6 +194,8 @@ export default function useTaskListSettings(): TaskSettingsHook {
       'true',
     );
     if (group) {
+      console.log('dispatch3');
+
       dispatch({ type: 'setGrouping', value: group === 'true' ? true : false });
     }
 
@@ -203,6 +208,8 @@ export default function useTaskListSettings(): TaskSettingsHook {
       // custom mode on and start saving settingin localstorage
       if (!equalsDefaultMode(q.order, q.direction, q.status, q.group)) {
         const { steps, ...rest } = q;
+        console.log('dispatch4');
+
         dispatch({ type: 'setCustom', value: true });
         localStorage.setItem('custom-settings', JSON.stringify(rest));
       }
@@ -218,6 +225,8 @@ export default function useTaskListSettings(): TaskSettingsHook {
 
   useEffect(() => {
     console.log('useEffect2');
+    console.log('dispatch5');
+
     dispatch({ type: 'setSteps', steps: q.steps });
   }, [q.steps]);
 
@@ -225,14 +234,22 @@ export default function useTaskListSettings(): TaskSettingsHook {
   const setMode = (mode: TaskListMode) => {
     if (mode === 'overview') {
       sq({ ...q, ...OverviewMode }, 'replace');
+      console.log('dispatch6');
+
       dispatch({ type: 'setCustom', value: false });
     } else if (mode === 'monitoring') {
       sq({ ...q, ...MonitoringMode }, 'replace');
+      console.log('dispatch7');
+
       dispatch({ type: 'setCustom', value: false });
     } else if (mode === 'error-tracker') {
       sq({ ...q, ...ErrorTrackerMode }, 'replace');
+      console.log('dispatch8');
+
       dispatch({ type: 'setCustom', value: false });
     } else if (mode === 'custom') {
+      console.log('dispatch9');
+
       dispatch({ type: 'setCustom', value: true });
       // Check previous settings from localstorage for custom setting
       const previousSettings = localStorage.getItem('custom-settings');

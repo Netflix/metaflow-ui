@@ -44,6 +44,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
   const plContext = useContext(PluginsContext);
 
+  console.log('RunPage render');
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(params.viewType ? params.viewType : 'timeline');
   useEffect(() => {
@@ -76,8 +77,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   //
   // Metadata for plugins
   //
-
-  debugger;
 
   const onUpdate = useCallback((items: Metadata[]) => {
     plContext.addDataToStore('run-metadata', metadataToRecord(items));

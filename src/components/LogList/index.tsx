@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
@@ -100,6 +100,12 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     }
   }, [searchActive, searchCurrent, searchQuery, search.result.result]);
 
+  const onRowsRendered = useCallback((data) => {
+    if (onScroll) {
+      setIndex(data.overscanStartIndex);
+    }
+  }, []);
+
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">
       <LogActionBar
@@ -125,11 +131,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
                 overscanRowCount={5}
                 rowCount={rows.length}
                 rowHeight={cache.rowHeight}
-                onRowsRendered={(data) => {
-                  if (onScroll) {
-                    setIndex(data.overscanStartIndex);
-                  }
-                }}
+                onRowsRendered={onRowsRendered}
                 deferredMeasurementCache={cache}
                 onScroll={(args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
                   if (args.scrollTop + args.clientHeight >= args.scrollHeight) {

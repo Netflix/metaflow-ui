@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Collapsable from '../../../components/Collapsable';
 import Timeline, { ROW_HEIGHT, SPACE_UNDER_TIMELINE } from '../../../components/Timeline/Timeline';
 import useTaskData from '../../../components/Timeline/useTaskData';
@@ -32,6 +32,8 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
     setPreview((state) => ({ start, end: state ? Math.max(end, state.end) : end, visiblerows }));
   }, [rows, steps]);
 
+  const handleStepRowClick = useCallback((stepid) => dispatch({ type: 'toggle', id: stepid }), [dispatch]);
+
   return (
     <Collapsable title="Timeline" initialState={true}>
       <TimelinePreviewContainer>
@@ -52,7 +54,7 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
                 ? 20
                 : (ROW_HEIGHT * preview.visiblerows.length + SPACE_UNDER_TIMELINE('minimal')) / 16
             }
-            onStepRowClick={(stepid) => dispatch({ type: 'toggle', id: stepid })}
+            onStepRowClick={handleStepRowClick}
           />
         )}
         {(!preview || (preview && preview.visiblerows.length === 0)) && (

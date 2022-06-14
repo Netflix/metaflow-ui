@@ -34,6 +34,7 @@ export type StepRowData = {
 };
 
 const emptyArray: Step[] = [];
+const emptyArray2: Task[] = [];
 
 //
 // Reducer
@@ -226,8 +227,6 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
       _limit: '1000',
     },
   });
-
-  const emptyArray2: Task[] = [];
 
   const onUpdate = useCallback((items: Task[]) => {
     dispatch({
