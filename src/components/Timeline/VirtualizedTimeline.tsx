@@ -61,31 +61,40 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   // Event handling
   //
 
-  const footerHandleUpdate = useCallback((which: 'left' | 'right', to: number) => {
-    if (which === 'left') {
-      timelineControlDispatch({
-        type: 'setZoom',
-        start:
-          to < timelineControls.min
-            ? timelineControls.min
-            : to > timelineControls.timelineEnd - 500
-            ? timelineControls.timelineStart
-            : to,
-        end: timelineControls.timelineEnd,
-      });
-    } else {
-      timelineControlDispatch({
-        type: 'setZoom',
-        start: timelineControls.timelineStart,
-        end:
-          to > timelineControls.max
-            ? timelineControls.max
-            : to < timelineControls.timelineStart + 500
-            ? timelineControls.timelineEnd
-            : to,
-      });
-    }
-  }, []);
+  const footerHandleUpdate = useCallback(
+    (which: 'left' | 'right', to: number) => {
+      if (which === 'left') {
+        timelineControlDispatch({
+          type: 'setZoom',
+          start:
+            to < timelineControls.min
+              ? timelineControls.min
+              : to > timelineControls.timelineEnd - 500
+              ? timelineControls.timelineStart
+              : to,
+          end: timelineControls.timelineEnd,
+        });
+      } else {
+        timelineControlDispatch({
+          type: 'setZoom',
+          start: timelineControls.timelineStart,
+          end:
+            to > timelineControls.max
+              ? timelineControls.max
+              : to < timelineControls.timelineStart + 500
+              ? timelineControls.timelineEnd
+              : to,
+        });
+      }
+    },
+    [
+      timelineControlDispatch,
+      timelineControls.max,
+      timelineControls.min,
+      timelineControls.timelineEnd,
+      timelineControls.timelineStart,
+    ],
+  );
 
   const zoom = (type: 'in' | 'out' | 'reset') => {
     if (type === 'in') {
@@ -97,9 +106,15 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
     }
   };
 
-  const handleStepRowClick = useCallback((stepid) => rowDataDispatch({ type: 'toggle', id: stepid }), []);
+  const handleStepRowClick = useCallback(
+    (stepid) => rowDataDispatch({ type: 'toggle', id: stepid }),
+    [rowDataDispatch],
+  );
 
-  const handleMove = useCallback((value: number) => timelineControlDispatch({ type: 'move', value: value }), []);
+  const handleMove = useCallback(
+    (value: number) => timelineControlDispatch({ type: 'move', value: value }),
+    [timelineControlDispatch],
+  );
 
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>

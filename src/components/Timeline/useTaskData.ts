@@ -235,30 +235,35 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     });
   }, []);
 
-  const postRequest = useCallback((success: boolean, _target: string, result: DataModel<Task[]> | undefined) => {
-    if (success && result) {
-      const tasksNeedingRefine = result.data
-        .filter((task) => task.status === 'unknown' && task.step_name !== '_parameters')
-        .map((task) => task.task_id);
+  const postRequest = useCallback(
+    (success: boolean, _target: string, result: DataModel<Task[]> | undefined) => {
+      if (success && result) {
+        const tasksNeedingRefine = result.data
+          .filter((task) => task.status === 'unknown' && task.step_name !== '_parameters')
+          .map((task) => task.task_id);
 
-      if (tasksNeedingRefine.length > 0) {
-        const target = apiHttp(
-          `/flows/${flowId}/runs/${runNumber}/tasks?taskId=${tasksNeedingRefine.join(',')}&postprocess=true&_limit=500`,
-        );
+        if (tasksNeedingRefine.length > 0) {
+          const target = apiHttp(
+            `/flows/${flowId}/runs/${runNumber}/tasks?taskId=${tasksNeedingRefine.join(
+              ',',
+            )}&postprocess=true&_limit=500`,
+          );
 
-        fetch(target)
-          .then((response) => response.json())
-          .then((response: DataModel<Task[]>) => {
-            if (response?.status === 200) {
-              dispatch({ type: 'fillTasks', data: response.data });
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+          fetch(target)
+            .then((response) => response.json())
+            .then((response: DataModel<Task[]>) => {
+              if (response?.status === 200) {
+                dispatch({ type: 'fillTasks', data: response.data });
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        }
       }
-    }
-  }, []);
+    },
+    [flowId, runNumber],
+  );
 
   // Fetch & subscribe to tasks
   const { status: taskStatus, error: taskError } = useResource<Task[], Task>({

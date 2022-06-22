@@ -78,9 +78,12 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Metadata for plugins
   //
 
-  const onUpdate = useCallback((items: Metadata[]) => {
-    plContext.addDataToStore('run-metadata', metadataToRecord(items));
-  }, []);
+  const onUpdate = useCallback(
+    (items: Metadata[]) => {
+      plContext.addDataToStore('run-metadata', metadataToRecord(items));
+    },
+    [plContext],
+  );
 
   useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/metadata`,
@@ -159,13 +162,25 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       // If no grouping, sort tasks here.
       const rowsToUpdate = !settings.group ? newRows.sort(sortRows(settings.sort[0], settings.sort[1])) : newRows;
       console.log('visibleRows', visibleRows, 'rowsToUpdate', rowsToUpdate);
-      if (!(visibleRows.length === 0 && rowsToUpdate.length === 0)) {
+      if (
+        !(visibleRows.length === 0 && rowsToUpdate.length === 0) &&
+        JSON.stringify(visibleRows) !== JSON.stringify(rowsToUpdate)
+      ) {
         setVisibleRows(rowsToUpdate);
       }
     } catch (e) {
       logWarning('Unexpected error while contructing task rows: ', e);
     }
-  }, [rows, settings.stepFilter, settings.sort, settings.statusFilter, settings.group, searchField.results, settings]);
+  }, [
+    rows,
+    settings.stepFilter,
+    settings.sort,
+    settings.statusFilter,
+    settings.group,
+    searchField.results,
+    settings,
+    visibleRows,
+  ]);
 
   useEffect(() => {
     console.log('visibleRows', visibleRows);

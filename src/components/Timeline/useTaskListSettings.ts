@@ -43,6 +43,7 @@ export function taskListSettingsReducer(state: TaskSettingsState, action: TaskSe
   console.log('taskListSettingsReducer', state, action);
   switch (action.type) {
     case 'sort':
+      console.log('sort: ', action.sort);
       return {
         ...state,
         sort: action.sort,
@@ -217,10 +218,10 @@ export default function useTaskListSettings(): TaskSettingsHook {
   }, [
     q,
     dispatch,
-    taskListSettings.isCustomEnabled,
-    taskListSettings.group,
-    taskListSettings.statusFilter,
-    taskListSettings.sort,
+    // taskListSettings.isCustomEnabled,
+    // taskListSettings.group,
+    // taskListSettings.statusFilter,
+    // taskListSettings.sort,
   ]);
 
   useEffect(() => {

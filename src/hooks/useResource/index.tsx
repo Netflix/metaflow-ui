@@ -212,8 +212,6 @@ export default function useResource<T, U>({
     (targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, requestid: number) => {
       setLogItem(`GET SENT ${targetUrl}`);
 
-      console.log('in fetchData');
-
       fetch(targetUrl, { signal })
         .then((response) => {
           if (response.status === 200) {
@@ -235,7 +233,6 @@ export default function useResource<T, U>({
                 // If we want all data and we are have next page available we fetch it.
                 // Else this fetch is done and we call the callback
                 if (fetchAllData && result.links.next !== null && result.links.next !== targetUrl) {
-                  console.log('calling self');
                   fetchData(result.links.next || targetUrl, signal, cb, requestid);
                 } else {
                   cb(true);
@@ -272,22 +269,6 @@ export default function useResource<T, U>({
   );
 
   useEffect(() => {
-    console.log('fetchAllData changed: ', fetchAllData);
-  }, [fetchAllData]);
-  useEffect(() => {
-    console.log('onUpdate changed: ', onUpdate);
-  }, [onUpdate]);
-  useEffect(() => {
-    console.log('postRequest changed: ', postRequest);
-  }, [postRequest]);
-  useEffect(() => {
-    console.log('setData changed: ', setData);
-  }, [setData]);
-  useEffect(() => {
-    console.log('setResult changed: ', setResult);
-  }, [setResult]);
-
-  useEffect(() => {
     const abortCtrl = new AbortController();
     const signal = abortCtrl.signal;
     let fulfilled = false;
@@ -304,8 +285,6 @@ export default function useResource<T, U>({
       if (!onUpdate) {
         setData(initialData);
       }
-
-      console.log('useEffect before fetchData');
 
       fetchData(
         target,
@@ -329,27 +308,6 @@ export default function useResource<T, U>({
     };
   }, [target, pause, retryCounter, error, onUpdate, fetchData, initialData]);
 
-  useEffect(() => {
-    console.log('target changed: ', target);
-  }, [target]);
-  useEffect(() => {
-    console.log('pause changed: ', pause);
-  }, [pause]);
-  useEffect(() => {
-    console.log('retryCounter changed: ', retryCounter);
-  }, [retryCounter]);
-  useEffect(() => {
-    console.log('error changed: ', error);
-  }, [error]);
-  useEffect(() => {
-    console.log('onUpdate changed: ', onUpdate);
-  }, [onUpdate]);
-  useEffect(() => {
-    console.log('fetchData changed: ', fetchData);
-  }, [fetchData]);
-  useEffect(() => {
-    console.log('initialData changed: ', initialData);
-  }, [initialData]);
   function retry() {
     setRetryCounter((val) => val + 1);
   }

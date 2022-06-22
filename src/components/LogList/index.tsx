@@ -100,11 +100,14 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     }
   }, [searchActive, searchCurrent, searchQuery, search.result.result]);
 
-  const onRowsRendered = useCallback((data) => {
-    if (onScroll) {
-      setIndex(data.overscanStartIndex);
-    }
-  }, []);
+  const onRowsRendered = useCallback(
+    (data) => {
+      if (onScroll) {
+        setIndex(data.overscanStartIndex);
+      }
+    },
+    [onScroll],
+  );
 
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">

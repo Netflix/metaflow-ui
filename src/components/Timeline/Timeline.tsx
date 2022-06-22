@@ -85,17 +85,20 @@ const Timeline: React.FC<TimelineProps> = ({
   // Event handling
   //
 
-  const onRowsRendered = useCallback((params: RenderedRows) => {
-    const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
+  const onRowsRendered = useCallback(
+    (params: RenderedRows) => {
+      const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
 
-    if (stepNeedsSticky) {
-      setStickyHeader(stepNeedsSticky.name);
-    } else {
-      if (stickyHeader) {
-        setStickyHeader(null);
+      if (stepNeedsSticky) {
+        setStickyHeader(stepNeedsSticky.name);
+      } else {
+        if (stickyHeader) {
+          setStickyHeader(null);
+        }
       }
-    }
-  }, []);
+    },
+    [stepPositions, stickyHeader],
+  );
 
   const rowRenderer = useCallback(
     () =>
@@ -108,12 +111,12 @@ const Timeline: React.FC<TimelineProps> = ({
         t: t,
         dragging: dragging,
       }),
-    [],
+    [dragging, onStepRowClick, paramsString, rows, searchStatus, t, timeline],
   );
 
-  const handleToggle = () => {
+  const handleToggle = useCallback(() => {
     if (stickyHeader) onStepRowClick(stickyHeader);
-  };
+  }, [onStepRowClick, stickyHeader]);
 
   const autosizerContents = useCallback(
     ({ width, height }) => (
@@ -168,7 +171,19 @@ const Timeline: React.FC<TimelineProps> = ({
         </div>
       </>
     ),
-    [],
+    [
+      dragging,
+      footerType,
+      handleToggle,
+      onHandleMove,
+      onMove,
+      onRowsRendered,
+      rowRenderer,
+      rows,
+      stickyHeader,
+      t,
+      timeline,
+    ],
   );
 
   return (
