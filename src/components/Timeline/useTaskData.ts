@@ -190,8 +190,6 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
     case 'reset':
       return {};
   }
-
-  return state;
 }
 
 //
