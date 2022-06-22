@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { AutoSizer, List } from 'react-virtualized';
 import styled from 'styled-components';
 
@@ -100,16 +100,17 @@ const Timeline: React.FC<TimelineProps> = ({
     [stepPositions, stickyHeader],
   );
 
-  const rowRenderer = useCallback(
-    createRowRenderer({
-      rows,
-      timeline,
-      searchStatus,
-      onStepRowClick,
-      paramsString,
-      t: t,
-      dragging: dragging,
-    }),
+  const rowRenderer = useMemo(
+    () =>
+      createRowRenderer({
+        rows,
+        timeline,
+        searchStatus,
+        onStepRowClick,
+        paramsString,
+        t: t,
+        dragging: dragging,
+      }),
     [dragging, onStepRowClick, paramsString, rows, searchStatus, t, timeline],
   );
 

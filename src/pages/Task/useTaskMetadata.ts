@@ -16,6 +16,8 @@ type TaskMetadata = {
   attemptMetadataResource: Resource<Metadata[]>;
 };
 
+const emptyArray: Metadata[] = [];
+
 function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMetadata {
   const { addDataToStore } = useContext(PluginsContext);
 
@@ -24,7 +26,7 @@ function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMe
     fetchAllData: true,
     updatePredicate: (a: Metadata, b: Metadata) => a.id === b.id,
     subscribeToEvents: true,
-    initialData: [],
+    initialData: emptyArray,
     pause: paused,
   };
 
