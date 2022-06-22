@@ -101,16 +101,15 @@ const Timeline: React.FC<TimelineProps> = ({
   );
 
   const rowRenderer = useCallback(
-    () =>
-      createRowRenderer({
-        rows,
-        timeline,
-        searchStatus,
-        onStepRowClick,
-        paramsString,
-        t: t,
-        dragging: dragging,
-      }),
+    createRowRenderer({
+      rows,
+      timeline,
+      searchStatus,
+      onStepRowClick,
+      paramsString,
+      t: t,
+      dragging: dragging,
+    }),
     [dragging, onStepRowClick, paramsString, rows, searchStatus, t, timeline],
   );
 
