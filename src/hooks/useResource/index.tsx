@@ -277,11 +277,6 @@ export default function useResource<T, U>({
       const requestid = Date.now();
       statusDispatch({ type: 'set', id: requestid, status: 'Loading' });
 
-      // if (error !== null) {
-      //   console.log('setting error to null');
-      //   setError(null);
-      // }
-
       if (!onUpdate) {
         setData(initialData);
       }
@@ -293,6 +288,9 @@ export default function useResource<T, U>({
           fulfilled = true;
           if (isSuccess) {
             statusDispatch({ type: 'setstatus', id: requestid, status: 'Ok' });
+            if (error !== null) {
+              setError(null);
+            }
           } else {
             newError(target, defaultError, requestid);
           }

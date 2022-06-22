@@ -44,7 +44,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
   const plContext = useContext(PluginsContext);
 
-  console.log('RunPage render');
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(params.viewType ? params.viewType : 'timeline');
   useEffect(() => {
@@ -161,7 +160,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       const newRows: Row[] = makeVisibleRows(rows, settings, visibleSteps, searchField.results);
       // If no grouping, sort tasks here.
       const rowsToUpdate = !settings.group ? newRows.sort(sortRows(settings.sort[0], settings.sort[1])) : newRows;
-      console.log('visibleRows', visibleRows, 'rowsToUpdate', rowsToUpdate);
       if (
         !(visibleRows.length === 0 && rowsToUpdate.length === 0) &&
         JSON.stringify(visibleRows) !== JSON.stringify(rowsToUpdate)
@@ -181,10 +179,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     settings,
     visibleRows,
   ]);
-
-  useEffect(() => {
-    console.log('visibleRows', visibleRows);
-  }, [visibleRows]);
 
   const [visible, setVisible] = useState(false);
 

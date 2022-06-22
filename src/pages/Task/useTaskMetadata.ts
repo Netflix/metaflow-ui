@@ -57,7 +57,6 @@ function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMe
 
   // Update metadata to plugin store
   useEffect(() => {
-    console.log('Got task metadata: ', data);
     addDataToStore('metadata', metadataToRecord(data));
   }, [dataCount, addDataToStore, data]);
 
