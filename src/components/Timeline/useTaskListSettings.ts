@@ -171,7 +171,8 @@ export default function useTaskListSettings(): TaskSettingsHook {
       'startTime',
     );
 
-    if (sortDir || sortBy) {
+    const newSort = [sortBy || taskListSettings.sort[0], sortDir || taskListSettings.sort[1]];
+    if (JSON.stringify(taskListSettings.sort) !== JSON.stringify(newSort)) {
       dispatch({ type: 'sort', sort: [sortBy || taskListSettings.sort[0], sortDir || taskListSettings.sort[1]] });
     }
 
