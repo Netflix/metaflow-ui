@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useCallback, useContext, useEffect } from 'react';
 import { v4 as generateIdentifier } from 'uuid';
 import styled from 'styled-components';
@@ -62,24 +61,29 @@ const MAX_NOTIFICATIONS = 5;
 export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
-  const removeNotification = (notification: Notification) =>
-    setNotifications((ns) => ns.filter((n) => n.uuid !== notification.uuid));
+  const removeNotification = useCallback(
+    (notification: Notification) => setNotifications((ns) => ns.filter((n) => n.uuid !== notification.uuid)),
+    [],
+  );
 
-  const addNotification = (...notification: Notification[]) => {
-    const notificationsToAdd = notification
-      .map((n) => {
-        return { uuid: n.uuid || generateIdentifier(), ...n };
-      })
-      .reverse();
+  const addNotification = useCallback(
+    (...notification: Notification[]) => {
+      const notificationsToAdd = notification
+        .map((n) => {
+          return { uuid: n.uuid || generateIdentifier(), ...n };
+        })
+        .reverse();
 
-    // Remove incoming notifications from existing notifications
-    const existingNotifications = notifications.filter((a) => !notificationsToAdd.some((b) => a.uuid === b.uuid));
+      // Remove incoming notifications from existing notifications
+      const existingNotifications = notifications.filter((a) => !notificationsToAdd.some((b) => a.uuid === b.uuid));
 
-    setNotifications([...notificationsToAdd, ...existingNotifications].slice(0, MAX_NOTIFICATIONS));
-    return notificationsToAdd;
-  };
+      setNotifications([...notificationsToAdd, ...existingNotifications].slice(0, MAX_NOTIFICATIONS));
+      return notificationsToAdd;
+    },
+    [notifications],
+  );
 
-  const clearNotifications = () => setNotifications([]);
+  const clearNotifications = useCallback(() => setNotifications([]), []);
 
   const contextValue = {
     notifications,
@@ -163,7 +167,7 @@ export const Notifications: React.FC = () => {
       }
     });
     return () => unsubscribeFromEvent('Notifications');
-  }, []);
+  }, [addNotification, subscribeToEvent, unsubscribeFromEvent]);
 
   return (
     <NotificationsWrapper>
@@ -201,7 +205,7 @@ const NotificationRenderer: React.FC<{
     if (state === NotificationState.Mounted) {
       onMount(notification);
     }
-  }, []);
+  }, [notification, onMount, state]);
 
   return (
     <NotificationWrapper

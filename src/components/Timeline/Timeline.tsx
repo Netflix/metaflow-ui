@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { AutoSizer, List } from 'react-virtualized';
 import styled from 'styled-components';
 
@@ -11,6 +11,8 @@ import { toRelativeSize } from '../../utils/style';
 import { Row } from './VirtualizedTimeline';
 import { TasksSortBy } from './useTaskListSettings';
 import { AsyncStatus } from '../../types';
+
+const listStyle = { transition: 'height 0.25s' };
 
 //
 // Typedef
@@ -83,82 +85,110 @@ const Timeline: React.FC<TimelineProps> = ({
   // Event handling
   //
 
-  const onRowsRendered = (params: RenderedRows) => {
-    const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
+  const onRowsRendered = useCallback(
+    (params: RenderedRows) => {
+      const stepNeedsSticky = timelineNeedStickyHeader(stepPositions, params.startIndex);
 
-    if (stepNeedsSticky) {
-      setStickyHeader(stepNeedsSticky.name);
-    } else {
-      if (stickyHeader) {
-        setStickyHeader(null);
+      if (stepNeedsSticky) {
+        setStickyHeader(stepNeedsSticky.name);
+      } else {
+        if (stickyHeader) {
+          setStickyHeader(null);
+        }
       }
-    }
-  };
+    },
+    [stepPositions, stickyHeader],
+  );
+
+  const rowRenderer = useMemo(
+    () =>
+      createRowRenderer({
+        rows,
+        timeline,
+        searchStatus,
+        onStepRowClick,
+        paramsString,
+        t: t,
+        dragging: dragging,
+      }),
+    [dragging, onStepRowClick, paramsString, rows, searchStatus, t, timeline],
+  );
+
+  const handleToggle = useCallback(() => {
+    if (stickyHeader) onStepRowClick(stickyHeader);
+  }, [onStepRowClick, stickyHeader]);
+
+  const autosizerContents = useCallback(
+    ({ width, height }) => (
+      <>
+        <List
+          overscanRowCount={10}
+          rowCount={rows.length}
+          onRowsRendered={onRowsRendered}
+          rowHeight={ROW_HEIGHT}
+          rowRenderer={rowRenderer}
+          height={
+            height - SPACE_UNDER_TIMELINE(footerType) > rows.length * ROW_HEIGHT
+              ? rows.length * ROW_HEIGHT
+              : height - SPACE_UNDER_TIMELINE(footerType)
+          }
+          width={width}
+          style={listStyle}
+        />
+        {stickyHeader && timeline.groupingEnabled && (
+          <StickyHeader
+            stickyStep={stickyHeader}
+            items={rows}
+            timeline={timeline}
+            onToggle={handleToggle}
+            t={t}
+            dragging={dragging}
+          />
+        )}
+
+        <div style={{ width: width + 'px' }}>
+          <TimelineFooter
+            {...(footerType === 'minimap'
+              ? {
+                  type: 'minimap',
+                  props: {
+                    timeline,
+                    rows,
+                    onMove: onMove,
+                    onHandleMove: onHandleMove,
+                    onDraggingStateChange: setDragging,
+                  },
+                }
+              : {
+                  type: 'minimal',
+                  props: {
+                    startTime: timeline.startTime,
+                    visibleStartTime: timeline.visibleStartTime,
+                    visibleEndtime: timeline.visibleEndTime,
+                  },
+                })}
+          />
+        </div>
+      </>
+    ),
+    [
+      dragging,
+      footerType,
+      handleToggle,
+      onHandleMove,
+      onMove,
+      onRowsRendered,
+      rowRenderer,
+      rows,
+      stickyHeader,
+      t,
+      timeline,
+    ],
+  );
 
   return (
     <ListContainer customMinHeight={customMinimumHeight}>
-      <AutoSizer>
-        {({ width, height }) => (
-          <>
-            <List
-              overscanRowCount={10}
-              rowCount={rows.length}
-              onRowsRendered={onRowsRendered}
-              rowHeight={ROW_HEIGHT}
-              rowRenderer={createRowRenderer({
-                rows,
-                timeline,
-                searchStatus,
-                onStepRowClick,
-                paramsString,
-                t: t,
-                dragging: dragging,
-              })}
-              height={
-                height - SPACE_UNDER_TIMELINE(footerType) > rows.length * ROW_HEIGHT
-                  ? rows.length * ROW_HEIGHT
-                  : height - SPACE_UNDER_TIMELINE(footerType)
-              }
-              width={width}
-              style={{ transition: 'height 0.25s' }}
-            />
-            {stickyHeader && timeline.groupingEnabled && (
-              <StickyHeader
-                stickyStep={stickyHeader}
-                items={rows}
-                timeline={timeline}
-                onToggle={() => onStepRowClick(stickyHeader)}
-                t={t}
-                dragging={dragging}
-              />
-            )}
-
-            <div style={{ width: width + 'px' }}>
-              <TimelineFooter
-                {...(footerType === 'minimap'
-                  ? {
-                      type: 'minimap',
-                      props: {
-                        timeline,
-                        rows,
-                        onMove: onMove,
-                        onHandleMove: onHandleMove,
-                        onDraggingStateChange: setDragging,
-                      },
-                    }
-                  : {
-                      type: 'minimal',
-                      props: {
-                        startTime: timeline.startTime,
-                        visibleStartTime: timeline.visibleStartTime,
-                        visibleEndtime: timeline.visibleEndTime,
-                      },
-                    })}
-              />
-            </div>
-          </>
-        )}
-      </AutoSizer>
+      <AutoSizer>{autosizerContents}</AutoSizer>
     </ListContainer>
   );
 };

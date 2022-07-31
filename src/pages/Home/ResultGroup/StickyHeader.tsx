@@ -26,7 +26,7 @@ const StickyHeader: React.FC<Props> = ({ tableRef, children }) => {
     window.addEventListener('scroll', listener);
 
     return () => window.removeEventListener('scroll', listener);
-  }, []); // eslint-disable-line
+  }, [scrollState]);
 
   const isSticky = headerShouldStick(rect);
 

@@ -85,5 +85,5 @@ export default function useWebsocketRequest<T>({
         conn.close();
       }
     };
-  }, [url, qs, enabled]); // eslint-disable-line
+  }, [url, qs, enabled, onClose, onError, onOpen, onUpdate, onConnecting, queryParams]);
 }

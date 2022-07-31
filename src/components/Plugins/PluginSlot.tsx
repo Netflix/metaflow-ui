@@ -116,7 +116,19 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
       unsubscribeFromDatastore(VERY_UNIQUE_ID);
       unsubscribeFromEvent(VERY_UNIQUE_ID);
     };
-  }, [title, id]); // eslint-disable-line
+  }, [
+    title,
+    id,
+    VERY_UNIQUE_ID,
+    callEvent,
+    plugin,
+    resourceParams,
+    route,
+    subscribeToDatastore,
+    subscribeToEvent,
+    unsubscribeFromDatastore,
+    unsubscribeFromEvent,
+  ]);
 
   return (
     <PluginSlotContainer>

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { List } from 'react-virtualized';
@@ -54,6 +54,36 @@ const TaskList: React.FC<Props> = ({
       (viewScrollTop + 25 > ref.current.offsetTop ? HEADER_SIZE_PX + 25 : ref.current.offsetTop - viewScrollTop + 25)
     : 0;
 
+  const rowRenderer = useCallback(
+    ({ index, style }) => {
+      const item = rows[index];
+
+      return (
+        <TaskListRow
+          key={index}
+          index={index}
+          style={style}
+          item={item}
+          grouped={grouped}
+          paramsString={paramsString}
+          duration={
+            item.type === 'step'
+              ? getStepDuration(item.data, item.rowObject.status, item.rowObject.duration)
+              : item.data[item.data.length - 1].duration || null
+          }
+          toggle={
+            item.type === 'step'
+              ? () => (item.data ? rowDataDispatch({ type: 'toggle', id: item.data.step_name }) : null)
+              : undefined
+          }
+          active={item.type === 'task' && getTaskId(item.data[0]) === activeTaskId}
+          isOpen={item.type === 'step' && item.rowObject.isOpen}
+        />
+      );
+    },
+    [activeTaskId, grouped, paramsString, rowDataDispatch, rows],
+  );
+
   return (
     <TaskListContainer ref={ref}>
       <FixedList style={{ position: 'sticky', top: HEADER_SIZE_PX + 'px' }}>
@@ -62,32 +92,7 @@ const TaskList: React.FC<Props> = ({
             overscanRowCount={5}
             rowCount={rows.length}
             rowHeight={toRelativeSize(28)}
-            rowRenderer={({ index, style }) => {
-              const item = rows[index];
-
-              return (
-                <TaskListRow
-                  key={index}
-                  index={index}
-                  style={style}
-                  item={item}
-                  grouped={grouped}
-                  paramsString={paramsString}
-                  duration={
-                    item.type === 'step'
-                      ? getStepDuration(item.data, item.rowObject.status, item.rowObject.duration)
-                      : item.data[item.data.length - 1].duration || null
-                  }
-                  toggle={
-                    item.type === 'step'
-                      ? () => (item.data ? rowDataDispatch({ type: 'toggle', id: item.data.step_name }) : null)
-                      : undefined
-                  }
-                  active={item.type === 'task' && getTaskId(item.data[0]) === activeTaskId}
-                  isOpen={item.type === 'step' && item.rowObject.isOpen}
-                />
-              );
-            }}
+            rowRenderer={rowRenderer}
             height={listSize}
             width={toRelativeSize(245)}
           />

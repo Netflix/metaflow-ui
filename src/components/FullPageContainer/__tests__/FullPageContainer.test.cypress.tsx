@@ -10,33 +10,33 @@ describe('FullPageContainer test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <FullPageContainer onClose={onClose}>Hello world</FullPageContainer>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
-    
+
     cy.get('[data-testid="fullpage-close-button"]')
       .click()
-        .then(() => {
+      .then(() => {
         expect(onClose).to.have.been.called;
       });
   });
-  
+
   it('<FullPageContainer> - Content rendering', () => {
     const onClose = cy.stub();
     // With children
     mount(
       <ThemeProvider theme={theme}>
         <FullPageContainer onClose={onClose}>Hello world</FullPageContainer>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="fullpage-content"]').should('contain', 'Hello world');
-  
+
     // With component
     mount(
       <ThemeProvider theme={theme}>
-        <FullPageContainer onClose={onClose} component={(num: number) => <>Hei maailma</>}>
+        <FullPageContainer onClose={onClose} component={() => <>Hei maailma</>}>
           Hello world
         </FullPageContainer>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="fullpage-content"]').should('contain', 'Hei maailma');
   });

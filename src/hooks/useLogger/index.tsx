@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { StringParam, useQueryParams } from 'use-query-params';
 import { endLogging, startLogging } from '../../utils/debugdb';
 
@@ -46,14 +46,14 @@ function useLogger(): { enabled: boolean; startLogging: () => void; stopLogging:
   const context = useContext(LoggingContext);
   const [q, sq] = useQueryParams({ debug: StringParam });
 
-  const start = () => {
+  const start = useCallback(() => {
     context.start();
-  };
+  }, [context]);
 
-  const stop = () => {
+  const stop = useCallback(() => {
     sq({ debug: undefined }, 'replaceIn');
     context.stop();
-  };
+  }, [context, sq]);
 
   useEffect(() => {
     const setting = localStorage.getItem('debug-mode');
@@ -62,7 +62,7 @@ function useLogger(): { enabled: boolean; startLogging: () => void; stopLogging:
     } else {
       stop();
     }
-  }, []); // eslint-disable-line
+  }, [q?.debug, start, stop]);
 
   return { enabled: context.enabled, startLogging: start, stopLogging: stop };
 }

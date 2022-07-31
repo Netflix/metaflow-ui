@@ -61,8 +61,10 @@ export function taskListSettingsReducer(state: TaskSettingsState, action: TaskSe
 
     case 'setCustom':
       return { ...state, isCustomEnabled: action.value };
+
+    default:
+      return state;
   }
-  return state;
 }
 
 type PossibleParameterValue = string | number | undefined | null;
@@ -169,7 +171,8 @@ export default function useTaskListSettings(): TaskSettingsHook {
       'startTime',
     );
 
-    if (sortDir || sortBy) {
+    const newSort = [sortBy || taskListSettings.sort[0], sortDir || taskListSettings.sort[1]];
+    if (JSON.stringify(taskListSettings.sort) !== JSON.stringify(newSort)) {
       dispatch({ type: 'sort', sort: [sortBy || taskListSettings.sort[0], sortDir || taskListSettings.sort[1]] });
     }
 
@@ -198,11 +201,19 @@ export default function useTaskListSettings(): TaskSettingsHook {
       // custom mode on and start saving settingin localstorage
       if (!equalsDefaultMode(q.order, q.direction, q.status, q.group)) {
         const { steps, ...rest } = q;
+
         dispatch({ type: 'setCustom', value: true });
         localStorage.setItem('custom-settings', JSON.stringify(rest));
       }
     }
-  }, [q, dispatch]); // eslint-disable-line
+  }, [
+    q,
+    dispatch,
+    taskListSettings.isCustomEnabled,
+    taskListSettings.group,
+    taskListSettings.statusFilter,
+    taskListSettings.sort,
+  ]);
 
   useEffect(() => {
     dispatch({ type: 'setSteps', steps: q.steps });

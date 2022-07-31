@@ -39,7 +39,7 @@ const AutoLoadTrigger: React.FC<AutoLoadProps> = ({ loadMore, status, resultAmou
       }, 250);
     }
     return () => (to ? window.clearTimeout(to) : undefined);
-  }, [status]); // eslint-disable-line
+  }, [status, isUpdatable]);
 
   // Let trigger be disabled for half a second on initial render
   useEffect(() => {

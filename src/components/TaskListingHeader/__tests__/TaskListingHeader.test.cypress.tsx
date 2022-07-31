@@ -6,6 +6,17 @@ import TaskListingHeader, { getMode } from '../TaskListingHeader';
 import useSeachField from '../../../hooks/useSearchField';
 import CollapseButton from '../components/CollapseButton';
 import { createTaskListSettings } from '../../../utils/testhelper';
+import { Run } from '../../../types';
+
+const mockRun: Run = {
+  run_number: 1,
+  status: 'running',
+  flow_id: '1',
+  system_tags: [],
+  ts_epoch: 1597490980000,
+  user_name: 'test_user',
+  user: 'test_user',
+};
 
 const headerFunctionProps = {
   onToggleCollapse: () => null,
@@ -20,7 +31,10 @@ const headerFunctionProps = {
     completed: 0,
     running: 0,
     failed: 0,
+    pending: 0,
+    unknown: 0,
   },
+  run: mockRun,
 };
 
 describe('TaskListingHeader test', () => {
@@ -89,19 +103,19 @@ describe('TaskListingHeader test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <CollapseButton {...props} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     cy.get('[data-testid="timeline-collapse-button"]')
       .click()
       .then(() => {
         expect(props.collapse).to.be.calledOnce;
-      }); 
+      });
 
     mount(
       <ThemeProvider theme={theme}>
         <CollapseButton {...props} isAnyGroupOpen={false} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     cy.get('[data-testid="timeline-collapse-button"]')

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
@@ -65,6 +65,8 @@ type TaskViewProps = {
 type FullScreenData =
   | { type: 'logs'; logtype: 'stdout' | 'stderr' }
   | { type: 'artifact'; name: string; artifactdata: string };
+
+const emptyArray: Artifact[] = [];
 
 //
 // Component
@@ -159,6 +161,10 @@ const Task: React.FC<TaskViewProps> = ({
     url: `${logUrl}err?attempt_id=${attemptId.toString()}`,
   });
 
+  const onUpdate = useCallback((data) => {
+    data && setArtifacts((currentData) => [...currentData, ...data]);
+  }, []);
+
   // Artifacts
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const artifactUrl = `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/artifacts`;
@@ -174,10 +180,8 @@ const Task: React.FC<TaskViewProps> = ({
     },
     subscribeToEvents: true,
     fetchAllData: true,
-    initialData: [],
-    onUpdate: (data) => {
-      data && setArtifacts((currentData) => [...currentData, ...data]);
-    },
+    initialData: emptyArray,
+    onUpdate,
     pause: !task || attemptId === null,
   });
 

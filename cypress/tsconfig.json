@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "types": ["cypress"]
+    "types": ["cypress", "cypress-wait-until"]
   },
   "include": ["**/*.*", "../plugin-api/__tests__/*"]
 }

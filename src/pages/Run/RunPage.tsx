@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import useRowData from '../../components/Timeline/useTaskData';
 import { getPath } from '../../utils/routing';
@@ -33,6 +33,8 @@ type RunPageProps = {
   run: IRun;
   params: RunPageParams;
 };
+
+const emptyArray: Metadata[] = [];
 
 //
 // Component
@@ -75,16 +77,21 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Metadata for plugins
   //
 
+  const onUpdate = useCallback(
+    (items: Metadata[]) => {
+      plContext.addDataToStore('run-metadata', metadataToRecord(items));
+    },
+    [plContext],
+  );
+
   useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${run.run_number}/metadata`,
-    initialData: [],
+    initialData: emptyArray,
     subscribeToEvents: true,
     queryParams: {
       step_name: 'start',
     },
-    onUpdate(items) {
-      plContext.addDataToStore('run-metadata', metadataToRecord(items));
-    },
+    onUpdate,
   });
 
   //
@@ -114,7 +121,16 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
         setMode('error-tracker');
       }
     }
-  }, [params.runNumber]); // eslint-disable-line
+  }, [
+    params.runNumber,
+    listParams.direction,
+    listParams.order,
+    listParams.status,
+    params.stepName,
+    params.taskId,
+    run.status,
+    setMode,
+  ]);
   //
   // Graph measurements and rendering logic
   //
@@ -144,12 +160,25 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       const newRows: Row[] = makeVisibleRows(rows, settings, visibleSteps, searchField.results);
       // If no grouping, sort tasks here.
       const rowsToUpdate = !settings.group ? newRows.sort(sortRows(settings.sort[0], settings.sort[1])) : newRows;
-      setVisibleRows(rowsToUpdate);
+      if (
+        !(visibleRows.length === 0 && rowsToUpdate.length === 0) &&
+        JSON.stringify(visibleRows) !== JSON.stringify(rowsToUpdate)
+      ) {
+        setVisibleRows(rowsToUpdate);
+      }
     } catch (e) {
       logWarning('Unexpected error while contructing task rows: ', e);
     }
-    /* eslint-disable */
-  }, [rows, settings.stepFilter, settings.sort, settings.statusFilter, settings.group, searchField.results]);
+  }, [
+    rows,
+    settings.stepFilter,
+    settings.sort,
+    settings.statusFilter,
+    settings.group,
+    searchField.results,
+    settings,
+    visibleRows,
+  ]);
 
   const [visible, setVisible] = useState(false);
 
@@ -186,7 +215,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     if ((dagResult.status === 'Error' || dagResult.data === null) && tab === 'dag') {
       dagResult.retry();
     }
-  }, [tab]); //eslint-disable-line
+  }, [tab, dagResult]);
 
   return (
     <>
