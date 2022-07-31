@@ -23,8 +23,15 @@ describe('DAG test', () => {
   it('<DAG /> - health check', async () => {
     mount(
       <ThemeProvider theme={theme}>
-        <DAG run={run} steps={[]} result={createResource({}, {})} />
-      </ThemeProvider>
+        <DAG
+          run={run}
+          steps={[]}
+          result={createResource(
+            { file: 'test_file', parameters: [], constants: [], steps: {}, graph_structure: [] },
+            {},
+          )}
+        />
+      </ThemeProvider>,
     );
     // Expect to see error here since we don't mock websocket
     cy.get('[data-testid="dag-container-Error"]').should('exist');
@@ -44,7 +51,6 @@ describe('DAG test', () => {
         steps: {},
         graph_structure: [],
         doc: 'string',
-        decorators: [],
       }),
     ).to.be.false;
 
@@ -56,7 +62,6 @@ describe('DAG test', () => {
         steps: {},
         graph_structure: [],
         doc: 'string',
-        decorators: [],
       }),
     ).to.be.false;
   });
