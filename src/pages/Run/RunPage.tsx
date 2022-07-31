@@ -294,6 +294,4 @@ const RunPageContainer = styled(FixedContent)<{ visible: boolean }>`
   height: calc(100vh - 9rem);
 `;
 
-RunPage.whyDidYouRender = true;
-
 export default RunPage;
