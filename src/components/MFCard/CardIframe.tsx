@@ -9,7 +9,7 @@ type Props = {
   path: string;
 };
 
-const FALLBACK_HEIGHT = 150;
+const FALLBACK_HEIGHT = 750; // arbitrary height that should show enough
 
 //
 // Render single card in iframe.
