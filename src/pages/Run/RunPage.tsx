@@ -24,6 +24,7 @@ import useResource from '../../hooks/useResource';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
 import { metadataToRecord } from '../../utils/metadata';
 import { GraphModel } from '../../components/DAG/DAGUtils';
+import { getRunId } from '../../utils/run';
 
 //
 // Typedef
@@ -68,7 +69,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const { rows, steps, dispatch, counts, taskStatus, isAnyGroupOpen, taskError, stepError } = useRowData(
     params.flowId,
-    run.run_number.toString(),
+    getRunId(run),
   );
 
   //
@@ -76,7 +77,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   //
 
   useResource<Metadata[], Metadata>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/metadata`,
+    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/metadata`,
     initialData: [],
     subscribeToEvents: true,
     queryParams: {
@@ -91,7 +92,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Search API
   //
 
-  const searchField = useSeachField(run.flow_id, run.run_number.toString());
+  const searchField = useSeachField(run.flow_id, getRunId(run));
 
   //
   // Listing settings and graph measurements
@@ -177,7 +178,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // DAG data, fetch here to prevent multiple fetches when switching tabs
   //
   const dagResult = useResource<GraphModel, GraphModel>({
-    url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
+    url: encodeURI(`/flows/${run.flow_id}/runs/${getRunId(run)}/dag`),
     subscribeToEvents: false,
     initialData: null,
   });

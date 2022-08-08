@@ -59,7 +59,7 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
       <StyledTR
         data-testid="result-group-row"
         data-flow_id={run.flow_id}
-        data-run_id={run.run}
+        data-run_id={getRunId(run)}
         data-status={run.status}
         data-user={run.user}
         data-tags={(run.tags || []).join(' ')}
