@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StringParam, useQueryParams } from 'use-query-params';
 import useSearchRequest, { SearchResult, TaskMatch } from '../useSearchRequest';
@@ -48,7 +48,7 @@ function isCached(flowId: string, runNumber: string) {
 // Search query will return list of tasks that matched to query.
 //
 
-export default function useSeachField(flowID: string, runNumber: string): SearchFieldReturnType {
+export default function useSearchField(flowID: string, runNumber: string): SearchFieldReturnType {
   const { t } = useTranslation();
   const [qp, setQp] = useQueryParams({ q: StringParam });
   const [searchValue, setSearchValue] = useState(qp.q ? qp.q : isCached(flowID, runNumber) ? cache.text : '');
@@ -57,26 +57,32 @@ export default function useSeachField(flowID: string, runNumber: string): Search
   );
   const [enabled, setEnabled] = useState(true);
 
-  const updateSearchResults = (newResults: SearchResultModel) => {
-    setSearchResults({
-      ...newResults,
-      // Only display items that were searchable, unsearchable result indicates error
-      result: newResults.result.filter((r) => r.searchable),
-    });
-    cache.results = newResults;
-    cache.id = flowID + runNumber;
-  };
+  const updateSearchResults = useCallback(
+    (newResults: SearchResultModel) => {
+      setSearchResults({
+        ...newResults,
+        // Only display items that were searchable, unsearchable result indicates error
+        result: newResults.result.filter((r) => r.searchable),
+      });
+      cache.results = newResults;
+      cache.id = flowID + runNumber;
+    },
+    [flowID, runNumber],
+  );
 
-  const updateText = (str: string, forceUpdate?: boolean) => {
-    setSearchValue(str);
-    setQp({ q: str }, 'replaceIn');
-    cache.text = str;
-    cache.id = flowID + runNumber;
+  const updateText = useCallback(
+    (str: string, forceUpdate?: boolean) => {
+      setSearchValue(str);
+      setQp({ q: str }, 'replaceIn');
+      cache.text = str;
+      cache.id = flowID + runNumber;
 
-    if (forceUpdate) {
-      setEnabled(false);
-    }
-  };
+      if (forceUpdate) {
+        setEnabled(false);
+      }
+    },
+    [setQp, runNumber, flowID],
+  );
 
   useEffect(() => {
     if (!enabled) {
@@ -84,23 +90,45 @@ export default function useSeachField(flowID: string, runNumber: string): Search
     }
   }, [enabled]);
 
-  useSearchRequest({
-    url: `/flows/${flowID}/runs/${runNumber}/search`,
-    searchValue: searchValue,
-    onUpdate: (event: SearchResult) => {
+  const onError = useCallback(() => {
+    updateSearchResults({ result: [], status: 'Error', errorMsg: t('search.failed-to-search') });
+  }, [t, updateSearchResults]);
+
+  const onUpdate = useCallback(
+    (event: SearchResult) => {
       if (event.type === 'result' && Array.isArray(event.matches)) {
         updateSearchResults({ result: event.matches || [], status: 'Ok' });
       } else if (event.type === 'error' && event.message) {
         updateSearchResults({ status: 'Error', errorMsg: event.message, result: [] });
       }
     },
-    onConnecting: () => {
-      updateSearchResults({ ...searchResults, status: 'Loading' });
-    },
-    onError: () => {
-      updateSearchResults({ result: [], status: 'Error', errorMsg: t('search.failed-to-search') });
-    },
-    enabled: enabled,
+    [updateSearchResults],
+  );
+
+  const onConnecting = useCallback(() => {
+    // if (searchResults.status !== 'Loading') {
+    //   updateSearchResults({ ...searchResults, status: 'Loading' });
+    // }
+
+    setSearchResults((existingSearchResults) => {
+      cache.results = { ...existingSearchResults, status: 'Loading' };
+      cache.id = flowID + runNumber;
+      return {
+        ...existingSearchResults,
+        status: 'Loading',
+        // Only display items that were searchable, unsearchable result indicates error
+        result: existingSearchResults.result.filter((r) => r.searchable),
+      };
+    });
+  }, [flowID, runNumber]);
+
+  useSearchRequest({
+    url: `/flows/${flowID}/runs/${runNumber}/search`,
+    searchValue: searchValue,
+    onUpdate,
+    onConnecting,
+    onError,
+    enabled,
   });
 
   useEffect(() => {

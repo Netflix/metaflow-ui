@@ -124,6 +124,8 @@ const StatusReducer = (state: StatusState, action: StatusAction): StatusState =>
   }
 };
 
+const emptyObject = {};
+
 //
 // Hook
 //
@@ -133,7 +135,7 @@ export default function useResource<T, U>({
   wsUrl,
   initialData = null,
   subscribeToEvents = false,
-  queryParams = {},
+  queryParams = emptyObject,
   websocketParams,
   socketParamFilter,
   updatePredicate = (_a, _b) => false,
@@ -306,11 +308,13 @@ export default function useResource<T, U>({
     };
   }, [target, pause, retryCounter, error, onUpdate, fetchData, initialData]);
 
-  function retry() {
+  const retry = useCallback(() => {
     setRetryCounter((val) => val + 1);
-  }
+  }, []);
 
-  return { url, target, data, error, getResult: () => result, status: status.status, retry };
+  const getResult = useCallback(() => result, [result]);
+
+  return { url, target, data, error, getResult, status: status.status, retry };
 }
 
 function getWebsocketUrl<T>(url: string, data: T | null, wsUrl?: string | ((result: T) => string)): string {

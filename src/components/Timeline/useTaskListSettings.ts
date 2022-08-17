@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import {
   DecodedValueMap,
   QueryParamConfig,
@@ -220,29 +220,32 @@ export default function useTaskListSettings(): TaskSettingsHook {
   }, [q.steps]);
 
   // Update active settings mode for task listing.
-  const setMode = (mode: TaskListMode) => {
-    if (mode === 'overview') {
-      sq({ ...q, ...OverviewMode }, 'replace');
-      dispatch({ type: 'setCustom', value: false });
-    } else if (mode === 'monitoring') {
-      sq({ ...q, ...MonitoringMode }, 'replace');
-      dispatch({ type: 'setCustom', value: false });
-    } else if (mode === 'error-tracker') {
-      sq({ ...q, ...ErrorTrackerMode }, 'replace');
-      dispatch({ type: 'setCustom', value: false });
-    } else if (mode === 'custom') {
-      dispatch({ type: 'setCustom', value: true });
-      // Check previous settings from localstorage for custom setting
-      const previousSettings = localStorage.getItem('custom-settings');
-      if (previousSettings) {
-        const parsed = JSON.parse(previousSettings);
-        if (parsed) {
-          const steps = q.steps ? { steps: q.steps } : {};
-          sq({ ...parsed, ...steps }, 'replace');
+  const setMode = useCallback(
+    (mode: TaskListMode) => {
+      if (mode === 'overview') {
+        sq({ ...q, ...OverviewMode }, 'replace');
+        dispatch({ type: 'setCustom', value: false });
+      } else if (mode === 'monitoring') {
+        sq({ ...q, ...MonitoringMode }, 'replace');
+        dispatch({ type: 'setCustom', value: false });
+      } else if (mode === 'error-tracker') {
+        sq({ ...q, ...ErrorTrackerMode }, 'replace');
+        dispatch({ type: 'setCustom', value: false });
+      } else if (mode === 'custom') {
+        dispatch({ type: 'setCustom', value: true });
+        // Check previous settings from localstorage for custom setting
+        const previousSettings = localStorage.getItem('custom-settings');
+        if (previousSettings) {
+          const parsed = JSON.parse(previousSettings);
+          if (parsed) {
+            const steps = q.steps ? { steps: q.steps } : {};
+            sq({ ...parsed, ...steps }, 'replace');
+          }
         }
       }
-    }
-  };
+    },
+    [q, sq],
+  );
 
   return { settings: taskListSettings, dispatch, setQueryParam: sq, params: q, setMode };
 }

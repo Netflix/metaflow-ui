@@ -55,6 +55,15 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
   const { t } = useTranslation();
   const activeMode = getMode(settings);
 
+  const autoCompleteSettings = {
+    url: `/flows/${run.flow_id}/runs/${run.run_number || run.run_id}/artifacts/autocomplete`,
+    params: (input: string) => ({
+      'name:co': input,
+    }),
+  };
+
+  const autoCompleteEnabled = (str: string) => str.indexOf(':') === -1;
+
   return (
     <TaskListingContainer>
       <SettingsRow>
@@ -70,13 +79,8 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
               initialValue={searchField.fieldProps.text}
               onUpdate={searchField.fieldProps.setText}
               results={searchField.results}
-              autoCompleteSettings={{
-                url: `/flows/${run.flow_id}/runs/${run.run_number || run.run_id}/artifacts/autocomplete`,
-                params: (input) => ({
-                  'name:co': input,
-                }),
-              }}
-              autoCompleteEnabled={(str) => str.indexOf(':') === -1}
+              autoCompleteSettings={autoCompleteSettings}
+              autoCompleteEnabled={autoCompleteEnabled}
             />
           )}
 

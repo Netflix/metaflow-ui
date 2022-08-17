@@ -116,6 +116,11 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
     [timelineControlDispatch],
   );
 
+  const handleToggleCollapse = (type: 'expand' | 'collapse') =>
+    rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' });
+
+  const handleSetFullScreen = () => setFullscreen(true);
+
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
@@ -128,12 +133,10 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
           isAnyGroupOpen={isAnyGroupOpen}
           setQueryParam={setQueryParam}
           onModeSelect={onModeSelect}
-          onSetFullscreen={() => setFullscreen(true)}
+          onSetFullscreen={handleSetFullScreen}
           onZoom={zoom}
           userZoomed={timelineControls.controlled}
-          onToggleCollapse={(type: 'expand' | 'collapse') =>
-            rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' })
-          }
+          onToggleCollapse={handleToggleCollapse}
         />
         {rows.length > 0 && (
           <Timeline

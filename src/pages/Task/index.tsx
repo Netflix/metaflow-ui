@@ -134,6 +134,9 @@ const Task: React.FC<TaskViewProps> = ({
   const isCurrentTaskFinished = !!(task && task.finished_at);
   const isLatestAttempt = attemptId === (tasks?.length || 1) - 1;
 
+  const handleToggleCollapse = (type: 'expand' | 'collapse') =>
+    rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' });
+
   //
   // Related data start
   //
@@ -205,9 +208,7 @@ const Task: React.FC<TaskViewProps> = ({
       <TaskListingHeader
         run={run}
         settings={settings}
-        onToggleCollapse={(type: 'expand' | 'collapse') =>
-          rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' })
-        }
+        onToggleCollapse={handleToggleCollapse}
         searchField={searchField}
         counts={counts}
         isAnyGroupOpen={isAnyGroupOpen}

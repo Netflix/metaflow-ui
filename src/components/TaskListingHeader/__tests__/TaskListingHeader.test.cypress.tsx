@@ -3,7 +3,7 @@ import { mount } from '@cypress/react';
 import { ThemeProvider } from 'styled-components';
 import theme from '../../../theme';
 import TaskListingHeader, { getMode } from '../TaskListingHeader';
-import useSeachField from '../../../hooks/useSearchField';
+import useSearchField from '../../../hooks/useSearchField';
 import CollapseButton from '../components/CollapseButton';
 import { createTaskListSettings } from '../../../utils/testhelper';
 import { Run } from '../../../types';
@@ -40,7 +40,7 @@ const headerFunctionProps = {
 describe('TaskListingHeader test', () => {
   it('<TaskListingHeader> - should render', () => {
     const Component = () => {
-      const searchField = useSeachField('a', 'b');
+      const searchField = useSearchField('a', 'b');
       return (
         <ThemeProvider theme={theme}>
           <TaskListingHeader settings={createTaskListSettings({})} searchField={searchField} {...headerFunctionProps} />

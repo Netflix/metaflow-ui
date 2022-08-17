@@ -9,6 +9,8 @@ import styled from 'styled-components';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
 import { Run } from '../../../types';
 
+const zeroCounts = { all: 0, failed: 0, running: 0, completed: 0, unknown: 0, pending: 0 };
+
 //
 // Typedef
 //
@@ -58,11 +60,7 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
           />
         )}
         {(!preview || (preview && preview.visiblerows.length === 0)) && (
-          <TimelineNoRows
-            counts={{ all: 0, failed: 0, running: 0, completed: 0, unknown: 0, pending: 0 }}
-            searchStatus="NotAsked"
-            tasksStatus={taskStatus}
-          />
+          <TimelineNoRows counts={zeroCounts} searchStatus="NotAsked" tasksStatus={taskStatus} />
         )}
       </TimelinePreviewContainer>
     </Collapsable>

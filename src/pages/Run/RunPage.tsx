@@ -10,7 +10,7 @@ import Tabs from '../../components/Tabs';
 import RunHeader from './RunHeader';
 import DAG from '../../components/DAG';
 import Timeline, { Row } from '../../components/Timeline/VirtualizedTimeline';
-import useSeachField from '../../hooks/useSearchField';
+import useSearchField from '../../hooks/useSearchField';
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { logWarning } from '../../utils/errorlogger';
 
@@ -98,7 +98,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Search API
   //
 
-  const searchField = useSeachField(run.flow_id, run.run_number.toString());
+  const searchField = useSearchField(run.flow_id, run.run_number.toString());
 
   //
   // Listing settings and graph measurements
@@ -131,6 +131,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     run.status,
     setMode,
   ]);
+
   //
   // Graph measurements and rendering logic
   //
@@ -143,6 +144,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Data processing
   //
   const [visibleRows, setVisibleRows] = useState<Row[]>([]);
+
   // Figure out rows that should be visible if something related to that changes
   // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {

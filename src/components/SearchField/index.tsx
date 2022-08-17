@@ -26,19 +26,23 @@ const SearchField: React.FC<SearchFieldProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const handleChange = (e: string) => {
+    if (!e) {
+      onUpdate('', true);
+    }
+  };
+
+  const handleSubmit = (str: string) => {
+    onUpdate(str, true);
+  };
+
   return (
     <SearchFieldContainer title={t('task.search-tasks-tip')}>
       <FilterInput
         sectionLabel={t('search.artifact')}
         initialValue={initialValue}
-        onChange={(e) => {
-          if (!e) {
-            onUpdate('', true);
-          }
-        }}
-        onSubmit={(str) => {
-          onUpdate(str, true);
-        }}
+        onChange={handleChange}
+        onSubmit={handleSubmit}
         noClear
         customIcon={['search', 'sm']}
         customIconElement={results.status === 'Loading' ? <Icon name="rowLoader" spin /> : null}
