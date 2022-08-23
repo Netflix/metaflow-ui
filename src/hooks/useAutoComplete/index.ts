@@ -98,6 +98,14 @@ function useAutoComplete<T>({
     }
   }, [requestUrl, abortCtrl, url]);
 
+  const reset = useCallback(() => {
+    setResult({ status: 'NotAsked', data: [], timestamp: 0 });
+  }, []);
+
+  const refetch = useCallback(() => {
+    setRefetcher((num) => num + 1);
+  }, []);
+
   useEffect(() => {
     if ((!searchEmpty && !input) || !enabled) return;
 
@@ -147,19 +155,12 @@ function useAutoComplete<T>({
           setResult({ status: 'Error', data: [], timestamp: Date.now() });
         });
     }
-    return () => {
-      abortCtrl.abort();
-    };
   }, [url, preFetch, searchEmpty, refetcher, abortCtrl, input, enabled, finder, parser, updateResult]);
 
   return {
     result,
-    reset() {
-      setResult({ status: 'NotAsked', data: [], timestamp: 0 });
-    },
-    refetch() {
-      setRefetcher((num) => num + 1);
-    },
+    reset,
+    refetch,
   };
 }
 
