@@ -7,7 +7,7 @@ import { formatDuration } from './format';
  * let's have same fallbacks just in case.
  */
 export function getRunId(run: Run): string {
-  return run.run || run.run_id || (run.run_number || 0).toString();
+  return run.run ?? run.run_id ?? (run.run_number ?? 0).toString();
 }
 
 /**

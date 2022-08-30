@@ -14,6 +14,7 @@ import FEATURE_FLAGS from '../../utils/FEATURE';
 import { SetQuery } from 'use-query-params';
 import { TaskListMode, TaskSettingsQueryParameters, TaskSettingsState } from '../Timeline/useTaskListSettings';
 import { Run } from '../../types';
+import { getRunId } from '../../utils/run';
 
 //
 // Typedef
@@ -71,7 +72,7 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
               onUpdate={searchField.fieldProps.setText}
               results={searchField.results}
               autoCompleteSettings={{
-                url: `/flows/${run.flow_id}/runs/${run.run_number || run.run_id}/artifacts/autocomplete`,
+                url: `/flows/${run.flow_id}/runs/${getRunId(run)}/artifacts/autocomplete`,
                 params: (input) => ({
                   'name:co': input,
                 }),

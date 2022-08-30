@@ -11,6 +11,7 @@ import Tooltip, { TooltipTitle } from '../../Tooltip';
 import { mix } from 'polished';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../../utils/routing';
+import { getRunId } from '../../../utils/run';
 
 //
 // DAG Content section for when we have dag data
@@ -42,7 +43,7 @@ const DAGContent: React.FC<DAGContentProps> = ({ showFullscreen, graphData, run,
   }, {});
 
   function goToStep(stepName: string) {
-    history.push(getPath.step(run.flow_id, run.run_number, stepName));
+    history.push(getPath.step(run.flow_id, getRunId(run), stepName));
   }
 
   return (
