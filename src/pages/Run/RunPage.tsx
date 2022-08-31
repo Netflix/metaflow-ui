@@ -35,6 +35,7 @@ type RunPageProps = {
 };
 
 const emptyArray: Metadata[] = [];
+const DAG_RETRY_TIMEOUT = 3000; // time between retries when fetching the DAG
 
 //
 // Component
@@ -215,7 +216,8 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Refetch dag on tab change if dag fetching failed
   useEffect(() => {
     if ((dagResult.status === 'Error' || dagResult.data === null) && tab === 'dag') {
-      dagResult.retry();
+      console.log('i would retry fetching dag data');
+      setTimeout(() => dagResult.retry(), DAG_RETRY_TIMEOUT);
     }
   }, [tab, dagResult]);
 
