@@ -63,13 +63,13 @@ const RunHeader: React.FC<Props> = ({ run }) => {
   ];
 
   const params = useResource<RunParam, RunParam>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/parameters`,
+    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/parameters`,
     subscribeToEvents: true,
     initialData: {},
   });
 
   const dstype = useResource<Artifact[], Artifact>({
-    url: `/flows/${run.flow_id}/runs/${run.run_number}/artifacts`,
+    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/artifacts`,
     queryParams: {
       ds_type: 'local',
       _limit: '1',
