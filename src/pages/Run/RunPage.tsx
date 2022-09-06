@@ -100,7 +100,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Search API
   //
 
-  const searchField = useSeachField(run.flow_id, getRunId(run));
+  const searchField = useSearchField(run.flow_id, getRunId(run));
 
   //
   // Listing settings and graph measurements
