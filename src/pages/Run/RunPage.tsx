@@ -43,7 +43,7 @@ const DAG_RETRY_TIMEOUT = 3000; // time between retries when fetching the DAG
 
 const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
-  const plContext = useContext(PluginsContext);
+  const { addDataToStore } = useContext(PluginsContext);
 
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(params.viewType ? params.viewType : 'timeline');
@@ -80,9 +80,9 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const onUpdate = useCallback(
     (items: Metadata[]) => {
-      plContext.addDataToStore('run-metadata', metadataToRecord(items));
+      addDataToStore('run-metadata', metadataToRecord(items));
     },
-    [plContext],
+    [addDataToStore],
   );
 
   useResource<Metadata[], Metadata>({
@@ -216,7 +216,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Refetch dag on tab change if dag fetching failed
   useEffect(() => {
     if ((dagResult.status === 'Error' || dagResult.data === null) && tab === 'dag') {
-      console.log('i would retry fetching dag data');
       setTimeout(() => dagResult.retry(), DAG_RETRY_TIMEOUT);
     }
   }, [tab, dagResult]);

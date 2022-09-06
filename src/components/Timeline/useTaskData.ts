@@ -34,6 +34,7 @@ export type StepRowData = {
 };
 
 const emptyArray: Step[] = [];
+const emptyStepLineArray: StepLineData[] = [];
 const emptyArray2: Task[] = [];
 
 //
@@ -294,7 +295,7 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     unknown: 0,
     pending: 0,
   });
-  const [steps, setStepLines] = useState<StepLineData[]>([]);
+  const [steps, setStepLines] = useState<StepLineData[]>(emptyStepLineArray);
   const [anyOpen, setAnyOpen] = useState<boolean>(true);
 
   useEffect(() => {

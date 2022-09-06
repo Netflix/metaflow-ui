@@ -290,9 +290,7 @@ export default function useResource<T, U>({
           fulfilled = true;
           if (isSuccess) {
             statusDispatch({ type: 'setstatus', id: requestid, status: 'Ok' });
-            if (error !== null) {
-              setError(null);
-            }
+            setError(null);
           } else {
             newError(target, defaultError, requestid);
           }
@@ -306,7 +304,7 @@ export default function useResource<T, U>({
         abortCtrl.abort();
       }
     };
-  }, [target, pause, retryCounter, error, onUpdate, fetchData, initialData]);
+  }, [target, pause, retryCounter, onUpdate, fetchData, initialData]);
 
   const retry = useCallback(() => {
     setRetryCounter((val) => val + 1);

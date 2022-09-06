@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { apiHttp } from '../../constants';
 
 /**
@@ -248,12 +248,12 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }
 
   // Add new data and trigger subs
-  function addDataToStore(path: string, data: unknown) {
+  const addDataToStore = useCallback((path: string, data: unknown) => {
     DataStore.data = { ...DataStore.data, [path]: data };
     for (const item of PluginDataSubscriptions.filter((s) => s.path === path)) {
       item.fn(data);
     }
-  }
+  }, []);
 
   //
   // Event system
