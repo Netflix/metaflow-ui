@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useReducer, useContext } from 'react';
+import React, { useEffect, useCallback, useReducer, useContext, useRef } from 'react';
 
 import { Run as IRun } from '../../types';
 import useResource, { DataModel } from '../../hooks/useResource';
@@ -45,11 +45,23 @@ const Home: React.FC = () => {
   const { timezone } = useContext(TimezoneContext);
 
   const { setQp, params: rawParams } = useHomeParameters();
-  const rawParamsString = JSON.stringify(rawParams);
+
+  const initialRender = useRef(true);
 
   useEffect(() => {
-    HomeStateCache.active = false;
-  }, []);
+    if (initialRender.current) {
+      initialRender.current = false;
+
+      HomeStateCache.active = false;
+      // Try to use same params as last time when on frontpage. But only try this if
+      // user is coming to default frontpage. We don't want to interrupt direct links from working
+      const fromLS = localStorage.getItem('home-params');
+      const lastUsedParams = fromLS ? JSON.parse(fromLS) : false;
+      if (lastUsedParams && isDefaultParams(rawParams, false)) {
+        setQp(lastUsedParams);
+      }
+    }
+  }, [rawParams, setQp]);
 
   //
   // QueryParams
@@ -73,7 +85,7 @@ const Home: React.FC = () => {
       cachedResult: shouldUseCachedResult(historyAction),
     });
     localStorage.setItem('home-params', JSON.stringify(rawParams));
-  }, [rawParamsString, historyAction, rawParams]);
+  }, [historyAction, rawParams]);
 
   //
   // State
