@@ -19,7 +19,7 @@ type TaskMetadata = {
 const emptyArray: Metadata[] = [];
 
 function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMetadata {
-  const { addDataToStore } = useContext(PluginsContext);
+  const { addDataToStore, clearDataStore } = useContext(PluginsContext);
 
   const config = {
     url: url,
@@ -63,8 +63,8 @@ function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMe
   }, [dataCount, addDataToStore, data]);
 
   useEffect(() => {
-    return () => addDataToStore('metadata', {});
-  }, [url, attemptId, addDataToStore]);
+    return () => clearDataStore('metadata');
+  }, [url, attemptId, clearDataStore]);
 
   return { data, taskMetadataResource, attemptMetadataResource };
 }

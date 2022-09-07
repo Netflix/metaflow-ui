@@ -44,7 +44,7 @@ const DAG_RETRY_TIMEOUT = 3000; // time between retries when fetching the DAG
 
 const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
-  const { addDataToStore } = useContext(PluginsContext);
+  const { addDataToStore, clearDataStore } = useContext(PluginsContext);
 
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(params.viewType ? params.viewType : 'timeline');
@@ -85,6 +85,10 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     },
     [addDataToStore],
   );
+
+  useEffect(() => {
+    return () => clearDataStore('run-metadata');
+  });
 
   useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/metadata`,

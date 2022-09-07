@@ -148,6 +148,7 @@ type PluginsContextProps = {
   subscribeToDatastore: (key: string, path: string, fn: (data: unknown) => void) => void;
   unsubscribeFromDatastore: (key: string) => void;
   addDataToStore: (path: string, data: unknown) => void;
+  clearDataStore: (path: string) => void;
   subscribeToEvent: (key: string, event: string, fn: (data: unknown) => void) => void;
   unsubscribeFromEvent: (key: string) => void;
   callEvent: (event: string, data?: unknown) => void;
@@ -259,6 +260,11 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, []);
 
+  // Clear the store before a metadata request
+  const clearDataStore = useCallback((path: string) => {
+    DataStore.data = { ...DataStore.data, [path]: {} };
+  }, []);
+
   //
   // Event system
   //
@@ -300,6 +306,7 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     subscribeToDatastore,
     unsubscribeFromDatastore,
     addDataToStore,
+    clearDataStore,
     subscribeToEvent,
     unsubscribeFromEvent,
     callEvent,
