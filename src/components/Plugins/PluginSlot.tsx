@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router';
 import styled from 'styled-components';
 import PLUGIN_STYLESHEET from './PluginDefaultStyleSheet';
@@ -30,13 +30,10 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
     useContext(PluginsContext);
   const loc = useLocation();
   const VERY_UNIQUE_ID = id + title + url;
-  const route = getRouteMatch(loc.pathname);
+  const route = useMemo(() => getRouteMatch(loc.pathname), [loc.pathname]);
 
-  //
-  // Subscribe to messages from iframe
-  //
-  useEffect(() => {
-    const listener = (e: MessageEvent) => {
+  const listener = useCallback(
+    (e: MessageEvent) => {
       if (PluginCommuncationsAPI.isRegisterMessage(e) && e.data.name === title) {
         const w = _iframe.current?.contentWindow;
         if (w) {
@@ -109,26 +106,25 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
           }
         }
       }
-    };
+    },
+    [VERY_UNIQUE_ID, callEvent, plugin, resourceParams, route, subscribeToDatastore, subscribeToEvent, title],
+  );
+  //
+  // Subscribe to messages from iframe
+  //
+  useEffect(() => {
     window.addEventListener('message', listener);
     return () => {
       window.removeEventListener('message', listener);
+    };
+  }, [listener]);
+
+  useEffect(() => {
+    return () => {
       unsubscribeFromDatastore(VERY_UNIQUE_ID);
       unsubscribeFromEvent(VERY_UNIQUE_ID);
     };
-  }, [
-    title,
-    id,
-    VERY_UNIQUE_ID,
-    callEvent,
-    plugin,
-    resourceParams,
-    route,
-    subscribeToDatastore,
-    subscribeToEvent,
-    unsubscribeFromDatastore,
-    unsubscribeFromEvent,
-  ]);
+  }, [VERY_UNIQUE_ID, unsubscribeFromDatastore, unsubscribeFromEvent]);
 
   return (
     <PluginSlotContainer>
