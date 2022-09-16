@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AutoUpdating from '../../../components/AutoUpdating';
 import { TD } from '../../../components/Table';
+import Triggers from '../../../components/Triggers';
 import { Run } from '../../../types';
 import {
   getRunDuration,
@@ -34,6 +35,7 @@ type ResultGroupCellsProps = {
 
 const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
   ({ r, params, updateListValue, link, timezone, infoOpen }) => {
+    const hasTrigger = true;
     return (
       <>
         {/* STATUS INDICATOR */}
@@ -53,8 +55,9 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* USER NAME */}
         {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
         {/* STARTED AT */}
-        <TDWithLink link={link}>
+        <TDWithLink link={hasTrigger ? undefined : link}>
           <WordBreak>{getRunStartTime(r, timezone)}</WordBreak>
+          {hasTrigger ? <Triggers run={r} /> : null}
         </TDWithLink>
         {/* FINISHED AT */}
         <TDWithLink link={link}>
@@ -91,11 +94,11 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
 // Cells
 //
 
-const TDWithLink: React.FC<{ link: string }> = ({ children, link }) => {
+const TDWithLink: React.FC<{ link?: string }> = ({ children, link }) => {
   return (
     <LinkTD>
       {children}
-      <GhostLink to={link}></GhostLink>
+      {link ? <GhostLink to={link}></GhostLink> : null}
     </LinkTD>
   );
 };
