@@ -53,6 +53,7 @@ const en = {
 
       id: 'ID',
       status: 'Status',
+      'triggered-by': 'Triggered by',
       'started-at': 'Started at',
       'finished-at': 'Finished at',
       language: 'Language',

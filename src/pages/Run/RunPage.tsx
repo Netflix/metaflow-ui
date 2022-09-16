@@ -57,6 +57,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const [previousStepName, setPreviousStepName] = useState<string>();
   const [previousTaskId, setPreviousTaskId] = useState<string>();
+  const [metadataRecord, setMetadataRecord] = useState<Record<string, string>>();
 
   useEffect(() => {
     params.stepName && params.stepName !== 'not-selected' && setPreviousStepName(params.stepName);
@@ -84,7 +85,27 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       step_name: 'start',
     },
     onUpdate(items) {
-      plContext.addDataToStore('run-metadata', metadataToRecord(items));
+      const metadataRecord = metadataToRecord([
+        ...items,
+        {
+          id: 12966402,
+          flow_id: 'GoodbyeFlow',
+          run_number: 'argo-goodbyeflow-wcptw',
+          step_name: 'start',
+          task_id: 't-06b1e2c4',
+          field_name: 'trigger_events',
+          value:
+            '[{"event_name": "metaflow_flow_run_succeeded", "timestamp": 1663184739, "event_id": "123456789123", "flow_name": "HelloFlow", "run_id": "argo-helloflow-atykf"}]',
+          type: 'runtime',
+          user_name: 'argo-workflows',
+          ts_epoch: 1661876130793,
+          tags: ['attempt_id:0'],
+          system_tags: [],
+        },
+      ]);
+
+      setMetadataRecord(metadataRecord);
+      plContext.addDataToStore('run-metadata', metadataRecord);
     },
   });
 
@@ -193,7 +214,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     <>
       <RunPageContainer visible={visible}>
         <ErrorBoundary message={t('error.run-header-error')}>
-          <RunHeader run={run} />
+          <RunHeader run={run} metadataRecord={metadataRecord} />
         </ErrorBoundary>
         <Tabs
           activeTab={tab}

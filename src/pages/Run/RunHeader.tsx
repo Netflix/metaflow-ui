@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { Artifact, Run, RunParam } from '../../types';
+import { Artifact, Metadata, Run, RunParam } from '../../types';
 
 import StatusField from '../../components/Status';
 import { Link, useHistory } from 'react-router-dom';
@@ -18,6 +18,7 @@ import AutoUpdating from '../../components/AutoUpdating';
 import DataHeader from '../../components/DataHeader';
 import RunWarning from './components/RunWarning';
 import useResource from '../../hooks/useResource';
+import Trigger from '../../components/Trigger';
 
 //
 // Typedef
@@ -25,13 +26,14 @@ import useResource from '../../hooks/useResource';
 
 type Props = {
   run: Run;
+  metadataRecord?: Record<string, string>;
 };
 
 //
 // Component
 //
 
-const RunHeader: React.FC<Props> = ({ run }) => {
+const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { timezone } = useContext(TimezoneContext);
@@ -39,6 +41,13 @@ const RunHeader: React.FC<Props> = ({ run }) => {
   const headerItems = [
     { label: t('fields.run-id'), value: getRunId(run) },
     { label: t('fields.status'), value: <StatusField status={run.status} /> },
+    {
+      label: t('fields.triggered-by'),
+      value: metadataRecord?.['trigger_events'] ? (
+        <TriggerInHeader triggerEventsValue={JSON.parse(metadataRecord?.['trigger_events'])?.[0]} />
+      ) : null,
+      hidden: !Boolean(metadataRecord?.['trigger_events']),
+    },
     {
       label: t('fields.user'),
       value: <StyledLink to={`/?user=${encodeURIComponent(run.user || 'null')}`}>{getUsername(run)}</StyledLink>,
@@ -148,6 +157,12 @@ const StyledLink = styled(Link)`
 
 const PluginWrapper = styled.div`
   margin-top: 1rem;
+`;
+
+const TriggerInHeader = styled(Trigger)`
+  a {
+    color: #fff;
+  }
 `;
 
 export default RunHeader;
