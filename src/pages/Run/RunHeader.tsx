@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import { Artifact, Metadata, Run, RunParam } from '../../types';
+import { Artifact, Run, RunParam } from '../../types';
 
 import StatusField from '../../components/Status';
 import { Link, useHistory } from 'react-router-dom';
