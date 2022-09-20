@@ -85,24 +85,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       step_name: 'start',
     },
     onUpdate(items) {
-      const metadataRecord = metadataToRecord([
-        ...items,
-        {
-          id: 12966402,
-          flow_id: 'GoodbyeFlow',
-          run_number: 'argo-goodbyeflow-wcptw',
-          step_name: 'start',
-          task_id: 't-06b1e2c4',
-          field_name: 'trigger_events',
-          value:
-            '[{"event_name": "metaflow_flow_run_succeeded", "timestamp": 1663184739, "event_id": "123456789123", "flow_name": "HelloFlow", "run_id": "argo-helloflow-atykf"}]',
-          type: 'runtime',
-          user_name: 'argo-workflows',
-          ts_epoch: 1661876130793,
-          tags: ['attempt_id:0'],
-          system_tags: [],
-        },
-      ]);
+      const metadataRecord = metadataToRecord(items);
 
       setMetadataRecord(metadataRecord);
       plContext.addDataToStore('run-metadata', metadataRecord);

@@ -3,18 +3,11 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AutoUpdating from '../../../components/AutoUpdating';
 import { TD } from '../../../components/Table';
-import Triggers from '../../../components/Triggers';
 import { Run } from '../../../types';
-import {
-  getRunDuration,
-  getRunEndTime,
-  getRunId,
-  getRunStartTime,
-  getTagOfType,
-  getUsername,
-} from '../../../utils/run';
+import { getRunDuration, getRunEndTime, getRunId, getTagOfType, getUsername } from '../../../utils/run';
 import { StatusColorCell } from './ResultGroupStatus';
 import ResultGroupTags from './ResultGroupTags';
+import StartedAtCell from './StartedAtCell';
 
 //
 // Typedef
@@ -35,7 +28,6 @@ type ResultGroupCellsProps = {
 
 const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
   ({ r, params, updateListValue, link, timezone, infoOpen }) => {
-    const hasTrigger = true;
     return (
       <>
         {/* STATUS INDICATOR */}
@@ -55,10 +47,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* USER NAME */}
         {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
         {/* STARTED AT */}
-        <TDWithLink link={hasTrigger ? undefined : link}>
-          <WordBreak>{getRunStartTime(r, timezone)}</WordBreak>
-          {hasTrigger ? <Triggers run={r} /> : null}
-        </TDWithLink>
+        <StartedAtCell timezone={timezone} run={r} link={link} />
         {/* FINISHED AT */}
         <TDWithLink link={link}>
           <WordBreak>{getRunEndTime(r, timezone)}</WordBreak>
@@ -94,7 +83,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
 // Cells
 //
 
-const TDWithLink: React.FC<{ link?: string }> = ({ children, link }) => {
+export const TDWithLink: React.FC<{ link?: string }> = ({ children, link }) => {
   return (
     <LinkTD>
       {children}
