@@ -19,6 +19,8 @@ import DataHeader from '../../components/DataHeader';
 import RunWarning from './components/RunWarning';
 import useResource from '../../hooks/useResource';
 import Trigger from '../../components/Trigger';
+import TitledRow from '../../components/TitledRow';
+import { getISOString } from '../../utils/date';
 
 //
 // Typedef
@@ -87,6 +89,13 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
     initialData: [],
   });
 
+  const triggerEventsData = metadataRecord?.['trigger_events']
+    ? JSON.parse(metadataRecord?.['trigger_events'])?.[0]
+    : {};
+  if (triggerEventsData.timestamp) {
+    triggerEventsData.timestamp = getISOString(new Date(run.ts_epoch), timezone);
+  }
+
   return (
     <RunHeaderContainer>
       <DataHeader items={headerItems} wide />
@@ -95,6 +104,10 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
       <Collapsable title={t('run.run-details')}>
         <>
           <RunParameterTable params={params} />
+
+          {Boolean(metadataRecord?.['trigger_events']) && (
+            <TitledRow title={t('run.triggering-event')} type="table" content={triggerEventsData} />
+          )}
 
           <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
 

@@ -93,6 +93,7 @@ const en = {
         "DAG structure data doesn't exists. Data is only available when flow is executed on AWS",
       'developer-comment': 'Developer comment',
       timeline: 'Timeline',
+      'triggering-event': 'Triggering event',
       parameters: 'Parameters',
       'no-parameters': 'No run parameters.',
       'run-parameters-error': 'Problem loading run parameters.',
