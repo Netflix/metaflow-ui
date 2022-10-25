@@ -93,7 +93,7 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
     ? JSON.parse(metadataRecord?.['trigger_events'])?.[0]
     : {};
   if (triggerEventsData.timestamp) {
-    triggerEventsData.timestamp = getISOString(new Date(run.ts_epoch), timezone);
+    triggerEventsData.timestamp = getISOString(new Date(triggerEventsData.timestamp), timezone);
   }
 
   return (

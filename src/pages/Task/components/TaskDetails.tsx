@@ -18,6 +18,7 @@ import styled from 'styled-components';
 import RenderMetadata from '../../../components/RenderMetadata';
 import DataHeader from '../../../components/DataHeader';
 import { Resource } from '../../../hooks/useResource';
+import Trigger from '../../../components/Trigger';
 
 type Props = {
   run: Run;
@@ -58,6 +59,13 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
       value: <StatusField status={task.status} />,
     },
     {
+      label: t('fields.triggered-by'),
+      value: metadataParams?.['trigger_events'] ? (
+        <TriggerInHeader triggerEventsValue={JSON.parse(metadataParams?.['trigger_events'])?.[0]} />
+      ) : null,
+      hidden: !Boolean(metadataParams?.['trigger_events']),
+    },
+    {
       label: t('fields.started-at'),
       value: task.started_at ? getISOString(new Date(task.started_at), timezone) : '',
     },
@@ -70,6 +78,13 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
       value: getAttemptDuration(task),
     },
   ];
+
+  const triggerEventsData = metadataParams?.['trigger_events']
+    ? JSON.parse(metadataParams?.['trigger_events'])?.[0]
+    : {};
+  if (triggerEventsData.timestamp) {
+    triggerEventsData.timestamp = getISOString(new Date(triggerEventsData.timestamp), timezone);
+  }
 
   return (
     <>
@@ -96,6 +111,10 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
                   content: metadataParams,
                 })}
           />
+
+          {Boolean(metadataParams?.['trigger_events']) && (
+            <TitledRow title={t('run.triggering-event')} type="table" content={triggerEventsData} />
+          )}
 
           {developerNote && <TitledRow type="default" title={'Developer note'} content={developerNote} />}
         </Collapsable>
@@ -133,6 +152,12 @@ export function getAttemptDuration(task: ITask): string {
 
 const HeaderContainer = styled.div`
   margin-bottom: 1rem;
+`;
+
+const TriggerInHeader = styled(Trigger)`
+  a {
+    color: #fff;
+  }
 `;
 
 export default TaskDetails;

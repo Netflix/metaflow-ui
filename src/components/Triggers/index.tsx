@@ -13,7 +13,7 @@ const Triggers: React.FC<Props> = ({ triggerEventsValue }) => {
   return (
     <>
       {triggerEventsValue?.map((triggerEventsValue: TriggerEventsValue) => (
-        <Trigger triggerEventsValue={triggerEventsValue} key={triggerEventsValue.event_id} />
+        <Trigger triggerEventsValue={triggerEventsValue} key={triggerEventsValue.pathspec} />
       ))}
     </>
   );

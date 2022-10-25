@@ -15,14 +15,15 @@ describe('Trigger test', () => {
           triggerEventsValue={{
             event_name: 'metaflow_flow_run_succeeded',
             timestamp: 1663184739,
-            event_id: '123456789123',
+            pathspec: `/${flow_name}/${run_id}`,
             flow_name,
             run_id,
+            event_type: 'metaflow_service',
           }}
         />
       </ThemeProvider>,
     );
 
-    cy.get('a').should('have.attr', 'href', `/${flow_name}/${run_id}`).and('contain', 'HelloFlow/...flow-atykf');
+    cy.get('a').should('have.attr', 'href', `/${flow_name}/${run_id}`).and('contain', 'HelloFlow...flow-atykf');
   });
 });
