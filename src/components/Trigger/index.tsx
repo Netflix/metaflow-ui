@@ -33,7 +33,7 @@ const Trigger: React.FC<Props> = ({ triggerEventsValue, className }) => {
 
   // Only handles triggers from runs
   const label = pathspec;
-  const link = pathspec;
+  const link = '/' + pathspec;
   const id = pathspec;
   const linkToRun = Boolean(link);
   let displayLabel = label;

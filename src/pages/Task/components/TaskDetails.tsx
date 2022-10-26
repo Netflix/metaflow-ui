@@ -79,12 +79,16 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
     },
   ];
 
-  const triggerEventsData = metadataParams?.['trigger_events']
-    ? JSON.parse(metadataParams?.['trigger_events'])?.[0]
-    : {};
-  if (triggerEventsData.timestamp) {
-    triggerEventsData.timestamp = getISOString(new Date(triggerEventsData.timestamp), timezone);
-  }
+  let triggerEventsData: Record<string, string>[] = metadataParams?.['trigger_events']
+    ? JSON.parse(metadataParams?.['trigger_events'])
+    : [];
+
+  triggerEventsData = triggerEventsData.map((triggerEvent) => {
+    return {
+      ...triggerEvent,
+      timestamp: getISOString(new Date(triggerEvent.timestamp), timezone),
+    };
+  });
 
   return (
     <>
@@ -112,9 +116,14 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
                 })}
           />
 
-          {Boolean(metadataParams?.['trigger_events']) && (
-            <TitledRow title={t('run.triggering-event')} type="table" content={triggerEventsData} />
-          )}
+          {triggerEventsData.map((triggerEvent) => (
+            <TitledRow
+              title={t('run.triggering-event')}
+              type="table"
+              content={triggerEvent}
+              key={triggerEvent.pathspec}
+            />
+          ))}
 
           {developerNote && <TitledRow type="default" title={'Developer note'} content={developerNote} />}
         </Collapsable>

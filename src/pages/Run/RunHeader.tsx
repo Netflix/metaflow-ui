@@ -89,12 +89,16 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
     initialData: [],
   });
 
-  const triggerEventsData = metadataRecord?.['trigger_events']
-    ? JSON.parse(metadataRecord?.['trigger_events'])?.[0]
-    : {};
-  if (triggerEventsData.timestamp) {
-    triggerEventsData.timestamp = getISOString(new Date(triggerEventsData.timestamp), timezone);
-  }
+  let triggerEventsData: Record<string, string>[] = metadataRecord?.['trigger_events']
+    ? JSON.parse(metadataRecord?.['trigger_events'])
+    : [];
+
+  triggerEventsData = triggerEventsData.map((triggerEvent) => {
+    return {
+      ...triggerEvent,
+      timestamp: getISOString(new Date(triggerEvent.timestamp), timezone),
+    };
+  });
 
   return (
     <RunHeaderContainer>
@@ -105,9 +109,14 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
         <>
           <RunParameterTable params={params} />
 
-          {Boolean(metadataRecord?.['trigger_events']) && (
-            <TitledRow title={t('run.triggering-event')} type="table" content={triggerEventsData} />
-          )}
+          {triggerEventsData.map((triggerEvent) => (
+            <TitledRow
+              title={t('run.triggering-event')}
+              type="table"
+              content={triggerEvent}
+              key={triggerEvent.pathspec}
+            />
+          ))}
 
           <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
 
