@@ -18,7 +18,7 @@ import AutoUpdating from '../../components/AutoUpdating';
 import DataHeader from '../../components/DataHeader';
 import RunWarning from './components/RunWarning';
 import useResource from '../../hooks/useResource';
-import Trigger from '../../components/Trigger';
+import Triggers from '../../components/Triggers';
 import TitledRow from '../../components/TitledRow';
 import { getISOString } from '../../utils/date';
 
@@ -46,7 +46,7 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
     {
       label: t('fields.triggered-by'),
       value: metadataRecord?.['trigger_events'] ? (
-        <TriggerInHeader triggerEventsValue={JSON.parse(metadataRecord?.['trigger_events'])?.[0]} />
+        <TriggersInHeader triggerEventsValue={JSON.parse(metadataRecord?.['trigger_events'])} />
       ) : null,
       hidden: !Boolean(metadataRecord?.['trigger_events']),
     },
@@ -181,7 +181,7 @@ const PluginWrapper = styled.div`
   margin-top: 1rem;
 `;
 
-const TriggerInHeader = styled(Trigger)`
+const TriggersInHeader = styled(Triggers)`
   a {
     color: #fff;
   }

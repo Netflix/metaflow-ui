@@ -21,6 +21,7 @@ export type TriggerEventsValue = {
 type Props = {
   triggerEventsValue: TriggerEventsValue;
   className?: string;
+  showToolTip?: boolean;
 };
 
 /**
@@ -28,7 +29,7 @@ type Props = {
  * @param triggerEventsValue The trigger event to display.
  * @param className Enables styling of the component.
  */
-const Trigger: React.FC<Props> = ({ triggerEventsValue, className }) => {
+const Trigger: React.FC<Props> = ({ triggerEventsValue, className, showToolTip = true }) => {
   const { pathspec } = triggerEventsValue;
 
   // Only handles triggers from runs
@@ -43,11 +44,14 @@ const Trigger: React.FC<Props> = ({ triggerEventsValue, className }) => {
     displayLabel = label.slice(0, MAX_LABEL_WIDTH / 2) + '...' + label.slice((-1 * MAX_LABEL_WIDTH) / 2);
   }
   const tooltipId = `label-tooltip-${id}`;
+
   return (
     <TriggerLine key={id} data-tip data-for={tooltipId} className={className}>
-      <StyledIcon name="arrow" linkToRun={linkToRun} />
-      <TriggerLink href={link}>{displayLabel}</TriggerLink>
-      <Tooltip id={tooltipId}>{label}</Tooltip>
+      <TriggerLink href={link}>
+        <StyledIcon name="arrow" linkToRun={linkToRun} />
+        {showToolTip ? displayLabel : pathspec}
+      </TriggerLink>
+      {showToolTip && <Tooltip id={tooltipId}>{label}</Tooltip>}
     </TriggerLine>
   );
 };
@@ -57,14 +61,14 @@ type ArrowIconProps = {
 };
 
 const TriggerLine = styled.div`
-  color: #fff;
   margin-top: 4px;
   white-space: nowrap;
+  position: relative;
 `;
 
 const TriggerLink = styled.a`
   text-decoration: none;
-  color: ${(props) => props.theme.color.text.light};
+  color: inherit;
 `;
 
 const StyledIcon = styled(Icon)<ArrowIconProps>`
@@ -72,7 +76,7 @@ const StyledIcon = styled(Icon)<ArrowIconProps>`
   circle {
     fill: ${(props) => (props.linkToRun ? '#336cde' : '#54ac43')};
   }
-  path {
+  svg path {
     fill: #fff;
   }
 `;

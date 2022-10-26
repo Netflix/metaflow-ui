@@ -18,7 +18,7 @@ import styled from 'styled-components';
 import RenderMetadata from '../../../components/RenderMetadata';
 import DataHeader from '../../../components/DataHeader';
 import { Resource } from '../../../hooks/useResource';
-import Trigger from '../../../components/Trigger';
+import Triggers from '../../../components/Triggers';
 
 type Props = {
   run: Run;
@@ -61,7 +61,7 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
     {
       label: t('fields.triggered-by'),
       value: metadataParams?.['trigger_events'] ? (
-        <TriggerInHeader triggerEventsValue={JSON.parse(metadataParams?.['trigger_events'])?.[0]} />
+        <TriggersInHeader triggerEventsValue={JSON.parse(metadataParams?.['trigger_events'])} />
       ) : null,
       hidden: !Boolean(metadataParams?.['trigger_events']),
     },
@@ -163,7 +163,7 @@ const HeaderContainer = styled.div`
   margin-bottom: 1rem;
 `;
 
-const TriggerInHeader = styled(Trigger)`
+const TriggersInHeader = styled(Triggers)`
   a {
     color: #fff;
   }

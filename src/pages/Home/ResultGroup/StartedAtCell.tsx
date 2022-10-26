@@ -41,7 +41,9 @@ const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
   return (
     <TDWithLink link={hasTrigger ? undefined : link}>
       <WordBreak>{getRunStartTime(run, timezone)}</WordBreak>
-      {hasTrigger ? <Triggers triggerEventsValue={JSON.parse(metadataRecord?.['trigger_events'] ?? '')} /> : null}
+      {hasTrigger ? (
+        <Triggers showMultiple triggerEventsValue={JSON.parse(metadataRecord?.['trigger_events'] ?? '')} />
+      ) : null}
     </TDWithLink>
   );
 };
