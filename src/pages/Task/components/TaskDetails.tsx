@@ -86,7 +86,7 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
   triggerEventsData = triggerEventsData.map((triggerEvent) => {
     return {
       ...triggerEvent,
-      timestamp: getISOString(new Date(triggerEvent.timestamp), timezone),
+      timestamp: getISOString(new Date(Number.parseInt(triggerEvent.timestamp) * 1000), timezone),
     };
   });
 

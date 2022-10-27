@@ -96,7 +96,7 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
   triggerEventsData = triggerEventsData.map((triggerEvent) => {
     return {
       ...triggerEvent,
-      timestamp: getISOString(new Date(triggerEvent.timestamp), timezone),
+      timestamp: getISOString(new Date(Number.parseInt(triggerEvent.timestamp) * 1000), timezone),
     };
   });
 
