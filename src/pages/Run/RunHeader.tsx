@@ -18,6 +18,9 @@ import AutoUpdating from '../../components/AutoUpdating';
 import DataHeader from '../../components/DataHeader';
 import RunWarning from './components/RunWarning';
 import useResource from '../../hooks/useResource';
+import Triggers from '../../components/Triggers';
+import TitledRow from '../../components/TitledRow';
+import { getISOString } from '../../utils/date';
 
 //
 // Typedef
@@ -25,13 +28,14 @@ import useResource from '../../hooks/useResource';
 
 type Props = {
   run: Run;
+  metadataRecord?: Record<string, string>;
 };
 
 //
 // Component
 //
 
-const RunHeader: React.FC<Props> = ({ run }) => {
+const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { timezone } = useContext(TimezoneContext);
@@ -39,6 +43,13 @@ const RunHeader: React.FC<Props> = ({ run }) => {
   const headerItems = [
     { label: t('fields.run-id'), value: getRunId(run) },
     { label: t('fields.status'), value: <StatusField status={run.status} /> },
+    {
+      label: t('fields.triggered-by'),
+      value: metadataRecord?.['trigger_events'] ? (
+        <TriggersInHeader triggerEventsValue={JSON.parse(metadataRecord?.['trigger_events'])} />
+      ) : null,
+      hidden: !Boolean(metadataRecord?.['trigger_events']),
+    },
     {
       label: t('fields.user'),
       value: <StyledLink to={`/?user=${encodeURIComponent(run.user || 'null')}`}>{getUsername(run)}</StyledLink>,
@@ -78,6 +89,17 @@ const RunHeader: React.FC<Props> = ({ run }) => {
     initialData: [],
   });
 
+  let triggerEventsData: Record<string, string>[] = metadataRecord?.['trigger_events']
+    ? JSON.parse(metadataRecord?.['trigger_events'])
+    : [];
+
+  triggerEventsData = triggerEventsData.map((triggerEvent) => {
+    return {
+      ...triggerEvent,
+      timestamp: getISOString(new Date(triggerEvent.timestamp), timezone),
+    };
+  });
+
   return (
     <RunHeaderContainer>
       <DataHeader items={headerItems} wide />
@@ -86,6 +108,15 @@ const RunHeader: React.FC<Props> = ({ run }) => {
       <Collapsable title={t('run.run-details')}>
         <>
           <RunParameterTable params={params} />
+
+          {triggerEventsData.map((triggerEvent) => (
+            <TitledRow
+              title={t('run.triggering-event')}
+              type="table"
+              content={triggerEvent}
+              key={triggerEvent.pathspec}
+            />
+          ))}
 
           <TagRow label={t('run.tags')} tags={run.tags || []} push={history.push} noTagsMsg={t('run.no-tags')} />
 
@@ -148,6 +179,12 @@ const StyledLink = styled(Link)`
 
 const PluginWrapper = styled.div`
   margin-top: 1rem;
+`;
+
+const TriggersInHeader = styled(Triggers)`
+  a {
+    color: #fff;
+  }
 `;
 
 export default RunHeader;

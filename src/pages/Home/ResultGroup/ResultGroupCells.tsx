@@ -4,16 +4,10 @@ import styled from 'styled-components';
 import AutoUpdating from '../../../components/AutoUpdating';
 import { TD } from '../../../components/Table';
 import { Run } from '../../../types';
-import {
-  getRunDuration,
-  getRunEndTime,
-  getRunId,
-  getRunStartTime,
-  getTagOfType,
-  getUsername,
-} from '../../../utils/run';
+import { getRunDuration, getRunEndTime, getRunId, getTagOfType, getUsername } from '../../../utils/run';
 import { StatusColorCell } from './ResultGroupStatus';
 import ResultGroupTags from './ResultGroupTags';
+import StartedAtCell from './StartedAtCell';
 
 //
 // Typedef
@@ -53,9 +47,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* USER NAME */}
         {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
         {/* STARTED AT */}
-        <TDWithLink link={link}>
-          <WordBreak>{getRunStartTime(r, timezone)}</WordBreak>
-        </TDWithLink>
+        <StartedAtCell timezone={timezone} run={r} link={link} />
         {/* FINISHED AT */}
         <TDWithLink link={link}>
           <WordBreak>{getRunEndTime(r, timezone)}</WordBreak>
@@ -91,11 +83,11 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
 // Cells
 //
 
-const TDWithLink: React.FC<{ link: string }> = ({ children, link }) => {
+export const TDWithLink: React.FC<{ link?: string }> = ({ children, link }) => {
   return (
     <LinkTD>
       {children}
-      <GhostLink to={link}></GhostLink>
+      {link ? <GhostLink to={link}></GhostLink> : null}
     </LinkTD>
   );
 };
