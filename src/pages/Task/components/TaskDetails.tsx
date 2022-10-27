@@ -18,6 +18,7 @@ import styled from 'styled-components';
 import RenderMetadata from '../../../components/RenderMetadata';
 import DataHeader from '../../../components/DataHeader';
 import { Resource } from '../../../hooks/useResource';
+import Triggers from '../../../components/Triggers';
 
 type Props = {
   run: Run;
@@ -58,6 +59,13 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
       value: <StatusField status={task.status} />,
     },
     {
+      label: t('fields.triggered-by'),
+      value: metadataParams?.['trigger_events'] ? (
+        <TriggersInHeader triggerEventsValue={JSON.parse(metadataParams?.['trigger_events'])} />
+      ) : null,
+      hidden: !Boolean(metadataParams?.['trigger_events']),
+    },
+    {
       label: t('fields.started-at'),
       value: task.started_at ? getISOString(new Date(task.started_at), timezone) : '',
     },
@@ -70,6 +78,17 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
       value: getAttemptDuration(task),
     },
   ];
+
+  let triggerEventsData: Record<string, string>[] = metadataParams?.['trigger_events']
+    ? JSON.parse(metadataParams?.['trigger_events'])
+    : [];
+
+  triggerEventsData = triggerEventsData.map((triggerEvent) => {
+    return {
+      ...triggerEvent,
+      timestamp: getISOString(new Date(triggerEvent.timestamp), timezone),
+    };
+  });
 
   return (
     <>
@@ -96,6 +115,15 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
                   content: metadataParams,
                 })}
           />
+
+          {triggerEventsData.map((triggerEvent) => (
+            <TitledRow
+              title={t('run.triggering-event')}
+              type="table"
+              content={triggerEvent}
+              key={triggerEvent.pathspec}
+            />
+          ))}
 
           {developerNote && <TitledRow type="default" title={'Developer note'} content={developerNote} />}
         </Collapsable>
@@ -133,6 +161,12 @@ export function getAttemptDuration(task: ITask): string {
 
 const HeaderContainer = styled.div`
   margin-bottom: 1rem;
+`;
+
+const TriggersInHeader = styled(Triggers)`
+  a {
+    color: #fff;
+  }
 `;
 
 export default TaskDetails;
