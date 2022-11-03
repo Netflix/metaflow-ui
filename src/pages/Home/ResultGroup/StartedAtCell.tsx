@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
 import Triggers from '../../../components/Triggers';
 import useResource from '../../../hooks/useResource';
@@ -6,6 +6,8 @@ import { Metadata, Run } from '../../../types';
 import { metadataToRecord } from '../../../utils/metadata';
 import { getRunId, getRunStartTime } from '../../../utils/run';
 import { TDWithLink } from './ResultGroupCells';
+
+const emptyArray: Metadata[] = [];
 
 type Props = {
   run: Run;
@@ -22,18 +24,19 @@ type Props = {
 const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
   const [metadataRecord, setMetadataRecord] = useState<Record<string, string>>();
 
+  const onUpdate = useCallback((items: Metadata[]) => {
+    const metadataRecord = metadataToRecord(items);
+    setMetadataRecord(metadataRecord);
+  }, []);
+
   useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/metadata`,
-    initialData: [],
+    initialData: emptyArray,
     subscribeToEvents: true,
     queryParams: {
       step_name: 'start',
     },
-    onUpdate(items) {
-      const metadataRecord = metadataToRecord(items);
-
-      setMetadataRecord(metadataRecord);
-    },
+    onUpdate,
   });
 
   const hasTrigger = Boolean(metadataRecord?.['trigger_events']);

@@ -106,6 +106,7 @@ const Task: React.FC<TaskViewProps> = ({
     paramsString = paramsString ? `${paramsString}&${section}` : section;
   }
 
+  const updatePredicate = useCallback((a, b) => a.attempt_id === b.attempt_id, []);
   //
   // Task/attempt data
   // This is only used if we dont have data already from tasks listing.
@@ -118,7 +119,7 @@ const Task: React.FC<TaskViewProps> = ({
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${taskId}/attempts?postprocess=true`,
     subscribeToEvents: true,
     initialData: null,
-    updatePredicate: (a, b) => a.attempt_id === b.attempt_id,
+    updatePredicate,
     pause: stepName === 'not-selected' || taskId === 'not-selected' || !!taskFromList,
   });
 

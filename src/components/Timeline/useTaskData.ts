@@ -264,20 +264,24 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     [flowId, runNumber],
   );
 
+  const updatePredicate = useCallback((a: Task, b: Task) => a.task_id === b.task_id, []);
+  const initialQueryParams = {
+    _order: '+ts_epoch',
+    _limit: '1000',
+    postprocess: 'false',
+  };
+  const socketParamFilter = useCallback(({ postprocess, ...rest }: Record<string, string>) => {
+    return rest;
+  }, []);
+
   // Fetch & subscribe to tasks
   const { status: taskStatus, error: taskError } = useResource<Task[], Task>({
     url: encodeURI(`/flows/${flowId}/runs/${runNumber}/tasks`),
     subscribeToEvents: true,
     initialData: emptyArray2,
-    updatePredicate: (a, b) => a.task_id === b.task_id,
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-      postprocess: 'false',
-    },
-    socketParamFilter: ({ postprocess, ...rest }) => {
-      return rest;
-    },
+    updatePredicate,
+    queryParams: initialQueryParams,
+    socketParamFilter,
     fetchAllData: true,
     onUpdate,
     postRequest,

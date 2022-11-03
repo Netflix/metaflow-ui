@@ -136,6 +136,10 @@ const Home: React.FC = () => {
     ...(placeHolderParameters || {}),
   });
 
+  const onWSUpdate = useCallback((item: IRun) => {
+    dispatch({ type: 'realtimeData', data: [item] });
+  }, []);
+
   const { error, status } = useResource<IRun[], IRun>({
     url: `/runs`,
     initialData: emptyArray,
@@ -149,9 +153,7 @@ const Home: React.FC = () => {
     //
     // On websocket update just add items to new groups
     //
-    onWSUpdate: (item: IRun) => {
-      dispatch({ type: 'realtimeData', data: [item] });
-    },
+    onWSUpdate,
     //
     // Make sure that we dont have loader anymore after request
     //
