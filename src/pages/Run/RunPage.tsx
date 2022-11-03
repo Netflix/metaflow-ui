@@ -60,6 +60,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const [previousStepName, setPreviousStepName] = useState<string>();
   const [previousTaskId, setPreviousTaskId] = useState<string>();
+  const [metadataRecord, setMetadataRecord] = useState<Record<string, string>>();
 
   useEffect(() => {
     params.stepName && params.stepName !== 'not-selected' && setPreviousStepName(params.stepName);
@@ -229,7 +230,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     <>
       <RunPageContainer visible={visible}>
         <ErrorBoundary message={t('error.run-header-error')}>
-          <RunHeader run={run} />
+          <RunHeader run={run} metadataRecord={metadataRecord} />
         </ErrorBoundary>
         <Tabs
           activeTab={tab}
