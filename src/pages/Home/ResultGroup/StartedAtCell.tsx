@@ -37,6 +37,7 @@ const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
       step_name: 'start',
     },
     onUpdate,
+    fetchAllData: true,
   });
 
   const hasTrigger = Boolean(metadataRecord?.['trigger_events']);

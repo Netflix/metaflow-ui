@@ -37,6 +37,7 @@ function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMe
       _limit: '100',
       'attempt_id:is': 'null',
     },
+    fetchAllData: true,
   });
 
   // Get metadata for current attempt
@@ -46,6 +47,7 @@ function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMe
       _limit: '100',
       attempt_id: attemptId.toString(),
     },
+    fetchAllData: true,
   });
 
   // Merge task and attempt data.

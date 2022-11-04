@@ -101,6 +101,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       step_name: 'start',
     },
     onUpdate,
+    fetchAllData: true,
   });
 
   //
