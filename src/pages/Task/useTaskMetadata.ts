@@ -17,36 +17,46 @@ type TaskMetadata = {
 };
 
 const emptyArray: Metadata[] = [];
+const taskQueryParams = {
+  _limit: '100',
+  'attempt_id:is': 'null',
+};
+const updatePredicate = (a: Metadata, b: Metadata) => a.id === b.id;
 
 function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMetadata {
   const { addDataToStore, clearDataStore } = useContext(PluginsContext);
 
-  const config = {
-    url: url,
-    fetchAllData: true,
-    updatePredicate: (a: Metadata, b: Metadata) => a.id === b.id,
-    subscribeToEvents: true,
-    initialData: emptyArray,
-    pause: paused,
-  };
+  const config = useMemo(
+    () => ({
+      url: url,
+      fetchAllData: true,
+      updatePredicate,
+      subscribeToEvents: true,
+      initialData: emptyArray,
+      pause: paused,
+    }),
+    [paused, url],
+  );
 
   // Get metadata for tasks that don't have attempt id. We show them on every attempt
   const taskMetadataResource = useResource<Metadata[], Metadata>({
     ...config,
-    queryParams: {
-      _limit: '100',
-      'attempt_id:is': 'null',
-    },
+    queryParams: taskQueryParams,
     fetchAllData: true,
   });
+
+  const attemptQueryParams = useMemo(
+    () => ({
+      _limit: '100',
+      attempt_id: attemptId.toString(),
+    }),
+    [attemptId],
+  );
 
   // Get metadata for current attempt
   const attemptMetadataResource = useResource<Metadata[], Metadata>({
     ...config,
-    queryParams: {
-      _limit: '100',
-      attempt_id: attemptId.toString(),
-    },
+    queryParams: attemptQueryParams,
     fetchAllData: true,
   });
 

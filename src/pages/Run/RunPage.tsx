@@ -36,6 +36,9 @@ type RunPageProps = {
 };
 
 const emptyArray: Metadata[] = [];
+const initialQueryParams = {
+  step_name: 'start',
+};
 const DAG_RETRY_TIMEOUT = 3000; // time between retries when fetching the DAG
 
 //
@@ -97,9 +100,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/metadata`,
     initialData: emptyArray,
     subscribeToEvents: true,
-    queryParams: {
-      step_name: 'start',
-    },
+    queryParams: initialQueryParams,
     onUpdate,
     fetchAllData: true,
   });

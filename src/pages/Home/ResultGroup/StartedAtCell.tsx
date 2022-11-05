@@ -8,6 +8,9 @@ import { getRunId, getRunStartTime } from '../../../utils/run';
 import { TDWithLink } from './ResultGroupCells';
 
 const emptyArray: Metadata[] = [];
+const initialQueryParams = {
+  step_name: 'start',
+};
 
 type Props = {
   run: Run;
@@ -33,9 +36,7 @@ const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/metadata`,
     initialData: emptyArray,
     subscribeToEvents: true,
-    queryParams: {
-      step_name: 'start',
-    },
+    queryParams: initialQueryParams,
     onUpdate,
     fetchAllData: true,
   });

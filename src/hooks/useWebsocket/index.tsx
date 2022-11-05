@@ -11,17 +11,17 @@ export interface HookConfig<T> {
   onReconnect?: OnReconnect;
 }
 
+const emptyQueryParams = {};
+
 export default function useWebsocket<T>({
   url,
-  queryParams = {},
+  queryParams = emptyQueryParams,
   enabled = true,
   uuid,
   onUpdate,
   onReconnect,
 }: HookConfig<T>): void {
-  const uniqueId = uuid || generateIdentifier();
   const resource = new URL(url, document.baseURI).pathname;
-  const qs = new URLSearchParams(queryParams).toString();
 
   const [lastConnectedTime, setLastConnectedTime] = useState<Date | null>(null);
 
@@ -49,9 +49,12 @@ export default function useWebsocket<T>({
   });
 
   useEffect(() => {
+    console.log('useWebsocket: useEffect', { url, queryParams, enabled, onUpdate });
+    const uniqueId = uuid || generateIdentifier();
     const unsubWebsocket = enabled && ResourceEvents.subscribe(uniqueId, resource, queryParams, onUpdate);
+
     return () => {
       unsubWebsocket && unsubWebsocket();
     };
-  }, [url, qs, enabled, uniqueId, resource, queryParams, onUpdate]);
+  }, [url, enabled, uuid, resource, queryParams, onUpdate]);
 }

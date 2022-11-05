@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
@@ -67,6 +67,10 @@ type FullScreenData =
   | { type: 'artifact'; name: string; artifactdata: string };
 
 const emptyArray: Artifact[] = [];
+const socketParamFilter = ({ postprocess, ...rest }: Record<string, string>) => {
+  return rest;
+};
+const updatePredicate = (a: ITask, b: ITask) => a.attempt_id === b.attempt_id;
 
 //
 // Component
@@ -106,7 +110,6 @@ const Task: React.FC<TaskViewProps> = ({
     paramsString = paramsString ? `${paramsString}&${section}` : section;
   }
 
-  const updatePredicate = useCallback((a, b) => a.attempt_id === b.attempt_id, []);
   //
   // Task/attempt data
   // This is only used if we dont have data already from tasks listing.
@@ -169,19 +172,22 @@ const Task: React.FC<TaskViewProps> = ({
     data && setArtifacts((currentData) => [...currentData, ...data]);
   }, []);
 
+  const queryParams = useMemo(
+    () => ({
+      attempt_id: attemptId !== null ? attemptId.toString() : '',
+      postprocess: 'true',
+      _limit: '50',
+    }),
+    [attemptId],
+  );
+
   // Artifacts
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const artifactUrl = `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${task?.task_id}/artifacts`;
   const { status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: artifactUrl,
-    queryParams: {
-      attempt_id: attemptId !== null ? attemptId.toString() : '',
-      postprocess: 'true',
-      _limit: '50',
-    },
-    socketParamFilter: ({ postprocess, ...rest }) => {
-      return rest;
-    },
+    queryParams,
+    socketParamFilter,
     subscribeToEvents: true,
     fetchAllData: true,
     initialData: emptyArray,

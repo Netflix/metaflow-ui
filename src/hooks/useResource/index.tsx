@@ -1,4 +1,4 @@
-import { useState, useEffect, useReducer, useCallback } from 'react';
+import { useState, useEffect, useReducer, useCallback, useMemo } from 'react';
 import { apiHttp } from '../../constants';
 import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
@@ -125,6 +125,7 @@ const StatusReducer = (state: StatusState, action: StatusAction): StatusState =>
 };
 
 const emptyObject = {};
+const defaultUpdatePredicate = () => false;
 
 //
 // Hook
@@ -138,7 +139,7 @@ export default function useResource<T, U>({
   queryParams = emptyObject,
   websocketParams,
   socketParamFilter,
-  updatePredicate = (_a, _b) => false,
+  updatePredicate = defaultUpdatePredicate,
   fetchAllData = false,
   onUpdate,
   onWSUpdate,
@@ -166,11 +167,8 @@ export default function useResource<T, U>({
 
   const websocketUrl = getWebsocketUrl(url, data, wsUrl);
 
-  useWebsocket<U>({
-    url: websocketUrl,
-    queryParams: socketParamFilter ? socketParamFilter(queryParams || {}) : websocketParams || queryParams,
-    enabled: subscribeToEvents && !pause && !!websocketUrl,
-    onUpdate: (event: Event<unknown>) => {
+  const onWebsocketUpdate = useCallback(
+    (event: Event<unknown>) => {
       if (pause) return;
       // If onUpdate or onWSUpdate is given, dont update stateful data object.
       if (onUpdate || onWSUpdate) {
@@ -200,6 +198,19 @@ export default function useResource<T, U>({
         }
       }
     },
+    [initialData, onUpdate, onWSUpdate, pause, target, updatePredicate, useBatching],
+  );
+
+  const useWebsocketQueryParams = useMemo(
+    () => (socketParamFilter ? socketParamFilter(queryParams || {}) : websocketParams || queryParams),
+    [queryParams, socketParamFilter, websocketParams],
+  );
+
+  useWebsocket<U>({
+    url: websocketUrl,
+    queryParams: useWebsocketQueryParams,
+    enabled: subscribeToEvents && !pause && !!websocketUrl,
+    onUpdate: onWebsocketUpdate,
     uuid,
   });
 

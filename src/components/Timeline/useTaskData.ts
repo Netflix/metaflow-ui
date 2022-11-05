@@ -36,6 +36,20 @@ export type StepRowData = {
 const emptyArray: Step[] = [];
 const emptyStepLineArray: StepLineData[] = [];
 const emptyArray2: Task[] = [];
+const initialQueryParams = {
+  _order: '+ts_epoch',
+  _limit: '1000',
+  postprocess: 'false',
+};
+const queryParams = {
+  _order: '+ts_epoch',
+  _limit: '1000',
+};
+const updatePredicate = (a: Task, b: Task) => a.task_id === b.task_id;
+
+const socketParamFilter = ({ postprocess, ...rest }: Record<string, string>) => {
+  return rest;
+};
 
 //
 // Reducer
@@ -221,10 +235,7 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     subscribeToEvents: true,
     initialData: emptyArray,
     onUpdate: onStepUpdate,
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-    },
+    queryParams,
   });
 
   const onUpdate = useCallback((items: Task[]) => {
@@ -263,16 +274,6 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     },
     [flowId, runNumber],
   );
-
-  const updatePredicate = useCallback((a: Task, b: Task) => a.task_id === b.task_id, []);
-  const initialQueryParams = {
-    _order: '+ts_epoch',
-    _limit: '1000',
-    postprocess: 'false',
-  };
-  const socketParamFilter = useCallback(({ postprocess, ...rest }: Record<string, string>) => {
-    return rest;
-  }, []);
 
   // Fetch & subscribe to tasks
   const { status: taskStatus, error: taskError } = useResource<Task[], Task>({
