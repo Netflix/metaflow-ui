@@ -49,7 +49,6 @@ export default function useWebsocket<T>({
   });
 
   useEffect(() => {
-    console.log('useWebsocket: useEffect', { url, queryParams, enabled, onUpdate });
     const uniqueId = uuid || generateIdentifier();
     const unsubWebsocket = enabled && ResourceEvents.subscribe(uniqueId, resource, queryParams, onUpdate);
 
