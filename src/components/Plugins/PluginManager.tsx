@@ -147,7 +147,11 @@ type PluginsContextProps = {
   register: (manifest: Plugin, version: PluginVersionInfo) => void;
   subscribeToDatastore: (key: string, path: string, fn: (data: unknown) => void) => void;
   unsubscribeFromDatastore: (key: string) => void;
+<<<<<<< HEAD
   addDataToStore: (path: string, data: unknown) => void;
+=======
+  addDataToStore: (path: string, data: Record<string, unknown>) => void;
+>>>>>>> useEffect-warnings
   clearDataStore: (path: string) => void;
   subscribeToEvent: (key: string, event: string, fn: (data: unknown) => void) => void;
   unsubscribeFromEvent: (key: string) => void;
@@ -253,10 +257,20 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, []);
 
   // Add new data and trigger subs
+<<<<<<< HEAD
   const addDataToStore = useCallback((path: string, data: unknown) => {
     DataStore.data = { ...DataStore.data, [path]: data };
+=======
+  const addDataToStore = useCallback((path: string, data: Record<string, unknown>) => {
+    const existingPathData: Record<string, unknown> = DataStore.data[path] as Record<string, unknown>;
+
+    // Merge new data with existing data
+    const newPathData = { ...existingPathData, ...data };
+    DataStore.data = { ...DataStore.data, [path]: newPathData };
+>>>>>>> useEffect-warnings
     for (const item of PluginDataSubscriptions.filter((s) => s.path === path)) {
-      item.fn(data);
+      // Send out all data, not just the new data
+      item.fn(newPathData);
     }
   }, []);
 

@@ -94,7 +94,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   useEffect(() => {
     return () => clearDataStore('run-metadata');
-  });
+  }, [clearDataStore]);
 
   useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/metadata`,
