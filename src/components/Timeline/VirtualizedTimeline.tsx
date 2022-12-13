@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Step, Task, AsyncStatus, Run } from '../../types';
 import styled from 'styled-components';
 import { StepRowData, RowDataAction } from './useTaskData';
@@ -61,31 +61,40 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   // Event handling
   //
 
-  const footerHandleUpdate = (which: 'left' | 'right', to: number) => {
-    if (which === 'left') {
-      timelineControlDispatch({
-        type: 'setZoom',
-        start:
-          to < timelineControls.min
-            ? timelineControls.min
-            : to > timelineControls.timelineEnd - 500
-            ? timelineControls.timelineStart
-            : to,
-        end: timelineControls.timelineEnd,
-      });
-    } else {
-      timelineControlDispatch({
-        type: 'setZoom',
-        start: timelineControls.timelineStart,
-        end:
-          to > timelineControls.max
-            ? timelineControls.max
-            : to < timelineControls.timelineStart + 500
-            ? timelineControls.timelineEnd
-            : to,
-      });
-    }
-  };
+  const footerHandleUpdate = useCallback(
+    (which: 'left' | 'right', to: number) => {
+      if (which === 'left') {
+        timelineControlDispatch({
+          type: 'setZoom',
+          start:
+            to < timelineControls.min
+              ? timelineControls.min
+              : to > timelineControls.timelineEnd - 500
+              ? timelineControls.timelineStart
+              : to,
+          end: timelineControls.timelineEnd,
+        });
+      } else {
+        timelineControlDispatch({
+          type: 'setZoom',
+          start: timelineControls.timelineStart,
+          end:
+            to > timelineControls.max
+              ? timelineControls.max
+              : to < timelineControls.timelineStart + 500
+              ? timelineControls.timelineEnd
+              : to,
+        });
+      }
+    },
+    [
+      timelineControlDispatch,
+      timelineControls.max,
+      timelineControls.min,
+      timelineControls.timelineEnd,
+      timelineControls.timelineStart,
+    ],
+  );
 
   const zoom = (type: 'in' | 'out' | 'reset') => {
     if (type === 'in') {
@@ -96,6 +105,21 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
       timelineControlDispatch({ type: 'resetZoom' });
     }
   };
+
+  const handleStepRowClick = useCallback(
+    (stepid) => rowDataDispatch({ type: 'toggle', id: stepid }),
+    [rowDataDispatch],
+  );
+
+  const handleMove = useCallback(
+    (value: number) => timelineControlDispatch({ type: 'move', value: value }),
+    [timelineControlDispatch],
+  );
+
+  const handleToggleCollapse = (type: 'expand' | 'collapse') =>
+    rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' });
+
+  const handleSetFullScreen = () => setFullscreen(true);
 
   const content = (
     <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
@@ -109,12 +133,10 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
           isAnyGroupOpen={isAnyGroupOpen}
           setQueryParam={setQueryParam}
           onModeSelect={onModeSelect}
-          onSetFullscreen={() => setFullscreen(true)}
+          onSetFullscreen={handleSetFullScreen}
           onZoom={zoom}
           userZoomed={timelineControls.controlled}
-          onToggleCollapse={(type: 'expand' | 'collapse') =>
-            rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' })
-          }
+          onToggleCollapse={handleToggleCollapse}
         />
         {rows.length > 0 && (
           <Timeline
@@ -130,8 +152,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
             paramsString={paramsString}
             searchStatus={searchField.results.status}
             onHandleMove={footerHandleUpdate}
-            onMove={(value) => timelineControlDispatch({ type: 'move', value: value })}
-            onStepRowClick={(stepid) => rowDataDispatch({ type: 'toggle', id: stepid })}
+            onMove={handleMove}
+            onStepRowClick={handleStepRowClick}
           />
         )}
 

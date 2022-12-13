@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
@@ -66,6 +66,12 @@ type FullScreenData =
   | { type: 'logs'; logtype: 'stdout' | 'stderr' }
   | { type: 'artifact'; name: string; artifactdata: string };
 
+const emptyArray: Artifact[] = [];
+const socketParamFilter = ({ postprocess, ...rest }: Record<string, string>) => {
+  return rest;
+};
+const updatePredicate = (a: ITask, b: ITask) => a.attempt_id === b.attempt_id;
+
 //
 // Component
 //
@@ -116,7 +122,7 @@ const Task: React.FC<TaskViewProps> = ({
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${taskId}/attempts?postprocess=true`,
     subscribeToEvents: true,
     initialData: null,
-    updatePredicate: (a, b) => a.attempt_id === b.attempt_id,
+    updatePredicate,
     pause: stepName === 'not-selected' || taskId === 'not-selected' || !!taskFromList,
   });
 
@@ -131,6 +137,9 @@ const Task: React.FC<TaskViewProps> = ({
   const task = tasks?.find((item) => item.attempt_id === attemptId) || null;
   const isCurrentTaskFinished = !!(task && task.finished_at);
   const isLatestAttempt = attemptId === (tasks?.length || 1) - 1;
+
+  const handleToggleCollapse = (type: 'expand' | 'collapse') =>
+    rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' });
 
   //
   // Related data start
@@ -159,25 +168,30 @@ const Task: React.FC<TaskViewProps> = ({
     url: `${logUrl}err?attempt_id=${attemptId.toString()}`,
   });
 
+  const onUpdate = useCallback((data) => {
+    data && setArtifacts((currentData) => [...currentData, ...data]);
+  }, []);
+
+  const queryParams = useMemo(
+    () => ({
+      attempt_id: attemptId !== null ? attemptId.toString() : '',
+      postprocess: 'true',
+      _limit: '50',
+    }),
+    [attemptId],
+  );
+
   // Artifacts
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
   const artifactUrl = `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${task?.task_id}/artifacts`;
   const { status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: artifactUrl,
-    queryParams: {
-      attempt_id: attemptId !== null ? attemptId.toString() : '',
-      postprocess: 'true',
-      _limit: '50',
-    },
-    socketParamFilter: ({ postprocess, ...rest }) => {
-      return rest;
-    },
+    queryParams,
+    socketParamFilter,
     subscribeToEvents: true,
     fetchAllData: true,
-    initialData: [],
-    onUpdate: (data) => {
-      data && setArtifacts((currentData) => [...currentData, ...data]);
-    },
+    initialData: emptyArray,
+    onUpdate,
     pause: !task || attemptId === null,
   });
 
@@ -196,14 +210,15 @@ const Task: React.FC<TaskViewProps> = ({
     task && dagResult.data ? dagResult.data.steps[task.step_name]?.decorators || [] : [],
   );
 
+  // Show cards if feature flag is set and the task has not failed
+  const showCards = task?.status !== 'failed' && FEATURE_FLAGS.CARDS;
+
   return (
     <TaskContainer>
       <TaskListingHeader
         run={run}
         settings={settings}
-        onToggleCollapse={(type: 'expand' | 'collapse') =>
-          rowDataDispatch({ type: type === 'expand' ? 'openAll' : 'closeAll' })
-        }
+        onToggleCollapse={handleToggleCollapse}
         searchField={searchField}
         counts={counts}
         isAnyGroupOpen={isAnyGroupOpen}
@@ -350,7 +365,7 @@ const Task: React.FC<TaskViewProps> = ({
                     ]
                   : []),
                 // Render cards at the end of sections if enabled by feature flags.
-                ...(FEATURE_FLAGS.CARDS
+                ...(showCards
                   ? cardsResult.cards.map((def) => ({
                       key: def.hash,
                       order: 99,
@@ -376,7 +391,7 @@ const Task: React.FC<TaskViewProps> = ({
                     }))
                   : []),
                 // Show spinner if any cards are still loading
-                ...(FEATURE_FLAGS.CARDS
+                ...(showCards
                   ? cardsResult.status === 'loading'
                     ? [
                         {
@@ -394,7 +409,7 @@ const Task: React.FC<TaskViewProps> = ({
                     : []
                   : []),
                 // Show error if cards were not fetched before timeout
-                ...(FEATURE_FLAGS.CARDS
+                ...(showCards
                   ? cardsResult.status === 'timeout'
                     ? [
                         {

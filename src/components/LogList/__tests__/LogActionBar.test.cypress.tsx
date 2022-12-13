@@ -4,7 +4,7 @@ import TestWrapper, { gid } from '../../../utils/testing';
 import LogActionBar from '../LogActionBar';
 
 const Search = {
-  search: (str: string) => null,
+  search: () => null,
   result: {
     active: false,
     result: [],
@@ -12,7 +12,7 @@ const Search = {
     current: 0,
   },
   nextResult: () => null,
-}
+};
 
 describe('LogActionBar', () => {
   it('Should render empty action bar since there is no log data', () => {
@@ -38,7 +38,12 @@ describe('LogActionBar', () => {
   it('Should render action bar with three buttons', () => {
     mount(
       <TestWrapper>
-        <LogActionBar downloadlink="" data={[{ row: 0, line: 'Hello world' }]} setFullscreen={() => null} search={Search} />
+        <LogActionBar
+          downloadlink=""
+          data={[{ row: 0, line: 'Hello world' }]}
+          setFullscreen={() => null}
+          search={Search}
+        />
       </TestWrapper>,
     );
 

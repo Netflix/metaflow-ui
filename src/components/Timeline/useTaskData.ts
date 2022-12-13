@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useCallback, useEffect, useReducer, useState } from 'react';
 import { Task, Step, AsyncStatus, APIError, TaskStatus } from '../../types';
 import useResource, { DataModel } from '../../hooks/useResource';
 import {
@@ -31,6 +31,24 @@ export type StepRowData = {
   data: Record<string, Task[]>;
   tasksTotal?: number;
   tasksVisible?: number;
+};
+
+const emptyArray: Step[] = [];
+const emptyStepLineArray: StepLineData[] = [];
+const emptyArray2: Task[] = [];
+const initialQueryParams = {
+  _order: '+ts_epoch',
+  _limit: '1000',
+  postprocess: 'false',
+};
+const queryParams = {
+  _order: '+ts_epoch',
+  _limit: '1000',
+};
+const updatePredicate = (a: Task, b: Task) => a.task_id === b.task_id;
+
+const socketParamFilter = ({ postprocess, ...rest }: Record<string, string>) => {
+  return rest;
 };
 
 //
@@ -187,8 +205,6 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
     case 'reset':
       return {};
   }
-
-  return state;
 }
 
 //
@@ -209,42 +225,28 @@ export type useTaskDataHook = {
 export default function useTaskData(flowId: string, runNumber: string): useTaskDataHook {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
 
+  const onStepUpdate = useCallback((items) => {
+    dispatch({ type: 'fillStep', data: items });
+  }, []);
+
   // Fetch & subscribe to steps
   const { error: stepError } = useResource<Step[], Step>({
     url: encodeURI(`/flows/${flowId}/runs/${runNumber}/steps`),
     subscribeToEvents: true,
-    initialData: [],
-    onUpdate: (items) => {
-      dispatch({ type: 'fillStep', data: items });
-    },
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-    },
+    initialData: emptyArray,
+    onUpdate: onStepUpdate,
+    queryParams,
   });
 
-  // Fetch & subscribe to tasks
-  const { status: taskStatus, error: taskError } = useResource<Task[], Task>({
-    url: encodeURI(`/flows/${flowId}/runs/${runNumber}/tasks`),
-    subscribeToEvents: true,
-    initialData: [],
-    updatePredicate: (a, b) => a.task_id === b.task_id,
-    queryParams: {
-      _order: '+ts_epoch',
-      _limit: '1000',
-      postprocess: 'false',
-    },
-    socketParamFilter: ({ postprocess, ...rest }) => {
-      return rest;
-    },
-    fetchAllData: true,
-    onUpdate: (items) => {
-      dispatch({
-        type: 'fillTasks',
-        data: items.map((item) => ({ ...item, status: item.status === 'unknown' ? 'refining' : item.status })),
-      });
-    },
-    postRequest: (success, _target, result) => {
+  const onUpdate = useCallback((items: Task[]) => {
+    dispatch({
+      type: 'fillTasks',
+      data: items.map((item) => ({ ...item, status: item.status === 'unknown' ? 'refining' : item.status })),
+    });
+  }, []);
+
+  const postRequest = useCallback(
+    (success: boolean, _target: string, result: DataModel<Task[]> | undefined) => {
       if (success && result) {
         const tasksNeedingRefine = result.data
           .filter((task) => task.status === 'unknown' && task.step_name !== '_parameters')
@@ -270,6 +272,20 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
         }
       }
     },
+    [flowId, runNumber],
+  );
+
+  // Fetch & subscribe to tasks
+  const { status: taskStatus, error: taskError } = useResource<Task[], Task>({
+    url: encodeURI(`/flows/${flowId}/runs/${runNumber}/tasks`),
+    subscribeToEvents: true,
+    initialData: emptyArray2,
+    updatePredicate,
+    queryParams: initialQueryParams,
+    socketParamFilter,
+    fetchAllData: true,
+    onUpdate,
+    postRequest,
     useBatching: true,
   });
 
@@ -284,7 +300,7 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     unknown: 0,
     pending: 0,
   });
-  const [steps, setStepLines] = useState<StepLineData[]>([]);
+  const [steps, setStepLines] = useState<StepLineData[]>(emptyStepLineArray);
   const [anyOpen, setAnyOpen] = useState<boolean>(true);
 
   useEffect(() => {

@@ -37,7 +37,7 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSectio
 
     window.addEventListener('scroll', listener);
     return () => window.removeEventListener('scroll', listener);
-  }, [items, setSection, activeSection]); // eslint-disable-line
+  }, [items, setSection, activeSection]);
 
   useEffect(() => {
     if (activeSection) {

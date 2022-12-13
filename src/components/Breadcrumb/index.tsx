@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ChangeEventHandler, useState, useMemo } from 'react';
 import styled from 'styled-components';
 import { useLocation, match, useHistory, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,7 @@ import Button, { ButtonLink, ButtonCSS, BigButton } from '../Button';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
 import { ItemRow } from '../Structure';
-import useAutoComplete from '../../hooks/useAutoComplete';
+import useAutoComplete, { AutoCompleteItem } from '../../hooks/useAutoComplete';
 import { takeLastSplitFromURL } from '../../utils/url';
 import { AutoCompleteLine } from '../AutoComplete';
 import HeightAnimatedContainer from '../HeightAnimatedContainer';
@@ -26,24 +26,30 @@ const Breadcrumb: React.FC = () => {
   const routeMatch = getRouteMatch(location.pathname);
   const buttonList = findAdditionalButtons(routeMatch, location.search);
   const currentBreadcrumbPath = buttonList.map((item) => item.label).join('/');
-  const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
 
+  const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
   const [edit, setEdit] = useState(false);
   const [str, setStr] = useState(currentBreadcrumbPath.replace(/\s/g, ''));
   const [warning, setWarning] = useState('');
 
-  const autoCompleteUrl = urlFromString(str);
-  const { result: autoCompleteResult, reset: resetAutocomplete } = useAutoComplete<string>({
-    url: autoCompleteUrl.url || '',
-    params: autoCompleteUrl.params,
-    enabled: !!autoCompleteUrl.url,
-    finder: (item, input) => {
-      const last = takeLastSplitFromURL(item.label);
-      return !input ? true : last.toLowerCase().includes(input.toLowerCase());
-    },
-    input: takeLastSplitFromURL(str),
-    searchEmpty: str.split('/').length > 1,
-  });
+  const autoCompleteUrl = useMemo(() => urlFromString(str), [str]);
+  const finder = (item: AutoCompleteItem, input: string) => {
+    const last = takeLastSplitFromURL(item.label);
+    return !input ? true : last.toLowerCase().includes(input.toLowerCase());
+  };
+  const autoCompleteParams = useMemo(
+    () => ({
+      url: autoCompleteUrl.url || '',
+      params: autoCompleteUrl.params,
+      enabled: !!autoCompleteUrl.url,
+      finder,
+      input: takeLastSplitFromURL(str),
+      searchEmpty: str.split('/').length > 1,
+    }),
+    [autoCompleteUrl.params, autoCompleteUrl.url, str],
+  );
+
+  const { result: autoCompleteResult, reset: resetAutocomplete } = useAutoComplete<string>(autoCompleteParams);
 
   //
   // Handlers
@@ -114,6 +120,22 @@ const Breadcrumb: React.FC = () => {
     setStr(currentBreadcrumbPath.replace(/\s/g, ''));
   };
 
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    setStr(e?.target.value?.replace(/\s/g, '') || '');
+    if (!e?.target.value?.replace(/\s/g, '')) {
+      resetAutocomplete();
+    }
+  };
+
+  const handleFocus = () => {
+    resetAutocomplete();
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (e && e.charCode === 13) {
+      openModal();
+    }
+  };
   //
   // Esc listeners
   //
@@ -167,16 +189,7 @@ const Breadcrumb: React.FC = () => {
                 </CrumbComponent>
               );
             })}
-            <EditButton
-              onClick={openModal}
-              onKeyPress={(e) => {
-                if (e && e.charCode === 13) {
-                  openModal();
-                }
-              }}
-              tabIndex={0}
-              textOnly
-            >
+            <EditButton onClick={openModal} onKeyPress={handleKeyPress} tabIndex={0} textOnly>
               <Icon name="pen" size="md" />
             </EditButton>
           </BreadcrumbGroup>
@@ -196,15 +209,8 @@ const Breadcrumb: React.FC = () => {
                     value={str}
                     onKeyPress={onKeyPress}
                     onKeyDown={onKeyDown}
-                    onChange={(e) => {
-                      setStr(e?.target.value?.replace(/\s/g, '') || '');
-                      if (!e?.target.value?.replace(/\s/g, '')) {
-                        resetAutocomplete();
-                      }
-                    }}
-                    onFocus={() => {
-                      resetAutocomplete();
-                    }}
+                    onChange={handleChange}
+                    onFocus={handleFocus}
                     autoFocus={true}
                   />
                 </BreadcrumbInputWrapper>

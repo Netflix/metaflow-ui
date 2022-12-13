@@ -35,7 +35,7 @@ const AutoComplete: React.FC<Props> = ({ result, setActiveOption, onSelect }) =>
 
   useEffect(() => {
     setActiveOption(result[active]?.value || null);
-  }, [active]); // eslint-disable-line
+  }, [setActiveOption, result, active]);
 
   useEffect(() => {
     setActive(-1);

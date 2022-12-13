@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import useRowData from '../../components/Timeline/useTaskData';
 import { getPath } from '../../utils/routing';
@@ -10,7 +10,7 @@ import Tabs from '../../components/Tabs';
 import RunHeader from './RunHeader';
 import DAG from '../../components/DAG';
 import Timeline, { Row } from '../../components/Timeline/VirtualizedTimeline';
-import useSeachField from '../../hooks/useSearchField';
+import useSearchField from '../../hooks/useSearchField';
 import ErrorBoundary from '../../components/GeneralErrorBoundary';
 import { logWarning } from '../../utils/errorlogger';
 
@@ -35,13 +35,19 @@ type RunPageProps = {
   params: RunPageParams;
 };
 
+const emptyArray: Metadata[] = [];
+const initialQueryParams = {
+  step_name: 'start',
+};
+const DAG_RETRY_TIMEOUT = 3000; // time between retries when fetching the DAG
+
 //
 // Component
 //
 
 const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const { t } = useTranslation();
-  const plContext = useContext(PluginsContext);
+  const { addDataToStore, clearDataStore } = useContext(PluginsContext);
 
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(params.viewType ? params.viewType : 'timeline');
@@ -77,26 +83,33 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Metadata for plugins
   //
 
+  const onUpdate = useCallback(
+    (items: Metadata[]) => {
+      const record = metadataToRecord(items);
+      setMetadataRecord(record);
+      addDataToStore('run-metadata', record);
+    },
+    [addDataToStore],
+  );
+
+  useEffect(() => {
+    return () => clearDataStore('run-metadata');
+  });
+
   useResource<Metadata[], Metadata>({
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/metadata`,
-    initialData: [],
+    initialData: emptyArray,
     subscribeToEvents: true,
-    queryParams: {
-      step_name: 'start',
-    },
-    onUpdate(items) {
-      const metadataRecord = metadataToRecord(items);
-
-      setMetadataRecord(metadataRecord);
-      plContext.addDataToStore('run-metadata', metadataRecord);
-    },
+    queryParams: initialQueryParams,
+    onUpdate,
+    fetchAllData: true,
   });
 
   //
   // Search API
   //
 
-  const searchField = useSeachField(run.flow_id, getRunId(run));
+  const searchField = useSearchField(run.flow_id, getRunId(run));
 
   //
   // Listing settings and graph measurements
@@ -119,7 +132,17 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
         setMode('error-tracker');
       }
     }
-  }, [params.runNumber]); // eslint-disable-line
+  }, [
+    params.runNumber,
+    listParams.direction,
+    listParams.order,
+    listParams.status,
+    params.stepName,
+    params.taskId,
+    run.status,
+    setMode,
+  ]);
+
   //
   // Graph measurements and rendering logic
   //
@@ -132,6 +155,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Data processing
   //
   const [visibleRows, setVisibleRows] = useState<Row[]>([]);
+
   // Figure out rows that should be visible if something related to that changes
   // This is not most performant way to do this so we might wanna update these functionalities later on.
   useEffect(() => {
@@ -149,12 +173,25 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       const newRows: Row[] = makeVisibleRows(rows, settings, visibleSteps, searchField.results);
       // If no grouping, sort tasks here.
       const rowsToUpdate = !settings.group ? newRows.sort(sortRows(settings.sort[0], settings.sort[1])) : newRows;
-      setVisibleRows(rowsToUpdate);
+      if (
+        !(visibleRows.length === 0 && rowsToUpdate.length === 0) &&
+        JSON.stringify(visibleRows) !== JSON.stringify(rowsToUpdate)
+      ) {
+        setVisibleRows(rowsToUpdate);
+      }
     } catch (e) {
       logWarning('Unexpected error while contructing task rows: ', e);
     }
-    /* eslint-disable */
-  }, [rows, settings.stepFilter, settings.sort, settings.statusFilter, settings.group, searchField.results]);
+  }, [
+    rows,
+    settings.stepFilter,
+    settings.sort,
+    settings.statusFilter,
+    settings.group,
+    searchField.results,
+    settings,
+    visibleRows,
+  ]);
 
   const [visible, setVisible] = useState(false);
 
@@ -189,9 +226,9 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // Refetch dag on tab change if dag fetching failed
   useEffect(() => {
     if ((dagResult.status === 'Error' || dagResult.data === null) && tab === 'dag') {
-      dagResult.retry();
+      setTimeout(() => dagResult.retry(), DAG_RETRY_TIMEOUT);
     }
-  }, [tab]); //eslint-disable-line
+  }, [tab, dagResult]);
 
   return (
     <>

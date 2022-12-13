@@ -29,7 +29,7 @@ function useOnKeyPress(key: string, callback: () => void): void {
     return () => {
       delete callbackStore[key][hookid];
     };
-  }, []); // eslint-disable-line
+  }, [callback, hookid, key]);
 }
 
 export default useOnKeyPress;
