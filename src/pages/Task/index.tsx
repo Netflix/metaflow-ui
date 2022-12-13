@@ -210,6 +210,9 @@ const Task: React.FC<TaskViewProps> = ({
     task && dagResult.data ? dagResult.data.steps[task.step_name]?.decorators || [] : [],
   );
 
+  // Show cards if feature flag is set and the task has not failed
+  const showCards = task?.status !== 'failed' && FEATURE_FLAGS.CARDS;
+
   return (
     <TaskContainer>
       <TaskListingHeader
@@ -362,7 +365,7 @@ const Task: React.FC<TaskViewProps> = ({
                     ]
                   : []),
                 // Render cards at the end of sections if enabled by feature flags.
-                ...(FEATURE_FLAGS.CARDS
+                ...(showCards
                   ? cardsResult.cards.map((def) => ({
                       key: def.hash,
                       order: 99,
@@ -388,7 +391,7 @@ const Task: React.FC<TaskViewProps> = ({
                     }))
                   : []),
                 // Show spinner if any cards are still loading
-                ...(FEATURE_FLAGS.CARDS
+                ...(showCards
                   ? cardsResult.status === 'loading'
                     ? [
                         {
@@ -406,7 +409,7 @@ const Task: React.FC<TaskViewProps> = ({
                     : []
                   : []),
                 // Show error if cards were not fetched before timeout
-                ...(FEATURE_FLAGS.CARDS
+                ...(showCards
                   ? cardsResult.status === 'timeout'
                     ? [
                         {
