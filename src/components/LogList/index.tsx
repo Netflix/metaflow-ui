@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
@@ -58,7 +58,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     };
     window.addEventListener('resize', listener);
     return () => window.removeEventListener('resize', listener);
-  }, []); // eslint-disable-line
+  }, [cache]);
 
   // Force row height calculations after fetch ok
 
@@ -67,7 +67,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
       cache.clearAll();
       _list.current.recomputeRowHeights();
     }
-  }, [okCount]); // eslint-disable-line
+  }, [okCount, cache]);
 
   useEffect(() => {
     if (stickBottom && _list) {
@@ -85,8 +85,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     if (onScroll && !stickBottom) {
       onScroll(debouncedIndex);
     }
-  }, [debouncedIndex, onScroll]); // eslint-disable-line
-
+  }, [debouncedIndex, onScroll, stickBottom]);
   //
   // Search features
   //
@@ -99,7 +98,16 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     if (searchActive && search.result.result[searchCurrent]) {
       _list.current?.scrollToRow(search.result.result[searchCurrent].line);
     }
-  }, [searchActive, searchCurrent, searchQuery]); //eslint-disable-line
+  }, [searchActive, searchCurrent, searchQuery, search.result.result]);
+
+  const onRowsRendered = useCallback(
+    (data) => {
+      if (onScroll) {
+        setIndex(data.overscanStartIndex);
+      }
+    },
+    [onScroll],
+  );
 
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">
@@ -126,11 +134,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
                 overscanRowCount={5}
                 rowCount={rows.length}
                 rowHeight={cache.rowHeight}
-                onRowsRendered={(data) => {
-                  if (onScroll) {
-                    setIndex(data.overscanStartIndex);
-                  }
-                }}
+                onRowsRendered={onRowsRendered}
                 deferredMeasurementCache={cache}
                 onScroll={(args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
                   if (args.scrollTop + args.clientHeight >= args.scrollHeight) {

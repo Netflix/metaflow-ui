@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { apiHttp } from '../../constants';
 
 /**
@@ -148,6 +148,7 @@ type PluginsContextProps = {
   subscribeToDatastore: (key: string, path: string, fn: (data: unknown) => void) => void;
   unsubscribeFromDatastore: (key: string) => void;
   addDataToStore: (path: string, data: unknown) => void;
+  clearDataStore: (path: string) => void;
   subscribeToEvent: (key: string, event: string, fn: (data: unknown) => void) => void;
   unsubscribeFromEvent: (key: string) => void;
   callEvent: (event: string, data?: unknown) => void;
@@ -191,9 +192,12 @@ export const PluginsContext = React.createContext<PluginsContextProps>({} as Plu
 export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [plugins, setPlugins] = useState<Plugin[]>([]);
 
-  function getPluginsBySlot(slot: string) {
-    return plugins.filter((item) => item.config.slot === slot);
-  }
+  const getPluginsBySlot = useCallback(
+    (slot: string) => {
+      return plugins.filter((item) => item.config.slot === slot);
+    },
+    [plugins],
+  );
 
   function register(manifest: Plugin, version: PluginVersionInfo) {
     const alreadyRegistered =
@@ -235,43 +239,49 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   //
 
   // Sub to data
-  function subscribeToDatastore(key: string, path: string, fn: (data: unknown) => void) {
+  const subscribeToDatastore = useCallback((key: string, path: string, fn: (data: unknown) => void) => {
     // If we have data, call subscription callback right away
     if (DataStore.data[path]) {
       fn(DataStore.data[path]);
     }
     PluginDataSubscriptions.push({ path, fn, key });
-  }
+  }, []);
+
   // Unsub from data
-  function unsubscribeFromDatastore(key: string) {
+  const unsubscribeFromDatastore = useCallback((key: string) => {
     PluginDataSubscriptions = PluginDataSubscriptions.filter((item) => item.key !== key);
-  }
+  }, []);
 
   // Add new data and trigger subs
-  function addDataToStore(path: string, data: unknown) {
+  const addDataToStore = useCallback((path: string, data: unknown) => {
     DataStore.data = { ...DataStore.data, [path]: data };
     for (const item of PluginDataSubscriptions.filter((s) => s.path === path)) {
       item.fn(data);
     }
-  }
+  }, []);
+
+  // Clear the store before a metadata request
+  const clearDataStore = useCallback((path: string) => {
+    DataStore.data = { ...DataStore.data, [path]: {} };
+  }, []);
 
   //
   // Event system
   //
 
-  function subscribeToEvent(key: string, event: string, fn: (data: unknown) => void) {
+  const subscribeToEvent = useCallback((key: string, event: string, fn: (data: unknown) => void) => {
     PluginEventSubscriptions.push({ event, fn, key });
-  }
+  }, []);
 
-  function unsubscribeFromEvent(key: string) {
+  const unsubscribeFromEvent = useCallback((key: string) => {
     PluginEventSubscriptions = PluginEventSubscriptions.filter((item) => item.key !== key);
-  }
+  }, []);
 
-  function callEvent(event: string, data?: unknown) {
+  const callEvent = useCallback((event: string, data?: unknown) => {
     for (const sub of PluginEventSubscriptions.filter((item) => item.event === event)) {
       sub.fn(data);
     }
-  }
+  }, []);
 
   // Susbcribe to listen UPDATE_PLUGIN messages so we can update plugin visibility.
   useEffect(() => {
@@ -287,7 +297,7 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
       }
     });
     return () => unsubscribeFromEvent('plugin_manager');
-  });
+  }, [unsubscribeFromEvent, subscribeToEvent]);
 
   const contextValue = {
     plugins,
@@ -296,6 +306,7 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
     subscribeToDatastore,
     unsubscribeFromDatastore,
     addDataToStore,
+    clearDataStore,
     subscribeToEvent,
     unsubscribeFromEvent,
     callEvent,

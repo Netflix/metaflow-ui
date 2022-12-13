@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import useWebsocketRequest, { OnOpen, OnUpdate, OnClose, OnError } from '../useWebsocketRequest';
 
 export type SearchResult =
@@ -66,7 +67,10 @@ export default function useSearchRequest({
   onOpen,
   enabled = true,
 }: HookConfig): void {
-  const searchKv = parseSearchValue(searchValue);
+  const searchKv = useMemo(() => {
+    return parseSearchValue(searchValue);
+  }, [searchValue]);
+
   useWebsocketRequest<SearchResult>({
     url,
     queryParams: searchKv !== null ? (searchKv as unknown as Record<string, string>) : {},

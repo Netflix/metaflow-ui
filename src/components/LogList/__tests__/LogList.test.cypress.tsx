@@ -12,7 +12,7 @@ function createLogData(props: Partial<LogData>): LogData {
     loadMore: (_index: number) => null,
     error: null,
     localSearch: {
-      search: (str: string) => null,
+      search: () => null,
       result: {
         active: false,
         result: [],

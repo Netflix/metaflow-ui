@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useReducer } from 'react';
 import {
   DecodedValueMap,
   QueryParamConfig,
@@ -61,8 +61,10 @@ export function taskListSettingsReducer(state: TaskSettingsState, action: TaskSe
 
     case 'setCustom':
       return { ...state, isCustomEnabled: action.value };
+
+    default:
+      return state;
   }
-  return state;
 }
 
 type PossibleParameterValue = string | number | undefined | null;
@@ -169,7 +171,8 @@ export default function useTaskListSettings(): TaskSettingsHook {
       'startTime',
     );
 
-    if (sortDir || sortBy) {
+    const newSort = [sortBy || taskListSettings.sort[0], sortDir || taskListSettings.sort[1]];
+    if (JSON.stringify(taskListSettings.sort) !== JSON.stringify(newSort)) {
       dispatch({ type: 'sort', sort: [sortBy || taskListSettings.sort[0], sortDir || taskListSettings.sort[1]] });
     }
 
@@ -198,40 +201,51 @@ export default function useTaskListSettings(): TaskSettingsHook {
       // custom mode on and start saving settingin localstorage
       if (!equalsDefaultMode(q.order, q.direction, q.status, q.group)) {
         const { steps, ...rest } = q;
+
         dispatch({ type: 'setCustom', value: true });
         localStorage.setItem('custom-settings', JSON.stringify(rest));
       }
     }
-  }, [q, dispatch]); // eslint-disable-line
+  }, [
+    q,
+    dispatch,
+    taskListSettings.isCustomEnabled,
+    taskListSettings.group,
+    taskListSettings.statusFilter,
+    taskListSettings.sort,
+  ]);
 
   useEffect(() => {
     dispatch({ type: 'setSteps', steps: q.steps });
   }, [q.steps]);
 
   // Update active settings mode for task listing.
-  const setMode = (mode: TaskListMode) => {
-    if (mode === 'overview') {
-      sq({ ...q, ...OverviewMode }, 'replace');
-      dispatch({ type: 'setCustom', value: false });
-    } else if (mode === 'monitoring') {
-      sq({ ...q, ...MonitoringMode }, 'replace');
-      dispatch({ type: 'setCustom', value: false });
-    } else if (mode === 'error-tracker') {
-      sq({ ...q, ...ErrorTrackerMode }, 'replace');
-      dispatch({ type: 'setCustom', value: false });
-    } else if (mode === 'custom') {
-      dispatch({ type: 'setCustom', value: true });
-      // Check previous settings from localstorage for custom setting
-      const previousSettings = localStorage.getItem('custom-settings');
-      if (previousSettings) {
-        const parsed = JSON.parse(previousSettings);
-        if (parsed) {
-          const steps = q.steps ? { steps: q.steps } : {};
-          sq({ ...parsed, ...steps }, 'replace');
+  const setMode = useCallback(
+    (mode: TaskListMode) => {
+      if (mode === 'overview') {
+        sq({ ...q, ...OverviewMode }, 'replace');
+        dispatch({ type: 'setCustom', value: false });
+      } else if (mode === 'monitoring') {
+        sq({ ...q, ...MonitoringMode }, 'replace');
+        dispatch({ type: 'setCustom', value: false });
+      } else if (mode === 'error-tracker') {
+        sq({ ...q, ...ErrorTrackerMode }, 'replace');
+        dispatch({ type: 'setCustom', value: false });
+      } else if (mode === 'custom') {
+        dispatch({ type: 'setCustom', value: true });
+        // Check previous settings from localstorage for custom setting
+        const previousSettings = localStorage.getItem('custom-settings');
+        if (previousSettings) {
+          const parsed = JSON.parse(previousSettings);
+          if (parsed) {
+            const steps = q.steps ? { steps: q.steps } : {};
+            sq({ ...parsed, ...steps }, 'replace');
+          }
         }
       }
-    }
-  };
+    },
+    [q, sq],
+  );
 
   return { settings: taskListSettings, dispatch, setQueryParam: sq, params: q, setMode };
 }

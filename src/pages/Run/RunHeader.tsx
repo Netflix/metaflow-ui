@@ -31,6 +31,13 @@ type Props = {
   metadataRecord?: Record<string, string>;
 };
 
+const emptyObj = {};
+const emptyArray: Artifact[] = [];
+const initialQueryParams = {
+  ds_type: 'local',
+  _limit: '1',
+};
+
 //
 // Component
 //
@@ -76,17 +83,14 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
   const params = useResource<RunParam, RunParam>({
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/parameters`,
     subscribeToEvents: true,
-    initialData: {},
+    initialData: emptyObj,
   });
 
   const dstype = useResource<Artifact[], Artifact>({
     url: `/flows/${run.flow_id}/runs/${getRunId(run)}/artifacts`,
-    queryParams: {
-      ds_type: 'local',
-      _limit: '1',
-    },
+    queryParams: initialQueryParams,
     subscribeToEvents: true,
-    initialData: [],
+    initialData: emptyArray,
   });
 
   let triggerEventsData: Record<string, string>[] = metadataRecord?.['trigger_events']

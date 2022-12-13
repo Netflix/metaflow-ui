@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { PluginsContext } from '../../components/Plugins/PluginManager';
 import useResource, { Resource } from '../../hooks/useResource';
 import { Metadata } from '../../types';
@@ -16,52 +16,67 @@ type TaskMetadata = {
   attemptMetadataResource: Resource<Metadata[]>;
 };
 
-function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMetadata {
-  const { addDataToStore } = useContext(PluginsContext);
+const emptyArray: Metadata[] = [];
+const taskQueryParams = {
+  _limit: '100',
+  'attempt_id:is': 'null',
+};
+const updatePredicate = (a: Metadata, b: Metadata) => a.id === b.id;
 
-  const config = {
-    url: url,
-    fetchAllData: true,
-    updatePredicate: (a: Metadata, b: Metadata) => a.id === b.id,
-    subscribeToEvents: true,
-    initialData: [],
-    pause: paused,
-  };
+function useTaskMetadata({ url, attemptId, paused }: TaskMetadataConfig): TaskMetadata {
+  const { addDataToStore, clearDataStore } = useContext(PluginsContext);
+
+  const config = useMemo(
+    () => ({
+      url: url,
+      fetchAllData: true,
+      updatePredicate,
+      subscribeToEvents: true,
+      initialData: emptyArray,
+      pause: paused,
+    }),
+    [paused, url],
+  );
 
   // Get metadata for tasks that don't have attempt id. We show them on every attempt
   const taskMetadataResource = useResource<Metadata[], Metadata>({
     ...config,
-    queryParams: {
-      _limit: '100',
-      'attempt_id:is': 'null',
-    },
+    queryParams: taskQueryParams,
+    fetchAllData: true,
   });
+
+  const attemptQueryParams = useMemo(
+    () => ({
+      _limit: '100',
+      attempt_id: attemptId.toString(),
+    }),
+    [attemptId],
+  );
 
   // Get metadata for current attempt
   const attemptMetadataResource = useResource<Metadata[], Metadata>({
     ...config,
-    queryParams: {
-      _limit: '100',
-      attempt_id: attemptId.toString(),
-    },
+    queryParams: attemptQueryParams,
+    fetchAllData: true,
   });
 
   // Merge task and attempt data.
-  const data =
-    taskMetadataResource.data && attemptMetadataResource.data
+  const data = useMemo<Metadata[]>(() => {
+    return taskMetadataResource.data && attemptMetadataResource.data
       ? [...taskMetadataResource.data, ...attemptMetadataResource.data]
       : [];
+  }, [attemptMetadataResource.data, taskMetadataResource.data]);
 
   const dataCount = data.length;
 
   // Update metadata to plugin store
   useEffect(() => {
     addDataToStore('metadata', metadataToRecord(data));
-  }, [dataCount]); //eslint-disable-line
+  }, [dataCount, addDataToStore, data]);
 
   useEffect(() => {
-    return () => addDataToStore('metadata', {});
-  }, [url, attemptId]); //eslint-disable-line
+    return () => clearDataStore('metadata');
+  }, [url, attemptId, clearDataStore]);
 
   return { data, taskMetadataResource, attemptMetadataResource };
 }

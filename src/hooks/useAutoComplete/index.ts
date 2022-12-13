@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AsyncStatus } from '../../types';
 import { apiHttp } from '../../constants';
 import { useDebounce } from 'use-debounce/lib';
@@ -64,9 +64,8 @@ function useAutoComplete<T>({
   const [result, setResult] = useState<AutoCompleteResult>(
     DataStore[url] ? DataStore[url] : { status: 'NotAsked', data: [], timestamp: 0 },
   );
-  const parseResult = parser || ((item: T) => ({ label: item, value: item }));
 
-  function updateResult() {
+  const updateResult = useCallback(() => {
     const newResults = DataStore[url].data.filter((item) =>
       finder ? finder(item, input) : item.value.toLocaleLowerCase().includes(input.toLowerCase()),
     );
@@ -75,32 +74,42 @@ function useAutoComplete<T>({
       data: newResults,
       timestamp: DataStore[url]?.timestamp || 0,
     });
-  }
+  }, [finder, input, url]);
 
   // Initialise caching
   useEffect(() => {
     if (!DataStore[url] && preFetch) {
       DataStore[url] = { status: 'NotAsked', data: [], timestamp: 0 };
     }
-  }, [url, preFetch]); // eslint-disable-line
+  }, [url, preFetch]);
 
   // Update results when input changes on prefetch
   useEffect(() => {
     if (input && preFetch) {
       updateResult();
     }
-  }, [preFetch, input]); //eslint-disable-line
+  }, [preFetch, input, updateResult]);
 
-  const abortCtrl = new AbortController();
+  const abortCtrl = useMemo(() => new AbortController(), []);
 
   useEffect(() => {
     if (DataStore[url] && DataStore[url].status === 'Loading') {
       abortCtrl.abort();
     }
-  }, [requestUrl]); //eslint-disable-line
+  }, [requestUrl, abortCtrl, url]);
+
+  const reset = useCallback(() => {
+    setResult({ status: 'NotAsked', data: [], timestamp: 0 });
+  }, []);
+
+  const refetch = useCallback(() => {
+    setRefetcher((num) => num + 1);
+  }, []);
 
   useEffect(() => {
     if ((!searchEmpty && !input) || !enabled) return;
+
+    const parseResult = parser || ((item: T) => ({ label: item, value: item }));
 
     if (preFetch) {
       if (DataStore[url]?.status !== 'NotAsked' && Date.now() - DataStore[url]?.timestamp < TIME_TO_REFETCH) {
@@ -146,19 +155,12 @@ function useAutoComplete<T>({
           setResult({ status: 'Error', data: [], timestamp: Date.now() });
         });
     }
-    return () => {
-      abortCtrl.abort();
-    };
-  }, [url, preFetch, searchEmpty, refetcher]); // eslint-disable-line
+  }, [url, preFetch, searchEmpty, refetcher, abortCtrl, input, enabled, finder, parser, updateResult]);
 
   return {
     result,
-    reset() {
-      setResult({ status: 'NotAsked', data: [], timestamp: 0 });
-    },
-    refetch() {
-      setRefetcher((num) => num + 1);
-    },
+    reset,
+    refetch,
   };
 }
 

@@ -24,11 +24,13 @@ const BasicResponse = {
   query: { _order: '+ts_epoch', _limit: '1000' },
 };
 
+const emptyArray: BasicReponseData[] = [];
+
 const ResourceListComponent = (useResourceSettings: Partial<HookConfig<BasicReponseData[], BasicReponseData>>) => {
   const { data } = useResource<BasicReponseData[], BasicReponseData>({
     url: 'string',
     wsUrl: 'ws://localhost/api/ws',
-    initialData: [],
+    initialData: emptyArray,
     ...useResourceSettings,
   });
 

@@ -63,6 +63,8 @@ export type StepLineData = {
   original?: Step;
 };
 
+const emptyStepLineArray: StepLineData[] = [];
+
 export function makeStepLineData(rows: RowDataModel): StepLineData[] {
   return Object.keys(rows).reduce((arr: StepLineData[], key) => {
     if (key.startsWith('_')) return arr;
@@ -76,7 +78,7 @@ export function makeStepLineData(rows: RowDataModel): StepLineData[] {
         step_name: key,
       },
     ]);
-  }, []);
+  }, emptyStepLineArray);
 }
 
 //

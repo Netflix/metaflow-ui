@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import styled from 'styled-components';
 import Collapsable from '../Collapsable';
 import Icon from '../Icon';
@@ -28,28 +28,29 @@ const VALID_CONTAINERS = ['collapsable', 'titled-container'];
 const PluginGroup: React.FC<Props> = ({ id, slot, baseurl, resourceParams }) => {
   const [removed, setRemoved] = useState<string[]>([]);
   const { getPluginsBySlot } = useContext(PluginsContext);
-  const plugins = getPluginsBySlot(slot).filter((item) => removed.indexOf(item.name) === -1);
-  if (plugins.length === 0) {
-    return null;
-  }
+  const plugins = useMemo(
+    () => getPluginsBySlot(slot).filter((item) => removed.indexOf(item.name) === -1),
+    [getPluginsBySlot, removed, slot],
+  );
+
+  const items = useMemo(() => plugins?.sort((a, b) => (a.name < b.name ? -1 : 1)), [plugins]);
+
   return (
     <>
-      {plugins
-        .sort((a, b) => (a.name < b.name ? -1 : 1))
-        .map((item) => (
-          <div key={item.name + id} style={{ display: item.config.visible ? 'block' : 'none' }}>
-            <PluginContainer plugin={item}>
-              <PluginSlot
-                id={id}
-                title={item.name}
-                url={pluginPath(item, baseurl)}
-                onRemove={() => setRemoved((st) => [...st, item.name])}
-                plugin={item}
-                resourceParams={resourceParams}
-              />
-            </PluginContainer>
-          </div>
-        ))}
+      {items.map((item) => (
+        <div key={item.name + id} style={{ display: item.config.visible ? 'block' : 'none' }}>
+          <PluginContainer plugin={item}>
+            <PluginSlot
+              id={id}
+              title={item.name}
+              url={pluginPath(item, baseurl)}
+              onRemove={() => setRemoved((st) => [...st, item.name])}
+              plugin={item}
+              resourceParams={resourceParams}
+            />
+          </PluginContainer>
+        </div>
+      ))}
     </>
   );
 };

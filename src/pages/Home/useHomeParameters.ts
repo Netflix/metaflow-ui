@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { DecodedValueMap, SetQuery, StringParam, useQueryParams, withDefault } from 'use-query-params';
 
 export const defaultHomeParameters = {
@@ -24,8 +25,10 @@ type ParametersMap = DecodedValueMap<typeof ParameterSettings>;
 
 function useHomeParameters(): { setQp: SetQuery<typeof ParameterSettings>; params: Record<string, string> } {
   const [qp, setQp] = useQueryParams(ParameterSettings);
-  const params = makeParams(qp);
-  return { setQp, params };
+  return useMemo(() => {
+    const params = makeParams(qp);
+    return { setQp, params };
+  }, [qp, setQp]);
 }
 
 //

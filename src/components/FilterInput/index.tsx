@@ -1,4 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  ChangeEvent,
+  ChangeEventHandler,
+  KeyboardEventHandler,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import styled, { css } from 'styled-components';
 import useAutoComplete, { AutoCompleteItem } from '../../hooks/useAutoComplete';
 import Icon, { IconKeys, IconSizes } from '../Icon';
@@ -99,6 +107,51 @@ const FilterInput: React.FC<FilterInputProps> = ({
     return () => clearTimeout(t);
   }, [hasFocus, autoCompleteOpen, resetAutocomplete]);
 
+  const handleKeyPress: KeyboardEventHandler<HTMLInputElement> = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.charCode === 13 && e?.currentTarget?.value) {
+        if (activeAutoCompleteOption) {
+          onSubmit(activeAutoCompleteOption);
+        } else {
+          onSubmit(e.currentTarget?.value);
+        }
+        if (!noClear) {
+          setVal('');
+        } else {
+          setVal(activeAutoCompleteOption || e.currentTarget.value);
+        }
+        setActiveOption(null);
+        resetAutocomplete();
+        // Currently it feels more natural to keep the focus on the input when adding tags
+        // Enable these if user feedback suggets that more conventional behaviour is wanted
+        // setHasFocus(false);
+        // e.currentTarget.blur();
+      }
+    },
+    [activeAutoCompleteOption, noClear, onSubmit, resetAutocomplete],
+  );
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setVal(e.currentTarget.value);
+      onChange && onChange(e.currentTarget.value);
+      if (!e.currentTarget.value || e.currentTarget.value === '') {
+        resetAutocomplete();
+      }
+    },
+    [onChange, resetAutocomplete],
+  );
+  const handleFocus = useCallback(() => {
+    setHasFocus(true);
+    if (val) {
+      refetchAutocomplete();
+    }
+  }, [refetchAutocomplete, val]);
+
+  const handleBlur = useCallback(() => {
+    setHasFocus(false);
+  }, []);
+
   return (
     <InputWrapper
       status={status}
@@ -119,42 +172,10 @@ const FilterInput: React.FC<FilterInputProps> = ({
           ref={inputEl}
           value={val}
           autoFocus={autoFocus}
-          onKeyPress={(e) => {
-            if (e.charCode === 13 && e.currentTarget.value) {
-              if (activeAutoCompleteOption) {
-                onSubmit(activeAutoCompleteOption);
-              } else {
-                onSubmit(e.currentTarget.value);
-              }
-              if (!noClear) {
-                setVal('');
-              } else {
-                setVal(activeAutoCompleteOption || e.currentTarget.value);
-              }
-              setActiveOption(null);
-              resetAutocomplete();
-              // Currently it feels more natural to keep the focus on the input when adding tags
-              // Enable these if user feedback suggets that more conventional behaviour is wanted
-              // setHasFocus(false);
-              // e.currentTarget.blur();
-            }
-          }}
-          onChange={(e) => {
-            setVal(e.currentTarget.value);
-            onChange && onChange(e.currentTarget.value);
-            if (!e.currentTarget.value || e.currentTarget.value === '') {
-              resetAutocomplete();
-            }
-          }}
-          onFocus={() => {
-            setHasFocus(true);
-            if (val) {
-              refetchAutocomplete();
-            }
-          }}
-          onBlur={() => {
-            setHasFocus(false);
-          }}
+          onKeyPress={handleKeyPress}
+          onChange={handleChange}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
 
         <SubmitIconHolder

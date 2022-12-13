@@ -232,7 +232,7 @@ export default function useTimelineControls(
         mode: mode,
       });
     }
-  }, [rows, run.ts_epoch, mode]); // eslint-disable-line
+  }, [rows, run.ts_epoch, mode, run.finished_at, timelineControls.max]);
 
   useEffect(() => {
     const tm = setInterval(() => {
