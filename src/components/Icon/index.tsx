@@ -40,6 +40,7 @@ import { ReactComponent as RowLoader } from '../../assets/row-loader.svg';
 import { ReactComponent as Plugin } from '../../assets/plugin.svg';
 import { ReactComponent as Calendar } from '../../assets/calendar.svg';
 import { ReactComponent as Arrow } from '../../assets/arrow.svg';
+import { ReactComponent as Link } from '../../assets/link.svg';
 
 const icons = {
   timeline: Timeline,
@@ -81,6 +82,7 @@ const icons = {
   plugin: Plugin,
   calendar: Calendar,
   arrow: Arrow,
+  link: Link,
 };
 
 export type SupportedIcons = typeof icons;
