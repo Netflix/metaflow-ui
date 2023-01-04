@@ -386,7 +386,7 @@ const Task: React.FC<TaskViewProps> = ({
                               }}
                               iconOnly
                             >
-                              <Icon name="link" size="sm" />
+                              <Icon name="external" size="sm" />
                             </Button>
                           </a>
                           <a
