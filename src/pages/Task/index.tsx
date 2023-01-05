@@ -371,21 +371,40 @@ const Task: React.FC<TaskViewProps> = ({
                       order: 99,
                       label: def.id ? `${t('card.card_id_title')}: ${def.id}` : `${t('card.card_title')}: ${def.type}`,
                       actionbar: (
-                        <a
-                          title={t('card.download_card')}
-                          href={apiHttp(taskCardPath(task, def.hash))}
-                          download
-                          data-testid="card-download"
-                        >
-                          <Button
-                            onClick={() => {
-                              /*intentional*/
-                            }}
-                            iconOnly
+                        <>
+                          <a
+                            title={t('card.link_card')}
+                            href={apiHttp(taskCardPath(task, def.hash))}
+                            data-testid="card-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ marginRight: '8px' }}
                           >
-                            <Icon name="download" size="sm" />
-                          </Button>
-                        </a>
+                            <Button
+                              onClick={() => {
+                                /*intentional*/
+                              }}
+                              iconOnly
+                            >
+                              <Icon name="external" size="sm" />
+                            </Button>
+                          </a>
+                          <a
+                            title={t('card.download_card')}
+                            href={apiHttp(taskCardPath(task, def.hash))}
+                            download
+                            data-testid="card-download"
+                          >
+                            <Button
+                              onClick={() => {
+                                /*intentional*/
+                              }}
+                              iconOnly
+                            >
+                              <Icon name="download" size="sm" />
+                            </Button>
+                          </a>
+                        </>
                       ),
                       component: <CardIframe path={`${taskCardPath(task, def.hash)}?embed=true`} />,
                     }))

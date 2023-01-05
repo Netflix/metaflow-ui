@@ -328,6 +328,7 @@ const en = {
       card_id_title: 'Card ID',
       card_title: 'Card',
       download_card: 'Download card HTML file',
+      link_card: 'Link to card',
       card_timeout: 'Timeout: loading cards',
       card_loading: 'Loading cards',
     },
