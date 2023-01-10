@@ -152,14 +152,21 @@ const FilterInput: React.FC<FilterInputProps> = ({
     setHasFocus(false);
   }, []);
 
+  const handleClick = useCallback(() => {
+    inputEl.current?.focus();
+  }, []);
+
+  const handleMouseDown = useCallback(() => {
+    if (inputEl?.current?.value) {
+      onSubmit(inputEl.current.value);
+      if (!noClear) {
+        setVal('');
+      }
+    }
+  }, [noClear, onSubmit]);
+
   return (
-    <InputWrapper
-      status={status}
-      active={hasFocus}
-      onClick={() => {
-        inputEl.current?.focus();
-      }}
-    >
+    <InputWrapper status={status} active={hasFocus} onClick={handleClick}>
       {sectionLabel && (
         <InputLabel active={hasFocus || val !== ''} status={status}>
           {sectionLabel}
@@ -182,14 +189,7 @@ const FilterInput: React.FC<FilterInputProps> = ({
           data-testid="filter-input-submit-button"
           status={status}
           focus={hasFocus}
-          onMouseDown={() => {
-            if (inputEl?.current?.value) {
-              onSubmit(inputEl.current.value);
-              if (!noClear) {
-                setVal('');
-              }
-            }
-          }}
+          onMouseDown={handleMouseDown}
         >
           {customIconElement
             ? customIconElement

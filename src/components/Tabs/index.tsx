@@ -27,6 +27,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, widen }) => {
   // Using internal state & effect here to track active tab so component can be used as
   // standalone OR controlled component. I imagine we need to use it as controlled in most cases
   // since we want perma urls
+
   const [active, setActive] = useState(activeTab);
   useEffect(() => {
     setActive(activeTab);
