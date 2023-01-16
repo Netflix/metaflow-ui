@@ -54,6 +54,22 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
     };
   }, [rowState]);
 
+  const handleMouseEnter = () => {
+    setIsHovering(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovering(false);
+  };
+
+  const handleToggleClick = () => {
+    if (rowState === RowState.Opening || rowState === RowState.Open) {
+      setRowState(RowState.Closing);
+    } else {
+      setRowState(RowState.Opening);
+    }
+  };
+
   return (
     <>
       <StyledTR
@@ -66,12 +82,8 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
         clickable
         stale={isStale}
         active={visible}
-        onMouseEnter={() => {
-          setIsHovering(true);
-        }}
-        onMouseLeave={() => {
-          setIsHovering(false);
-        }}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
         <ResultGroupCells
           r={run}
@@ -85,13 +97,7 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
           <VerticalToggle
             visible={visible || isHovering}
             active={rowState === RowState.Opening || rowState === RowState.Open}
-            onClick={() => {
-              if (rowState === RowState.Opening || rowState === RowState.Open) {
-                setRowState(RowState.Closing);
-              } else {
-                setRowState(RowState.Opening);
-              }
-            }}
+            onClick={handleToggleClick}
           />
         </td>
       </StyledTR>

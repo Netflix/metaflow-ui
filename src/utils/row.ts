@@ -1,5 +1,5 @@
 import { Row } from '../components/Timeline/VirtualizedTimeline';
-import { TaskStatus } from '../types';
+import { Task, TaskStatus } from '../types';
 
 const takeSmallest = (a: Row): number | null =>
   a.type === 'task' ? a.data[0].started_at || Number.MAX_VALUE : a.data.ts_epoch;
@@ -75,3 +75,9 @@ export const getTaskLineStatus = (rows: Row[]): TaskStatus => {
   if (statuses.indexOf('unknown') > -1) return 'unknown';
   return 'completed';
 };
+
+/**
+ * Get current step name
+ */
+export const getCurrentStepName = (rows: Task[]): string =>
+  rows.find((row) => row.status === 'running')?.step_name || '';

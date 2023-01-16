@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Log, AsyncStatus, APIError } from '../../types';
 import { DataModel, defaultError } from '../../hooks/useResource';
 import { apiHttp } from '../../constants';
@@ -38,6 +38,9 @@ const DEFAULT_PAGE_SIZE = 500;
 const PRELOAD_POLL_INTERVALL = 20000;
 const POSTLOAD_POLL_INTERVAL = 10000;
 
+const emptyArray: LogItem[] = [];
+const emptyResultArray: LogSearchResult[] = [];
+
 function isOkResult(param: DataModel<Log[]> | APIError): param is DataModel<Log[]> {
   return 'data' in param;
 }
@@ -59,8 +62,6 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
   const [logs, setLogs] = useState<LogItem[]>([]);
   const PAGE_SIZE = pagesize || DEFAULT_PAGE_SIZE;
 
-  const aborter = useRef<AbortController>();
-
   // generic log fetcher
   const fetchLogs = useCallback(
     (
@@ -73,14 +74,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
         page ? `&_page=${page}` : ''
       }&_order=${order}row`;
 
-      if (aborter.current) {
-        aborter.current.abort();
-      }
-
-      const currentAborter = new AbortController();
-      aborter.current = currentAborter;
-
-      return fetch(apiHttp(fullUrl), { signal: currentAborter.signal })
+      return fetch(apiHttp(fullUrl))
         .then((response) => response.json())
         .then((result: DataModel<Log[]> | APIError) => {
           if (isOkResult(result)) {
@@ -126,7 +120,6 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
         setPreloadStatus('Error');
         return;
       }
-
       setPreloadStatus('Ok');
     });
   }, [fetchLogs]);
@@ -256,10 +249,10 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     return () => {
       setStatus('NotAsked');
       setPreloadStatus('NotAsked');
-      setLogs([]);
+      setLogs(emptyArray);
       setError(null);
       setPostPoll(false);
-      setSearchResult({ active: false, result: [], current: 0, query: '' });
+      setSearchResult({ active: false, result: emptyResultArray, current: 0, query: '' });
     };
   }, [url]);
 

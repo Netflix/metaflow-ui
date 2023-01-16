@@ -30,7 +30,7 @@ import {
 } from '../../components/Timeline/useTaskListSettings';
 import FEATURE_FLAGS from '../../utils/FEATURE';
 import { isVersionEqualOrHigher } from '../../components/Plugins/PluginManager';
-import { GraphModel } from '../../components/DAG/DAGUtils';
+import { Decorator, GraphModel } from '../../components/DAG/DAGUtils';
 import useLogData, { LogData } from '../../hooks/useLogData';
 import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
@@ -67,10 +67,16 @@ type FullScreenData =
   | { type: 'artifact'; name: string; artifactdata: string };
 
 const emptyArray: Artifact[] = [];
+const emptyDecoratorArray: Decorator[] = [];
+
 const socketParamFilter = ({ postprocess, ...rest }: Record<string, string>) => {
   return rest;
 };
 const updatePredicate = (a: ITask, b: ITask) => a.attempt_id === b.attempt_id;
+
+const emptyFn = () => {
+  /*intentional*/
+};
 
 //
 // Component
@@ -154,7 +160,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   const logUrl = `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${task?.task_id}/logs/`;
 
-  // Stantard out logs
+  // Standard out logs
   const stdout = useLogData({
     paused: !isCurrentTaskFinished,
     preload: task?.status === 'running',
@@ -196,7 +202,7 @@ const Task: React.FC<TaskViewProps> = ({
   });
 
   useEffect(() => {
-    setArtifacts([]);
+    setArtifacts(emptyArray);
   }, [stepName, taskId, attemptId]);
 
   const developerNote = getDocString(dagResult, stepName);
@@ -207,11 +213,44 @@ const Task: React.FC<TaskViewProps> = ({
 
   const cardsResult = useTaskCards(
     task,
-    task && dagResult.data ? dagResult.data.steps[task.step_name]?.decorators || [] : [],
+    task && dagResult.data
+      ? dagResult.data.steps[task.step_name]?.decorators || emptyDecoratorArray
+      : emptyDecoratorArray,
   );
 
   // Show cards if feature flag is set and the task has not failed
   const showCards = task?.status !== 'failed' && FEATURE_FLAGS.CARDS;
+
+  const setSection = useCallback((value: string | null) => setQp({ section: value }, 'replaceIn'), [setQp]);
+  const selectHandler = useCallback((att) => setQp({ attempt: att }), [setQp]);
+  const setStdOutFullscreen = useCallback(() => setFullscreen({ type: 'logs', logtype: 'stdout' }), []);
+  const setStdErrFullscreen = useCallback(() => setFullscreen({ type: 'logs', logtype: 'stderr' }), []);
+  const closeHandler = useCallback(() => setFullscreen(null), []);
+  const openContactClickHandler = useCallback(
+    (name, data) => setFullscreen({ type: 'artifact', name, artifactdata: data }),
+    [],
+  );
+  const fullPageComponent = useCallback(
+    (height) => {
+      if (!fullscreen || !task) return <></>;
+      if (fullscreen.type === 'logs') {
+        return (
+          <LogList
+            logdata={fullscreen.logtype === 'stdout' ? stdout : stderr}
+            onScroll={fullscreen.logtype === 'stdout' ? stdout.loadMore : stderr.loadMore}
+            fixedHeight={height - 56}
+            downloadUrl={apiHttp(
+              `${logUrl}/${fullscreen.logtype === 'stdout' ? 'out' : 'err'}/download?attempt_id=${task.attempt_id}`,
+            )}
+          />
+        );
+      } else if (fullscreen.type === 'artifact') {
+        return <ArtifactViewer data={fullscreen.artifactdata} height={height} />;
+      }
+      return <div />;
+    },
+    [fullscreen, logUrl, stderr, stdout, task],
+  );
 
   return (
     <TaskContainer>
@@ -259,10 +298,8 @@ const Task: React.FC<TaskViewProps> = ({
           <>
             <AnchoredView
               activeSection={qp.section}
-              setSection={(value: string | null) => setQp({ section: value }, 'replaceIn')}
-              header={
-                <AttemptSelector tasks={tasks} currentAttempt={attemptId} onSelect={(att) => setQp({ attempt: att })} />
-              }
+              setSection={setSection}
+              header={<AttemptSelector tasks={tasks} currentAttempt={attemptId} onSelect={selectHandler} />}
               sections={[
                 //
                 // Task info
@@ -303,7 +340,7 @@ const Task: React.FC<TaskViewProps> = ({
                             onScroll={stdout.loadMore}
                             logdata={stdout}
                             downloadUrl={apiHttp(`${logUrl}/out/download?attempt_id=${task.attempt_id}`)}
-                            setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stdout' })}
+                            setFullscreen={setStdOutFullscreen}
                           />
                         }
                       />
@@ -329,7 +366,7 @@ const Task: React.FC<TaskViewProps> = ({
                             onScroll={stderr.loadMore}
                             logdata={stderr}
                             downloadUrl={apiHttp(`${logUrl}/err/download?attempt_id=${task.attempt_id}`)}
-                            setFullscreen={() => setFullscreen({ type: 'logs', logtype: 'stderr' })}
+                            setFullscreen={setStdErrFullscreen}
                           />
                         }
                       />
@@ -353,9 +390,7 @@ const Task: React.FC<TaskViewProps> = ({
                               component={
                                 <ArtifactTable
                                   artifacts={artifacts.filter((art) => !art.name.startsWith('_'))}
-                                  onOpenContentClick={(name, data) =>
-                                    setFullscreen({ type: 'artifact', name, artifactdata: data })
-                                  }
+                                  onOpenContentClick={openContactClickHandler}
                                 />
                               }
                             />
@@ -380,12 +415,7 @@ const Task: React.FC<TaskViewProps> = ({
                             rel="noopener noreferrer"
                             style={{ marginRight: '8px' }}
                           >
-                            <Button
-                              onClick={() => {
-                                /*intentional*/
-                              }}
-                              iconOnly
-                            >
+                            <Button onClick={emptyFn} iconOnly>
                               <Icon name="external" size="sm" />
                             </Button>
                           </a>
@@ -395,12 +425,7 @@ const Task: React.FC<TaskViewProps> = ({
                             download
                             data-testid="card-download"
                           >
-                            <Button
-                              onClick={() => {
-                                /*intentional*/
-                              }}
-                              iconOnly
-                            >
+                            <Button onClick={emptyFn} iconOnly>
                               <Icon name="download" size="sm" />
                             </Button>
                           </a>
@@ -447,7 +472,7 @@ const Task: React.FC<TaskViewProps> = ({
       </div>
       {fullscreen && task && (
         <FullPageContainer
-          onClose={() => setFullscreen(null)}
+          onClose={closeHandler}
           actionbar={
             fullscreen.type === 'logs' ? null : (
               <ArtifactActionBar
@@ -457,25 +482,7 @@ const Task: React.FC<TaskViewProps> = ({
             )
           }
           title={fullscreen.type === 'logs' ? fullscreen.logtype : fullscreen.name}
-          component={(height) => {
-            if (fullscreen.type === 'logs') {
-              return (
-                <LogList
-                  logdata={fullscreen.logtype === 'stdout' ? stdout : stderr}
-                  onScroll={fullscreen.logtype === 'stdout' ? stdout.loadMore : stderr.loadMore}
-                  fixedHeight={height - 56}
-                  downloadUrl={apiHttp(
-                    `${logUrl}/${fullscreen.logtype === 'stdout' ? 'out' : 'err'}/download?attempt_id=${
-                      task.attempt_id
-                    }`,
-                  )}
-                />
-              );
-            } else if (fullscreen.type === 'artifact') {
-              return <ArtifactViewer data={fullscreen.artifactdata} height={height} />;
-            }
-            return <div />;
-          }}
+          component={fullPageComponent}
         ></FullPageContainer>
       )}
     </TaskContainer>

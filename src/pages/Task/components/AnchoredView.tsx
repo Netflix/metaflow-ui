@@ -8,7 +8,7 @@ import TaskSection from './TaskSection';
 // Anchored View
 //
 
-type AnchoredViewSection = {
+export type AnchoredViewSection = {
   key: string;
   label: React.ReactNode | string;
   order: number;

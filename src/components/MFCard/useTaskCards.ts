@@ -4,7 +4,9 @@ import { DataModel } from '../../hooks/useResource';
 import { Task } from '../../types';
 import { Decorator } from '../DAG/DAGUtils';
 
-type CardResultState = 'loading' | 'timeout' | 'success';
+type CardResultState = 'loading' | 'timeout' | 'success' | 'error';
+
+const emptyArray: CardDefinition[] = [];
 
 export type CardResult = {
   status: CardResultState;
@@ -35,7 +37,7 @@ const POSTLOAD_POLL_INTERVAL = 5000;
 // Returns a status and a list of cards (if any)
 //
 export default function useTaskCards(task: Task | null, decorators: Decorator[]): CardResult {
-  const [data, setData] = useState<CardDefinition[]>([]);
+  const [data, setData] = useState<CardDefinition[]>(emptyArray);
   const [poll, setPoll] = useState(false);
   const [status, setStatus] = useState<CardResultState>('loading');
 
@@ -52,6 +54,10 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
   const aborter = useRef<AbortController>();
 
   function fetchCards(path: string, invalidate = false) {
+    if (!path) {
+      return;
+    }
+
     setPoll(false);
 
     if (aborter.current) {
@@ -61,8 +67,8 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
     const currentAborter = new AbortController();
     aborter.current = currentAborter;
     // We want to invalidate cache when polling since cache would return old results.
-    // First request will be iwthout invalidate and if that returns us all expected cards
-    // we dont need to poll and invalidate.
+    // First request will be without invalidate and if that returns us all expected cards
+    // we don't need to poll and invalidate.
     fetch(`${apiHttp(path)}${invalidate ? '?invalidate=true' : ''}`)
       .then((result) => result.json())
       .then((result: DataModel<CardDefinition[]>) => {
@@ -70,8 +76,8 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
           setData(result.data);
         }
       })
-      .catch(() => {
-        console.warn('Cards request failed');
+      .catch((e) => {
+        console.warn('Cards request failed for ', apiHttp(path), e);
       })
       .finally(() => {
         setPoll(true);
@@ -111,7 +117,7 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
     fetchCards(url);
 
     return () => {
-      setData([]);
+      setData(emptyArray);
     };
   }, [url]);
 
