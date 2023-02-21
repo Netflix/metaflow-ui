@@ -160,16 +160,19 @@ const Task: React.FC<TaskViewProps> = ({
 
   const logUrl = `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${task?.task_id}/logs/`;
 
+  // Show logs if feature flag is set
+  const showLogs = FEATURE_FLAGS.LOGS;
+
   // Standard out logs
-  const stdout = useLogData({
-    paused: !isCurrentTaskFinished,
+  const stdout: LogData = useLogData({
+    paused: !isCurrentTaskFinished || !showLogs,
     preload: task?.status === 'running',
     url: `${logUrl}out?attempt_id=${attemptId.toString()}`,
   });
 
   // Error logs
-  const stderr = useLogData({
-    paused: !isCurrentTaskFinished,
+  const stderr: LogData = useLogData({
+    paused: !isCurrentTaskFinished || !showLogs,
     preload: task?.status === 'running',
     url: `${logUrl}err?attempt_id=${attemptId.toString()}`,
   });
@@ -220,9 +223,6 @@ const Task: React.FC<TaskViewProps> = ({
 
   // Show cards if feature flag is set and the task has not failed
   const showCards = task?.status !== 'failed' && FEATURE_FLAGS.CARDS;
-
-  // Show logs if feature flag is set
-  const showLogs = FEATURE_FLAGS.LOGS;
 
   const setSection = useCallback((value: string | null) => setQp({ section: value }, 'replaceIn'), [setQp]);
   const selectHandler = useCallback((att) => setQp({ attempt: att }), [setQp]);
