@@ -221,6 +221,9 @@ const Task: React.FC<TaskViewProps> = ({
   // Show cards if feature flag is set and the task has not failed
   const showCards = task?.status !== 'failed' && FEATURE_FLAGS.CARDS;
 
+  // Show logs if feature flag is set
+  const showLogs = FEATURE_FLAGS.LOGS;
+
   const setSection = useCallback((value: string | null) => setQp({ section: value }, 'replaceIn'), [setQp]);
   const selectHandler = useCallback((att) => setQp({ attempt: att }), [setQp]);
   const setStdOutFullscreen = useCallback(() => setFullscreen({ type: 'logs', logtype: 'stdout' }), []);
@@ -325,55 +328,63 @@ const Task: React.FC<TaskViewProps> = ({
                 //
                 // Stdout logs
                 //
-                {
-                  key: 'stdout',
-                  order: 2,
-                  label: t('task.std-out'),
-                  component: (
-                    <>
-                      <SectionLoader
-                        minHeight={110}
-                        status={getLogSectionStatus(stdout)}
-                        error={stdout.error}
-                        component={
-                          <LogList
-                            onScroll={stdout.loadMore}
-                            logdata={stdout}
-                            downloadUrl={apiHttp(`${logUrl}/out/download?attempt_id=${task.attempt_id}`)}
-                            setFullscreen={setStdOutFullscreen}
-                          />
-                        }
-                      />
-                      {task.status === 'pending' && t('task.waiting-for-task-to-start')}
-                    </>
-                  ),
-                },
+                ...(showLogs
+                  ? [
+                      {
+                        key: 'stdout',
+                        order: 2,
+                        label: t('task.std-out'),
+                        component: (
+                          <>
+                            <SectionLoader
+                              minHeight={110}
+                              status={getLogSectionStatus(stdout)}
+                              error={stdout.error}
+                              component={
+                                <LogList
+                                  onScroll={stdout.loadMore}
+                                  logdata={stdout}
+                                  downloadUrl={apiHttp(`${logUrl}/out/download?attempt_id=${task.attempt_id}`)}
+                                  setFullscreen={setStdOutFullscreen}
+                                />
+                              }
+                            />
+                            {task.status === 'pending' && t('task.waiting-for-task-to-start')}
+                          </>
+                        ),
+                      },
+                    ]
+                  : []),
                 //
                 // Strerr logs
                 //
-                {
-                  key: 'stderr',
-                  order: 3,
-                  label: t('task.std-err'),
-                  component: (
-                    <>
-                      <SectionLoader
-                        minHeight={110}
-                        status={getLogSectionStatus(stderr)}
-                        error={stderr.error}
-                        component={
-                          <LogList
-                            onScroll={stderr.loadMore}
-                            logdata={stderr}
-                            downloadUrl={apiHttp(`${logUrl}/err/download?attempt_id=${task.attempt_id}`)}
-                            setFullscreen={setStdErrFullscreen}
-                          />
-                        }
-                      />
-                      {task.status === 'pending' && t('task.waiting-for-task-to-start')}
-                    </>
-                  ),
-                },
+                ...(showLogs
+                  ? [
+                      {
+                        key: 'stderr',
+                        order: 3,
+                        label: t('task.std-err'),
+                        component: (
+                          <>
+                            <SectionLoader
+                              minHeight={110}
+                              status={getLogSectionStatus(stderr)}
+                              error={stderr.error}
+                              component={
+                                <LogList
+                                  onScroll={stderr.loadMore}
+                                  logdata={stderr}
+                                  downloadUrl={apiHttp(`${logUrl}/err/download?attempt_id=${task.attempt_id}`)}
+                                  setFullscreen={setStdErrFullscreen}
+                                />
+                              }
+                            />
+                            {task.status === 'pending' && t('task.waiting-for-task-to-start')}
+                          </>
+                        ),
+                      },
+                    ]
+                  : []),
                 // Render artifacts if enabled by feature flags.
                 ...(FEATURE_FLAGS.ARTIFACT_TABLE
                   ? [
