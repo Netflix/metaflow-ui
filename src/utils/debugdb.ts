@@ -15,12 +15,12 @@ interface MyDB extends DBSchema {
 async function init() {
   db = await openDB<MyDB>('debugdb', 1, {
     upgrade(db) {
-      db.createObjectStore('logs', {
+      db.createObjectStore('logs' as never, {
         autoIncrement: true,
       });
     },
   });
-  db.add('logs', `[${new Date().toISOString()}] Logging started`);
+  db.add('logs' as never, `[${new Date().toISOString()}] Logging started`);
 }
 
 export function startLogging(): void {
@@ -47,7 +47,7 @@ export function endLogging(): void {
  */
 export function setLogItem(str: string): void {
   if (db) {
-    db.add('logs', `[${new Date().toISOString()}] ${str}`);
+    db.add('logs' as never, `[${new Date().toISOString()}] ${str}`);
   }
 }
 
@@ -56,7 +56,7 @@ export function setLogItem(str: string): void {
  */
 export async function getLogs(): Promise<void> {
   if (db) {
-    const all = await db.getAll('logs');
+    const all = await db.getAll('logs' as never);
     downloadString(all.join('\n'), 'text/plain', `logs-${new Date().toISOString()}}.txt`);
   }
 }

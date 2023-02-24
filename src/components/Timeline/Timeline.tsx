@@ -119,7 +119,7 @@ const Timeline: React.FC<TimelineProps> = ({
   }, [onStepRowClick, stickyHeader]);
 
   const autosizerContents = useCallback(
-    ({ width, height }) => (
+    ({ width, height }: { width: number; height: number }) => (
       <>
         <List
           overscanRowCount={10}

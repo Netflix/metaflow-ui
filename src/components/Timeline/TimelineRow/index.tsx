@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import { Row } from '../VirtualizedTimeline';
 import { Link } from 'react-router-dom';
@@ -103,7 +103,7 @@ const TimelineRow: React.FC<TimelineRowProps> = ({
   );
 };
 
-const RowElement: React.FC<{ item: Row; onOpen: () => void; paramsString?: string }> = ({
+const RowElement: React.FC<{ item: Row; children: ReactNode; onOpen: () => void; paramsString?: string }> = ({
   item,
   children,
   onOpen,

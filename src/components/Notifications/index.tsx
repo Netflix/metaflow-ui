@@ -87,8 +87,14 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const contextValue = {
     notifications,
-    addNotification: useCallback((...notification) => addNotification(...notification), [addNotification]),
-    removeNotification: useCallback((notification) => removeNotification(notification), [removeNotification]),
+    addNotification: useCallback(
+      (...notification: Notification[]) => addNotification(...notification),
+      [addNotification],
+    ),
+    removeNotification: useCallback(
+      (notification: Notification) => removeNotification(notification),
+      [removeNotification],
+    ),
     clearNotifications: useCallback(() => clearNotifications(), [clearNotifications]),
   };
 

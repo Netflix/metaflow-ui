@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback, CSSProperties } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,7 @@ import { lighten } from 'polished';
 import LogActionBar from './LogActionBar';
 import { getTimestampString } from '../../utils/date';
 import { TimezoneContext } from '../TimezoneProvider';
+import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
 
 //
 // Typedef
@@ -101,7 +102,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
   }, [searchActive, searchCurrent, searchQuery, search.result.result]);
 
   const onRowsRendered = useCallback(
-    (data) => {
+    (data: { overscanStartIndex: React.SetStateAction<number> }) => {
       if (onScroll) {
         setIndex(data.overscanStartIndex);
       }
@@ -128,7 +129,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
       {rows.length > 0 && (
         <LogListContainer data-testid="loglist-container">
           <AutoSizer disableHeight>
-            {({ width }) => (
+            {({ width }: { width: number }) => (
               <List
                 ref={_list}
                 overscanRowCount={5}
@@ -143,7 +144,17 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
                     setStickBottom(false);
                   }
                 }}
-                rowRenderer={({ index, style, key, parent }) => (
+                rowRenderer={({
+                  index,
+                  style,
+                  key,
+                  parent,
+                }: {
+                  index: number;
+                  style: CSSProperties;
+                  key: string;
+                  parent: MeasuredCellParent;
+                }) => (
                   <CellMeasurer cache={cache} columnIndex={0} key={key} rowIndex={index} parent={parent}>
                     {() => {
                       const item = rows[index];

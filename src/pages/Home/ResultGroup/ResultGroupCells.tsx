@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import AutoUpdating from '../../../components/AutoUpdating';
@@ -83,7 +83,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
 // Cells
 //
 
-export const TDWithLink: React.FC<{ link?: string }> = ({ children, link }) => {
+export const TDWithLink: React.FC<{ children?: ReactNode; link?: string }> = ({ children, link }) => {
   return (
     <LinkTD>
       {children}

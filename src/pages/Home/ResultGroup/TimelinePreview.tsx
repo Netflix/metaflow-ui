@@ -35,7 +35,7 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
     setPreview((state) => ({ start, end: state ? Math.max(end, state.end) : end, visiblerows }));
   }, [rows, steps]);
 
-  const handleStepRowClick = useCallback((stepid) => dispatch({ type: 'toggle', id: stepid }), [dispatch]);
+  const handleStepRowClick = useCallback((stepid: string) => dispatch({ type: 'toggle', id: stepid }), [dispatch]);
 
   return (
     <Collapsable title="Timeline" initialState={true}>

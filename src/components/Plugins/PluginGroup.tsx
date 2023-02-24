@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useContext, useState, useMemo, ReactNode } from 'react';
 import styled from 'styled-components';
 import Collapsable from '../Collapsable';
 import Icon from '../Icon';
@@ -59,7 +59,7 @@ function isCollapsableContainer(container: string | undefined) {
   return !container || container === 'collapsable' || VALID_CONTAINERS.indexOf(container) === -1;
 }
 
-const PluginContainer: React.FC<{ plugin: Plugin }> = ({ plugin, children }) => {
+const PluginContainer: React.FC<{ plugin: Plugin; children: ReactNode }> = ({ plugin, children }) => {
   const props = plugin.config.containerProps || {};
   if (isCollapsableContainer(plugin.config.container)) {
     return (

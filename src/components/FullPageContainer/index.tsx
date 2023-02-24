@@ -15,6 +15,7 @@ type FullPageContainerProps = {
   // Function that returns component. Gets available height as parameter
   component?: (height: number) => JSX.Element;
   actionbar?: React.ReactNode;
+  children?: React.ReactNode;
 };
 
 //

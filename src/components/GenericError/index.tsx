@@ -145,7 +145,7 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
         {error.traceback && (
           <>
             <DetailsHeader>
-              <div>{t('error.stack-trace')}</div>
+              <div>{t('error.stack-trace') as string}</div>
               <StackButtonsContainer>
                 <Button
                   title={t('error.copy-stack-trace')}

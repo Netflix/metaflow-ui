@@ -50,7 +50,10 @@ const TitledRow: React.FC<Props> = (props) => {
  * JSON objects looks better than by default stringify
  * @param value Pretty much any value
  */
-export function valueToRenderableType(value: React.ReactNode, forceFormat?: boolean): React.ReactChild {
+export function valueToRenderableType(
+  value: React.ReactNode | Record<string, unknown>,
+  forceFormat?: boolean,
+): React.ReactChild {
   if (React.isValidElement(value)) return value;
 
   if (typeof value === 'boolean') {

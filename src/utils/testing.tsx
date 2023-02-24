@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { ThemeProvider } from 'styled-components';
 import { MemoryRouter, Route } from 'react-router-dom';
 import './i18n';
@@ -11,7 +11,7 @@ import { QueryParamProvider } from 'use-query-params';
  * Wrapper for testing component that depends on theming and routing. Also accepts route as param if
  * component depends on certain routes.
  */
-const TestWrapper: React.FC<{ route?: string }> = ({ children, route = '/' }) => {
+const TestWrapper: React.FC<{ children: ReactNode; route?: string }> = ({ children, route = '/' }) => {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />

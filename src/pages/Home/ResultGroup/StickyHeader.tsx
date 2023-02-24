@@ -8,6 +8,7 @@ import styled from 'styled-components';
 
 type Props = {
   tableRef: React.RefObject<HTMLTableElement>;
+  children: React.ReactNode;
 };
 
 //

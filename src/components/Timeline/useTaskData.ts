@@ -225,7 +225,7 @@ export type useTaskDataHook = {
 export default function useTaskData(flowId: string, runNumber: string): useTaskDataHook {
   const [rows, dispatch] = useReducer(rowDataReducer, {});
 
-  const onStepUpdate = useCallback((items) => {
+  const onStepUpdate = useCallback((items: Step[]) => {
     dispatch({ type: 'fillStep', data: items });
   }, []);
 

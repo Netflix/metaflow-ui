@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { HEADER_SIZE_PX } from '../../../constants';
 import AnchorMenu from './AnchorMenu';
@@ -80,7 +80,7 @@ const AnchoredView: React.FC<AnchoredViewProps> = ({ sections, header, activeSec
   );
 };
 
-const HeightTracker: React.FC<{ updateLastSectionHeight: (height: number) => void }> = ({
+const HeightTracker: React.FC<{ children: ReactNode; updateLastSectionHeight: (height: number) => void }> = ({
   children,
   updateLastSectionHeight,
 }) => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import HeightAnimatedContainer from '../HeightAnimatedContainer';
 import Icon from '../Icon';
@@ -11,6 +11,7 @@ type CollapsableProps = {
   title: string | JSX.Element;
   animated?: boolean;
   initialState?: boolean;
+  children: ReactNode;
 };
 
 //
@@ -20,7 +21,7 @@ type CollapsableProps = {
 const Collapsable: React.FC<CollapsableProps> = ({ children, title, animated = true, initialState = false }) => {
   const [open, setOpen] = useState(initialState);
   const [transitioning, setTransitioning] = useState(false);
-  const Container: React.FC<{ active?: boolean | undefined }> = animated
+  const Container: React.FC<{ children: ReactNode; active?: boolean | undefined }> = animated
     ? HeightAnimatedContainer
     : ({ children: c }) => <>{c}</>;
 

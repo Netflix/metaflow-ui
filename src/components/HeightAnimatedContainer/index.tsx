@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { ReactNode, useRef } from 'react';
 import styled from 'styled-components';
 import useComponentSize from '@rehooks/component-size';
 
@@ -6,7 +6,7 @@ import useComponentSize from '@rehooks/component-size';
 // Container that is automatically updating its height with animations.
 //
 
-const HeightAnimatedContainer: React.FC<{ active?: boolean }> = ({ children, active = true }) => {
+const HeightAnimatedContainer: React.FC<{ children: ReactNode; active?: boolean }> = ({ children, active = true }) => {
   const _innerElement = useRef<HTMLDivElement>(null);
   const { height } = useComponentSize(_innerElement);
 
