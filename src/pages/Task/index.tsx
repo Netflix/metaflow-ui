@@ -213,7 +213,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   const cardsResult = useTaskCards(
     task,
-    task && dagResult.data
+    task && dagResult.data?.steps
       ? dagResult.data.steps[task.step_name]?.decorators || emptyDecoratorArray
       : emptyDecoratorArray,
   );
