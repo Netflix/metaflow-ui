@@ -213,7 +213,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   const cardsResult = useTaskCards(
     task,
-    task && dagResult.data
+    task && dagResult.data?.steps
       ? dagResult.data.steps[task.step_name]?.decorators || emptyDecoratorArray
       : emptyDecoratorArray,
   );
@@ -494,7 +494,7 @@ const Task: React.FC<TaskViewProps> = ({
 //
 
 function getDocString(dagResult: Resource<GraphModel>, stepName: string): string | null {
-  if (dagResult.data) {
+  if (dagResult.data && dagResult.data.steps) {
     const dagItem = dagResult.data.steps[stepName];
 
     if (dagItem && dagItem.doc) {
