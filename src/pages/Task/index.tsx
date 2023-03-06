@@ -494,7 +494,7 @@ const Task: React.FC<TaskViewProps> = ({
 //
 
 function getDocString(dagResult: Resource<GraphModel>, stepName: string): string | null {
-  if (dagResult.data) {
+  if (dagResult.data && dagResult.data.steps) {
     const dagItem = dagResult.data.steps[stepName];
 
     if (dagItem && dagItem.doc) {
