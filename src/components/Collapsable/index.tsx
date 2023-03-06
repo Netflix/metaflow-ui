@@ -45,7 +45,7 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title, animated = t
           }}
           data-testid="collapsable-header"
         >
-          <div>{title}</div>
+          <Title>{title}</Title>
           <Icon name="arrowDown" rotate={open ? 180 : 0} />
         </CollapsableHeader>
 
@@ -71,7 +71,7 @@ const CollapseContainer = styled.div`
 
 const CollapsableHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.5rem;
@@ -91,6 +91,10 @@ const Content = styled.div<{ open: boolean; visible: boolean }>`
   position: ${(p) => (p.open ? 'static' : 'absolute')};
   width: 100%;
   visibility: ${(p) => (p.visible ? 'visible' : 'hidden')};
+`;
+
+const Title = styled.div`
+  margin-right: 1rem;
 `;
 
 export default Collapsable;
