@@ -17,6 +17,7 @@ type Props = {
   // Action buttons for section
   actionbar?: React.ReactNode;
   last?: boolean;
+  children: React.ReactNode;
 };
 
 const TaskSection: React.FC<Props> = ({

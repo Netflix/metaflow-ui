@@ -107,7 +107,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   };
 
   const handleStepRowClick = useCallback(
-    (stepid) => rowDataDispatch({ type: 'toggle', id: stepid }),
+    (stepid: string) => rowDataDispatch({ type: 'toggle', id: stepid }),
     [rowDataDispatch],
   );
 

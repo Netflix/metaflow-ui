@@ -14,6 +14,7 @@ type ModalProps = {
   title?: string;
   actionbar?: JSX.Element;
   onClose: () => void;
+  children?: React.ReactNode;
 };
 
 //

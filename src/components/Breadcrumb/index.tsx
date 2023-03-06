@@ -151,7 +151,7 @@ const Breadcrumb: React.FC = () => {
         variant="primaryText"
         disabled={location.pathname === '/'}
       >
-        {t('home.home')}
+        {t('home.home') as string}
       </ButtonLink>
 
       {/* On home page, when not editing breadcrumb */}

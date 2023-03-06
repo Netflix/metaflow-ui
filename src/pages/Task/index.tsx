@@ -174,7 +174,7 @@ const Task: React.FC<TaskViewProps> = ({
     url: `${logUrl}err?attempt_id=${attemptId.toString()}`,
   });
 
-  const onUpdate = useCallback((data) => {
+  const onUpdate = useCallback((data: Artifact[]) => {
     data && setArtifacts((currentData) => [...currentData, ...data]);
   }, []);
 
@@ -222,16 +222,16 @@ const Task: React.FC<TaskViewProps> = ({
   const showCards = task?.status !== 'failed' && FEATURE_FLAGS.CARDS;
 
   const setSection = useCallback((value: string | null) => setQp({ section: value }, 'replaceIn'), [setQp]);
-  const selectHandler = useCallback((att) => setQp({ attempt: att }), [setQp]);
+  const selectHandler = useCallback((att?: string | null) => setQp({ attempt: att }), [setQp]);
   const setStdOutFullscreen = useCallback(() => setFullscreen({ type: 'logs', logtype: 'stdout' }), []);
   const setStdErrFullscreen = useCallback(() => setFullscreen({ type: 'logs', logtype: 'stderr' }), []);
   const closeHandler = useCallback(() => setFullscreen(null), []);
   const openContactClickHandler = useCallback(
-    (name, data) => setFullscreen({ type: 'artifact', name, artifactdata: data }),
+    (name: string, data: string) => setFullscreen({ type: 'artifact', name, artifactdata: data }),
     [],
   );
   const fullPageComponent = useCallback(
-    (height) => {
+    (height: number) => {
       if (!fullscreen || !task) return <></>;
       if (fullscreen.type === 'logs') {
         return (

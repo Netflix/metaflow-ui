@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback, CSSProperties } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { List } from 'react-virtualized';
@@ -55,7 +55,7 @@ const TaskList: React.FC<Props> = ({
     : 0;
 
   const rowRenderer = useCallback(
-    ({ index, style }) => {
+    ({ index, style }: { index: number; style: CSSProperties }) => {
       const item = rows[index];
 
       return (

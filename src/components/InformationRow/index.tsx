@@ -9,6 +9,7 @@ const InformationRow: React.FC<{
   spaceless?: boolean;
   scrollOverflow?: boolean;
   'data-testid'?: string;
+  children?: React.ReactNode;
 }> = ({ spaceless = false, scrollOverflow = true, children, ...rest }) => {
   return (
     <StyledRow spaceless={spaceless} {...rest}>

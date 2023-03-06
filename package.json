@@ -5,11 +5,11 @@
   "dependencies": {
     "@rehooks/component-size": "^1.0.3",
     "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
-    "@types/react-router-dom": "^5.1.5",
-    "@types/react-virtualized": "^9.21.10",
-    "@types/styled-components": "^5.1.9",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^18.0.11",
+    "@types/react-router-dom": "^5.3.3",
+    "@types/react-virtualized": "^9.21.21",
+    "@types/styled-components": "^5.1.26",
     "@types/uuid": "^8.0.0",
     "copy-to-clipboard": "^3.3.1",
     "i18next": "^19.5.2",
@@ -24,7 +24,7 @@
     "react-i18next": "^11.15.3",
     "react-router-dom": "^5.2.0",
     "react-tooltip": "^4.2.17",
-    "react-virtualized": "^9.21.2",
+    "react-virtualized": "^9.22.3",
     "reconnecting-websocket": "^4.4.0",
     "spacetime": "^6.10.1",
     "styled-components": "^5.3.3",
@@ -66,7 +66,7 @@
     "@cypress/react": "^5.12.1",
     "@cypress/webpack-dev-server": "^1.8.0",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
-    "@typescript-eslint/parser": "^4.25.0",
+    "@typescript-eslint/parser": "^5.53.0",
     "concurrently": "^6.3.0",
     "cross-env": "^7.0.3",
     "cypress": "^9.3.1",
@@ -84,5 +84,8 @@
     "mock-websocket": "^0.0.7",
     "react-scripts": "4.0.3",
     "serve": "^12.0.1"
-  }
+  },
+  "resolutions": { "@types/react": "17.0.0" }
+
+
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { createTask, createStep } from '../../../utils/testhelper';
 import TaskListLabel from '../TaskListLabel';
 import { MemoryRouter, Route } from 'react-router-dom';
@@ -16,7 +16,7 @@ const BASE_PROPS = {
   status: 'Ok',
 };
 
-const TestWrapper: React.FC<{ route?: string }> = ({ children, route = '/' }) => {
+const TestWrapper: React.FC<{ children: ReactNode; route?: string }> = ({ children, route = '/' }) => {
   return (
     <ThemeProvider theme={theme}>
       <MemoryRouter initialEntries={[route]}>
