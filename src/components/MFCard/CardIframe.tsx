@@ -25,13 +25,16 @@ const CardIframe: React.FC<Props> = ({ path }) => {
 
     // Listen for a message from the iframe to check the height.
     const listener = (e: MessageEvent) => {
-      if (e.data.type === MESSAGE_NAME.HEIGHT_CHECK) {
-        if (typeof e.data.height === 'number') {
-          // Stop checking iframe periodically if it tells us what height it is.
-          clearInterval(interval);
-          setElementHeight(e.data.height);
-        } else {
-          console.warn("Height assign request didn't have a height value");
+      // ensure the message is from the iframe we're interested in
+      if (e.source === ref.current?.contentWindow) {
+        if (e.data.type === MESSAGE_NAME.HEIGHT_CHECK) {
+          if (typeof e.data.height === 'number') {
+            // Stop checking iframe periodically if it tells us what height it is.
+            clearInterval(interval);
+            setElementHeight(e.data.height);
+          } else {
+            console.warn("Height assign request didn't have a height value");
+          }
         }
       }
     };
