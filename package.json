@@ -1,6 +1,6 @@
 {
   "name": "metaflow-ui",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "private": true,
   "dependencies": {
     "@rehooks/component-size": "^1.0.3",
