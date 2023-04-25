@@ -21,6 +21,7 @@ import useResource from '../../hooks/useResource';
 import Triggers from '../../components/Triggers';
 import TitledRow from '../../components/TitledRow';
 import { getISOString } from '../../utils/date';
+import { TriggerEventsValue } from '../../components/Trigger';
 
 //
 // Typedef
@@ -52,10 +53,10 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
     { label: t('fields.status'), value: <StatusField status={run.status} /> },
     {
       label: t('fields.triggered-by'),
-      value: metadataRecord?.['trigger_events'] ? (
-        <TriggersInHeader triggerEventsValue={JSON.parse(metadataRecord?.['trigger_events'])} />
+      value: metadataRecord?.['execution-triggers'] ? (
+        <TriggersInHeader triggerEventsValue={JSON.parse(metadataRecord?.['execution-triggers'])} />
       ) : null,
-      hidden: !Boolean(metadataRecord?.['trigger_events']),
+      hidden: !Boolean(metadataRecord?.['execution-triggers']),
     },
     {
       label: t('fields.user'),
@@ -93,8 +94,8 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
     initialData: emptyArray,
   });
 
-  let triggerEventsData: Record<string, string>[] = metadataRecord?.['trigger_events']
-    ? JSON.parse(metadataRecord?.['trigger_events'])
+  let triggerEventsData: TriggerEventsValue[] = metadataRecord?.['execution-triggers']
+    ? JSON.parse(metadataRecord?.['execution-triggers'])
     : [];
 
   triggerEventsData = triggerEventsData.map((triggerEvent) => {
@@ -113,12 +114,12 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
         <>
           <RunParameterTable params={params} />
 
-          {triggerEventsData.map((triggerEvent) => (
+          {triggerEventsData.map((triggerEvent: TriggerEventsValue) => (
             <TitledRow
               title={t('run.triggering-event')}
               type="table"
               content={triggerEvent}
-              key={triggerEvent.pathspec}
+              key={triggerEvent.id ?? triggerEvent.name}
             />
           ))}
 

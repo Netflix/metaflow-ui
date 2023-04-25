@@ -43,13 +43,10 @@ const CustomTooltip = styled.div`
       opacity: 1;
     }
 
-    &.place-bottom::before {
-      border-bottom: 7px solid #d0d0d0;
-      top: -7px;
-    }
-
-    &.place-bottom::after {
+    &.place-bottom::after,
+    &.place-top::after {
       border-bottom-color: #fff;
+      background: #fff;
     }
     &:hover {
       visibility: visible;
