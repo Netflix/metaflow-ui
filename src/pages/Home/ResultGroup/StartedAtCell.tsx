@@ -29,7 +29,7 @@ const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
 
   const onUpdate = useCallback((items: Metadata[]) => {
     const metadataRecord = metadataToRecord(items);
-    setMetadataRecord(metadataRecord);
+    setMetadataRecord((old) => ({ ...old, ...metadataRecord }));
   }, []);
 
   useResource<Metadata[], Metadata>({
@@ -41,13 +41,13 @@ const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
     fetchAllData: true,
   });
 
-  const hasTrigger = Boolean(metadataRecord?.['trigger_events']);
+  const hasTrigger = Boolean(metadataRecord?.['execution-triggers']);
 
   return (
     <TDWithLink link={hasTrigger ? undefined : link}>
       <WordBreak>{getRunStartTime(run, timezone)}</WordBreak>
       {hasTrigger ? (
-        <Triggers showMultiple triggerEventsValue={JSON.parse(metadataRecord?.['trigger_events'] ?? '')} />
+        <Triggers showMultiple triggerEventsValue={JSON.parse(metadataRecord?.['execution-triggers'] ?? '')} />
       ) : null}
     </TDWithLink>
   );

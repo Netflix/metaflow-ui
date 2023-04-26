@@ -6,12 +6,10 @@ import Tooltip from '../Tooltip';
 const MAX_LABEL_WIDTH = 20; // number of characters to show before truncating
 
 export type TriggerEventsValue = {
-  flow_name: string;
-  run_id?: string;
-  event_name: string;
-  event_type: 'metaflow_user' | 'metaflow_service';
-  timestamp: number;
-  pathspec: string;
+  id: string;
+  name: string;
+  type: 'run' | 'event';
+  timestamp: string;
 };
 
 //
@@ -30,12 +28,11 @@ type Props = {
  * @param className Enables styling of the component.
  */
 const Trigger: React.FC<Props> = ({ triggerEventsValue, className, showToolTip = true }) => {
-  const { pathspec } = triggerEventsValue;
+  const { id, type, name } = triggerEventsValue;
 
   // Only handles triggers from runs
-  const label = pathspec;
-  const link = '/' + pathspec;
-  const id = pathspec;
+  const label = type === 'run' ? id.split('/').slice(0, 2).join('/') : name;
+  const link = type === 'run' ? '/' + label : undefined;
   const linkToRun = Boolean(link);
   let displayLabel = label;
 
@@ -49,7 +46,7 @@ const Trigger: React.FC<Props> = ({ triggerEventsValue, className, showToolTip =
     <TriggerLine key={id} data-tip data-for={tooltipId} className={className}>
       <TriggerLink href={link}>
         <StyledIcon name="arrow" linkToRun={linkToRun} />
-        {showToolTip ? displayLabel : pathspec}
+        {showToolTip ? displayLabel : id}
       </TriggerLink>
       {showToolTip && <Tooltip id={tooltipId}>{label}</Tooltip>}
     </TriggerLine>

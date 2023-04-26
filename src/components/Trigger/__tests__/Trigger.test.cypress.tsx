@@ -13,12 +13,10 @@ describe('Trigger test', () => {
       <ThemeProvider theme={theme}>
         <Trigger
           triggerEventsValue={{
-            event_name: 'metaflow_flow_run_succeeded',
-            timestamp: 1663184739,
-            pathspec: `${flow_name}/${run_id}`,
-            flow_name,
-            run_id,
-            event_type: 'metaflow_service',
+            name: 'metaflow_flow_run_succeeded',
+            timestamp: '1663184739',
+            id: `${flow_name}/${run_id}`,
+            type: 'run',
           }}
         />
       </ThemeProvider>,

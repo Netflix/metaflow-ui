@@ -86,7 +86,8 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const onUpdate = useCallback(
     (items: Metadata[]) => {
       const record = metadataToRecord(items);
-      setMetadataRecord(record);
+
+      setMetadataRecord((old) => ({ ...old, ...record }));
       addDataToStore('run-metadata', record);
     },
     [addDataToStore],

@@ -23,7 +23,7 @@ const Triggers: React.FC<Props> = ({ triggerEventsValue, showMultiple = false })
   return showMultiple || triggerEventsValue.length < 2 ? (
     <TriggerWrapper>
       {triggerEventsValue?.map((triggerEventsValue: TriggerEventsValue) => (
-        <Trigger triggerEventsValue={triggerEventsValue} key={triggerEventsValue.pathspec} />
+        <Trigger triggerEventsValue={triggerEventsValue} key={triggerEventsValue.id ?? triggerEventsValue.name} />
       ))}
     </TriggerWrapper>
   ) : (
@@ -35,7 +35,11 @@ const Triggers: React.FC<Props> = ({ triggerEventsValue, showMultiple = false })
       <PopoverWrapper open={popoverOpen}>
         <Popover show>
           {triggerEventsValue?.map((triggerEventsValue: TriggerEventsValue) => (
-            <Trigger triggerEventsValue={triggerEventsValue} key={triggerEventsValue.pathspec} showToolTip={false} />
+            <Trigger
+              triggerEventsValue={triggerEventsValue}
+              key={triggerEventsValue.id ?? triggerEventsValue.name}
+              showToolTip={false}
+            />
           ))}
         </Popover>
       </PopoverWrapper>
@@ -68,7 +72,7 @@ const TriggersButton = styled.button`
 `;
 
 const TriggerWrapper = styled.div`
-  color: #fff;
+  color: inherit;
 `;
 
 export default Triggers;
