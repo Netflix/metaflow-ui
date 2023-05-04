@@ -30,7 +30,7 @@ const Breadcrumb: React.FC = () => {
   const [activeAutoCompleteOption, setActiveOption] = useState<string | null>(null);
   const [edit, setEdit] = useState(false);
   const [str, setStr] = useState(currentBreadcrumbPath.replace(/\s/g, ''));
-  const [warning, setWarning] = useState('');
+  const [warning, setWarning] = useState<string | null>('');
 
   const autoCompleteUrl = useMemo(() => urlFromString(str), [str]);
   const finder = (item: AutoCompleteItem, input: string) => {
@@ -162,7 +162,7 @@ const Breadcrumb: React.FC = () => {
           onKeyPress={openModal}
           data-testid="breadcrumb-goto-input-inactive"
         >
-          <input placeholder={t('breadcrumb.goto')} />
+          <input placeholder={t('breadcrumb.goto') ?? ''} />
         </BreadcrumbEmptyInput>
       )}
 
@@ -205,7 +205,7 @@ const Breadcrumb: React.FC = () => {
                 <BreadcrumbInputWrapper active={edit}>
                   <input
                     type="text"
-                    placeholder={t('breadcrumb.goto')}
+                    placeholder={t('breadcrumb.goto') ?? ''}
                     value={str}
                     onKeyPress={onKeyPress}
                     onKeyDown={onKeyDown}

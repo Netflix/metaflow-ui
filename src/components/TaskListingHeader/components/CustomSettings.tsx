@@ -48,7 +48,7 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
       <ItemRow>
         <TaskListDropdownContainer>
           <DropdownField
-            label={t('run.mode')}
+            label={t('run.mode') ?? ''}
             onChange={(e) => {
               if (e?.target.value) {
                 updateMode(e?.target.value as TaskListMode);
@@ -66,7 +66,7 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
 
         <TaskListDropdownContainer>
           <DropdownField
-            label={t('fields.status')}
+            label={t('fields.status') ?? ''}
             onChange={(e) => {
               if (e?.target.value === 'all') {
                 updateStatusFilter(null);
@@ -92,7 +92,7 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
 
         <TaskListDropdownContainer>
           <DropdownField
-            label={t('timeline.order-by')}
+            label={t('timeline.order-by') ?? ''}
             onChange={(e) => {
               const val = e?.target.value;
               if (val) {

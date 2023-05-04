@@ -65,7 +65,7 @@ describe('GenericError test', () => {
   it('<APIErrorDetails /> - renders error details accordingly', () => {
     mount(
       <ThemeProvider theme={theme}>
-        <APIErrorDetails error={DEFAULT_ERROR} noIcon={false} t={(str: string) => str} />
+        <APIErrorDetails error={DEFAULT_ERROR} noIcon={false} t={(str: any) => str} />
       </ThemeProvider>,
     );
 

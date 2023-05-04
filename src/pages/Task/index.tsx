@@ -284,7 +284,7 @@ const Task: React.FC<TaskViewProps> = ({
 
         {status === 'Error' && !taskFromList && (
           <Space>
-            <APIErrorRenderer error={error} icon="listItemNotFound" message={t('error.load-error')} />
+            <APIErrorRenderer error={error} icon="listItemNotFound" message={t('error.load-error') ?? ''} />
           </Space>
         )}
 
@@ -408,7 +408,7 @@ const Task: React.FC<TaskViewProps> = ({
                       actionbar: (
                         <>
                           <a
-                            title={t('card.link_card')}
+                            title={t('card.link_card') ?? ''}
                             href={apiHttp(taskCardPath(task, def.hash))}
                             data-testid="card-link"
                             target="_blank"
@@ -420,7 +420,7 @@ const Task: React.FC<TaskViewProps> = ({
                             </Button>
                           </a>
                           <a
-                            title={t('card.download_card')}
+                            title={t('card.download_card') ?? ''}
                             href={apiHttp(taskCardPath(task, def.hash))}
                             download
                             data-testid="card-download"

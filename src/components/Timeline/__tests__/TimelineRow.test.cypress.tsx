@@ -9,7 +9,7 @@ import { QueryParamProvider } from 'use-query-params';
 import theme from '../../../theme';
 import { TaskStatus } from '../../../types';
 
-const MockT = (str: string) => str;
+const MockT = (str: any) => str;
 
 describe('TimelineRow component', () => {
   it('<TimelineRow> - should render', () => {

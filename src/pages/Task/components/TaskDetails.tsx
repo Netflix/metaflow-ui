@@ -79,15 +79,18 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
       </HeaderContainer>
 
       {FEATURE_FLAGS.TASK_METADATA && (
-        <Collapsable title={t('task.task-details')}>
+        <Collapsable title={t('task.task-details') ?? ''}>
           <TitledRow
-            title={t('task.metadata')}
+            title={t('task.metadata') ?? ''}
             {...(metadataResource.status !== 'Ok' || Object.keys(metadataParams).length === 0 || !showMetadata
               ? {
                   type: 'default',
                   content:
                     metadataResource.status === 'Error' && metadataResource.error ? (
-                      <APIErrorRenderer error={metadataResource.error} message={t('task.failed-to-load-metadata')} />
+                      <APIErrorRenderer
+                        error={metadataResource.error}
+                        message={t('task.failed-to-load-metadata') ?? ''}
+                      />
                     ) : (
                       t(!showMetadata ? 'task.metadata-not-available' : 'task.no-metadata')
                     ),

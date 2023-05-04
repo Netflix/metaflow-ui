@@ -34,13 +34,13 @@ const RunParameterTable: React.FC<Props> = ({ params, noTitle = false }) => {
     </ItemRow>
   ) : (
     <TitledRow
-      title={!noTitle ? t('run.parameters') : undefined}
+      title={!noTitle ? t('run.parameters') ?? undefined : undefined}
       {...(params.status !== 'Ok' || Object.keys(parameterTableItems).length === 0
         ? {
             type: 'default',
             content:
               params.status === 'Error' && params.error ? (
-                <APIErrorRenderer error={params.error} message={t('run.run-parameters-error')} />
+                <APIErrorRenderer error={params.error} message={t('run.run-parameters-error') ?? ''} />
               ) : (
                 t('run.no-parameters')
               ),

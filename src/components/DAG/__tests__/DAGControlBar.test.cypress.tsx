@@ -9,7 +9,7 @@ describe('DAGControlBar component', () => {
     const fn = cy.stub();
     mount(
       <ThemeProvider theme={theme}>
-        <DAGControlBar setFullscreen={fn} t={(str: string) => str} />
+        <DAGControlBar setFullscreen={fn} t={(str: any) => str} />
       </ThemeProvider>,
     );
     cy.get('[data-testid="dag-control-fullscreen-button"]')
