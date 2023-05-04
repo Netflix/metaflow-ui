@@ -18,9 +18,10 @@
     "react-tooltip": "^4.2.17",
     "react-virtualized": "^9.22.5",
     "reconnecting-websocket": "^4.4.0",
+    "setimmediate": "^1.0.5",
     "spacetime": "^7.4.3",
     "styled-components": "^5.3.10",
-    "use-debounce": "^5.0.0",
+    "use-debounce": "^9.0.4",
     "use-is-in-viewport": "^1.0.9",
     "use-query-params": "1.1.6",
     "uuid": "^9.0.0"
@@ -79,9 +80,11 @@
     "http-proxy-middleware": "^2.0.6",
     "mock-websocket": "^0.0.7",
     "prettier": "^2.8.8",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^5.0.1",
     "serve": "^14.2.0",
     "typescript": "^5.0.4"
   },
-  "resolutions": { "@types/react": "^18.0.0" }
+  "resolutions": {
+    "@types/react": "^18.0.0"
+  }
 }
