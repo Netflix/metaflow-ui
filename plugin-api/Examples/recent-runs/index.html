@@ -64,7 +64,7 @@
                 el.id = 'run-' + index;
                 el.classList = ['run'];
                 // Create link element with run number
-                if (item.run_number?.match(/^\w+$/)) {
+                if (item.run_number?.match(/^\w+$/) && resource.flow_id?.match(/^\w+$/)) {
                   let linkEl = document.createElement('a');
                   linkEl.href = `/${resource.flow_id}/${item.run_number}`;
                   linkEl.target = '_parent';
