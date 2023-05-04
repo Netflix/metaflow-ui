@@ -10,7 +10,7 @@ describe('DAGControlBar component', () => {
     mount(
       <ThemeProvider theme={theme}>
         <DAGControlBar setFullscreen={fn} t={(str: string) => str} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="dag-control-fullscreen-button"]')
       .click()

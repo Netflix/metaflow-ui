@@ -127,21 +127,27 @@ describe('useRowData hook - reducer', () => {
 
   it('toggle', () => {
     // Row with 'non-esixiting-id' doesnt exist so state is equals to old state
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'non-existing-id' })).to.deep.equal(DEFAULT_ROW_DATA());
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'non-existing-id' })).to.deep.equal(
+      DEFAULT_ROW_DATA(),
+    );
     // Row with 'start' exists. Boolean is toggled
     expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'toggle', id: 'start' })).not.to.deep.equal(DEFAULT_ROW_DATA());
   });
 
   it('open', () => {
     // Row with 'non-esixiting-id' doesnt exist so state is equals to old state
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'non-existing-id' })).to.deep.equal(DEFAULT_ROW_DATA());
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'non-existing-id' })).to.deep.equal(
+      DEFAULT_ROW_DATA(),
+    );
     // Row with 'start' exists. Boolean is set true
     expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'open', id: 'start' })['start'].isOpen).to.be.true;
   });
 
   it('open', () => {
     // Row with 'non-esixiting-id' doesnt exist so state is equals to old state
-    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'non-existing-id' })).to.deep.equal(DEFAULT_ROW_DATA());
+    expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'non-existing-id' })).to.deep.equal(
+      DEFAULT_ROW_DATA(),
+    );
     // Row with 'start' exists. Boolean is set true
     expect(rowDataReducer(DEFAULT_ROW_DATA(), { type: 'close', id: 'start' })['start'].isOpen).to.be.false;
   });

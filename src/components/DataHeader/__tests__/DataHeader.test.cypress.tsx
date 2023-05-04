@@ -19,7 +19,7 @@ const itemsList = [
     label: 'Test 3',
     value: 'test_3',
     hidden: false,
-  }
+  },
 ];
 
 describe('DataHeader test', () => {
@@ -28,15 +28,15 @@ describe('DataHeader test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <DataHeader items={itemsList} wide={false} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
-    cy.get('[data-testid="data-header-container"]').should('not.have.css','width','984px');
+    cy.get('[data-testid="data-header-container"]').should('not.have.css', 'width', '984px');
 
     mount(
       <ThemeProvider theme={theme}>
         <DataHeader items={itemsList} wide={true} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
-    cy.get('[data-testid="data-header-container"]').should('have.css','width','984px');
+    cy.get('[data-testid="data-header-container"]').should('have.css', 'width', '984px');
   });
 });

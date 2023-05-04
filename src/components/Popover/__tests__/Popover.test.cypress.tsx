@@ -9,7 +9,7 @@ describe('Icon test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Popover>Hei maailma!</Popover>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="popup-wrapper"]').should('exist').contains('Hei maailma!');
   });

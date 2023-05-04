@@ -12,14 +12,14 @@ describe('VerticalToggle test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <VerticalToggle active={false} onClick={click} visible={false} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="vertical-toggle"]').should('not.be.visible');
 
     mount(
       <ThemeProvider theme={theme}>
         <VerticalToggle active={false} onClick={click} visible={true} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="vertical-toggle"]').should('be.visible');
   });

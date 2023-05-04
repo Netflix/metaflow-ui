@@ -16,7 +16,6 @@
     "idb": "^5.0.8",
     "markdown-to-jsx": "^7.1.2",
     "polished": "^3.6.4",
-    "prettier": "^2.3.1",
     "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-custom-scrollbars-2": "^4.4.0",
@@ -82,6 +81,7 @@
     "fake-indexeddb": "^3.1.2",
     "http-proxy-middleware": "^1.0.4",
     "mock-websocket": "^0.0.7",
+    "prettier": "^2.8.8",
     "react-scripts": "4.0.3",
     "serve": "^12.0.1"
   },

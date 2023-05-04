@@ -12,30 +12,36 @@ describe('Collapsable test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Router>
-        <QueryParamProvider ReactRouterRoute={Route}>
-          <Collapsable title="Test child div">
-            <div>test_child_div</div>
-          </Collapsable>
-        </QueryParamProvider>
+          <QueryParamProvider ReactRouterRoute={Route}>
+            <Collapsable title="Test child div">
+              <div>test_child_div</div>
+            </Collapsable>
+          </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
-    
+
     // check that the component renders correctly in default closed state
-    cy.get('[data-testid="collapsable-header"]').find('.icon-arrowDown').invoke('attr', 'rotate').should('eq', '0');;
+    cy.get('[data-testid="collapsable-header"]').find('.icon-arrowDown').invoke('attr', 'rotate').should('eq', '0');
     cy.get('[data-testid="collapsable-content"]').not('visbile');
 
     // check that the component renders correctly when opened
-    cy.get('[data-testid="collapsable-header"]').click().then(() => {
-      cy.get('[data-testid="collapsable-header"]').find('.icon-arrowDown').invoke('attr', 'rotate').should('eq', '180');
-      cy.get('[data-testid="collapsable-content"]').should('be.visible');
-    });
+    cy.get('[data-testid="collapsable-header"]')
+      .click()
+      .then(() => {
+        cy.get('[data-testid="collapsable-header"]')
+          .find('.icon-arrowDown')
+          .invoke('attr', 'rotate')
+          .should('eq', '180');
+        cy.get('[data-testid="collapsable-content"]').should('be.visible');
+      });
 
     // check that the component renders correctly when closed
-    cy.get('[data-testid="collapsable-header"]').click().then(() => {
-      cy.get('[data-testid="collapsable-header"]').find('.icon-arrowDown').invoke('attr', 'rotate').should('eq', '0');;
-      cy.get('[data-testid="collapsable-content"]').not('visible');
-    });
-
+    cy.get('[data-testid="collapsable-header"]')
+      .click()
+      .then(() => {
+        cy.get('[data-testid="collapsable-header"]').find('.icon-arrowDown').invoke('attr', 'rotate').should('eq', '0');
+        cy.get('[data-testid="collapsable-content"]').not('visible');
+      });
   });
 });

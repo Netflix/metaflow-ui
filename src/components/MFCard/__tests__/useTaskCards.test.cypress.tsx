@@ -12,7 +12,9 @@ const MockComponent: React.FC<{ task?: Task | null; decos?: Decorator[] }> = ({ 
   return (
     <div data-testid="cardslist" className={cardsResult.status}>
       {cardsResult.cards.map((value) => (
-        <div key={value.hash} data-testid="card">{JSON.stringify(value)}</div>
+        <div key={value.hash} data-testid="card">
+          {JSON.stringify(value)}
+        </div>
       ))}
     </div>
   );
@@ -30,35 +32,46 @@ describe('useTaskCards', () => {
   });
 
   it('should return empty list since requests will fail', () => {
-    mount(<MockComponent task={createTask({})} decos={[
-      { name: 'card', attributes: {}, statically_defined: false },
-    ]} />);
+    mount(
+      <MockComponent task={createTask({})} decos={[{ name: 'card', attributes: {}, statically_defined: false }]} />,
+    );
     gid('cardslist').children().should('have.length', 0);
   });
 
   it('should return 1 card definition', () => {
-    cy.intercept('**/cards', createDataModel([{ id: '123', type: 'xd', hash: 'unique1' }], {}))
-    mount(<MockComponent task={createTask({})} decos={[
-      { name: 'card', attributes: {}, statically_defined: false },
-    ]} />);
+    cy.intercept('**/cards', createDataModel([{ id: '123', type: 'xd', hash: 'unique1' }], {}));
+    mount(
+      <MockComponent task={createTask({})} decos={[{ name: 'card', attributes: {}, statically_defined: false }]} />,
+    );
     gid('cardslist').children().should('have.length', 1);
   });
 
   it('should return 1 card definition first and second after a while', () => {
-    cy.intercept('**/cards*', createDataModel([{ id: '123', type: 'xd', hash: 'unique1' }], {}))
-    mount(<MockComponent task={createTask({ finished_at: Date.now() })} decos={[
-      { name: 'card', attributes: {}, statically_defined: false },
-      { name: 'card', attributes: {}, statically_defined: false }
-    ]} />);
+    cy.intercept('**/cards*', createDataModel([{ id: '123', type: 'xd', hash: 'unique1' }], {}));
+    mount(
+      <MockComponent
+        task={createTask({ finished_at: Date.now() })}
+        decos={[
+          { name: 'card', attributes: {}, statically_defined: false },
+          { name: 'card', attributes: {}, statically_defined: false },
+        ]}
+      />,
+    );
     gid('cardslist').children().should('have.length', 1);
     cy.get('.loading').should('have.length', 1);
 
     // Lets mock so that second request will return two results
-    cy.intercept('**/cards*', createDataModel([
-      { id: '123', type: 'xd', hash: 'unique1' },
-      { id: '321', type: 'xd', hash: 'unique2' }
-    ], {}));
-    gid('cardslist').children({ timeout: 6000 }).should('have.length', 2); 
+    cy.intercept(
+      '**/cards*',
+      createDataModel(
+        [
+          { id: '123', type: 'xd', hash: 'unique1' },
+          { id: '321', type: 'xd', hash: 'unique2' },
+        ],
+        {},
+      ),
+    );
+    gid('cardslist').children({ timeout: 6000 }).should('have.length', 2);
     cy.get('.success').should('have.length', 1);
   });
 });

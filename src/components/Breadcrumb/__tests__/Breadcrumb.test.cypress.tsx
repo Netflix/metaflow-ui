@@ -70,10 +70,9 @@ describe('Breadcrumb component', () => {
   });
 
   it('findAdditionalButtons - tasks', () => {
-    expect(findAdditionalButtons(matchWithParams({ ...RUN_PARAMS, stepName: 'start', taskId: '14' }), '')).to.deep.equal([
-      ...STEP_RESULT,
-      { label: '14', path: '/HugeFlow/5/start/14' },
-    ]);
+    expect(
+      findAdditionalButtons(matchWithParams({ ...RUN_PARAMS, stepName: 'start', taskId: '14' }), ''),
+    ).to.deep.equal([...STEP_RESULT, { label: '14', path: '/HugeFlow/5/start/14' }]);
   });
 
   it('notEmptyAndEqual', () => {
@@ -102,20 +101,20 @@ describe('Breadcrumb component', () => {
             <Breadcrumb />
           </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
   });
 
-  const makeBreadcrumb: React.FC<{ route?: string }>  = (route) => (
+  const makeBreadcrumb: React.FC<{ route?: string }> = (route) => (
     <ThemeProvider theme={theme}>
-        <Router>
-          <MemoryRouter initialEntries={[route as Location]}>
-            <QueryParamProvider ReactRouterRoute={Route}>
-              <Breadcrumb />
-            </QueryParamProvider>
-          </MemoryRouter>
-        </Router>
-      </ThemeProvider>
+      <Router>
+        <MemoryRouter initialEntries={[route as Location]}>
+          <QueryParamProvider ReactRouterRoute={Route}>
+            <Breadcrumb />
+          </QueryParamProvider>
+        </MemoryRouter>
+      </Router>
+    </ThemeProvider>
   );
 
   // Conditional rendering
@@ -130,7 +129,7 @@ describe('Breadcrumb component', () => {
     mount(makeBreadcrumb('/HugeFlow/4/views/timeline' as {}));
 
     cy.get('[data-testid="home-button"]');
-    cy.get('[data-testid="breadcrumb-button-container"]').within($container => {
+    cy.get('[data-testid="breadcrumb-button-container"]').within(($container) => {
       cy.wrap($container).get('.button').eq(0).contains('HugeFlow');
       cy.wrap($container).get('.button').eq(1).contains('4');
     });
@@ -139,8 +138,10 @@ describe('Breadcrumb component', () => {
   it('<Breadcrumb /> - Should render home and after click input field', () => {
     mount(makeBreadcrumb('/' as {}));
 
-    cy.get('[data-testid="breadcrumb-goto-input-inactive"]').click().then(() => {
-      cy.get('[data-testid="breadcrumb-goto-container"]').should('exist');
-    });
+    cy.get('[data-testid="breadcrumb-goto-input-inactive"]')
+      .click()
+      .then(() => {
+        cy.get('[data-testid="breadcrumb-goto-container"]').should('exist');
+      });
   });
 });
