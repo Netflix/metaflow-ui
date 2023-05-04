@@ -8,7 +8,7 @@
     "i18next": "^22.4.15",
     "idb": "^5.0.8",
     "markdown-to-jsx": "^7.2.0",
-    "polished": "^3.6.4",
+    "polished": "^4.2.2",
     "query-string": "^6.13.1",
     "react": "^16.13.1",
     "react-custom-scrollbars-2": "^4.4.0",
