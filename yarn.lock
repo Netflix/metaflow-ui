@@ -11362,10 +11362,10 @@ sourcemap-codec@^1.4.8:
   resolved "https://registry.yarnpkg.com/sourcemap-codec/-/sourcemap-codec-1.4.8.tgz#ea804bd94857402e6992d05a38ef1ae35a9ab4c4"
   integrity sha512-9NykojV5Uih4lgo5So5dtw+f0JgJX30KCNI8gwhz2J9A15wD0Ml6tjHKwf6fTSa6fAdVBdZeNOs9eJ71qCk8vA==
 
-spacetime@^6.10.1:
-  version "6.16.3"
-  resolved "https://registry.yarnpkg.com/spacetime/-/spacetime-6.16.3.tgz#86d3b05db33421a9ee478b1f2ca025582fc61fcf"
-  integrity sha512-JQEfj3VHT1gU1IMV5NvhgAP8P+2mDFd84ZCiHN//dp6hRKmuW0IizHissy62lO0nilfFjVhnoSaMC7te+Y5f4A==
+spacetime@^7.4.3:
+  version "7.4.3"
+  resolved "https://registry.yarnpkg.com/spacetime/-/spacetime-7.4.3.tgz#315f0a64e4d21c2068dd14be507b837d1c3314d0"
+  integrity sha512-jKrPVk8TPaYhKSR6azA4gzO5LD2ZB29YxqQBl9zTVG0QLtfOJiliTRCNmJA9tm/dul5Aq7oyzzuWJ8VTYQkMkQ==
 
 spawn-command@0.0.2-1:
   version "0.0.2-1"
