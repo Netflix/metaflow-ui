@@ -22,7 +22,9 @@
         // Set fixed height for plugin
         Metaflow.setHeight(40);
         // Show task id from URL.
-        document.getElementById('container').innerHTML = `Hello World! task id is ${resource.task_id}`;
+        if (resource.task_id?.match(/^\w+$/)) {
+          document.getElementById('container').innerHTML = `Hello World! task id is ${resource.task_id}`;
+        }
         // Subscribe to task metadata
         Metaflow.subscribeToMetadata((event) => {
           console.log("Task metadata update received. ", event.data);

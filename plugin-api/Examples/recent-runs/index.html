@@ -51,7 +51,7 @@
     <script>
       (function () {
         function getRuns(config, resource) {
-          if (!resource.run_number) return;
+          if (!resource.run_number || !resource.flow_id?.match(/^\w+$/)) return;
           // Fetch recent runs from API
           fetch(`/api/flows/${resource.flow_id}/runs?_order=-ts_epoch&_limit=6`)
             .then((response) => response.json())
@@ -64,10 +64,12 @@
                 el.id = 'run-' + index;
                 el.classList = ['run'];
                 // Create link element with run number
-                let linkEl = document.createElement('a');
-                linkEl.href = `/${resource.flow_id}/${item.run_number}`;
-                linkEl.target = '_parent';
-                linkEl.textContent = item.run_number;
+                if (item.run_number?.match(/^\w+$/)) {
+                  let linkEl = document.createElement('a');
+                  linkEl.href = `/${resource.flow_id}/${item.run_number}`;
+                  linkEl.target = '_parent';
+                  linkEl.textContent = item.run_number;
+                }
                 // Show duration for run
                 let durationEl = document.createElement('div');
                 durationEl.textContent = `Duration: ${item.duration / 1000}s`;
