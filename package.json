@@ -32,7 +32,7 @@
     "use-debounce": "^5.0.0",
     "use-is-in-viewport": "^1.0.9",
     "use-query-params": "1.1.6",
-    "uuid": "^8.2.0"
+    "uuid": "^9.0.0"
   },
   "scripts": {
     "start": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts start",
