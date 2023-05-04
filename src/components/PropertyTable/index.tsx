@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 
 //
@@ -48,7 +48,7 @@ function PropertyTable<T>({ items, columns, scheme = 'normal', ...rest }: Proper
           <PropertyTableRow key={index} data-testid="property-table-row">
             {columns.map((col, index) => (
               <PropertyTableRowItemContent key={index} scheme={scheme} data-testid="property-table-cell">
-                {col.accessor ? col.accessor(row) : col.prop ? row[col.prop] : ''}
+                {col.accessor ? col.accessor(row) : col.prop ? (row[col.prop] as ReactNode) : ''}
               </PropertyTableRowItemContent>
             ))}
           </PropertyTableRow>
