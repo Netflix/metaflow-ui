@@ -26,7 +26,7 @@ const ArtifactActionBar: React.FC<ArtifactActionBarProps> = ({ name, data }) => 
   return (
     <ItemRow>
       <Button
-        title={t('task.copy-to-clipboard')}
+        title={t('task.copy-to-clipboard') ?? ''}
         iconOnly
         onClick={() => {
           copy(data);
@@ -40,7 +40,7 @@ const ArtifactActionBar: React.FC<ArtifactActionBarProps> = ({ name, data }) => 
       </Button>
 
       <Button
-        title={t('task.download-artifact-content')}
+        title={t('task.download-artifact-content') ?? ''}
         iconOnly
         onClick={() => {
           downloadString(data, 'text/plain', `artifact-${name}.txt`);

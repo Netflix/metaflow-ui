@@ -9,24 +9,24 @@ import { QueryParamProvider } from 'use-query-params';
 import theme from '../../../theme';
 import { TaskStatus } from '../../../types';
 
-const MockT = (str: string) => str;
+const MockT = (str: any) => str;
 
 describe('TimelineRow component', () => {
   it('<TimelineRow> - should render', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Router>
-        <QueryParamProvider ReactRouterRoute={Route}>
-          <TimelineRow
-            timeline={createTimelineMetrics({})}
-            onOpen={cy.stub()}
-            item={{ type: 'task', data: [createTask({})] }}
-            dragging={false}
-            t={MockT}
-          />
-        </QueryParamProvider>
+          <QueryParamProvider ReactRouterRoute={Route}>
+            <TimelineRow
+              timeline={createTimelineMetrics({})}
+              onOpen={cy.stub()}
+              item={{ type: 'task', data: [createTask({})] }}
+              dragging={false}
+              t={MockT}
+            />
+          </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
   });
 
@@ -35,17 +35,17 @@ describe('TimelineRow component', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Router>
-        <QueryParamProvider ReactRouterRoute={Route}>
-          <TimelineRow
-            timeline={createTimelineMetrics({})}
-            onOpen={cy.stub()}
-            item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
-            dragging={false}
-            t={MockT}
-          />
-        </QueryParamProvider>
+          <QueryParamProvider ReactRouterRoute={Route}>
+            <TimelineRow
+              timeline={createTimelineMetrics({})}
+              onOpen={cy.stub()}
+              item={{ type: 'task', data: [task, createTask({ finished_at: 9999999999 })] }}
+              dragging={false}
+              t={MockT}
+            />
+          </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     // Dont render elements rows since there is no started at values
     cy.get('[data-testid="timeline-row-graphic-container"]').children().should('have.length', '0');
@@ -55,20 +55,20 @@ describe('TimelineRow component', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Router>
-        <QueryParamProvider ReactRouterRoute={Route}>
-          <TimelineRow
-            timeline={createTimelineMetrics({})}
-            onOpen={cy.stub()}
-            item={{
-              type: 'task',
-              data: [createTask({ started_at: 10 }), createTask({ started_at: 1000, finished_at: 9999999999 })],
-            }}
-            dragging={false}
-            t={MockT}
-          />
-        </QueryParamProvider>
+          <QueryParamProvider ReactRouterRoute={Route}>
+            <TimelineRow
+              timeline={createTimelineMetrics({})}
+              onOpen={cy.stub()}
+              item={{
+                type: 'task',
+                data: [createTask({ started_at: 10 }), createTask({ started_at: 1000, finished_at: 9999999999 })],
+              }}
+              dragging={false}
+              t={MockT}
+            />
+          </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     // Render two elements, one retry
     cy.get('[data-testid="timeline-row-graphic-container"]').children().should('have.length', '2');
@@ -102,7 +102,7 @@ describe('TimelineRow component', () => {
             <TimelineRow {...props} />
           </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     // Should have only one line graphic
     // expect(getByTestId('timeline-row-graphic-container').children.length).toBe(1);
@@ -127,7 +127,7 @@ describe('TimelineRow component', () => {
             <LineElement {...props} />
           </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     // Values of container and boxgraphic should be weird since we are extending timeline over selected value
     // by 1% of selected visible timeline
@@ -144,7 +144,7 @@ describe('TimelineRow component', () => {
             <LineElement {...props} timeline={createTimelineMetrics({ visibleStartTime: 300, visibleEndTime: 500 })} />
           </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     cy.get('[data-testid="boxgraphic-container"]').should('have.css', 'transform', 'matrix(1, 0, 0, 1, -479.208, 0)');
@@ -159,9 +159,9 @@ describe('TimelineRow component', () => {
             <LineElement {...props} timeline={createTimelineMetrics({ sortBy: 'duration' })} />
           </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
-    
+
     cy.get('[data-testid="boxgraphic-container"]').should('have.css', 'transform', 'matrix(1, 0, 0, 1, 0, 0)');
     cy.get('[data-testid="boxgraphic"]').should('have.css', 'width', '167.71875px');
     cy.get('[data-testid="boxgraphic-label"]').contains('0.3s');
@@ -174,7 +174,7 @@ describe('TimelineRow component', () => {
             <LineElement {...props} timeline={createTimelineMetrics({})} duration={null} />
           </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     cy.get('[data-testid="boxgraphic-container"]').should('have.css', 'transform', 'matrix(1, 0, 0, 1, 47.9208, 0)');

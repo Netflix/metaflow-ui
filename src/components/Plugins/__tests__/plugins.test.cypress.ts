@@ -54,10 +54,10 @@ describe('Plugins utils', () => {
   });
 
   it('cleanupVersionNumber', () => {
-    expect(cleanupVersionNumber('1')).to.equal(1)
-    expect(cleanupVersionNumber('54')).to.equal(54)
-    expect(cleanupVersionNumber('1+customthing1')).to.equal(1)
-    expect(cleanupVersionNumber('2.4.2')).to.equal(2)
+    expect(cleanupVersionNumber('1')).to.equal(1);
+    expect(cleanupVersionNumber('54')).to.equal(54);
+    expect(cleanupVersionNumber('1+customthing1')).to.equal(1);
+    expect(cleanupVersionNumber('2.4.2')).to.equal(2);
   });
 
   it('pluginPath', () => {

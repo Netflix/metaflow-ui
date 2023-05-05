@@ -1,4 +1,5 @@
 import 'cypress-wait-until';
+import 'setimmediate';
 
 import React from 'react';
 import { mount } from '@cypress/react';

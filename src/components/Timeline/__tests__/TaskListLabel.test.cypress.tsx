@@ -7,7 +7,7 @@ import { ThemeProvider } from 'styled-components';
 import theme from '../../../theme';
 import { QueryParamProvider } from 'use-query-params';
 
-const MockT = (str: string) => str;
+const MockT = (str: any) => str;
 
 const BASE_PROPS = {
   open: true,

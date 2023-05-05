@@ -9,14 +9,26 @@ describe('ShowDetailsButton test', () => {
     const toggle = cy.stub();
     mount(
       <ThemeProvider theme={theme}>
-        <ShowDetailsButton toggle={toggle} visible={false} showText="Yep" hideText="Nop" data-testid="test-showDetailsButton" />
+        <ShowDetailsButton
+          toggle={toggle}
+          visible={false}
+          showText="Yep"
+          hideText="Nop"
+          data-testid="test-showDetailsButton"
+        />
       </ThemeProvider>,
     );
     cy.get('[data-testid="test-showDetailsButton"]').should('have.text', 'Yep');
 
     mount(
       <ThemeProvider theme={theme}>
-        <ShowDetailsButton toggle={toggle} visible={true} showText="Yep" hideText="Nop" data-testid="test-showDetailsButton" />
+        <ShowDetailsButton
+          toggle={toggle}
+          visible={true}
+          showText="Yep"
+          hideText="Nop"
+          data-testid="test-showDetailsButton"
+        />
       </ThemeProvider>,
     );
     cy.get('[data-testid="test-showDetailsButton"]').should('have.text', 'Nop');

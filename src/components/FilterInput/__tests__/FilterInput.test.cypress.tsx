@@ -11,27 +11,30 @@ describe('FilterInput test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <FilterInput onSubmit={onSubmit} sectionLabel="Hello" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     const input = cy.get('[data-testid="filter-input-field"]');
     expect(input).to.exist;
     // Trigger with Enter
-    input.type('testing')
+    input
+      .type('testing')
       .should('have.value', 'testing')
       .type('{enter}')
       .then(() => {
         expect(onSubmit).to.have.been.calledWith('testing');
       });
-    
+
     // Trigger with button click
-    input.type('testing, click')
+    input
+      .type('testing, click')
       .should('have.value', 'testing, click')
       .then(() => {
-        cy.get('[data-testid="filter-input-submit-button"]').click()
+        cy.get('[data-testid="filter-input-submit-button"]')
+          .click()
           .then(() => {
             expect(onSubmit).to.have.been.calledWith('testing, click');
-          })
-      })
+          });
+      });
   });
 });

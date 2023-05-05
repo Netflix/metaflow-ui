@@ -83,7 +83,7 @@
       (function () {
         Metaflow.onReady((config, resource) => {
           document.getElementById('init').innerHTML = 'Plugin is up and ready!';
-          document.getElementById('resource').innerHTML = 'Resource Info: ' + JSON.stringify(resource);
+          document.getElementById('resource').innerText = 'Resource Info: ' + JSON.stringify(resource);
 
           Metaflow.subscribeToMetadata((message) => {
             document.getElementById('metadata').innerHTML = 'Metadata: ' + JSON.stringify(message, 0, 2);

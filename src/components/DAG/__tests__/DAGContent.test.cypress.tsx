@@ -196,16 +196,21 @@ describe('DAGContent dev', () => {
   it('test', () => {
     mount(
       <TestWrapper>
-        <DAGContent graphData={data} showFullscreen={true} run={createRun({})} stepData={[
-          { step_name: 'start', status: 'completed', started_at: 0, finished_at: 0 },
-          { step_name: 'regular_step', status: 'completed', started_at: 0, finished_at: 0 },
-          { step_name: 'prepare_foreach', status: 'completed', started_at: 0, finished_at: 0 }
-        ]} />
+        <DAGContent
+          graphData={data}
+          showFullscreen={true}
+          run={createRun({})}
+          stepData={[
+            { step_name: 'start', status: 'completed', started_at: 0, finished_at: 0 },
+            { step_name: 'regular_step', status: 'completed', started_at: 0, finished_at: 0 },
+            { step_name: 'prepare_foreach', status: 'completed', started_at: 0, finished_at: 0 },
+          ]}
+        />
       </TestWrapper>,
     );
 
-    gid('dag-normalitem').should('have.length', 6)
-    gid('dag-foreach-container').should('have.length', 1)
+    gid('dag-normalitem').should('have.length', 6);
+    gid('dag-foreach-container').should('have.length', 1);
   });
 
   it('test2', () => {
@@ -214,9 +219,9 @@ describe('DAGContent dev', () => {
         <DAGContent graphData={data2} showFullscreen={true} run={createRun({})} stepData={[]} />
       </TestWrapper>,
     );
-    
-    gid('dag-normalitem').should('have.length', 10)
-    gid('dag-foreach-container').should('have.length', 2)
-    gid('dag-parallel-container').should('have.length', 1)
+
+    gid('dag-normalitem').should('have.length', 10);
+    gid('dag-foreach-container').should('have.length', 2);
+    gid('dag-parallel-container').should('have.length', 1);
   });
 });

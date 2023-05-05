@@ -56,14 +56,14 @@ const LogActionBar: React.FC<LogActionBarProps> = ({
                   </ResultElement>
                 )
               }
-              infoMsg={t('task.log-search-tip')}
+              infoMsg={t('task.log-search-tip') ?? ''}
             />
           </SearchContainer>
 
           <Buttons data-testid="log-action-bar-buttons">
             <Button
               data-testid="log-action-button"
-              title={t('task.copy-logs-to-clipboard')}
+              title={t('task.copy-logs-to-clipboard') ?? ''}
               iconOnly
               onClick={() => {
                 copy(data.map((item) => (typeof item === 'object' ? item.line : item)).join('\n'));
@@ -76,7 +76,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({
               <Icon name="copy" size="sm" />
             </Button>
 
-            <a title={t('task.download-logs')} href={downloadlink} download data-testid="log-action-button">
+            <a title={t('task.download-logs') ?? ''} href={downloadlink} download data-testid="log-action-button">
               <Button
                 onClick={() => {
                   addNotification({
@@ -92,7 +92,7 @@ const LogActionBar: React.FC<LogActionBarProps> = ({
 
             {setFullscreen && (
               <Button
-                title={t('task.show-fullscreen')}
+                title={t('task.show-fullscreen') ?? ''}
                 onClick={() => setFullscreen()}
                 withIcon
                 data-testid="log-action-button"

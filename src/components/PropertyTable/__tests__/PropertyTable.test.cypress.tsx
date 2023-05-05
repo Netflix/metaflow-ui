@@ -15,7 +15,7 @@ describe('PropertyTable test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <PropertyTable items={[]} columns={[]} data-testid="test-propertytable" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="test-propertytable"]').should('exist');
   });
@@ -35,7 +35,7 @@ describe('PropertyTable test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <PropertyTable items={items} columns={columns} data-testid="test-propertytable" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
 
     // Check header labels
@@ -49,7 +49,7 @@ describe('PropertyTable test', () => {
     cy.get('[data-testid="property-table-row"]')
       .should('have.length', '2')
       .each((row, index) => {
-        cy.wrap(row).contains(`${items[index].a}${items[index].b}${items[index].c === 'Eka' ? 'Yep' : 'Nop'}`)
+        cy.wrap(row).contains(`${items[index].a}${items[index].b}${items[index].c === 'Eka' ? 'Yep' : 'Nop'}`);
       });
   });
 });

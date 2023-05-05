@@ -12,11 +12,11 @@ describe('AppBar test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Router>
-        <QueryParamProvider ReactRouterRoute={Route}>
-          <AppBar/>
-        </QueryParamProvider>
+          <QueryParamProvider ReactRouterRoute={Route}>
+            <AppBar />
+          </QueryParamProvider>
         </Router>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     // test all of the AppBars child components render
     cy.get('[data-testid="page-logo-image"]').should('exist');

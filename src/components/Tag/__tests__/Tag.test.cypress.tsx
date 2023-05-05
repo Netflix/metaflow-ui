@@ -9,7 +9,7 @@ describe('Tag test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Tag>Yo!</Tag>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
   });
 
@@ -18,9 +18,9 @@ describe('Tag test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <RemovableTag onClick={fn}>Hoy!</RemovableTag>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
-    
+
     cy.get('.removable-tag')
       .click()
       .then(() => {

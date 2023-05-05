@@ -22,7 +22,9 @@
         // Set fixed height for plugin
         Metaflow.setHeight(40);
         // Show run id from URL.
-        document.getElementById('container').innerHTML = `Hello World! Run number is ${resource.run_number}`;
+        if (resource.run_number?.match(/^\w+$/)) {
+          document.getElementById('container').innerHTML = `Hello World! Run number is ${resource.run_number}`;
+        }
         // Subscribe to run metadata
         Metaflow.subscribeToRunMetadata((event) => {
           console.log("Run metadata update received. ", event.data);

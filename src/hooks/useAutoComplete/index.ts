@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AsyncStatus } from '../../types';
 import { apiHttp } from '../../constants';
-import { useDebounce } from 'use-debounce/lib';
+import { useDebounce } from 'use-debounce';
 
 //
 // Typedef

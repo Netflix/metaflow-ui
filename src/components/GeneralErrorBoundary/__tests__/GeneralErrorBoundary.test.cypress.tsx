@@ -14,24 +14,24 @@ describe('GeneralErrorBoundary test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <ErrorBoundary message="error happened">hello world</ErrorBoundary>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
-    cy.get('div').should('contain' ,'hello world')
+    cy.get('div').should('contain', 'hello world');
   });
-  
+
   it('<GeneralErrorBoundary /> - With error', () => {
     // capture the error separately so that the test won't fail
     cy.on('fail', (err) => {
       expect(err.message).to.include('Error!');
-      return false
-    })
+      return false;
+    });
 
     mount(
       <ThemeProvider theme={theme}>
         <ErrorBoundary message="error happened">
           <CrashingComponent />
         </ErrorBoundary>
-      </ThemeProvider>
+      </ThemeProvider>,
     ).then(() => {
       cy.get('div').should('have.attr', 'message');
     });

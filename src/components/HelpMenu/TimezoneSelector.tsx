@@ -20,7 +20,7 @@ const TimezoneSelector: React.FC = () => {
     <div>
       <TimezoneRow>
         <DropdownField
-          label={t('help.timezone')}
+          label={t('help.timezone') ?? ''}
           options={TIMEZONES.map((o) => [o[0], o[1]])}
           value={(timezone || 0).toString()}
           onChange={(e) => e && updateTimezone(e.currentTarget.value)}

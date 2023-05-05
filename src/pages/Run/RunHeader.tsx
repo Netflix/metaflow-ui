@@ -110,13 +110,13 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
       <DataHeader items={headerItems} wide />
       <RunWarning run={run} usesLocalDataStore={(dstype.data && dstype.data.length > 0) || false} />
 
-      <Collapsable title={t('run.run-details')}>
+      <Collapsable title={t('run.run-details') ?? ''}>
         <>
           <RunParameterTable params={params} />
 
           {triggerEventsData.map((triggerEvent: TriggerEventsValue) => (
             <TitledRow
-              title={t('run.triggering-event')}
+              title={t('run.triggering-event') ?? ''}
               type="table"
               content={triggerEvent}
               key={triggerEvent.id ?? triggerEvent.name}

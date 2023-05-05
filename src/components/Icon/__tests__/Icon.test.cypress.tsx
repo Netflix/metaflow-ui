@@ -9,7 +9,7 @@ describe('Icon test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Icon name="timeline" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('.icon-timeline').should('exist');
   });

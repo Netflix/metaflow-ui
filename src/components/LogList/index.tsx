@@ -3,7 +3,7 @@ import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
 import { LogData, LogItem, SearchState } from '../../hooks/useLogData';
-import { useDebounce } from 'use-debounce/lib';
+import { useDebounce } from 'use-debounce';
 import { AsyncStatus, Log } from '../../types';
 import { lighten } from 'polished';
 import LogActionBar from './LogActionBar';
@@ -286,7 +286,7 @@ const PollLoader: React.FC<PollLoaderProps> = ({ status, preloadStatus }) => {
       <PollWaitingIndicator
         show={preloadStatus === 'Ok' || preloadStatus === 'Error'}
         isLoading={preloadStatus === 'Loading'}
-        title={t('task.poll-loader-msg')}
+        title={t('task.poll-loader-msg') ?? ''}
       >
         <svg className="spinner" viewBox="0 0 50 50">
           <circle className="path" cx="25" cy="25" r="20" fill="none" strokeWidth="5"></circle>

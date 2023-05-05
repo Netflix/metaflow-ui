@@ -18,7 +18,7 @@ describe('GenericError test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <GenericError message="STOP RIGHT THERE!" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(cy.contains('STOP RIGHT THERE!')).to.exist;
   });
@@ -30,7 +30,7 @@ describe('GenericError test', () => {
           message="STOP RIGHT THERE!"
           icon={<div data-testid="error-custom-icon">you have violated the law</div>}
         />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(cy.get('[data-testid="error-custom-icon"]')).to.exist;
   });
@@ -39,7 +39,7 @@ describe('GenericError test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <APIErrorRenderer error={DEFAULT_ERROR} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(cy.get('[data-testid="generic-error"]')).to.exist;
   });
@@ -48,7 +48,7 @@ describe('GenericError test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <APIErrorRenderer error={DEFAULT_ERROR} message="they are hacking the mainframe" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(cy.contains('they are hacking the mainframe')).to.exist;
   });
@@ -57,7 +57,7 @@ describe('GenericError test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <APIErrorRenderer error={DEFAULT_ERROR} />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     expect(cy.get('[data-testid="error-details"]')).to.exist;
   });
@@ -65,15 +65,17 @@ describe('GenericError test', () => {
   it('<APIErrorDetails /> - renders error details accordingly', () => {
     mount(
       <ThemeProvider theme={theme}>
-        <APIErrorDetails error={DEFAULT_ERROR} noIcon={false} t={(str: string) => str} />
-      </ThemeProvider>
+        <APIErrorDetails error={DEFAULT_ERROR} noIcon={false} t={(str: any) => str} />
+      </ThemeProvider>,
     );
 
-    cy.get('[data-testid="collapsable-header"]').click().then(()=> {
-      cy.get('[data-testid="titled-row-row-status-0"]').contains('500');
-      cy.get('[data-testid="titled-row-row-detail-2"]').contains('Absolute failure');
-      cy.get('[data-testid="error-details-logs"]').contains('Doing stuff ERROR!!');
-    });
+    cy.get('[data-testid="collapsable-header"]')
+      .click()
+      .then(() => {
+        cy.get('[data-testid="titled-row-row-status-0"]').contains('500');
+        cy.get('[data-testid="titled-row-row-detail-2"]').contains('Absolute failure');
+        cy.get('[data-testid="error-details-logs"]').contains('Doing stuff ERROR!!');
+      });
     cy.get('[data-testid="collapsable-header"]').click();
   });
 });
