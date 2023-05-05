@@ -17,7 +17,7 @@ const ParametersPreview: React.FC<{ run: Run }> = ({ run }) => {
   });
 
   return (
-    <Collapsable title={t('run.parameters')} initialState={false}>
+    <Collapsable title={t('run.parameters') ?? ''} initialState={false}>
       <RunParameterTable params={params} noTitle />
     </Collapsable>
   );

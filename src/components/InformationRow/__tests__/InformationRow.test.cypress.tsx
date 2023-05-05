@@ -9,7 +9,7 @@ describe('Icon test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <InformationRow data-testid="information-row" />
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('[data-testid="information-row"]').should('exist');
   });

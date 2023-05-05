@@ -141,14 +141,14 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
           <p className="statusTitle">{error.title}</p>
         </DetailsTitle>
       )}
-      <Collapsable title={t('error.error-details')}>
+      <Collapsable title={t('error.error-details') ?? ''}>
         {error.traceback && (
           <>
             <DetailsHeader>
               <div>{t('error.stack-trace') as string}</div>
               <StackButtonsContainer>
                 <Button
-                  title={t('error.copy-stack-trace')}
+                  title={t('error.copy-stack-trace') ?? ''}
                   iconOnly
                   onClick={() => {
                     copy(error.traceback || '');
@@ -162,7 +162,7 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
                 </Button>
 
                 <Button
-                  title={t('error.download-stack-trace')}
+                  title={t('error.download-stack-trace') ?? ''}
                   iconOnly
                   onClick={() => {
                     downloadString(error.traceback || '', 'text/plain', `stack-trace-${error.id}.txt`);
@@ -175,7 +175,7 @@ export const APIErrorDetails: React.FC<{ error: APIError; noIcon: boolean; t: TF
             <DetailsLog data-testid="error-details-logs">{error.traceback}</DetailsLog>
           </>
         )}
-        <TitledRow title={t('error.details')} type="table" content={versionsTable} />
+        <TitledRow title={t('error.details') ?? ''} type="table" content={versionsTable} />
         {/* will be re-enabled when error links data is updated */}
         {/* <TitledRow title={t('task.links')} type="table" content={linksTable} /> */}
         {noIcon && error.detail && (

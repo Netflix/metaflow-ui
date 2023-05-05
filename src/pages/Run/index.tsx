@@ -50,7 +50,9 @@ const RunContainer: React.FC = () => {
         </div>
       )}
 
-      {status === 'Error' && !run?.run_number && <APIErrorRenderer error={error} message={t('timeline.no-run-data')} />}
+      {status === 'Error' && !run?.run_number && (
+        <APIErrorRenderer error={error} message={t('timeline.no-run-data') ?? ''} />
+      )}
 
       {(status === 'Ok' || (status === 'Error' && error?.status === 404)) && run?.run_number && (
         <RunPage run={run} params={params} />

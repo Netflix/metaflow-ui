@@ -50,7 +50,7 @@ const HomeSidebar: React.FC<Props> = ({ handleParamChange, updateListValue, para
           {FEATURE.RUN_GROUPS && (
             <SidebarSectionWrapper>
               <DropdownField
-                label={t('filters.group-by')}
+                label={t('filters.group-by') ?? ''}
                 value={params._group || ''}
                 onChange={(e) => e && handleParamChange('_group', e.target.value)}
                 options={[

@@ -15,13 +15,13 @@ describe('ButtonGroup test', () => {
           <Button onClick={onClick}>test2</Button>
           <Button onClick={onClick}>test3</Button>
         </ButtonGroup>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
-    cy.get('button').eq(0).should('have.css','border-radius','4px 0px 0px 4px');
-    cy.get('button').eq(1).should('have.css','border-radius','0px');
-    cy.get('button').eq(2).should('have.css','border-radius','0px 4px 4px 0px');
+    cy.get('button').eq(0).should('have.css', 'border-radius', '4px 0px 0px 4px');
+    cy.get('button').eq(1).should('have.css', 'border-radius', '0px');
+    cy.get('button').eq(2).should('have.css', 'border-radius', '0px 4px 4px 0px');
     // click through all the buttons
-    cy.get('button').each($button => {
+    cy.get('button').each(($button) => {
       cy.wrap($button)
         .click()
         .then(() => {

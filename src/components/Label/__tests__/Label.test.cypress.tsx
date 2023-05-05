@@ -9,7 +9,7 @@ describe('Icon test', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Label className="test-label">Hei maailma!</Label>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
     cy.get('.test-label').should('exist').contains('Hei maailma!');
   });

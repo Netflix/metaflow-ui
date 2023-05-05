@@ -34,12 +34,27 @@ function makeTZData() {
     }`;
 
     let region = key.split('/')[0];
-    region = `${region[0].toUpperCase()}${region.slice(1)}`;
-    let city = key.split('/')[1].replace(/_/g, ' ');
-    city = `${city[0].toUpperCase()}${city.slice(1)}`;
-
-    // we need to add index to diffrentiate the offsets from one another
-    tzs.push([`${offset}|${index}`, `(GMT${offset}) ${region}/${city}`]);
+    region = `${region[0].toUpperCase()}${region.slice(1)}`
+      .replace('Us', 'US')
+      .replace('Uk', 'UK')
+      .replace('Gb', 'GB')
+      .replace('Uct', 'UCT')
+      .replace('Nz', 'NZ')
+      .replace('Gmt', 'GMT')
+      .replace('Prc', 'PRC')
+      .replace('Roc', 'ROC')
+      .replace('Rok', 'ROK')
+      .replace('eire', 'Eire');
+    let city = '';
+    if (key.includes('/')) {
+      city = key.split('/')[1].replace(/_/g, ' ');
+      city = `${city[0].toUpperCase()}${city.slice(1)}`.replace(/([\s-])(\w)/g, (_, p1, p2) => p1 + p2.toUpperCase());
+      // we need to add index to differentiate the offsets from one another
+      tzs.push([`${offset}|${index}`, `(GMT${offset}) ${region}/${city}`]);
+    } else {
+      // we need to add index to differentiate the offsets from one another
+      tzs.push([`${offset}|${index}`, `(GMT${offset}) ${region}`]);
+    }
   });
 
   const getOffset = (a: string) => parseFloat(a.split('|')[0]);

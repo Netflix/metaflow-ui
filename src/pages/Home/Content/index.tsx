@@ -72,7 +72,7 @@ const HomeContentArea: React.FC<Props> = ({
 
       {status === 'Error' && resultAmount === 0 && (
         <ContentErrorContainer>
-          <APIErrorRenderer error={error} message={t('error.load-error')} />
+          <APIErrorRenderer error={error} message={t('error.load-error') ?? ''} />
         </ContentErrorContainer>
       )}
 
