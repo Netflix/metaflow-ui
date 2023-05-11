@@ -82,7 +82,7 @@ const LineElement: React.FC<LineElementProps> = ({
     `${status === 'unknown' ? ` (${t('task.unable-to-find-status')})` : ''} ${getTimestampString(
       new Date(boxStartTime),
       timezone,
-    )}-${getTimestampString(new Date(boxStartTime + (duration ?? 0)), timezone)}`;
+    )}-${duration ? getTimestampString(new Date(boxStartTime + duration), timezone) : ''}`;
 
   return (
     <LineElementContainer
