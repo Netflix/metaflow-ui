@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styled, { DefaultTheme, keyframes, css } from 'styled-components';
 import { Step, Task } from '../../../types';
 import { StepRowData } from '../useTaskData';
@@ -9,6 +9,8 @@ import { useHistory } from 'react-router';
 import { getPathFor } from '../../../utils/routing';
 import { TasksSortBy } from '../useTaskListSettings';
 import { useTranslation } from 'react-i18next';
+import { getTimestampString } from '../../../utils/date';
+import { TimezoneContext } from '../../TimezoneProvider';
 
 //
 // Typedef
@@ -47,6 +49,8 @@ const LineElement: React.FC<LineElementProps> = ({
   paramsString,
 }) => {
   const { t } = useTranslation();
+  const { timezone } = useContext(TimezoneContext);
+
   const { push } = useHistory();
   const status = getRowStatus(row);
   // Extend visible area little bit to prevent lines seem like going out of bounds. Happens
@@ -73,6 +77,13 @@ const LineElement: React.FC<LineElementProps> = ({
 
   const labelPosition = getLengthLabelPosition(valueFromLeft, width);
 
+  const title =
+    formatDuration(duration) +
+    `${status === 'unknown' ? ` (${t('task.unable-to-find-status')})` : ''} ${getTimestampString(
+      new Date(boxStartTime),
+      timezone,
+    )}-${getTimestampString(new Date(boxStartTime + (duration ?? 0)), timezone)}`;
+
   return (
     <LineElementContainer
       style={{ transform: `translateX(${valueFromLeft}%)` }}
@@ -86,7 +97,7 @@ const LineElement: React.FC<LineElementProps> = ({
         }}
         data-testid="boxgraphic"
         dragging={dragging}
-        title={formatDuration(duration) + `${status === 'unknown' ? ` (${t('task.unable-to-find-status')})` : ''}`}
+        title={title}
         onClick={(e) => {
           if (row.type === 'task') {
             e.stopPropagation();
