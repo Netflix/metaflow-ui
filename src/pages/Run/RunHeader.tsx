@@ -82,13 +82,13 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
   ];
 
   const params = useResource<RunParam, RunParam>({
-    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/parameters`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/parameters`,
     subscribeToEvents: true,
     initialData: emptyObj,
   });
 
   const dstype = useResource<Artifact[], Artifact>({
-    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/artifacts`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/artifacts`,
     queryParams: initialQueryParams,
     subscribeToEvents: true,
     initialData: emptyArray,

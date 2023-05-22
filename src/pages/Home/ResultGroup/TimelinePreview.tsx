@@ -8,7 +8,6 @@ import { startAndEndpointsOfRows } from '../../../utils/row';
 import styled from 'styled-components';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
 import { Run } from '../../../types';
-import { getRunId } from '../../../utils/run';
 
 const zeroCounts = { all: 0, failed: 0, running: 0, completed: 0, unknown: 0, pending: 0 };
 
@@ -25,7 +24,7 @@ type TimelinePreviewProps = {
 //
 
 const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
-  const { rows, steps, dispatch, taskStatus } = useTaskData(run.flow_id, getRunId(run));
+  const { rows, steps, dispatch, taskStatus } = useTaskData(run.flow_id, run.run_number.toString());
   const [preview, setPreview] = useState<{ start: number; end: number; visiblerows: Row[] } | null>(null);
 
   useEffect(() => {
