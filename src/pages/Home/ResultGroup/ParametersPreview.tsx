@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import Collapsable from '../../../components/Collapsable';
 import useResource from '../../../hooks/useResource';
 import { Run, RunParam } from '../../../types';
-import { getRunId } from '../../../utils/run';
 import RunParameterTable from '../../Run/RunParameterTable';
 
 const emptyObj = {};
@@ -11,7 +10,7 @@ const emptyObj = {};
 const ParametersPreview: React.FC<{ run: Run }> = ({ run }) => {
   const { t } = useTranslation();
   const params = useResource<RunParam, RunParam>({
-    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/parameters`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/parameters`,
     subscribeToEvents: true,
     initialData: emptyObj,
   });

@@ -34,7 +34,7 @@ import { Decorator, GraphModel } from '../../components/DAG/DAGUtils';
 import useLogData, { LogData } from '../../hooks/useLogData';
 import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
-import { getRunId, getTagOfType } from '../../utils/run';
+import { getTagOfType } from '../../utils/run';
 import useTaskCards, { taskCardPath } from '../../components/MFCard/useTaskCards';
 import CardIframe from '../../components/MFCard/CardIframe';
 import Button from '../../components/Button';
@@ -125,7 +125,7 @@ const Task: React.FC<TaskViewProps> = ({
     status,
     error,
   } = useResource<ITask[], ITask>({
-    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${taskId}/attempts?postprocess=true`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${taskId}/attempts?postprocess=true`,
     subscribeToEvents: true,
     initialData: null,
     updatePredicate,
@@ -153,12 +153,12 @@ const Task: React.FC<TaskViewProps> = ({
 
   // Metadata
   const metadata = useTaskMetadata({
-    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${task?.task_id}/metadata`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/metadata`,
     attemptId: attemptId,
     paused: !task,
   });
 
-  const logUrl = `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${task?.task_id}/logs/`;
+  const logUrl = `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/logs/`;
 
   // Standard out logs
   const stdout = useLogData({
@@ -189,7 +189,7 @@ const Task: React.FC<TaskViewProps> = ({
 
   // Artifacts
   const [artifacts, setArtifacts] = useState<Artifact[]>([]);
-  const artifactUrl = `/flows/${run.flow_id}/runs/${getRunId(run)}/steps/${stepName}/tasks/${task?.task_id}/artifacts`;
+  const artifactUrl = `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/artifacts`;
   const { status: artifactStatus, error: artifactError } = useResource<Artifact[], Artifact>({
     url: artifactUrl,
     queryParams,

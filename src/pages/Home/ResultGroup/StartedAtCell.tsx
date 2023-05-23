@@ -4,7 +4,7 @@ import Triggers from '../../../components/Triggers';
 import useResource from '../../../hooks/useResource';
 import { Metadata, Run } from '../../../types';
 import { metadataToRecord } from '../../../utils/metadata';
-import { getRunId, getRunStartTime } from '../../../utils/run';
+import { getRunStartTime } from '../../../utils/run';
 import { TDWithLink } from './ResultGroupCells';
 
 const emptyArray: Metadata[] = [];
@@ -33,7 +33,7 @@ const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
   }, []);
 
   useResource<Metadata[], Metadata>({
-    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/metadata`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/metadata`,
     initialData: emptyArray,
     subscribeToEvents: true,
     queryParams: initialQueryParams,

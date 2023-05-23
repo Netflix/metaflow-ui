@@ -76,7 +76,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const { rows, steps, dispatch, counts, taskStatus, isAnyGroupOpen, taskError, stepError } = useRowData(
     params.flowId,
-    getRunId(run),
+    run.run_number.toString(),
   );
 
   //
@@ -98,7 +98,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   }, [clearDataStore]);
 
   useResource<Metadata[], Metadata>({
-    url: `/flows/${run.flow_id}/runs/${getRunId(run)}/metadata`,
+    url: `/flows/${run.flow_id}/runs/${run.run_number}/metadata`,
     initialData: emptyArray,
     subscribeToEvents: true,
     queryParams: initialQueryParams,
@@ -220,7 +220,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   // DAG data, fetch here to prevent multiple fetches when switching tabs
   //
   const dagResult = useResource<GraphModel, GraphModel>({
-    url: encodeURI(`/flows/${run.flow_id}/runs/${getRunId(run)}/dag`),
+    url: encodeURI(`/flows/${run.flow_id}/runs/${run.run_number}/dag`),
     subscribeToEvents: false,
     initialData: null,
   });
