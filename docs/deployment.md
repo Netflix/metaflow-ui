@@ -66,6 +66,7 @@ Available environment variables:
 | Environment variable         | Description                                                   | Default |
 | ---------------------------- | ------------------------------------------------------------- | ------- |
 | `REACT_APP_METAFLOW_SERVICE` | UI service API endpoint (cannot be changed without a rebuild) | `/api`  |
+| `REACT_APP_BASE_PATH`        | Base path override for UI (e.g. `/some/new/path`)             | ``      |
 
 ## 3. Reverse proxy
 
