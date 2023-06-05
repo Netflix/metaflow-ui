@@ -42,7 +42,7 @@ const PluginContent: React.FC<Props> = ({
         slot={slot}
         baseurl={baseurl}
         resourceParams={{
-          flow_id: 'Dev flow',
+          flow_id: 'Devflow',
           run_number: '1',
           step_name: 'start',
           task_id: '1',
