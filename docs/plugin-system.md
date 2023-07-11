@@ -44,7 +44,11 @@ Example of basic plugin HTML:
           });
 
           Metaflow.subscribeToMetadata((message) => {
-            console.log(`Metadata for ${resource.run_number} got updated! Metadata object for the task is ${JSON.stringify(message.data)}`);
+            console.log(
+              `Metadata for ${resource.run_number} got updated! Metadata object for the task is ${JSON.stringify(
+                message.data,
+              )}`,
+            );
           });
         });
 
@@ -64,17 +68,16 @@ Example of manifest.json
   "name": "Hello world plugin",
   "version": "0.0.1",
   "entrypoint": "plugin.html",
-  "slot": "task-details", 
+  "slot": "task-details",
   "container": "collapsable"
 }
 ```
-
 
 This plugin is registered to be rendered in the task details section (path /FLOW_ID/RUN_NUMBER/STEP_NAME/TASK_ID in application). It subscribes to a custom event "customEvent" and is prepared to send another custom event "customEvent" on button click. It also subscribes for updates about task Metadata.
 
 ## Plugin slots
 
-There are two implemented plugin slots, `run-header` and `task-details`. The desired slot must be defined in manifest.json file.
+There are three implemented plugin slots, `run-header`, `task-details`, and `header`. The desired slot must be defined in manifest.json file.
 
 ### run-header
 
@@ -83,6 +86,10 @@ The `run-header` plugin will be rendered below run details in a collapsable elem
 ### task-details
 
 The `task-details` plugin will be rendered below task details in a collapsable element.
+
+### header
+
+The `header` plugin will be rendered below the Metaflow logo in the header.
 
 ## Plugin configurations
 
