@@ -42,7 +42,7 @@ const Wrapper = styled.header`
   max-width: ${(p) => p.theme.layout.maxWidth}px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   position: sticky;
   top: 0;
   left: 0;

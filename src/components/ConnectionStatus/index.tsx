@@ -99,6 +99,7 @@ const Wrapper = styled.div<{ status: RealtimeStatus }>`
   &:hover ${Text} {
     opacity: 1;
   }
+  height: 2rem;
 `;
 
 const StatusColorIndicator = styled.div<{ status: RealtimeStatus }>`
