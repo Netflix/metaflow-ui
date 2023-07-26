@@ -36,6 +36,7 @@ type RunPageProps = {
 };
 
 const emptyArray: Metadata[] = [];
+const emptyRowArray: Row[] = [];
 const initialQueryParams = {
   step_name: 'start',
 };
@@ -76,7 +77,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const { rows, steps, dispatch, counts, taskStatus, isAnyGroupOpen, taskError, stepError } = useRowData(
     params.flowId,
-    run.run_number.toString(),
+    getRunId(run),
   );
 
   //
@@ -155,7 +156,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   //
   // Data processing
   //
-  const [visibleRows, setVisibleRows] = useState<Row[]>([]);
+  const [visibleRows, setVisibleRows] = useState<Row[]>(emptyRowArray);
 
   // Figure out rows that should be visible if something related to that changes
   // This is not most performant way to do this so we might wanna update these functionalities later on.

@@ -33,6 +33,7 @@ export type StepRowData = {
   tasksVisible?: number;
 };
 
+const emptyObject = {};
 const emptyArray: Step[] = [];
 const emptyStepLineArray: StepLineData[] = [];
 const emptyArray2: Task[] = [];
@@ -203,7 +204,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
         return { ...obj, [current]: { ...obj[current], isOpen: false } };
       }, state);
     case 'reset':
-      return {};
+      return emptyObject;
   }
 }
 
@@ -223,7 +224,7 @@ export type useTaskDataHook = {
 };
 
 export default function useTaskData(flowId: string, runNumber: string): useTaskDataHook {
-  const [rows, dispatch] = useReducer(rowDataReducer, {});
+  const [rows, dispatch] = useReducer(rowDataReducer, emptyObject);
 
   const onStepUpdate = useCallback((items: Step[]) => {
     dispatch({ type: 'fillStep', data: items });
@@ -297,17 +298,24 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     completed: 0,
     running: 0,
     failed: 0,
-    unknown: 0,
     pending: 0,
+    unknown: 0,
   });
   const [steps, setStepLines] = useState<StepLineData[]>(emptyStepLineArray);
   const [anyOpen, setAnyOpen] = useState<boolean>(true);
 
   useEffect(() => {
-    setCounts(countTaskRowsByStatus(rows));
-    setStepLines(makeStepLineData(rows));
+    // Only update counts if they have changed
+    const newCounts = countTaskRowsByStatus(rows);
+    if (JSON.stringify(counts) !== JSON.stringify(newCounts)) {
+      setCounts(newCounts);
+    }
+    const newSteps = makeStepLineData(rows);
+    if (JSON.stringify(steps) !== JSON.stringify(newSteps)) {
+      setStepLines(makeStepLineData(rows));
+    }
     setAnyOpen(!!Object.keys(rows).find((key) => rows[key].isOpen));
-  }, [rows]);
+  }, [rows, counts, steps]);
 
   return { rows, dispatch, taskStatus, counts, steps, isAnyGroupOpen: anyOpen, taskError, stepError };
 }

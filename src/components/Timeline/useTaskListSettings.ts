@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useReducer } from 'react';
+import { useCallback, useEffect, useMemo, useReducer } from 'react';
 import {
   DecodedValueMap,
   QueryParamConfig,
@@ -247,5 +247,8 @@ export default function useTaskListSettings(): TaskSettingsHook {
     [q, sq],
   );
 
-  return { settings: taskListSettings, dispatch, setQueryParam: sq, params: q, setMode };
+  return useMemo(
+    () => ({ settings: taskListSettings, dispatch, setQueryParam: sq, params: q, setMode }),
+    [q, setMode, sq, taskListSettings],
+  );
 }

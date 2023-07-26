@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StringParam, useQueryParams } from 'use-query-params';
 import useSearchRequest, { SearchResult, TaskMatch } from '../useSearchRequest';
 
+const notAskedSearchResults: SearchResultModel = { result: [], status: 'NotAsked' };
 //
 // Typedef
 //
@@ -33,7 +34,7 @@ export type SearchFieldReturnType = {
 const cache: { id: string; text: string; results: SearchResultModel } = {
   id: '',
   text: '',
-  results: { result: [], status: 'NotAsked' },
+  results: notAskedSearchResults,
 };
 
 function isCached(flowId: string, runNumber: string) {
@@ -53,7 +54,7 @@ export default function useSearchField(flowID: string, runNumber: string): Searc
   const [qp, setQp] = useQueryParams({ q: StringParam });
   const [searchValue, setSearchValue] = useState(qp.q ? qp.q : isCached(flowID, runNumber) ? cache.text : '');
   const [searchResults, setSearchResults] = useState<SearchResultModel>(
-    isCached(flowID, runNumber) ? cache.results : { result: [], status: 'NotAsked' },
+    isCached(flowID, runNumber) ? cache.results : notAskedSearchResults,
   );
   const [enabled, setEnabled] = useState(true);
 
@@ -133,7 +134,7 @@ export default function useSearchField(flowID: string, runNumber: string): Searc
 
   useEffect(() => {
     if (searchValue === '') {
-      setSearchResults({ result: [], status: 'NotAsked' });
+      setSearchResults(notAskedSearchResults);
     }
   }, [searchValue, setSearchResults]);
 
@@ -144,8 +145,11 @@ export default function useSearchField(flowID: string, runNumber: string): Searc
     }
   }, [qp.q, flowID, runNumber]);
 
-  return {
-    results: searchResults,
-    fieldProps: { text: searchValue, setText: updateText },
-  };
+  return useMemo(
+    () => ({
+      results: searchResults,
+      fieldProps: { text: searchValue, setText: updateText },
+    }),
+    [searchResults, searchValue, updateText],
+  );
 }

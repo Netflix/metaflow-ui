@@ -1,18 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiHttp } from '../../constants';
 import { DataModel } from '../../hooks/useResource';
 import { Task } from '../../types';
 import { Decorator } from '../DAG/DAGUtils';
 
+const POSTLOAD_POLL_INTERVAL = 5000;
+
 type CardResultState = 'loading' | 'timeout' | 'success' | 'error';
-
-const emptyArray: CardDefinition[] = [];
-
-export type CardResult = {
-  status: CardResultState;
-  cards: CardDefinition[];
-};
-
 export type CardDefinition = {
   // ID of custom card
   id?: string;
@@ -22,6 +16,14 @@ export type CardDefinition = {
   hash: string;
 };
 
+export type CardResult = {
+  status: CardResultState;
+  cards: CardDefinition[];
+};
+
+const emptyArray: CardDefinition[] = [];
+const emptyTaskCard: CardResult = { status: 'loading', cards: emptyArray };
+
 export function taskCardsPath(task: Task): string {
   return `/flows/${task.flow_id}/runs/${task.run_number}/steps/${task.step_name}/tasks/${task.task_id}/cards`;
 }
@@ -30,19 +32,21 @@ export function taskCardPath(task: Task, hash: string): string {
   return `${taskCardsPath(task)}/${hash}`;
 }
 
-const POSTLOAD_POLL_INTERVAL = 5000;
-
 //
 // Fetch list of card definitions for given task according to the decorators.
 // Returns a status and a list of cards (if any)
 //
 export default function useTaskCards(task: Task | null, decorators: Decorator[]): CardResult {
-  const [data, setData] = useState<CardDefinition[]>(emptyArray);
   const [poll, setPoll] = useState(false);
-  const [status, setStatus] = useState<CardResultState>('loading');
+  // Task cards are stored in a map where key is the url and value is the result
+  // This is because this hook can be called with a stale task
+  const [taskCards, setTaskCards] = useState<Record<string, CardResult>>({});
+  const aborter = useRef<AbortController>();
+  const taskFinishedAt = task?.finished_at;
+  const expectedCards = decorators.filter((item) => item.name === 'card');
 
   const url = task ? taskCardsPath(task) : '';
-  const expectedCards = decorators.filter((item) => item.name === 'card');
+
   // timeout in seconds
   const maxTimeout: number = expectedCards.reduce((timeout, decorator) => {
     if (typeof decorator.attributes.timeout === 'number' && decorator.attributes.timeout > timeout) {
@@ -51,40 +55,47 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
     return timeout;
   }, 0);
 
-  const aborter = useRef<AbortController>();
+  const fetchCards = useCallback(
+    (path: string, invalidate = false) => {
+      if (!path) {
+        return;
+      }
 
-  function fetchCards(path: string, invalidate = false) {
-    if (!path) {
-      return;
-    }
+      setPoll(false);
 
-    setPoll(false);
+      if (aborter.current) {
+        aborter.current.abort();
+      }
 
-    if (aborter.current) {
-      aborter.current.abort();
-    }
+      const currentAborter = new AbortController();
+      aborter.current = currentAborter;
+      // We want to invalidate cache when polling since cache would return old results.
+      // First request will be without invalidate and if that returns us all expected cards
+      // we don't need to poll and invalidate.
+      return fetch(`${apiHttp(path)}${invalidate ? '?invalidate=true' : ''}`)
+        .then((result) => result.json())
+        .then((result: DataModel<CardDefinition[]>) => {
+          if (result.status === 200) {
+            setTaskCards((prev) => ({
+              ...prev,
+              [path]: {
+                ...prev[path],
+                cards: result.data,
+                status: result.data.length >= expectedCards.length ? 'success' : prev[path]?.status,
+              },
+            }));
+          }
+        })
+        .catch((e) => {
+          console.warn('Cards request failed for ', apiHttp(path), e);
+        })
+        .finally(() => {
+          setPoll(true);
+        });
+    },
+    [expectedCards.length],
+  );
 
-    const currentAborter = new AbortController();
-    aborter.current = currentAborter;
-    // We want to invalidate cache when polling since cache would return old results.
-    // First request will be without invalidate and if that returns us all expected cards
-    // we don't need to poll and invalidate.
-    fetch(`${apiHttp(path)}${invalidate ? '?invalidate=true' : ''}`)
-      .then((result) => result.json())
-      .then((result: DataModel<CardDefinition[]>) => {
-        if (result.status === 200) {
-          setData(result.data);
-        }
-      })
-      .catch((e) => {
-        console.warn('Cards request failed for ', apiHttp(path), e);
-      })
-      .finally(() => {
-        setPoll(true);
-      });
-  }
-
-  const taskFinishedAt = task?.finished_at;
   // Poll for new cards
   useEffect(() => {
     let t: number;
@@ -93,14 +104,31 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
       // Timeout timer is: task.finished_at + timeout from decorator attributes + 30seconds extra time.
       const timeout = taskFinishedAt ? taskFinishedAt + (maxTimeout + 30) * 1000 : false;
       // if we have enough cards (as presented by decorators list) or timeout has passed, skip request.
-      if (expectedCards.length <= data.length) {
+      if (expectedCards.length <= taskCards[url]?.cards.length) {
         setPoll(false);
-        setStatus('success');
+        if (taskCards[url]?.status !== 'success') {
+          setTaskCards((prev) => ({
+            ...prev,
+            [url]: { ...prev[url], status: 'success' },
+          }));
+        }
+        // If the timeout has been reached
       } else if (timeout && timeout < Date.now()) {
         setPoll(false);
-        setStatus('timeout');
+        if (taskCards[url]?.status !== 'timeout') {
+          setTaskCards((prev) => ({
+            ...prev,
+            [url]: { ...prev[url], status: 'timeout' },
+          }));
+        }
       } else {
-        setStatus('loading');
+        // Otherwise set the status to loading and continue polling
+        if (taskCards[url]?.status !== 'loading') {
+          setTaskCards((prev) => ({
+            ...prev,
+            [url]: { ...prev[url], status: 'loading' },
+          }));
+        }
         t = window.setTimeout(() => {
           fetchCards(url, true);
         }, POSTLOAD_POLL_INTERVAL);
@@ -110,16 +138,12 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
     return () => {
       clearTimeout(t);
     };
-  }, [url, poll, data, expectedCards, maxTimeout, taskFinishedAt, status]);
+  }, [url, poll, expectedCards, maxTimeout, taskFinishedAt, fetchCards, taskCards]);
 
   // Initial fetch
   useEffect(() => {
     fetchCards(url);
+  }, [fetchCards, url]);
 
-    return () => {
-      setData(emptyArray);
-    };
-  }, [url]);
-
-  return { status, cards: data };
+  return taskCards[url] ?? emptyTaskCard;
 }

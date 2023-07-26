@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { MESSAGE_NAME } from '../Plugins/PluginManager';
 import { apiHttp } from '../../constants';
+import Spinner from '../Spinner';
 
 const CHECK_HEIGHT_INTERVAL = 1000;
 
@@ -18,6 +19,8 @@ const FALLBACK_HEIGHT = 750; // arbitrary height that should show enough
 const CardIframe: React.FC<Props> = ({ path }) => {
   const ref = useRef<HTMLIFrameElement>(null);
   const [elementHeight, setElementHeight] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   // Check iframe height every second in case it changes somehow.
   useEffect(() => {
@@ -69,15 +72,32 @@ const CardIframe: React.FC<Props> = ({ path }) => {
     };
   }, []);
 
+  const handleIframeLoad = () => {
+    setLoading(false);
+  };
+
+  const handleIframeError = () => {
+    setError(true);
+  };
+
   return (
     <div>
+      {error && <div>Something went wrong</div>}
+      {loading && (
+        <SpinnerContainer>
+          <Spinner />
+        </SpinnerContainer>
+      )}
       <StyledCardIframe
         ref={ref}
         title="Card"
         style={{
           height: elementHeight + 'px',
+          background: loading ? 'transparent' : 'rgba(0, 0, 0, 0.03)',
         }}
         src={apiHttp(path)}
+        onLoad={handleIframeLoad}
+        onError={handleIframeError}
       />
     </div>
   );
@@ -86,7 +106,13 @@ const CardIframe: React.FC<Props> = ({ path }) => {
 const StyledCardIframe = styled.iframe`
   width: 100%;
   border: none;
-  background: rgba(0, 0, 0, 0.03);
+`;
+
+const SpinnerContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 110px;
 `;
 
 export default CardIframe;

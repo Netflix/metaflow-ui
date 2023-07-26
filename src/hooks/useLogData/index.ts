@@ -39,7 +39,7 @@ const PRELOAD_POLL_INTERVALL = 20000;
 const POSTLOAD_POLL_INTERVAL = 10000;
 
 const emptyArray: LogItem[] = [];
-const emptyResultArray: LogSearchResult[] = [];
+const emptySearchResult = { active: false, result: [], current: 0, query: '' };
 
 function isOkResult(param: DataModel<Log[]> | APIError): param is DataModel<Log[]> {
   return 'data' in param;
@@ -59,7 +59,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
   const [error, setError] = useState<APIError | null>(null);
   const [postPoll, setPostPoll] = useState<boolean>(false);
   // Datastore
-  const [logs, setLogs] = useState<LogItem[]>([]);
+  const [logs, setLogs] = useState<LogItem[]>(emptyArray);
   const PAGE_SIZE = pagesize || DEFAULT_PAGE_SIZE;
 
   // generic log fetcher
@@ -211,16 +211,11 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     }
   }
 
-  const [searchResult, setSearchResult] = useState<SearchState>({
-    active: false,
-    result: [],
-    current: 0,
-    query: '',
-  });
+  const [searchResult, setSearchResult] = useState<SearchState>(emptySearchResult);
 
   function search(str: string) {
     if (!str) {
-      return setSearchResult({ active: false, result: [], current: 0, query: '' });
+      return setSearchResult(emptySearchResult);
     }
     const query = str.toLowerCase();
     const results = logs
@@ -252,7 +247,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
       setLogs(emptyArray);
       setError(null);
       setPostPoll(false);
-      setSearchResult({ active: false, result: emptyResultArray, current: 0, query: '' });
+      setSearchResult(emptySearchResult);
     };
   }, [url]);
 
