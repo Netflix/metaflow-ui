@@ -72,7 +72,7 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
       // We want to invalidate cache when polling since cache would return old results.
       // First request will be without invalidate and if that returns us all expected cards
       // we don't need to poll and invalidate.
-      return fetch(`${apiHttp(path)}${invalidate ? '?invalidate=true' : ''}`)
+      fetch(`${apiHttp(path)}${invalidate ? '?invalidate=true' : ''}`)
         .then((result) => result.json())
         .then((result: DataModel<CardDefinition[]>) => {
           if (result.status === 200) {
@@ -87,7 +87,11 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
           }
         })
         .catch((e) => {
-          console.warn('Cards request failed for ', apiHttp(path), e);
+          console.error('Cards request failed for ', apiHttp(path), e);
+          setTaskCards((prev) => ({
+            ...prev,
+            [path]: { cards: prev[path]?.cards ?? [], status: 'error' },
+          }));
         })
         .finally(() => {
           setPoll(true);
@@ -109,7 +113,7 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
         if (taskCards[url]?.status !== 'success') {
           setTaskCards((prev) => ({
             ...prev,
-            [url]: { ...prev[url], status: 'success' },
+            [url]: { cards: prev[url]?.cards ?? [], status: 'success' },
           }));
         }
         // If the timeout has been reached
@@ -118,7 +122,7 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
         if (taskCards[url]?.status !== 'timeout') {
           setTaskCards((prev) => ({
             ...prev,
-            [url]: { ...prev[url], status: 'timeout' },
+            [url]: { cards: prev[url]?.cards ?? [], status: 'timeout' },
           }));
         }
       } else {
@@ -126,7 +130,7 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
         if (taskCards[url]?.status !== 'loading') {
           setTaskCards((prev) => ({
             ...prev,
-            [url]: { ...prev[url], status: 'loading' },
+            [url]: { cards: prev[url]?.cards ?? [], status: 'loading' },
           }));
         }
         t = window.setTimeout(() => {

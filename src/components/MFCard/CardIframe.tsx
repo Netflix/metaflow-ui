@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { ReactEventHandler, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { MESSAGE_NAME } from '../Plugins/PluginManager';
 import { apiHttp } from '../../constants';
@@ -76,7 +76,8 @@ const CardIframe: React.FC<Props> = ({ path }) => {
     setLoading(false);
   };
 
-  const handleIframeError = () => {
+  const handleIframeError: ReactEventHandler<HTMLIFrameElement> = (e) => {
+    console.error('Error loading card', e);
     setError(true);
   };
 

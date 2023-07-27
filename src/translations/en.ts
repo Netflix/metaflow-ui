@@ -330,6 +330,7 @@ const en = {
       download_card: 'Download card HTML file',
       link_card: 'Link to card',
       card_timeout: 'Timeout: loading cards',
+      card_error: 'Error: loading cards',
       card_loading: 'Loading cards',
     },
   },

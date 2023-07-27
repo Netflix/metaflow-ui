@@ -401,7 +401,7 @@ const Task: React.FC<TaskViewProps> = ({
                     ]
                   : []),
                 // Render cards at the end of sections if enabled by feature flags.
-                ...(showCards
+                ...(showCards && cardsResult?.cards?.length
                   ? cardsResult?.cards?.map((def) => ({
                       key: def.hash,
                       order: 99,
@@ -461,6 +461,19 @@ const Task: React.FC<TaskViewProps> = ({
                           key: 'card_timeout',
                           order: 99,
                           label: t('card.card_timeout'),
+                          component: <></>,
+                        },
+                      ]
+                    : []
+                  : []),
+                // Show error if cards were not fetched before timeout
+                ...(showCards
+                  ? cardsResult?.status === 'error'
+                    ? [
+                        {
+                          key: 'card_error',
+                          order: 99,
+                          label: t('card.card_error'),
                           component: <></>,
                         },
                       ]
