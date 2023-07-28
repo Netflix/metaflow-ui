@@ -11,12 +11,6 @@ export const Page = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-  &:before {
-    display: block;
-    content: '';
-    height: ${(p) => p.theme.layout.appbarHeight}rem;
-  }
 `;
 
 export const Section = styled.section`

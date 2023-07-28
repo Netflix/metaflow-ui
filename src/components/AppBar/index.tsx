@@ -6,6 +6,7 @@ import Breadcrumb from '../Breadcrumb';
 import { ItemRow } from '../Structure';
 import HelpMenu from '../HelpMenu';
 import ConnectionStatus from '../ConnectionStatus';
+import PluginGroup from '../Plugins/PluginGroup';
 
 //
 // Main application bar which is always shown on top of the page
@@ -24,6 +25,9 @@ const AppBar: React.FC = () => {
         <Breadcrumb />
         <HelpMenu />
       </ItemRow>
+      <ItemRow pad="lg">
+        <PluginGroup id="header" title="Extensions" slot="header" />
+      </ItemRow>
     </Wrapper>
   );
 };
@@ -39,15 +43,16 @@ const Wrapper = styled.header`
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   right: 0;
-  height: ${(p) => p.theme.layout.appbarHeight}rem;
+  min-height: ${(p) => p.theme.layout.appbarHeight}rem;
   margin: 0 auto;
   padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem;
   background: ${(p) => p.theme.color.bg.white};
   z-index: 999;
+  flex-direction: column;
 `;
 
 const Logo = styled.img`
@@ -59,9 +64,8 @@ const LogoLink = styled(Link)`
 `;
 
 const ConnectionStatusWrapper = styled.div`
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
   padding-top: ${(p) => p.theme.spacer.md}rem;
 `;

@@ -19,7 +19,7 @@ type Props = {
   resourceParams?: Record<string, string>;
 };
 
-const VALID_CONTAINERS = ['collapsable', 'titled-container'];
+const VALID_CONTAINERS = ['collapsable', 'titled-container', 'none'];
 
 //
 // Renders list of plugin to iframe in collapsable element.
