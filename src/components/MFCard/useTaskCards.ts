@@ -84,6 +84,15 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
                 status: result.data.length >= expectedCards.length ? 'success' : prev[path]?.status,
               },
             }));
+          } else {
+            // The request returned a 500 because there are no cards for this task
+            setTaskCards((prev) => ({
+              ...prev,
+              [path]: {
+                cards: prev[path]?.cards ?? [],
+                status: result.status === 500 ? 'success' : 'error',
+              },
+            }));
           }
         })
         .catch((e) => {
