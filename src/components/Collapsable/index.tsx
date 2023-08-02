@@ -28,8 +28,7 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title, animated = t
   // Only keep animator active while user clicked buttons. Other wise we could have problems with performance on
   // nested collapse elements
   useEffect(() => {
-    const t: number | undefined = undefined;
-    setTimeout(() => {
+    const t = setTimeout(() => {
       setTransitioning(false);
     }, 250);
     return () => clearTimeout(t);

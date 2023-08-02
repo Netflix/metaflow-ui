@@ -141,6 +141,7 @@ const Task: React.FC<TaskViewProps> = ({
     ? tasks.map((item) => item.attempt_id).sort((a, b) => b - a)[0]
     : 0;
   const task = tasks?.find((item) => item.attempt_id === attemptId) || null;
+
   const isCurrentTaskFinished = !!(task && task.finished_at);
   const isLatestAttempt = attemptId === (tasks?.length || 1) - 1;
 
@@ -349,7 +350,7 @@ const Task: React.FC<TaskViewProps> = ({
                   ),
                 },
                 //
-                // Strerr logs
+                // Stderr logs
                 //
                 {
                   key: 'stderr',
@@ -400,8 +401,8 @@ const Task: React.FC<TaskViewProps> = ({
                     ]
                   : []),
                 // Render cards at the end of sections if enabled by feature flags.
-                ...(showCards
-                  ? cardsResult.cards.map((def) => ({
+                ...(showCards && cardsResult?.cards?.length
+                  ? cardsResult?.cards?.map((def) => ({
                       key: def.hash,
                       order: 99,
                       label: def.id ? `${t('card.card_id_title')}: ${def.id}` : `${t('card.card_title')}: ${def.type}`,
@@ -436,7 +437,7 @@ const Task: React.FC<TaskViewProps> = ({
                   : []),
                 // Show spinner if any cards are still loading
                 ...(showCards
-                  ? cardsResult.status === 'loading'
+                  ? cardsResult?.status === 'loading'
                     ? [
                         {
                           key: 'card_loading',
@@ -454,12 +455,25 @@ const Task: React.FC<TaskViewProps> = ({
                   : []),
                 // Show error if cards were not fetched before timeout
                 ...(showCards
-                  ? cardsResult.status === 'timeout'
+                  ? cardsResult?.status === 'timeout'
                     ? [
                         {
                           key: 'card_timeout',
                           order: 99,
                           label: t('card.card_timeout'),
+                          component: <></>,
+                        },
+                      ]
+                    : []
+                  : []),
+                // Show error if cards were not fetched before timeout
+                ...(showCards
+                  ? cardsResult?.status === 'error'
+                    ? [
+                        {
+                          key: 'card_error',
+                          order: 99,
+                          label: t('card.card_error'),
                           component: <></>,
                         },
                       ]
