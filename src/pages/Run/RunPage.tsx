@@ -52,6 +52,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   // Store active tab. Is defined by URL
   const [tab, setTab] = useState(params.viewType ? params.viewType : 'timeline');
+
   useEffect(() => {
     if (params.viewType) {
       setTab(params.viewType);
@@ -198,9 +199,13 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       setVisible(true);
     }, 1);
+
+    return () => {
+      clearTimeout(timeout);
+    };
   }, []);
 
   const sharedProps = {
@@ -227,9 +232,15 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   });
   // Refetch dag on tab change if dag fetching failed
   useEffect(() => {
+    let dagTimeout: ReturnType<typeof setTimeout>;
+
     if ((dagResult.status === 'Error' || dagResult.data === null) && tab === 'dag') {
-      setTimeout(() => dagResult.retry(), DAG_RETRY_TIMEOUT);
+      dagTimeout = setTimeout(() => dagResult.retry(), DAG_RETRY_TIMEOUT);
     }
+
+    return () => {
+      clearTimeout(dagTimeout);
+    };
   }, [tab, dagResult]);
 
   return (
