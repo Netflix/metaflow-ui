@@ -59,7 +59,7 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
             name={plg.name}
             title={plg.name}
             src={pluginPath(plg, baseurl)}
-            sandbox="allow-scripts"
+            sandbox={`allow-scripts ${plg.parameters?.sandbox || ''}`}
           />
         );
       })}
