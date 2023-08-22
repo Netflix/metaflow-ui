@@ -25,6 +25,8 @@ import Announcements from './components/Announcement';
 import { PluginsProvider } from './components/Plugins/PluginManager';
 import PluginRegisterSystem from './components/Plugins/PluginRegisterSystem';
 
+import { appBasePath } from './constants';
+
 const App: React.FC = () => {
   const { t } = useTranslation();
   // Features list must be fetched before we render application so we don't render things that
@@ -46,7 +48,7 @@ const App: React.FC = () => {
             <PluginsProvider>
               <LoggingProvider>
                 <GlobalStyle />
-                <Router basename={process.env.REACT_APP_BASE_PATH}>
+                <Router basename={appBasePath}>
                   <QueryParamProvider ReactRouterRoute={Route}>
                     {flagsReceived ? (
                       <>

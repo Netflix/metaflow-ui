@@ -4,6 +4,7 @@ import { toRelativeSize } from './utils/style';
 declare global {
   interface Window {
     METAFLOW_SERVICE: string;
+    APP_BASE_PATH: string | undefined;
     FEATURES: FeatureFlags;
     MF_DEFAULT_TIME_FILTER_DAYS: string;
   }
@@ -19,6 +20,9 @@ const metaflowServiceUrl = new URL(
   window.METAFLOW_SERVICE || process.env.REACT_APP_METAFLOW_SERVICE || '/api',
   document.baseURI,
 );
+
+export const appBasePath = window.APP_BASE_PATH ?? process.env.REACT_APP_BASE_PATH;
+
 const protocolWs = metaflowServiceUrl.protocol === 'https:' ? 'wss:' : 'ws:';
 
 export const METAFLOW_SERVICE = metaflowServiceUrl.href.replace(/\/$/, '');
