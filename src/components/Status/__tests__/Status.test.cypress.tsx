@@ -20,7 +20,7 @@ describe('Icon test', () => {
       </ThemeProvider>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
-    cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(32, 175, 46)');
+    cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(76, 152, 120)');
 
     mount(
       <ThemeProvider theme={theme}>
@@ -28,7 +28,7 @@ describe('Icon test', () => {
       </ThemeProvider>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
-    cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(235, 52, 40)');
+    cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(230, 120, 108)');
 
     mount(
       <ThemeProvider theme={theme}>
@@ -44,6 +44,6 @@ describe('Icon test', () => {
       </ThemeProvider>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
-    cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(229, 169, 12)');
+    cy.get('[data-testid="status-container-color"]').should('have.css', 'background-color', 'rgb(219, 173, 52)');
   });
 });
