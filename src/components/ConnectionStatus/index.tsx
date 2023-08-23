@@ -89,6 +89,14 @@ const Text = styled(SmallText)<{ status: RealtimeStatus }>`
   white-space: 'nowrap';
   transition: opacity 0.25s;
   opacity: ${(p) => (p.status === 'Connected' ? 0 : 1)};
+  position: absolute;
+  right: 0;
+  top: 100%;
+  color: ${(p) => p.theme.color.text.white};
+  background: ${(p) => p.theme.color.bg.tooltip};
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  white-space: nowrap;
 `;
 
 const Wrapper = styled.div<{ status: RealtimeStatus }>`
@@ -100,24 +108,41 @@ const Wrapper = styled.div<{ status: RealtimeStatus }>`
     opacity: 1;
   }
   height: 2rem;
+  width: 2rem;
+  position: relative;
 `;
 
 const StatusColorIndicator = styled.div<{ status: RealtimeStatus }>`
-  height: 0.5rem;
-  width: 0.5rem;
-  border-radius: 0.125rem;
+  height: 0.75rem;
+  width: 0.75rem;
+  border-radius: 50%;
   transition: background-color 0.15s;
+  outline-style: solid;
+  outline-width: 6px;
 
   background-color: ${(p) => {
     switch (p.status) {
       case 'Connected':
-        return p.theme.color.bg.green;
+        return p.theme.color.connection.green;
       case 'Stale':
-        return p.theme.color.bg.yellow;
+        return p.theme.color.connection.yellow;
       case 'Disconnected':
-        return p.theme.color.bg.red;
+        return p.theme.color.connection.red;
       default:
-        return p.theme.color.bg.green;
+        return p.theme.color.connection.green;
+    }
+  }};
+
+  outline-color: ${(p) => {
+    switch (p.status) {
+      case 'Connected':
+        return p.theme.color.connection.lightGreen;
+      case 'Stale':
+        return p.theme.color.connection.lightYellow;
+      case 'Disconnected':
+        return p.theme.color.connection.lightRed;
+      default:
+        return p.theme.color.connection.lightGreen;
     }
   }};
 

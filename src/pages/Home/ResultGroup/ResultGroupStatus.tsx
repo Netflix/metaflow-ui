@@ -1,27 +1,30 @@
-import styled, { css } from 'styled-components';
-import { TD, TH } from '../../../components/Table';
-import { colorByStatus } from '../../../utils/style';
+import styled from 'styled-components';
+import { TD } from '../../../components/Table';
+import { colorByStatus, iconByStatus } from '../../../utils/style';
+import Icon, { SupportedIcons } from '../../../components/Icon';
+import React from 'react';
+import { RunStatus } from '../../../types';
 
 //
 // Small status indicator on left side of the rows
 //
 
-const statusCellCSS = css`
-  width: 0.25rem;
-  padding: 1px;
-`;
+type StatusColorCellProps = {
+  status: keyof RunStatus;
+  title: keyof RunStatus;
+};
 
-export const StatusColorCell = styled(TD)<{
+const StatusColorCell: React.FC<StatusColorCellProps> = ({ status, title }) => {
+  const name: keyof SupportedIcons | undefined = iconByStatus(status);
+  console.log('name', name, title);
+  return <StatusCell status={status}>{name && <Icon name={name} size="xs" />}</StatusCell>;
+};
+
+const StatusCell = styled(TD)<{
   status: string;
-  hideBorderTop?: boolean;
-  hideBorderBottom?: boolean;
 }>`
-  background: ${(p) => colorByStatus(p.theme, p.status) || 'transparent'} !important;
-  ${statusCellCSS};
-  ${(p) => (p.hideBorderTop ? 'border-top: none;' : null)};
-  ${(p) => (p.hideBorderBottom ? 'border-bottom: none;' : null)};
+  text-align: center;
+  color: ${(p) => colorByStatus(p.theme, p.status) || 'transparent'} !important;
 `;
 
-export const StatusColorHeaderCell = styled(TH)`
-  ${statusCellCSS};
-`;
+export default StatusColorCell;

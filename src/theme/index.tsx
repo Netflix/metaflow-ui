@@ -5,6 +5,7 @@ const spacer = {
   xs: 0.25,
   sm: 0.5,
   md: 1,
+  ml: 1.5,
   lg: 2,
   hg: 3,
 };
@@ -34,10 +35,11 @@ const bgColor = {
   blueLight: '#e4f0ff',
   silver: '#E8EAED',
   teal: brandColor.teal,
-  yellow: '#E5A90C',
-  red: '#EB3428',
-  green: '#20AF2E',
+  yellow: '#DBAD34',
+  red: '#E6786C',
+  green: '#4C9878',
   greenLight: '#BCE307',
+  tooltip: rgba(51, 51, 51, 0.7),
 };
 
 const borderColor = {
@@ -45,6 +47,15 @@ const borderColor = {
   normal: '#d0d0d0',
   mid: rgba(0, 0, 0, 0.2),
   dark: rgba(0, 0, 0, 0.35),
+};
+
+const connectionColor = {
+  lightGreen: rgba(32, 175, 46, 0.2),
+  green: ' #20AF2E',
+  lightYellow: rgba(32, 175, 46, 0.2),
+  yellow: ' #20AF2E',
+  lightRed: rgba(32, 175, 46, 0.2),
+  red: ' #20AF2E',
 };
 
 const border = {
@@ -93,7 +104,7 @@ const defaultTheme: DefaultTheme = {
     maxWidth: 2560,
     appbarHeight: 7,
     appbarLogoHeight: 1.5,
-    pagePaddingX: spacer.hg,
+    pagePaddingX: spacer.ml,
     pagePaddingY: spacer.lg,
     sidebarWidth: 14,
   },
@@ -106,6 +117,7 @@ const defaultTheme: DefaultTheme = {
     border: borderColor,
     icon: iconColor,
     button: buttonColor,
+    connection: connectionColor,
   },
 
   notification: {
