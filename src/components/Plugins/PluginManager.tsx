@@ -107,7 +107,7 @@ export const MESSAGE_NAME = {
 type UpdatePluginMessage = { slot: string; name: string; visible: boolean };
 
 // Collection of functions to validate messages from plugins
-export const PluginCommuncationsAPI = {
+export const PluginCommunicationsAPI = {
   isPluginMessage(event: MessageEvent, name?: string): boolean {
     return Object.values(MESSAGE_NAME).indexOf(event.data?.type) > -1 && event.data.name === name;
   },
@@ -291,7 +291,7 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Susbcribe to listen UPDATE_PLUGIN messages so we can update plugin visibility.
   useEffect(() => {
     subscribeToEvent('plugin_manager', 'UPDATE_PLUGIN', (data) => {
-      if (PluginCommuncationsAPI.isUpdatePluginMessage(data)) {
+      if (PluginCommunicationsAPI.isUpdatePluginMessage(data)) {
         setPlugins((items) =>
           items.map((pl) =>
             pl.name === data.name && pl.config.slot === data.slot
