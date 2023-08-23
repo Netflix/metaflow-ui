@@ -25,6 +25,9 @@ const StatusCell = styled(TD)<{
 }>`
   text-align: center;
   color: ${(p) => colorByStatus(p.theme, p.status) || 'transparent'} !important;
+  i {
+    vertical-align: middle;
+  }
 `;
 
 export default StatusColorCell;

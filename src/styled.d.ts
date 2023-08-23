@@ -77,9 +77,7 @@ declare module 'styled-components' {
         green: string;
         lightGreen: string;
         yellow: string;
-        lightYellow: string;
         red: string;
-        lightRed: string;
       };
     };
 

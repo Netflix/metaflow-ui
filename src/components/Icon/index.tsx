@@ -7,6 +7,7 @@ import { ReactComponent as ArrowPointTop } from '../../assets/arrow-point-up.svg
 import { ReactComponent as Calendar } from '../../assets/calendar.svg';
 import { ReactComponent as CaretDown } from '../../assets/caret_down.svg';
 import { ReactComponent as Check } from '../../assets/check.svg';
+import { ReactComponent as Chevron } from '../../assets/chevron.svg';
 import { ReactComponent as Collapse } from '../../assets/collapse.svg';
 import { ReactComponent as Completed } from '../../assets/completed.svg';
 import { ReactComponent as Copy } from '../../assets/copy.svg';
@@ -53,6 +54,7 @@ const icons = {
   calendar: Calendar,
   caretDown: CaretDown,
   check: Check,
+  chevron: Chevron,
   collapse: Collapse,
   completed: Completed,
   copy: Copy,

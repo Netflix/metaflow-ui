@@ -138,9 +138,9 @@ const StatusColorIndicator = styled.div<{ status: RealtimeStatus }>`
       case 'Connected':
         return p.theme.color.connection.lightGreen;
       case 'Stale':
-        return p.theme.color.connection.lightYellow;
+        return 'transparent';
       case 'Disconnected':
-        return p.theme.color.connection.lightRed;
+        return 'transparent';
       default:
         return p.theme.color.connection.lightGreen;
     }

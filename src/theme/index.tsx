@@ -52,10 +52,8 @@ const borderColor = {
 const connectionColor = {
   lightGreen: rgba(32, 175, 46, 0.2),
   green: ' #20AF2E',
-  lightYellow: rgba(32, 175, 46, 0.2),
-  yellow: ' #20AF2E',
-  lightRed: rgba(32, 175, 46, 0.2),
-  red: ' #20AF2E',
+  yellow: '#E5A90C',
+  red: '#EB3428',
 };
 
 const border = {

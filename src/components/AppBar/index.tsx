@@ -47,8 +47,7 @@ const Wrapper = styled.header`
   right: 0;
   min-height: ${(p) => p.theme.layout.appbarHeight}rem;
   margin: 0 auto;
-  padding: ${(p) => p.theme.layout.pagePaddingY}rem;
-  ${(p) => p.theme.layout.pagePaddingX}rem;
+  padding: ${(p) => p.theme.layout.pagePaddingY}rem ${(p) => p.theme.layout.pagePaddingX}rem;
   background: ${(p) => p.theme.color.bg.white};
   z-index: 999;
   flex-direction: column;
