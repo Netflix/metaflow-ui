@@ -9,6 +9,14 @@ const FEATURE_FLAGS = {
   ARTIFACT_SEARCH: (process.env.REACT_APP_FEATURE_ARTIFACT_SEARCH || '0') === '1',
   DEBUG_VIEW: (process.env.REACT_APP_FEATURE_DEBUG_VIEW || '1') === '1',
   CARDS: (process.env.REACT_APP_FEATURE_CARDS || '1') === '1',
+
+  // Hide visual elements to be used when MFGUI is displayed in an iframe
+  HIDE_LOGO: (process.env.REACT_APP_FEATURE_HIDE_LOGO || '0') === '1',
+  HIDE_HOME_BUTTON: (process.env.REACT_APP_FEATURE_HIDE_HOME_BUTTON || '0') === '1',
+  HIDE_STATUS_FILTERS: (process.env.REACT_APP_FEATURE_HIDE_STATUS_FILTERS || '0') === '1',
+  HIDE_TABLE_HEADER: (process.env.REACT_APP_FEATURE_HIDE_TABLE_HEADER || '0') === '1',
+  HIDE_QUICK_LINKS: (process.env.REACT_APP_FEATURE_HIDE_QUICK_LINKS || '0') === '1',
+
   CACHE_DISABLE: false,
   DB_LISTEN_DISABLE: false,
   HEARTBEAT_DISABLE: false,

@@ -61,7 +61,14 @@ const StickyHeaderTHead = styled.thead`
   }
 
   .result-group-columns th {
-    top: 10.3125rem;
+    top: 7rem;
+  }
+
+  .result-group-title + .result-group-columns {
+    th {
+      top: 10.3125rem;
+    }
+  }
 `;
 
 export default StickyHeader;

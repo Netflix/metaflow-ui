@@ -48,7 +48,7 @@ const en = {
       branch: 'Branch',
       'user-tags': 'User tags',
       tasks: 'Tasks',
-
+      'filter-by': 'Filter by',
       flow_id: 'Flow',
 
       id: 'ID',

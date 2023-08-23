@@ -13,6 +13,7 @@ import { AutoCompleteLine } from '../AutoComplete';
 import HeightAnimatedContainer from '../HeightAnimatedContainer';
 import InputWrapper from '../Form/InputWrapper';
 import useOnKeyPress from '../../hooks/useOnKeyPress';
+import FEATURE_FLAGS from '../../utils/FEATURE';
 
 //
 // Component
@@ -144,15 +145,17 @@ const Breadcrumb: React.FC = () => {
 
   return (
     <StyledBreadcrumb pad="md">
-      <ButtonLink
-        to={'/'}
-        tabIndex={0}
-        data-testid={'home-button'}
-        variant="primaryText"
-        disabled={location.pathname === '/'}
-      >
-        {t('home.home') as string}
-      </ButtonLink>
+      {!FEATURE_FLAGS.HIDE_HOME_BUTTON && (
+        <ButtonLink
+          to={'/'}
+          tabIndex={0}
+          data-testid={'home-button'}
+          variant="primaryText"
+          disabled={location.pathname === '/'}
+        >
+          {t('home.home') as string}
+        </ButtonLink>
+      )}
 
       {/* On home page, when not editing breadcrumb */}
       {buttonList.length === 0 && !edit && (

@@ -7,7 +7,6 @@ import Button from '../../../components/Button';
 import { Text } from '../../../components/Text';
 import FilterInput from '../../../components/FilterInput';
 
-import FEATURE from '../../../utils/FEATURE';
 import SidebarStatusSelection from './SidebarStatusSelection';
 import { TagParameterList } from './SidebarTags';
 import SidebarTimerangeSelection from './SidebarTimerangeSelection';
@@ -15,6 +14,7 @@ import { isDefaultParams } from '../Home.utils';
 import { HEADER_SIZE_REM } from '../../../constants';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import { TimezoneContext } from '../../../components/TimezoneProvider';
+import FEATURE_FLAGS from '../../../utils/FEATURE';
 
 //
 // Typedef
@@ -47,7 +47,7 @@ const HomeSidebar: React.FC<Props> = ({ handleParamChange, updateListValue, para
         autoHide
       >
         <SidebarContent>
-          {FEATURE.RUN_GROUPS && (
+          {FEATURE_FLAGS.RUN_GROUPS && (
             <SidebarSectionWrapper>
               <DropdownField
                 label={t('filters.group-by') ?? ''}
