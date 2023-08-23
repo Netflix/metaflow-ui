@@ -104,7 +104,7 @@ export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean
   padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.md}rem;
   border-top-left-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
   border-top-right-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
-  border-bottom: 2px solid ${(p) => (p.active ? p.theme.color.bg.blue : p.theme.color.border.mid)};
+  border-bottom: 2px solid ${(p) => (p.active ? p.theme.color.bg.blue : 'transparent')};
   background: ${(p) =>
     p.temporary && p.active ? p.theme.color.bg.blueLight : p.temporary ? '#f6f6f6' : 'transparent'};
   color: ${(p) => (p.active ? p.theme.color.text.dark : p.theme.color.text.mid)};

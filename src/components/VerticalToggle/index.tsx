@@ -19,7 +19,7 @@ type Props = {
 const VerticalToggle: React.FC<Props> = ({ visible, active, onClick }) => {
   return (
     <ToggleContainer data-testid="vertical-toggle" onClick={onClick} show={visible}>
-      <Icon name="chevron" size="md" rotate={active ? 180 : 0} />
+      <Icon name="chevron" size="sm" rotate={active ? 180 : 0} />
     </ToggleContainer>
   );
 };
