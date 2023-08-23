@@ -384,6 +384,7 @@ export function findAdditionalButtons(routeMatch: match<KnownURLParams> | null, 
 const BreadcrumbGroup = styled.div`
   ${ButtonCSS}
   border-color: ${(p) => p.theme.color.text.blue};
+  width: 100%;
 `;
 
 const BreadcrumbEmptyInput = styled(InputWrapper)`

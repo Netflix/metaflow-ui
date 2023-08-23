@@ -4,6 +4,7 @@
 - [Styles](styles.md)
 - [Tests](tests.md)
 - [Plugin system](plugin-system.md)
+- [Feature flags](feature-flags.md)
 
 ## Getting started
 
@@ -75,6 +76,7 @@ $ docker run -p 3000:3000 -e METAFLOW_SERVICE=http://localhost:8083/ metaflow-ui
 # Run the metaflow code with the following custom METAFLOW_SERVICE_URL and METAFLOW_SERVICE_URL
 $ METAFLOW_SERVICE_URL=http://localhost:8080/ METAFLOW_DEFAULT_METADATA=service python helloworld.py run
 ```
+
 or
 
 ```sh
@@ -87,5 +89,5 @@ or
 
 ```sh
 # And run like a normal metaflow script
-$ python helloworld.py run 
+$ python helloworld.py run
 ```
