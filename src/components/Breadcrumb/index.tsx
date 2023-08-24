@@ -494,6 +494,7 @@ const GoToContainer = styled.div`
   top: -${(p) => p.theme.spacer.sm}rem;
   left: -${(p) => p.theme.spacer.sm}rem;
   ${PopoverStyles}
+  width: 100%;
 `;
 
 const GotoClose = styled.div`
