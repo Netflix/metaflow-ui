@@ -34,6 +34,7 @@ export type PluginSettings = {
   container?: string; // Should be enum?
   containerProps?: Record<string, unknown>;
   useApplicationStyles?: boolean;
+  height?: number;
 };
 
 type PluginVersionInfo = {
@@ -44,11 +45,11 @@ type PluginVersionInfo = {
 // Constants. Plugin will not render if it doesn't satisfy SUPPORTED_PLUGIN_API_VERSION.
 //
 
-export type AllowedSlot = 'task-details' | 'run-header' | 'header';
+export type AllowedSlot = 'task-details' | 'run-header' | 'header' | 'top-nav';
 
 const SUPPORTED_PLUGIN_API_VERSION = '0.13.0';
 const RECOMMENDED_PLUGIN_API_VERSION = '1.1.0';
-const ALLOWED_SLOTS: AllowedSlot[] = ['task-details', 'run-header', 'header'];
+const ALLOWED_SLOTS: AllowedSlot[] = ['task-details', 'run-header', 'header', 'top-nav'];
 
 //
 // Utils

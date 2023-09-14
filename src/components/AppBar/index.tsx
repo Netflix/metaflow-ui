@@ -6,8 +6,8 @@ import Breadcrumb from '../Breadcrumb';
 import { ItemRow } from '../Structure';
 import HelpMenu from '../HelpMenu';
 import ConnectionStatus from '../ConnectionStatus';
-import PluginGroup from '../Plugins/PluginGroup';
 import FEATURE_FLAGS from '../../utils/FEATURE';
+import PluginGroup from '../Plugins/PluginGroup';
 
 //
 // Main application bar which is always shown on top of the page
