@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState, useMemo, useCallback } 
 import { useLocation } from 'react-router';
 import styled from 'styled-components';
 import PLUGIN_STYLESHEET from './PluginDefaultStyleSheet';
-import { PluginCommuncationsAPI, MESSAGE_NAME, PluginsContext, Plugin } from './PluginManager';
+import { PluginCommunicationsAPI, MESSAGE_NAME, PluginsContext, Plugin } from './PluginManager';
 import { getRouteMatch, KnownURLParams } from '../../utils/routing';
 
 //
@@ -34,7 +34,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
 
   const listener = useCallback(
     (e: MessageEvent) => {
-      if (PluginCommuncationsAPI.isRegisterMessage(e) && e.data.name === title) {
+      if (PluginCommunicationsAPI.isRegisterMessage(e) && e.data.name === title) {
         const w = _iframe.current?.contentWindow;
         if (w) {
           w.postMessage(
@@ -55,7 +55,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
           console.log('Register message happened when iframe wasnt ready');
         }
       }
-      if (PluginCommuncationsAPI.isPluginMessage(e, title)) {
+      if (PluginCommunicationsAPI.isPluginMessage(e, title)) {
         switch (e.data.type) {
           case MESSAGE_NAME.SUBSCRIBE_DATA: {
             if (!e.data.paths) return;

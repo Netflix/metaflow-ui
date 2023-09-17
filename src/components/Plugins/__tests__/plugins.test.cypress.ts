@@ -3,7 +3,7 @@ import {
   isVersionEqualOrHigher,
   MESSAGE_NAME,
   Plugin,
-  PluginCommuncationsAPI,
+  PluginCommunicationsAPI,
   pluginPath,
 } from '../PluginManager';
 
@@ -78,7 +78,7 @@ describe('Plugins utils', () => {
     // All keys from constant should be seen as valid
     for (const key in MESSAGE_NAME) {
       expect(
-        PluginCommuncationsAPI.isPluginMessage(
+        PluginCommunicationsAPI.isPluginMessage(
           {
             data: {
               type: (MESSAGE_NAME as any)[key],
@@ -91,7 +91,7 @@ describe('Plugins utils', () => {
     }
     // Wrong type fails
     expect(
-      PluginCommuncationsAPI.isPluginMessage(
+      PluginCommunicationsAPI.isPluginMessage(
         {
           data: {
             type: 'wrong name',
@@ -103,7 +103,7 @@ describe('Plugins utils', () => {
     ).to.equal(false);
     // Mismatch on names fails
     expect(
-      PluginCommuncationsAPI.isPluginMessage(
+      PluginCommunicationsAPI.isPluginMessage(
         {
           data: {
             type: MESSAGE_NAME.HEIGHT_CHECK,
@@ -117,45 +117,45 @@ describe('Plugins utils', () => {
 
   it('PluginCommuncationsAPI.isRegisterMessage', () => {
     // Messages with too little properties
-    expect(PluginCommuncationsAPI.isRegisterMessage({ data: {} } as MessageEvent)).to.equal(false);
+    expect(PluginCommunicationsAPI.isRegisterMessage({ data: {} } as MessageEvent)).to.equal(false);
     expect(
-      PluginCommuncationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent' } } as MessageEvent),
+      PluginCommunicationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent' } } as MessageEvent),
     ).to.equal(false);
     expect(
-      PluginCommuncationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent', name: 'test' } } as MessageEvent),
+      PluginCommunicationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent', name: 'test' } } as MessageEvent),
     ).to.equal(false);
 
     // Correct message
     const correctMessage = {
       data: { type: 'PluginRegisterEvent', name: 'test', version: { api: '1.0.0' } },
     };
-    const result = PluginCommuncationsAPI.isRegisterMessage(correctMessage as MessageEvent);
+    const result = PluginCommunicationsAPI.isRegisterMessage(correctMessage as MessageEvent);
     expect((result as any).type).to.equal(correctMessage.data.type);
 
     // Messages with wrong data types
     expect(
-      PluginCommuncationsAPI.isRegisterMessage({
+      PluginCommunicationsAPI.isRegisterMessage({
         data: { ...correctMessage.data, version: { api: 13 } },
       } as MessageEvent),
     ).to.equal(false);
     expect(
-      PluginCommuncationsAPI.isRegisterMessage({
+      PluginCommunicationsAPI.isRegisterMessage({
         data: { ...correctMessage.data, name: 123 },
       } as MessageEvent),
     ).to.equal(false);
   });
 
   it('PluginCommuncationsAPI.isUpdatePluginMessage', () => {
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage(null)).to.equal(false);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage(123)).to.equal(false);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage('null')).to.equal(false);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage([null])).to.equal(false);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage({})).to.equal(false);
+    expect(PluginCommunicationsAPI.isUpdatePluginMessage(null)).to.equal(false);
+    expect(PluginCommunicationsAPI.isUpdatePluginMessage(123)).to.equal(false);
+    expect(PluginCommunicationsAPI.isUpdatePluginMessage('null')).to.equal(false);
+    expect(PluginCommunicationsAPI.isUpdatePluginMessage([null])).to.equal(false);
+    expect(PluginCommunicationsAPI.isUpdatePluginMessage({})).to.equal(false);
 
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage({ name: 'test', slot: 'test', visible: true })).to.equal(true);
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage({ name: 'test', slot: 'test', visible: 'true' })).to.equal(
+    expect(PluginCommunicationsAPI.isUpdatePluginMessage({ name: 'test', slot: 'test', visible: true })).to.equal(true);
+    expect(PluginCommunicationsAPI.isUpdatePluginMessage({ name: 'test', slot: 'test', visible: 'true' })).to.equal(
       false,
     );
-    expect(PluginCommuncationsAPI.isUpdatePluginMessage({ name: 'test', visible: true })).to.equal(false);
+    expect(PluginCommunicationsAPI.isUpdatePluginMessage({ name: 'test', visible: true })).to.equal(false);
   });
 });

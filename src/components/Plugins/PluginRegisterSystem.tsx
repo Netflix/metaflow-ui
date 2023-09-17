@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { apiHttp } from '../../constants';
-import { Plugin, PluginCommuncationsAPI, pluginPath, PluginsContext } from './PluginManager';
+import { Plugin, PluginCommunicationsAPI, pluginPath, PluginsContext } from './PluginManager';
 
 //
 // Plugin register system will add iframes to DOM until it gets register message
@@ -26,7 +26,7 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
 
   const messageListener = useCallback(
     (event: MessageEvent) => {
-      const msg = PluginCommuncationsAPI.isRegisterMessage(event);
+      const msg = PluginCommunicationsAPI.isRegisterMessage(event);
       if (msg) {
         const definition = definitions.find((item) => item.name === msg.name);
         if (definition) {
