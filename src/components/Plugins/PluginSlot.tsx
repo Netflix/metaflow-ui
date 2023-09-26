@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import PLUGIN_STYLESHEET from './PluginDefaultStyleSheet';
 import { PluginCommunicationsAPI, MESSAGE_NAME, PluginsContext, Plugin } from './PluginManager';
 import { getRouteMatch, KnownURLParams } from '../../utils/routing';
+import { TimezoneContext } from '../TimezoneProvider';
 
 //
 // Typedef
@@ -31,6 +32,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
   const loc = useLocation();
   const VERY_UNIQUE_ID = id + title + url;
   const route = useMemo(() => getRouteMatch(loc.pathname), [loc.pathname]);
+  const { timezone } = useContext(TimezoneContext);
 
   const listener = useCallback(
     (e: MessageEvent) => {
@@ -42,6 +44,9 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
               type: 'ReadyToRender',
               config: plugin,
               resource: resourceParams ? resourceParams : route ? convertParams(route.params) : {},
+              settings: {
+                timezone,
+              },
             },
             '*',
           );
@@ -107,7 +112,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
         }
       }
     },
-    [VERY_UNIQUE_ID, callEvent, plugin, resourceParams, route, subscribeToDatastore, subscribeToEvent, title],
+    [VERY_UNIQUE_ID, callEvent, plugin, resourceParams, route, subscribeToDatastore, subscribeToEvent, title, timezone],
   );
   //
   // Subscribe to messages from iframe

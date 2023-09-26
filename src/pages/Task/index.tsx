@@ -160,6 +160,13 @@ const Task: React.FC<TaskViewProps> = ({
     : 0;
   const task = tasks?.find((item) => item.attempt_id === attemptId) || null;
 
+  useEffect(() => {
+    // Add task information to the store so that it can be used by plugins
+    if (task) {
+      addDataToStore('task-info', { ...task });
+    }
+  }, [task, addDataToStore]);
+
   const isCurrentTaskFinished = !!(task && task.finished_at);
   const isLatestAttempt = attemptId === (tasks?.length || 1) - 1;
 
