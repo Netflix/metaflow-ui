@@ -7,7 +7,7 @@ const StatusField: React.FC<{ status: keyof RunStatus | TaskStatus }> = ({ statu
   return (
     <StatusContainer data-testid="status-container">
       <StatusIndicator status={status} />
-      {status}
+      <StatusText>{status}</StatusText>
     </StatusContainer>
   );
 };
@@ -18,9 +18,8 @@ const StatusContainer = styled.div`
   text-transform: capitalize;
 `;
 
-export const StatusColorIndicator = styled.div`
-  display: flex;
-  margin-right: 0.5rem;
+const StatusText = styled.span`
+  margin-left: 0.5rem;
 `;
 
 export default StatusField;

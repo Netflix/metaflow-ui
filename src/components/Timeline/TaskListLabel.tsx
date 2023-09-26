@@ -5,9 +5,9 @@ import styled, { css } from 'styled-components';
 import { AsyncStatus, Step, Task, TaskStatus } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { getPath } from '../../utils/routing';
-import { iconByStatus } from '../../utils/style';
 import { getTaskDuration, getTaskId } from '../../utils/task';
 import Icon from '../Icon';
+import StatusIndicator from '../StatusIndicator';
 
 //
 // Typedef
@@ -35,8 +35,6 @@ type Props = TaskRow | StepRow;
 const TaskListLabel: React.FC<Props> = (props) => {
   const { open, grouped, tasksTotal, tasksVisible } = props;
 
-  const statusIcon = iconByStatus(props.status);
-
   return (
     <RowLabel type={props.type} isOpen={open} group={grouped} status={props.status}>
       {props.type === 'task' ? (
@@ -51,7 +49,9 @@ const TaskListLabel: React.FC<Props> = (props) => {
           }
           data-testid="tasklistlabel-link"
         >
-          <StatusWrapper>{statusIcon && <Icon name={statusIcon} size="xs" />}</StatusWrapper>
+          <StatusWrapper>
+            <StatusIndicator status={props.status} />
+          </StatusWrapper>
 
           <RowLabelContent>
             <RowLabelTaskName
@@ -78,8 +78,9 @@ const TaskListLabel: React.FC<Props> = (props) => {
           data-testid="tasklistlabel-step-container"
           isLoading={props.searchStatus === 'Loading'}
         >
-          <StatusWrapper>{statusIcon && <Icon name={statusIcon} size="xs" />}</StatusWrapper>
-
+          <StatusWrapper>
+            <StatusIndicator status={props.status} />
+          </StatusWrapper>
           <RowLabelContent type="step">
             <RowStepName
               data-testid="tasklistlabel-text"

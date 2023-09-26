@@ -4,8 +4,8 @@ import { ThemeProvider } from 'styled-components';
 import theme from '../../../theme';
 import Status from '..';
 
-describe.only('Icon test', () => {
-  it.only('<Icon /> - health check', () => {
+describe('Icon test', () => {
+  it('<Icon /> - health check', () => {
     mount(
       <ThemeProvider theme={theme}>
         <Status status="completed" />
@@ -20,7 +20,7 @@ describe.only('Icon test', () => {
       </ThemeProvider>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
-    cy.get('[data-testid="status-container-color"]').should('have.css', 'color', 'rgb(230, 120, 108)');
+    cy.get('[data-testid="status-container-color"]').should('have.css', 'color', 'rgb(255, 255, 255)');
 
     mount(
       <ThemeProvider theme={theme}>
