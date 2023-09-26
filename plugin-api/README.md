@@ -6,17 +6,17 @@ This folder contains the JS API for making UI plugins for Metaflow UI. There are
 
 Plugins will use JS API to communicate with the host application. Plugins must call at least the `register` function from the API to get rendered.
 
-| function               | type                                                                           | description                                                                                         |
-| ---------------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
-| onReady                | (callback: (configuration, resource) => void) => void                          | Register callback function to be run when host and plugin iframe are ready.                         |
-| subscribe              | (paths: string[], cb: (message: { path: string, data: any }) => void) => void  | Subscribe to contextual data updates from application. Possible paths: 'metadata' or 'run-metadata' |
-| subscribeToMetadata    | (callback: (message: Record<string,string>) => void) => void                   | Subscribe to task metadata                                                                          |
-| subscribeToRunMetadata | (callback: (message: Record<string,string>) => void) => void                   | Subscribe to run metadata                                                                           |
-| on                     | (events: string[], cb: (message: { type: string, data: any }) => void) => void | Subscribe to any event by event string.                                                             |
-| call                   | (event: string, data: any) => void                                             | Call any custom event with string and any data.                                                     |
-| sendNotification       | (message: string \| { type: string, message: string }) => void                 | Call notification API from host application.                                                        |
-| setHeight              | (height: number \| undefined) => void                                          | Update height of iframe container for plugin.                                                       |
-| setVisibility          | (visibility: boolean) => void                                                  | Update visibility of the plugin. Note that if will stay in iframe even if visibility is set false.  |
+| function               | type                                                                           | description                                                                                                        |
+| ---------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| onReady                | (callback: (configuration, resource, settings) => void) => void                | Register callback function to be run when host and plugin iframe are ready.                                        |
+| subscribe              | (paths: string[], cb: (message: { path: string, data: any }) => void) => void  | Subscribe to contextual data updates from application. Possible paths: 'metadata', 'run-metadata', and 'task-info' |
+| subscribeToMetadata    | (callback: (message: Record<string,string>) => void) => void                   | Subscribe to task metadata                                                                                         |
+| subscribeToRunMetadata | (callback: (message: Record<string,string>) => void) => void                   | Subscribe to run metadata                                                                                          |
+| on                     | (events: string[], cb: (message: { type: string, data: any }) => void) => void | Subscribe to any event by event string.                                                                            |
+| call                   | (event: string, data: any) => void                                             | Call any custom event with string and any data.                                                                    |
+| sendNotification       | (message: string \| { type: string, message: string }) => void                 | Call notification API from host application.                                                                       |
+| setHeight              | (height: number \| undefined) => void                                          | Update height of iframe container for plugin.                                                                      |
+| setVisibility          | (visibility: boolean) => void                                                  | Update visibility of the plugin. Note that if will stay in iframe even if visibility is set false.                 |
 
 ## How to
 
