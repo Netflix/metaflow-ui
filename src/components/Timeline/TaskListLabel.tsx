@@ -35,8 +35,6 @@ type Props = TaskRow | StepRow;
 const TaskListLabel: React.FC<Props> = (props) => {
   const { open, grouped, tasksTotal, tasksVisible } = props;
 
-  const statusIcon = iconByStatus(props.status);
-
   return (
     <RowLabel type={props.type} isOpen={open} group={grouped} status={props.status}>
       {props.type === 'task' ? (
