@@ -1,3 +1,5 @@
+/// <reference types="cypress" />
+
 // We want to make sure every test starts from empty state, so
 // remove cache data about plugin api from require.
 function removeRequireCacheEntry() {
@@ -81,6 +83,7 @@ describe('PluginAPITests', () => {
     const { Metaflow } = require('../MetaflowPluginAPI');
     let paths;
     let callback = cy.stub();
+    const path = 'somepath';
 
     // Add event listener to parent window.
     const listener = (event) => {
@@ -90,14 +93,14 @@ describe('PluginAPITests', () => {
     window.parent.addEventListener('message', listener);
 
     // Susbcribe to 'somepath' data
-    Metaflow.subscribe(['somepath'], callback);
+    Metaflow.subscribe([path], callback);
 
-    const DataMessage = { name: window.name, type: 'DataUpdate', data: 'test' };
+    const DataMessage = { name: window.name, type: 'DataUpdate', data: 'test', path };
     window.postMessage(DataMessage);
 
     cy.waitUntil(() => paths && paths.length > 0).then(() => {
       // Parent should get paths in a message
-      expect(paths[0]).to.equal('somepath');
+      expect(paths[0]).to.equal(path);
       // Listeners should have been triggered due window.postMessage
       expect(callback).to.have.been.calledWith(DataMessage);
       // Remove Event listener so we dont trigger it in upcoming tests
@@ -213,6 +216,28 @@ describe('PluginAPITests', () => {
     cy.waitUntil(() => paths && paths.length > 0).then(() => {
       // Parent should get paths in a message
       expect(paths[0]).to.equal('run-metadata');
+      // Remove Event listener so we dont trigger it in upcoming tests
+      window.parent.removeEventListener('message', listener);
+    });
+  });
+
+  it('Metaflow.subscribeToTaskInfo', () => {
+    const { Metaflow } = require('../MetaflowPluginAPI');
+    let paths;
+
+    // Add event listener to parent window.
+    const listener = (event) => {
+      expect(event.data.type).to.equal('PluginSubscribeToData');
+      paths = event.data.paths;
+    };
+    window.parent.addEventListener('message', listener);
+
+    // Susbcribe to 'somepath' data
+    Metaflow.subscribeToTaskInfo(cy.stub());
+
+    cy.waitUntil(() => paths && paths.length > 0).then(() => {
+      // Parent should get paths in a message
+      expect(paths[0]).to.equal('task-info');
       // Remove Event listener so we dont trigger it in upcoming tests
       window.parent.removeEventListener('message', listener);
     });
