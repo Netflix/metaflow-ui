@@ -2,10 +2,10 @@ import { TFunction } from 'i18next';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import { AsyncStatus, Step, Task } from '../../types';
+import { AsyncStatus, Step, Task, TaskStatus } from '../../types';
 import { formatDuration } from '../../utils/format';
 import { getPath } from '../../utils/routing';
-import { colorByStatus } from '../../utils/style';
+import { iconByStatus } from '../../utils/style';
 import { getTaskDuration, getTaskId } from '../../utils/task';
 import Icon from '../Icon';
 
@@ -19,7 +19,7 @@ type BaseProps = {
   t: TFunction;
   duration: number | null;
   paramsString?: string;
-  status: string;
+  status: TaskStatus;
   searchStatus?: AsyncStatus;
   tasksTotal?: number;
   tasksVisible?: number;
@@ -35,6 +35,8 @@ type Props = TaskRow | StepRow;
 const TaskListLabel: React.FC<Props> = (props) => {
   const { open, grouped, tasksTotal, tasksVisible } = props;
 
+  const statusIcon = iconByStatus(props.status);
+
   return (
     <RowLabel type={props.type} isOpen={open} group={grouped} status={props.status}>
       {props.type === 'task' ? (
@@ -49,6 +51,8 @@ const TaskListLabel: React.FC<Props> = (props) => {
           }
           data-testid="tasklistlabel-link"
         >
+          <StatusWrapper>{statusIcon && <Icon name={statusIcon} size="xs" />}</StatusWrapper>
+
           <RowLabelContent>
             <RowLabelTaskName
               data-testid="tasklistlabel-text"
@@ -66,6 +70,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
               {formatDuration(getTaskDuration(props.item), 1)}
             </RowDuration>
           </RowLabelContent>
+          <Padding />
         </Link>
       ) : (
         <StepLabel
@@ -73,11 +78,8 @@ const TaskListLabel: React.FC<Props> = (props) => {
           data-testid="tasklistlabel-step-container"
           isLoading={props.searchStatus === 'Loading'}
         >
-          {props.searchStatus === 'Loading' ? (
-            <Icon name="rowLoader" size="xs" spin data-testid="tasklistlabel-open-icon" />
-          ) : (
-            <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="tasklistlabel-open-icon" />
-          )}
+          <StatusWrapper>{statusIcon && <Icon name={statusIcon} size="xs" />}</StatusWrapper>
+
           <RowLabelContent type="step">
             <RowStepName
               data-testid="tasklistlabel-text"
@@ -96,6 +98,11 @@ const TaskListLabel: React.FC<Props> = (props) => {
             </RowStepName>
             <RowDuration data-testid="tasklistlabel-duration">{formatDuration(props.duration, 1)}</RowDuration>
           </RowLabelContent>
+          {props.searchStatus === 'Loading' ? (
+            <Icon name="rowLoader" size="xs" spin data-testid="tasklistlabel-open-icon" />
+          ) : (
+            <Icon name="arrowDown" size="xs" rotate={open ? 0 : -90} data-testid="tasklistlabel-open-icon" />
+          )}
         </StepLabel>
       )}
     </RowLabel>
@@ -120,8 +127,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   font-size: ${(p) => (p.type === 'task' ? '0.75rem' : '0.875rem')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
   line-height: 1.6875rem;
-  border-left: 2px solid ${(p) => colorByStatus(p.theme, p.status)};
-  padding-left: ${(p) => (p.group ? '0' : '0.5rem')};
+  border-left: ${(p) => p.theme.border.thinLight};
 
   a {
     display: flex;
@@ -129,7 +135,6 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
     color: ${(p) => p.theme.color.text.dark};
     text-decoration: none;
     max-width: 100%;
-    padding-left: ${(p) => (p.group ? '2.5rem' : '0rem')};
     white-space: nowrap;
 
     ${(p) =>
@@ -177,8 +182,15 @@ const RowLabelTaskName = styled.div`
 
 const RowTaskName = styled.div`
   overflow: hidden;
-
   text-overflow: ellipsis;
+`;
+
+const StatusWrapper = styled.div`
+  width: 2rem;
+  display: flex;
+  justify-content: center;
+  flex-grow: 0;
+  flex-shrink: 0;
 `;
 
 const StepLabel = styled.div<{ isLoading: boolean }>`
@@ -196,11 +208,11 @@ const StepLabel = styled.div<{ isLoading: boolean }>`
     flex-shrink: 0;
   }
 
-  > div {
-    padding-left: 0.625rem;
-  }
-
   svg path {
     fill: ${(p) => (p.isLoading ? '#717171' : '#fff')};
   }
+`;
+
+const Padding = styled.div`
+  width: 2.5rem;
 `;

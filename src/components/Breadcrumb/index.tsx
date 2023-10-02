@@ -384,7 +384,6 @@ const BreadcrumbGroup = styled.div`
 `;
 
 const BreadcrumbEmptyInput = styled(InputWrapper)`
-  width: 35rem;
   border: 1px solid ${(p) => p.theme.color.text.blue};
 
   input {
@@ -467,7 +466,6 @@ const StyledBreadcrumb = styled(ItemRow)`
   input[type='text'] {
     line-height: 1.875rem;
     font-size: 0.875rem;
-    width: 35rem;
     background: #fff;
     padding-left: 0;
     margin-left: -0.25rem;
@@ -484,6 +482,7 @@ const GoToHolder = styled.div`
   height: 2rem;
   margin-top: -0.5625rem;
   z-index: 2;
+  width: 100%;
 `;
 
 const GoToContainer = styled.div`
@@ -491,6 +490,7 @@ const GoToContainer = styled.div`
   top: -${(p) => p.theme.spacer.sm}rem;
   left: -${(p) => p.theme.spacer.sm}rem;
   ${PopoverStyles}
+  width: 100%;
 `;
 
 const GotoClose = styled.div`

@@ -4,10 +4,11 @@ import styled from 'styled-components';
 import AutoUpdating from '../../../components/AutoUpdating';
 import { TD } from '../../../components/Table';
 import { Run } from '../../../types';
-import { getRunDuration, getRunEndTime, getRunId, getTagOfType, getUsername } from '../../../utils/run';
-import { StatusColorCell } from './ResultGroupStatus';
+import { getRunDuration, getRunId, getTagOfType, getUsername } from '../../../utils/run';
+import StatusColorCell from './ResultGroupStatus';
 import ResultGroupTags from './ResultGroupTags';
 import StartedAtCell from './StartedAtCell';
+import FinishedAtCell from './FinishedAtCell';
 
 //
 // Typedef
@@ -27,11 +28,11 @@ type ResultGroupCellsProps = {
 //
 
 const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
-  ({ r, params, updateListValue, link, timezone, infoOpen }) => {
+  ({ r, params, updateListValue, link, timezone }) => {
     return (
       <>
         {/* STATUS INDICATOR */}
-        <StatusColorCell status={r.status} title={r.status} hideBorderBottom={infoOpen} />
+        <StatusColorCell status={r.status} title={r.status} />
         {/* FLOW ID */}
         {params._group !== 'flow_id' && (
           <TDWithLink link={link}>
@@ -49,9 +50,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* STARTED AT */}
         <StartedAtCell timezone={timezone} run={r} link={link} />
         {/* FINISHED AT */}
-        <TDWithLink link={link}>
-          <WordBreak>{getRunEndTime(r, timezone)}</WordBreak>
-        </TDWithLink>
+        <FinishedAtCell timezone={timezone} run={r} link={link} />
         {/* DURATION */}
         <TDWithLink link={link}>
           <WordBreak>

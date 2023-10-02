@@ -60,6 +60,11 @@ const ResultGroup: React.FC<Props> = React.memo(
 
     const cols: TableColDefinition[] = [
       {
+        label: t('fields.status'),
+        key: 'status',
+        maxWidth: '62',
+      },
+      {
         label: t('fields.flow_id'),
         key: 'flow_id',
         sortable: true,
