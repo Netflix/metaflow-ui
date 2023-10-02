@@ -169,12 +169,20 @@ const Metaflow = {
     this.subscribe(['task-info'], (data) => fn(data));
   },
 
+  subscribeToInfo(fn) {
+    this.subscribe(['info'], (event) => fn(event.data));
+  },
+
   subscribeToRunMetadata(fn) {
     this.subscribe(['run-metadata'], (data) => fn(data));
   },
 
   subscribeToRunInfo(fn) {
     this.subscribe(['run-info'], (data) => fn(data));
+  },
+  
+  subscribeToRunInfo(fn) {
+    this.subscribe(['run-info'], (event) => fn(event.data));
   },
 };
 
