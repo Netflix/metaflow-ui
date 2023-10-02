@@ -6,6 +6,7 @@ import Breadcrumb from '../Breadcrumb';
 import { ItemRow } from '../Structure';
 import HelpMenu from '../HelpMenu';
 import ConnectionStatus from '../ConnectionStatus';
+import FEATURE_FLAGS from '../../utils/FEATURE';
 import PluginGroup from '../Plugins/PluginGroup';
 
 //
@@ -16,11 +17,13 @@ const AppBar: React.FC = () => {
   return (
     <Wrapper>
       <ItemRow pad="lg">
-        <LogoLink to={'/'}>
-          <Logo data-testid="page-logo-image" src={logo} />
-        </LogoLink>
+        {!FEATURE_FLAGS.HIDE_LOGO && (
+          <LogoLink to={'/'}>
+            <Logo data-testid="page-logo-image" src={logo} />
+          </LogoLink>
+        )}
         <Breadcrumb />
-        <HelpMenu />
+        {!FEATURE_FLAGS.HIDE_QUICK_LINKS && <HelpMenu />}
         <ConnectionStatus />
       </ItemRow>
       <ItemRow pad="lg">

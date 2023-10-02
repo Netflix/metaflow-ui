@@ -48,7 +48,7 @@ const en = {
       branch: 'Branch',
       'user-tags': 'User tags',
       tasks: 'Tasks',
-
+      'filter-by': 'Filter by',
       flow_id: 'Flow',
 
       id: 'ID',
@@ -312,6 +312,12 @@ const en = {
       ARTIFACT_TABLE_msg: 'Show artifact table on task view.',
       ARTIFACT_SEARCH_msg: 'Enable search field in timeline view to filter tasks by artifact values.',
       DEBUG_VIEW_msg: 'Expose this view in help menu as a link.',
+      CARDS_msg: 'Show cards on task view.',
+      HIDE_LOGO_msg: 'Hide Metaflow logo.',
+      HIDE_HOME_BUTTON_msg: 'Hide home button.',
+      HIDE_STATUS_FILTERS_msg: 'Hide run status filters.',
+      HIDE_TABLE_HEADER_msg: 'Hide header of runs table.',
+      HIDE_QUICK_LINKS_msg: 'Hide quick links button.',
       CACHE_DISABLE_msg: 'Disable cache from server side.',
       DB_LISTEN_DISABLE_msg: 'Disable real time update features from database.',
       HEARTBEAT_DISABLE_msg: 'Disable heartbeat for tasks and runs.',

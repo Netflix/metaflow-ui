@@ -51,7 +51,7 @@ Plugins requires some configuration to their manifest.json
   "name": "Plugin name", // Name will be visible in UI
   "version": "0.0.1",
   "entrypoint": "index.html", // Name for HTML file used
-  "slot": "run-header", // Slot in UI where plugin is rendered. "run-header", "task-details", or "header"
+  "slot": "run-header", // Slot in UI where plugin is rendered. "run-header", "task-details", "header", "top-nav"
   "visible": true, // (Optional) Define if plugin should be visible by default. Default: true
   "container": "titled-container", // (Optional) Define what kind of container is used for plugin. "collapsable" or "titled-container". Default: "collapsable"
   "containerProps": {}, // (Optional) Properties for container element. For example collapsable can take { "initialState": true } to be open by default. Default: null

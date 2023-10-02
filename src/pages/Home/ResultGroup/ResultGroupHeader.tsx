@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { TableColDefinition } from '.';
 import Label, { LabelType } from '../../../components/Label';
 import { HeaderColumn, TR } from '../../../components/Table';
+import FEATURE_FLAGS from '../../../utils/FEATURE';
 
 type ResultGroupHeaderProps = {
   handleClick: (str: string) => void;
@@ -17,14 +18,17 @@ type ResultGroupHeaderProps = {
 const ResultGroupHeader: React.FC<ResultGroupHeaderProps> = React.memo(
   ({ handleClick, error, cols, onOrderChange, order, label, clickable }) => (
     <>
-      <TR className="result-group-title">
-        <th colSpan={cols.length + 1} style={{ textAlign: 'left' }}>
-          <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
-            {label}
-          </ResultGroupTitle>
-          {error && <Label type={LabelType.Warning}>{error.message}</Label>}
-        </th>
-      </TR>
+      {!FEATURE_FLAGS.HIDE_TABLE_HEADER && (
+        <TR className="result-group-title">
+          <th colSpan={cols.length + 1} style={{ textAlign: 'left' }}>
+            <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
+              {label}
+            </ResultGroupTitle>
+
+            {error && <Label type={LabelType.Warning}>{error.message}</Label>}
+          </th>
+        </TR>
+      )}
       <TR className="result-group-columns">
         {cols.map((col) => (
           <HeaderColumn

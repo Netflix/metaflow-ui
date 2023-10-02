@@ -1,5 +1,5 @@
 const VERSION_INFO = {
-  api: '1.1.1',
+  api: '1.1.2',
 };
 
 const Listeners = [];
@@ -158,8 +158,16 @@ const Metaflow = {
     this.subscribe(['metadata'], (event) => fn(event.data));
   },
 
+  subscribeToInfo(fn) {
+    this.subscribe(['info'], (event) => fn(event.data));
+  },
+
   subscribeToRunMetadata(fn) {
     this.subscribe(['run-metadata'], (event) => fn(event.data));
+  },
+  
+  subscribeToRunInfo(fn) {
+    this.subscribe(['run-info'], (event) => fn(event.data));
   },
 };
 

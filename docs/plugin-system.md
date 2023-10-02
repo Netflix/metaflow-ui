@@ -77,7 +77,7 @@ This plugin is registered to be rendered in the task details section (path /FLOW
 
 ## Plugin slots
 
-There are three implemented plugin slots, `run-header`, `task-details`, and `header`. The desired slot must be defined in manifest.json file.
+There are three implemented plugin slots, `run-header`, `task-details`, `header`, and `top-nav`. The desired slot must be defined in manifest.json file.
 
 ### run-header
 
@@ -90,6 +90,10 @@ The `task-details` plugin will be rendered below task details in a collapsable e
 ### header
 
 The `header` plugin will be rendered below the Metaflow logo in the header.
+
+### top-nav
+
+The `top-nav` plugin will be rendered at the very top of the page. It has some special properties that allows the plugin to be used for a navigation bar.
 
 ## Plugin configurations
 

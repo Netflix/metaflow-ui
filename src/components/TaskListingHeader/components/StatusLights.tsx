@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { StatusColorIndicator } from '../../Status';
+import StatusIndicator from '../../StatusIndicator';
 
 //
 // Typedef
@@ -40,7 +40,7 @@ const StatusLightsContainer = styled.div`
   margin-left: 0.5rem;
 `;
 
-const StatusBox = styled(StatusColorIndicator)`
+const StatusBox = styled(StatusIndicator)`
   margin: 0 1px;
 `;
 

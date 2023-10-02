@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
@@ -29,7 +29,7 @@ import {
   TaskSettingsState,
 } from '../../components/Timeline/useTaskListSettings';
 import FEATURE_FLAGS from '../../utils/FEATURE';
-import { isVersionEqualOrHigher } from '../../components/Plugins/PluginManager';
+import { PluginsContext, isVersionEqualOrHigher } from '../../components/Plugins/PluginManager';
 import { Decorator, GraphModel } from '../../components/DAG/DAGUtils';
 import useLogData, { LogData } from '../../hooks/useLogData';
 import { apiHttp } from '../../constants';
@@ -101,7 +101,7 @@ const Task: React.FC<TaskViewProps> = ({
 }) => {
   const { t } = useTranslation();
   const [fullscreen, setFullscreen] = useState<null | FullScreenData>(null);
-
+  const { addDataToStore, clearDataStore } = useContext(PluginsContext);
   //
   // Query params
   //
@@ -117,6 +117,23 @@ const Task: React.FC<TaskViewProps> = ({
   }
 
   //
+  // Basic task info for plugins
+  //
+
+  const onUpdateTasks = useCallback(
+    (item: ITask[]) => {
+      const record = { ...item };
+
+      addDataToStore('task-info', record);
+    },
+    [addDataToStore],
+  );
+
+  useEffect(() => {
+    return () => clearDataStore('task-info');
+  }, [clearDataStore]);
+
+  //
   // Task/attempt data
   // This is only used if we dont have data already from tasks listing.
   //
@@ -129,6 +146,7 @@ const Task: React.FC<TaskViewProps> = ({
     subscribeToEvents: true,
     initialData: null,
     updatePredicate,
+    onUpdate: onUpdateTasks,
     pause: stepName === 'not-selected' || taskId === 'not-selected' || !!taskFromList,
   });
 

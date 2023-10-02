@@ -1,10 +1,9 @@
 import styled from 'styled-components';
 import { TD } from '../../../components/Table';
-import { colorByStatus, iconByStatus } from '../../../utils/style';
-import Icon, { SupportedIcons } from '../../../components/Icon';
 import React from 'react';
 import { RunStatus } from '../../../types';
 import { SmallText } from '../../../components/Text';
+import StatusIndicator from '../../../components/StatusIndicator';
 
 //
 // Small status indicator on left side of the rows
@@ -16,24 +15,19 @@ type StatusColorCellProps = {
 };
 
 const StatusColorCell: React.FC<StatusColorCellProps> = ({ status, title }) => {
-  const name: keyof SupportedIcons | undefined = iconByStatus(status);
-
   return (
     <>
-      <StatusCell status={status}>
-        {name && <Icon name={name} size="xs" />}
+      <StatusCell>
+        <StatusIndicator status={status} />
         <Text>{title} Run</Text>
       </StatusCell>
     </>
   );
 };
 
-const StatusCell = styled(TD)<{
-  status: string;
-}>`
+const StatusCell = styled(TD)`
   text-align: center;
   position: relative;
-  color: ${(p) => colorByStatus(p.theme, p.status) || 'transparent'} !important;
   i {
     vertical-align: middle;
   }

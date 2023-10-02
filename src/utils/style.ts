@@ -51,7 +51,6 @@ export function colorByStatus(theme: DefaultTheme, status: string): string {
  * Default icons for different statuses
  */
 export function iconByStatus(status: keyof RunStatus | TaskStatus): keyof SupportedIcons | undefined {
-  console.log('status', status);
   switch (status) {
     case 'completed':
       return 'completed';
