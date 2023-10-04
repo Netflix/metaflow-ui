@@ -1,8 +1,8 @@
 const VERSION_INFO = {
-  api: '1.1.1',
+  api: '1.2.0',
 };
 
-const Listeners = [];
+const DataListeners = [];
 const EventListeners = [];
 let initialised = false;
 let onReadyFn = () => null;
@@ -19,18 +19,21 @@ function messageHandler(event) {
         if (!initialised) {
           Metaflow.parameters = event.data.config;
           Metaflow.resource = event.data.resource;
+          Metaflow.settings = event.data.settings;
           PluginInfo.manifest = event.data.config;
           PluginInfo.slot = event.data.config?.config?.slot;
           initialised = true;
           if (onReadyFn) {
-            onReadyFn(Metaflow.parameters, Metaflow.resource);
+            onReadyFn(Metaflow.parameters, Metaflow.resource, Metaflow.settings);
           }
         }
         return;
       }
       case 'DataUpdate': {
-        for (const listener of Listeners) {
-          listener(event.data);
+        for (const listener of DataListeners) {
+          if (event.data.path && listener.paths.includes(event.data.path)) {
+            listener.callback(event.data);
+          }
         }
         return;
       }
@@ -93,7 +96,7 @@ const Metaflow = {
    * @param {(event: { path: string, data: * }) => void} fn
    */
   subscribe(paths, fn) {
-    Listeners.push(fn);
+    DataListeners.push({ paths, callback: fn });
     window.parent.postMessage({ name: window.name, type: 'PluginSubscribeToData', paths: paths }, '*');
   },
   /**
@@ -155,11 +158,31 @@ const Metaflow = {
   },
 
   subscribeToMetadata(fn) {
-    this.subscribe(['metadata'], (event) => fn(event.data));
+    this.subscribe(['metadata'], (data) => fn(data));
+  },
+
+  subscribeToInfo(fn) {
+    this.subscribe(['info'], (data) => fn(data));
+  },
+
+  subscribeToTaskInfo(fn) {
+    this.subscribe(['task-info'], (data) => fn(data));
+  },
+
+  subscribeToInfo(fn) {
+    this.subscribe(['info'], (event) => fn(event.data));
   },
 
   subscribeToRunMetadata(fn) {
-    this.subscribe(['run-metadata'], (event) => fn(event.data));
+    this.subscribe(['run-metadata'], (data) => fn(data));
+  },
+
+  subscribeToRunInfo(fn) {
+    this.subscribe(['run-info'], (data) => fn(data));
+  },
+  
+  subscribeToRunInfo(fn) {
+    this.subscribe(['run-info'], (event) => fn(event.data));
   },
 };
 

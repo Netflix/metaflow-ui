@@ -24,6 +24,7 @@ import { fetchFeaturesConfig } from './utils/FEATURE';
 import Announcements from './components/Announcement';
 import { PluginsProvider } from './components/Plugins/PluginManager';
 import PluginRegisterSystem from './components/Plugins/PluginRegisterSystem';
+import TopNavPlugin from './components/Plugins/TopNavPlugin';
 
 import { appBasePath } from './constants';
 
@@ -52,6 +53,7 @@ const App: React.FC = () => {
                   <QueryParamProvider ReactRouterRoute={Route}>
                     {flagsReceived ? (
                       <>
+                        <TopNavPlugin />
                         <Notifications />
                         <Announcements />
                         <AppBar />

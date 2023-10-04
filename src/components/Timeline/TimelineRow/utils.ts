@@ -1,6 +1,6 @@
 import { lighten } from 'polished';
 import { DefaultTheme } from 'styled-components';
-import { Step, Task } from '../../../types';
+import { Step, Task, TaskStatus } from '../../../types';
 import { StepRowData } from '../useTaskData';
 import { LabelPosition } from './LineElement';
 
@@ -30,7 +30,7 @@ export function getStepDuration(step: Step, status: string, calculatedDuration: 
 
 export function getRowStatus(
   row: { type: 'step'; data: Step; rowObject: StepRowData } | { type: 'task'; data: Task },
-): string {
+): TaskStatus {
   if (row.type === 'step') {
     return row.rowObject.status;
   } else {

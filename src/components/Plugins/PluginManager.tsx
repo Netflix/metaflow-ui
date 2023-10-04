@@ -34,6 +34,7 @@ export type PluginSettings = {
   container?: string; // Should be enum?
   containerProps?: Record<string, unknown>;
   useApplicationStyles?: boolean;
+  height?: number;
 };
 
 type PluginVersionInfo = {
@@ -44,11 +45,11 @@ type PluginVersionInfo = {
 // Constants. Plugin will not render if it doesn't satisfy SUPPORTED_PLUGIN_API_VERSION.
 //
 
-export type AllowedSlot = 'task-details' | 'run-header' | 'header';
+export type AllowedSlot = 'task-details' | 'run-header' | 'header' | 'top-nav';
 
 const SUPPORTED_PLUGIN_API_VERSION = '0.13.0';
 const RECOMMENDED_PLUGIN_API_VERSION = '1.1.0';
-const ALLOWED_SLOTS: AllowedSlot[] = ['task-details', 'run-header', 'header'];
+const ALLOWED_SLOTS: AllowedSlot[] = ['task-details', 'run-header', 'header', 'top-nav'];
 
 //
 // Utils
@@ -107,7 +108,7 @@ export const MESSAGE_NAME = {
 type UpdatePluginMessage = { slot: string; name: string; visible: boolean };
 
 // Collection of functions to validate messages from plugins
-export const PluginCommuncationsAPI = {
+export const PluginCommunicationsAPI = {
   isPluginMessage(event: MessageEvent, name?: string): boolean {
     return Object.values(MESSAGE_NAME).indexOf(event.data?.type) > -1 && event.data.name === name;
   },
@@ -291,7 +292,7 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Susbcribe to listen UPDATE_PLUGIN messages so we can update plugin visibility.
   useEffect(() => {
     subscribeToEvent('plugin_manager', 'UPDATE_PLUGIN', (data) => {
-      if (PluginCommuncationsAPI.isUpdatePluginMessage(data)) {
+      if (PluginCommunicationsAPI.isUpdatePluginMessage(data)) {
         setPlugins((items) =>
           items.map((pl) =>
             pl.name === data.name && pl.config.slot === data.slot

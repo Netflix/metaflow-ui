@@ -1,4 +1,6 @@
 import { DefaultTheme } from 'styled-components';
+import { SupportedIcons } from '../components/Icon';
+import { RunStatus, TaskStatus } from '../types';
 
 /**
  * Get browsers font size. User might have changed default of 16px.
@@ -42,5 +44,21 @@ export function colorByStatus(theme: DefaultTheme, status: string): string {
       return theme.color.bg.yellow;
     default:
       return theme.color.bg.dark;
+  }
+}
+
+/**
+ * Default icons for different statuses
+ */
+export function iconByStatus(status: keyof RunStatus | TaskStatus): keyof SupportedIcons | undefined {
+  switch (status) {
+    case 'completed':
+      return 'completed';
+    case 'failed':
+      return 'error';
+    case 'running':
+      return 'running';
+    default:
+      return 'pending';
   }
 }

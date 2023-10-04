@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { useLocation, match, Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getPath, getRouteMatch, KnownURLParams } from '../../utils/routing';
-import Button, { ButtonLink, ButtonCSS, BigButton } from '../Button';
+import { ButtonLink, ButtonCSS, BigButton } from '../Button';
 import Icon from '../Icon';
 import { PopoverStyles } from '../Popover';
 import { ItemRow } from '../Structure';
@@ -13,6 +13,7 @@ import { AutoCompleteLine } from '../AutoComplete';
 import HeightAnimatedContainer from '../HeightAnimatedContainer';
 import InputWrapper from '../Form/InputWrapper';
 import useOnKeyPress from '../../hooks/useOnKeyPress';
+import FEATURE_FLAGS from '../../utils/FEATURE';
 
 //
 // Component
@@ -131,11 +132,6 @@ const Breadcrumb: React.FC = () => {
     resetAutocomplete();
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLButtonElement>) => {
-    if (e && e.charCode === 13) {
-      openModal();
-    }
-  };
   //
   // Esc listeners
   //
@@ -144,15 +140,17 @@ const Breadcrumb: React.FC = () => {
 
   return (
     <StyledBreadcrumb pad="md">
-      <ButtonLink
-        to={'/'}
-        tabIndex={0}
-        data-testid={'home-button'}
-        variant="primaryText"
-        disabled={location.pathname === '/'}
-      >
-        {t('home.home') as string}
-      </ButtonLink>
+      {!FEATURE_FLAGS.HIDE_HOME_BUTTON && (
+        <ButtonLink
+          to={'/'}
+          tabIndex={0}
+          data-testid={'home-button'}
+          variant="primaryText"
+          disabled={location.pathname === '/'}
+        >
+          {t('home.home') as string}
+        </ButtonLink>
+      )}
 
       {/* On home page, when not editing breadcrumb */}
       {buttonList.length === 0 && !edit && (
@@ -169,7 +167,7 @@ const Breadcrumb: React.FC = () => {
       {/* Rendering breadcrumb items when not in home and not editing. */}
       {!edit && buttonList.length > 0 && (
         <>
-          <BreadcrumbGroup data-testid="breadcrumb-button-container">
+          <BreadcrumbGroup data-testid="breadcrumb-button-container" onClick={() => openModal()}>
             {buttonList.map(({ label, path }, index) => {
               const isLastItem = index + 1 === buttonList.length;
               return (
@@ -189,9 +187,6 @@ const Breadcrumb: React.FC = () => {
                 </CrumbComponent>
               );
             })}
-            <EditButton onClick={openModal} onKeyPress={handleKeyPress} tabIndex={0} textOnly>
-              <Icon name="pen" size="md" />
-            </EditButton>
           </BreadcrumbGroup>
         </>
       )}
@@ -221,20 +216,23 @@ const Breadcrumb: React.FC = () => {
               <HeightAnimatedContainer>
                 {autoCompleteResult.status === 'Ok' && autoCompleteResult.data.length > 0 && str !== '' ? (
                   <BreadcrumbInfo>
-                    {autoCompleteResult.data.slice(0, 4).map((item) => (
-                      <AutoCompleteLine
-                        active={item.value === activeAutoCompleteOption}
-                        key={item.value}
-                        onClick={() => {
-                          const value = mergeWithString(str, item.value);
-                          setStr(value);
-                          tryMove(value);
-                          closeUp();
-                        }}
-                      >
-                        {takeLastSplitFromURL(item.label)}
-                      </AutoCompleteLine>
-                    ))}
+                    {autoCompleteResult.data
+                      .slice(0, 4)
+                      .filter((item) => !item.value.startsWith('_'))
+                      .map((item) => (
+                        <AutoCompleteLine
+                          active={item.value === activeAutoCompleteOption}
+                          key={item.value}
+                          onClick={() => {
+                            const value = mergeWithString(str, item.value);
+                            setStr(value);
+                            tryMove(value);
+                            closeUp();
+                          }}
+                        >
+                          {takeLastSplitFromURL(item.label)}
+                        </AutoCompleteLine>
+                      ))}
                   </BreadcrumbInfo>
                 ) : (
                   <BreadcrumbInfo>
@@ -381,10 +379,10 @@ export function findAdditionalButtons(routeMatch: match<KnownURLParams> | null, 
 const BreadcrumbGroup = styled.div`
   ${ButtonCSS}
   border-color: ${(p) => p.theme.color.text.blue};
+  width: 100%;
 `;
 
 const BreadcrumbEmptyInput = styled(InputWrapper)`
-  width: 35rem;
   border: 1px solid ${(p) => p.theme.color.text.blue};
 
   input {
@@ -437,26 +435,6 @@ const BreadcrumbDivider = styled.div`
   z-index: 1;
 `;
 
-const EditButton = styled(Button)`
-  background: transparent;
-  height: 2.375rem;
-
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-left: 0.25rem;
-
-  border-left: ${(p) => p.theme.border.thinPrimary};
-
-  &:hover {
-    border-left: ${(p) => p.theme.border.thinPrimary};
-    background: transparent;
-  }
-
-  .icon {
-    height: 1.5rem;
-  }
-`;
-
 const StyledBreadcrumb = styled(ItemRow)`
   font-size: 0.875rem;
 
@@ -467,7 +445,6 @@ const StyledBreadcrumb = styled(ItemRow)`
   input[type='text'] {
     line-height: 1.875rem;
     font-size: 0.875rem;
-    width: 35rem;
     background: #fff;
     padding-left: 0;
     margin-left: -0.25rem;
@@ -484,6 +461,7 @@ const GoToHolder = styled.div`
   height: 2rem;
   margin-top: -0.5625rem;
   z-index: 2;
+  width: 100%;
 `;
 
 const GoToContainer = styled.div`
@@ -491,6 +469,7 @@ const GoToContainer = styled.div`
   top: -${(p) => p.theme.spacer.sm}rem;
   left: -${(p) => p.theme.spacer.sm}rem;
   ${PopoverStyles}
+  width: 100%;
 `;
 
 const GotoClose = styled.div`

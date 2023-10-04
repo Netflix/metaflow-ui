@@ -19,7 +19,7 @@ type Props = {
   resourceParams?: Record<string, string>;
 };
 
-const VALID_CONTAINERS = ['collapsable', 'titled-container', 'none'];
+const VALID_CONTAINERS = ['collapsable', 'titled-container', 'none', 'sticky'];
 
 //
 // Renders list of plugin to iframe in collapsable element.
@@ -78,6 +78,10 @@ const PluginContainer: React.FC<{ plugin: Plugin; children: ReactNode }> = ({ pl
     );
   }
 
+  if (plugin.config.container === 'sticky') {
+    return <StickyContainer style={{ height: plugin.config.height }}>{children}</StickyContainer>;
+  }
+
   return <>{children}</>;
 };
 
@@ -103,6 +107,18 @@ export const PluginHeader = styled.div`
 
   svg path {
     fill: #333;
+  }
+`;
+
+const StickyContainer = styled.div`
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  & iframe {
+    position: absolute;
   }
 `;
 

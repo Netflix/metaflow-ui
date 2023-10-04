@@ -6,6 +6,7 @@ import Breadcrumb from '../Breadcrumb';
 import { ItemRow } from '../Structure';
 import HelpMenu from '../HelpMenu';
 import ConnectionStatus from '../ConnectionStatus';
+import FEATURE_FLAGS from '../../utils/FEATURE';
 import PluginGroup from '../Plugins/PluginGroup';
 
 //
@@ -15,15 +16,15 @@ import PluginGroup from '../Plugins/PluginGroup';
 const AppBar: React.FC = () => {
   return (
     <Wrapper>
-      <ConnectionStatusWrapper>
-        <ConnectionStatus />
-      </ConnectionStatusWrapper>
       <ItemRow pad="lg">
-        <LogoLink to={'/'}>
-          <Logo data-testid="page-logo-image" src={logo} />
-        </LogoLink>
+        {!FEATURE_FLAGS.HIDE_LOGO && (
+          <LogoLink to={'/'}>
+            <Logo data-testid="page-logo-image" src={logo} />
+          </LogoLink>
+        )}
         <Breadcrumb />
-        <HelpMenu />
+        {!FEATURE_FLAGS.HIDE_QUICK_LINKS && <HelpMenu />}
+        <ConnectionStatus />
       </ItemRow>
       <ItemRow pad="lg">
         <PluginGroup id="header" title="Extensions" slot="header" />
@@ -49,7 +50,7 @@ const Wrapper = styled.header`
   right: 0;
   min-height: ${(p) => p.theme.layout.appbarHeight}rem;
   margin: 0 auto;
-  padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem;
+  padding: ${(p) => p.theme.layout.pagePaddingY}rem ${(p) => p.theme.layout.pagePaddingX}rem;
   background: ${(p) => p.theme.color.bg.white};
   z-index: 999;
   flex-direction: column;
@@ -61,11 +62,4 @@ const Logo = styled.img`
 
 const LogoLink = styled(Link)`
   margin-right: 1.7rem;
-`;
-
-const ConnectionStatusWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  padding-top: ${(p) => p.theme.spacer.md}rem;
 `;

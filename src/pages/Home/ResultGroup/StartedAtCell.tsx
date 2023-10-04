@@ -42,10 +42,13 @@ const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
   });
 
   const hasTrigger = Boolean(metadataRecord?.['execution-triggers']);
+  const displayTime = getRunStartTime(run, timezone);
+  const [date, time] = displayTime ? displayTime.split(' ') : [null, null];
 
   return (
     <TDWithLink link={hasTrigger ? undefined : link}>
-      <WordBreak>{getRunStartTime(run, timezone)}</WordBreak>
+      <DisplayDate>{date}</DisplayDate>
+      <DisplayTime>{time}</DisplayTime>
       {hasTrigger ? (
         <Triggers showMultiple triggerEventsValue={JSON.parse(metadataRecord?.['execution-triggers'] ?? '')} />
       ) : null}
@@ -53,7 +56,12 @@ const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
   );
 };
 
-const WordBreak = styled.span`
+const DisplayDate = styled.div`
+  word-break: break-word;
+`;
+
+const DisplayTime = styled.div`
+  color: ${(p) => p.theme.color.text.light};
   word-break: break-word;
 `;
 

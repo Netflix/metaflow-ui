@@ -47,6 +47,7 @@ declare module 'styled-components' {
         red: string;
         green: string;
         greenLight: string;
+        tooltip: string;
       };
       text: {
         white: string;
@@ -71,6 +72,12 @@ declare module 'styled-components' {
         default: ButtonColors;
         text: ButtonColors;
         primaryText: ButtonColors;
+      };
+      connection: {
+        green: string;
+        lightGreen: string;
+        yellow: string;
+        red: string;
       };
     };
 

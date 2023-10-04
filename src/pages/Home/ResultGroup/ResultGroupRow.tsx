@@ -8,7 +8,6 @@ import { getPath } from '../../../utils/routing';
 import { getRunId } from '../../../utils/run';
 import TimelinePreview from './TimelinePreview';
 import ResultGroupCells from './ResultGroupCells';
-import { StatusColorCell } from './ResultGroupStatus';
 import { TableColDefinition } from './';
 import HeightAnimatedContainer from '../../../components/HeightAnimatedContainer';
 import ParametersPreview from './ParametersPreview';
@@ -103,7 +102,6 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
       </StyledTR>
       {visible && (
         <tr>
-          <StatusColorCell status={run.status} title={run.status} hideBorderTop={true} />
           <StyledTD colSpan={cols.length}>
             <HeightAnimatedContainer active={isTransitioning(rowState)}>
               <StyledSection closing={rowState === RowState.Closing}>
@@ -135,7 +133,9 @@ function isTransitioning(rs: RowState) {
 // Styles
 //
 
-const StyledTR = styled(TR)``;
+const StyledTR = styled(TR)`
+  height: 3.5rem;
+`;
 
 // Need to align expand area by one pixel so that border is on correct position
 const StyledTD = styled.td`

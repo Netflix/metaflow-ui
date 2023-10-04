@@ -2,8 +2,9 @@ import React, { useContext, useEffect, useRef, useState, useMemo, useCallback } 
 import { useLocation } from 'react-router';
 import styled from 'styled-components';
 import PLUGIN_STYLESHEET from './PluginDefaultStyleSheet';
-import { PluginCommuncationsAPI, MESSAGE_NAME, PluginsContext, Plugin } from './PluginManager';
+import { PluginCommunicationsAPI, MESSAGE_NAME, PluginsContext, Plugin } from './PluginManager';
 import { getRouteMatch, KnownURLParams } from '../../utils/routing';
+import { TimezoneContext } from '../TimezoneProvider';
 
 //
 // Typedef
@@ -31,10 +32,11 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
   const loc = useLocation();
   const VERY_UNIQUE_ID = id + title + url;
   const route = useMemo(() => getRouteMatch(loc.pathname), [loc.pathname]);
+  const { timezone } = useContext(TimezoneContext);
 
   const listener = useCallback(
     (e: MessageEvent) => {
-      if (PluginCommuncationsAPI.isRegisterMessage(e) && e.data.name === title) {
+      if (PluginCommunicationsAPI.isRegisterMessage(e) && e.data.name === title) {
         const w = _iframe.current?.contentWindow;
         if (w) {
           w.postMessage(
@@ -42,6 +44,9 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
               type: 'ReadyToRender',
               config: plugin,
               resource: resourceParams ? resourceParams : route ? convertParams(route.params) : {},
+              settings: {
+                timezone,
+              },
             },
             '*',
           );
@@ -55,7 +60,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
           console.log('Register message happened when iframe wasnt ready');
         }
       }
-      if (PluginCommuncationsAPI.isPluginMessage(e, title)) {
+      if (PluginCommunicationsAPI.isPluginMessage(e, title)) {
         switch (e.data.type) {
           case MESSAGE_NAME.SUBSCRIBE_DATA: {
             if (!e.data.paths) return;
@@ -107,7 +112,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
         }
       }
     },
-    [VERY_UNIQUE_ID, callEvent, plugin, resourceParams, route, subscribeToDatastore, subscribeToEvent, title],
+    [VERY_UNIQUE_ID, callEvent, plugin, resourceParams, route, subscribeToDatastore, subscribeToEvent, title, timezone],
   );
   //
   // Subscribe to messages from iframe
@@ -177,7 +182,7 @@ function convertParams(params: KnownURLParams | null): Partial<Params> {
 //
 
 const PluginSlotContainer = styled.div`
-  padding: 0.5rem 0 1rem 0;
+  // padding: 0.5rem 0 1rem 0;
   height: 100%;
 
   iframe {

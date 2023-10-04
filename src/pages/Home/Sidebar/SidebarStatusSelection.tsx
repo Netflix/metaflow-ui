@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { CheckboxField } from '../../../components/Form/Checkbox';
 import { Section, SectionHeader } from '../../../components/Structure';
+import FEATURE_FLAGS from '../../../utils/FEATURE';
 
 //
 // Typedef
@@ -17,34 +18,40 @@ const SidebarStatusSelection: React.FC<Props> = ({ updateField, status }) => {
   const { t } = useTranslation();
   return (
     <Section>
-      <SectionHeader>{t('fields.status')}</SectionHeader>
+      {FEATURE_FLAGS.HIDE_STATUS_FILTERS ? (
+        <SectionHeader>{t('fields.filter-by')}</SectionHeader>
+      ) : (
+        <>
+          <SectionHeader>{t('fields.status')}</SectionHeader>
 
-      <CheckboxContainer>
-        <StatusCheckboxField
-          label={t('filters.completed')}
-          value="completed"
-          activeStatus={status}
-          updateField={updateField}
-        />
-      </CheckboxContainer>
+          <CheckboxContainer>
+            <StatusCheckboxField
+              label={t('filters.completed')}
+              value="completed"
+              activeStatus={status}
+              updateField={updateField}
+            />
+          </CheckboxContainer>
 
-      <CheckboxContainer>
-        <StatusCheckboxField
-          label={t('filters.running')}
-          value="running"
-          activeStatus={status}
-          updateField={updateField}
-        />
-      </CheckboxContainer>
+          <CheckboxContainer>
+            <StatusCheckboxField
+              label={t('filters.running')}
+              value="running"
+              activeStatus={status}
+              updateField={updateField}
+            />
+          </CheckboxContainer>
 
-      <CheckboxContainer>
-        <StatusCheckboxField
-          label={t('filters.failed')}
-          value="failed"
-          activeStatus={status}
-          updateField={updateField}
-        />
-      </CheckboxContainer>
+          <CheckboxContainer>
+            <StatusCheckboxField
+              label={t('filters.failed')}
+              value="failed"
+              activeStatus={status}
+              updateField={updateField}
+            />
+          </CheckboxContainer>
+        </>
+      )}
     </Section>
   );
 };

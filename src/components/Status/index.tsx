@@ -1,13 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
-import { colorByStatus } from '../../utils/style';
+import { RunStatus, TaskStatus } from '../../types';
+import StatusIndicator from '../StatusIndicator';
 
-const StatusField: React.FC<{ status: string }> = ({ status }) => (
-  <StatusContainer data-testid="status-container">
-    <StatusColorIndicator status={status} data-testid="status-container-color" />
-    {status}
-  </StatusContainer>
-);
+const StatusField: React.FC<{ status: keyof RunStatus | TaskStatus }> = ({ status }) => {
+  return (
+    <StatusContainer data-testid="status-container">
+      <StatusIndicator status={status} />
+      <StatusText>{status}</StatusText>
+    </StatusContainer>
+  );
+};
 
 const StatusContainer = styled.div`
   display: flex;
@@ -15,12 +18,8 @@ const StatusContainer = styled.div`
   text-transform: capitalize;
 `;
 
-export const StatusColorIndicator = styled.div<{ status: string }>`
-  height: 0.5rem;
-  width: 0.5rem;
-  border-radius: 2px;
-  margin-right: 0.5rem;
-  background: ${(p) => colorByStatus(p.theme, p.status)};
+const StatusText = styled.span`
+  margin-left: 0.5rem;
 `;
 
 export default StatusField;

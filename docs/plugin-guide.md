@@ -26,7 +26,7 @@ This way requires the use of the UI application and Metaflow Metadata services.
 > `PLUGINS={"your-new-plugin": {}} docker-compose -f docker-compose.development.yml up`
 
 6. Run Metaflow runs with the new backend service. https://github.com/Netflix/metaflow-service
-7. Open UI in browser `http://localhost:3000` and start developing the plugin. Plugin should show up in `run-header`, `task-details`, or `header` depending on the manifest.json `slot` parameter.
+7. Open UI in browser `http://localhost:3000` and start developing the plugin. Plugin should show up in `run-header`, `task-details`, `header`, or `top-nav` depending on the manifest.json `slot` parameter.
 8. See `Deployment guide` from below
 
 # Deployment
