@@ -93,6 +93,14 @@ const notFoundError = {
   type: 'error',
 };
 
+const forbiddenError = {
+  id: 'forbidden',
+  traceback: undefined,
+  status: 403,
+  title: 'Access Denied',
+  type: 'error',
+};
+
 //
 // Imperative store for data if useBatching is on. Meaning that arriving websocket data is stored in this object while waiting to be batched to
 // view. We use this to prevent dozens of renders per second for more intensive runs.
@@ -255,22 +263,27 @@ export default function useResource<T, U>({
                 newError(targetUrl, defaultError, requestid);
               });
           } else {
-            response
-              .json()
-              .then((result) => {
-                if (typeof result === 'object' && result.id) {
-                  newError(targetUrl, result, requestid);
-                } else if (response.status === 404) {
-                  newError(targetUrl, notFoundError, requestid);
-                } else {
+            if (response.status === 403) {
+              newError(targetUrl, forbiddenError, requestid);
+            } else if (response.status === 404) {
+              newError(targetUrl, notFoundError, requestid);
+            } else {
+              response
+                .json()
+                .then((result) => {
+                  if (typeof result === 'object' && result.id) {
+                    newError(targetUrl, result, requestid);
+                  } else {
+                    newError(targetUrl, defaultError, requestid);
+                  }
+                  postRequest && postRequest(false, targetUrl);
+                })
+                .catch((e) => {
+                  console.error('Error decoding JSON for response: ', response, ': ', e);
                   newError(targetUrl, defaultError, requestid);
-                }
-                postRequest && postRequest(false, targetUrl);
-              })
-              .catch(() => {
-                newError(targetUrl, defaultError, requestid);
-                postRequest && postRequest(false, targetUrl);
-              });
+                  postRequest && postRequest(false, targetUrl);
+                });
+            }
           }
         })
         .catch((_e) => {
