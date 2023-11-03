@@ -78,7 +78,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const { rows, steps, dispatch, counts, taskStatus, isAnyGroupOpen, taskError, stepError } = useRowData(
     params.flowId,
-    getRunId(run),
+    run.run_number.toString(),
   );
 
   //
