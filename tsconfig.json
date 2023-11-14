@@ -25,7 +25,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "baseUrl": "http://localhost:3000/",
+    "baseUrl": "src",
   },
   "include": [ "src/**/*" ],
   "exclude": [
