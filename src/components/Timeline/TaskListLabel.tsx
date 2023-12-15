@@ -89,7 +89,7 @@ const TaskListLabel: React.FC<Props> = (props) => {
                 tasksTotal === tasksVisible ? tasksTotal : `${tasksVisible}/${tasksTotal}`
               }`}
             >
-              {props.item.step_name}
+              <StepNameWithCount>{props.item.step_name}</StepNameWithCount>
               {!!tasksTotal && (
                 <>
                   {' '}
@@ -129,6 +129,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
   line-height: 1.6875rem;
   border-left: ${(p) => p.theme.border.thinLight};
+  padding-left: ${(p) => (p.type === 'task' ? '0.5rem' : undefined)};
 
   a {
     display: flex;
@@ -158,6 +159,7 @@ const RowStepName = styled.span<{ bigName: boolean }>`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  display: flex;
 `;
 
 const RowDuration = styled.span`
@@ -170,8 +172,8 @@ const StepCount = styled.span`
 `;
 
 const RowLabelContent = styled.div<{ type?: 'step' }>`
-  // In case of step row, lets remove icon width from total width so it aligns nicely
-  width: ${(p) => (p.type === 'step' ? 'calc(100% - 30px)' : '100%')};
+  // In case of step row, lets remove icon and caret width from total width so it aligns nicely
+  width: ${(p) => (p.type === 'step' ? 'calc(100% - 60px)' : 'calc(100% - 30px)')};
   display: flex;
   justify-content: space-between;
 `;
@@ -216,4 +218,10 @@ const StepLabel = styled.div<{ isLoading: boolean }>`
 
 const Padding = styled.div`
   width: 2.5rem;
+`;
+
+const StepNameWithCount = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
 `;
