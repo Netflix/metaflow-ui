@@ -7,6 +7,8 @@ declare global {
     APP_BASE_PATH: string | undefined;
     FEATURES: FeatureFlags;
     MF_DEFAULT_TIME_FILTER_DAYS: string;
+    METAFLOW_RELOAD_TOKEN: string;
+    metaflow_card_update: (payload: object) => void;
   }
 }
 /**

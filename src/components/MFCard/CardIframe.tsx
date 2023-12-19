@@ -1,4 +1,4 @@
-import React, { ReactEventHandler, forwardRef, useEffect, useRef, useState } from 'react';
+import React, { ReactEventHandler, forwardRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { MESSAGE_NAME } from '../Plugins/PluginManager';
 import { apiHttp } from '../../constants';
@@ -73,7 +73,7 @@ const CardIframe = forwardRef(function (
       clearInterval(interval);
       window.removeEventListener('message', listener);
     };
-  }, []);
+  }, [ref]);
 
   const handleIframeLoad = () => {
     setLoading(false);
