@@ -8,6 +8,7 @@ const CHECK_HEIGHT_INTERVAL = 1000;
 
 type Props = {
   path: string;
+  onLoad: (iframe: HTMLIFrameElement) => void;
 };
 
 const FALLBACK_HEIGHT = 750; // arbitrary height that should show enough
@@ -16,11 +17,12 @@ const FALLBACK_HEIGHT = 750; // arbitrary height that should show enough
 // Render single card in iframe.
 //
 
-const CardIframe: React.FC<Props> = ({ path }) => {
-  const ref = useRef<HTMLIFrameElement>(null);
+const CardIframe = ({ path, onLoad }: Props) => {
+  // const ref = useRef<HTMLIFrameElement>(null);
   const [elementHeight, setElementHeight] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const ref = useRef<HTMLIFrameElement>(null);
 
   // Check iframe height every second in case it changes somehow.
   useEffect(() => {
@@ -29,7 +31,7 @@ const CardIframe: React.FC<Props> = ({ path }) => {
     // Listen for a message from the iframe to check the height.
     const listener = (e: MessageEvent) => {
       // ensure the message is from the iframe we're interested in
-      if (e.source === ref.current?.contentWindow) {
+      if (e.source === (ref as React.RefObject<HTMLIFrameElement>)?.current?.contentWindow) {
         if (e.data.type === MESSAGE_NAME.HEIGHT_CHECK) {
           if (typeof e.data.height === 'number') {
             // Stop checking iframe periodically if it tells us what height it is.
@@ -47,7 +49,7 @@ const CardIframe: React.FC<Props> = ({ path }) => {
     // If not, wait for a postMessage from the iframe to set the height.
     const checkHeight = () => {
       try {
-        body = ref.current?.contentWindow?.document.body;
+        body = (ref as React.RefObject<HTMLIFrameElement>)?.current?.contentWindow?.document.body;
         if (body) {
           const h = Math.max(body?.scrollHeight ?? 0, body?.clientHeight ?? 0, body?.offsetHeight ?? 0);
           if (h) {
@@ -70,10 +72,13 @@ const CardIframe: React.FC<Props> = ({ path }) => {
       clearInterval(interval);
       window.removeEventListener('message', listener);
     };
-  }, []);
+  }, [ref]);
 
   const handleIframeLoad = () => {
     setLoading(false);
+    if (ref?.current) {
+      onLoad(ref?.current);
+    }
   };
 
   const handleIframeError: ReactEventHandler<HTMLIFrameElement> = (e) => {
@@ -82,7 +87,7 @@ const CardIframe: React.FC<Props> = ({ path }) => {
   };
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       {error && <div>Something went wrong</div>}
       {loading && (
         <SpinnerContainer>

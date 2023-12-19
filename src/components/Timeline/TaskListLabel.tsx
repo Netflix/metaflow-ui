@@ -170,8 +170,8 @@ const StepCount = styled.span`
 `;
 
 const RowLabelContent = styled.div<{ type?: 'step' }>`
-  // In case of step row, lets remove icon width from total width so it aligns nicely
-  width: ${(p) => (p.type === 'step' ? 'calc(100% - 30px)' : '100%')};
+  // In case of step row, lets remove icon and caret width from total width so it aligns nicely
+  width: ${(p) => (p.type === 'step' ? 'calc(100% - 1.875rem - 1.875rem)' : 'calc(100% - 1.875rem - 1.875rem)')};
   display: flex;
   justify-content: space-between;
 `;
@@ -215,5 +215,5 @@ const StepLabel = styled.div<{ isLoading: boolean }>`
 `;
 
 const Padding = styled.div`
-  width: 2.5rem;
+  width: 1.875rem;
 `;
