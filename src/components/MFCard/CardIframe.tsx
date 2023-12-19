@@ -1,4 +1,4 @@
-import React, { ReactEventHandler, useEffect, useRef, useState } from 'react';
+import React, { ReactEventHandler, forwardRef, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { MESSAGE_NAME } from '../Plugins/PluginManager';
 import { apiHttp } from '../../constants';
@@ -16,8 +16,11 @@ const FALLBACK_HEIGHT = 750; // arbitrary height that should show enough
 // Render single card in iframe.
 //
 
-const CardIframe: React.FC<Props> = ({ path }) => {
-  const ref = useRef<HTMLIFrameElement>(null);
+const CardIframe = forwardRef(function (
+  { path }: Props,
+  ref: React.RefObject<HTMLIFrameElement> | ((instance: HTMLIFrameElement | null) => void) | null | undefined,
+) {
+  // const ref = useRef<HTMLIFrameElement>(null);
   const [elementHeight, setElementHeight] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -29,7 +32,7 @@ const CardIframe: React.FC<Props> = ({ path }) => {
     // Listen for a message from the iframe to check the height.
     const listener = (e: MessageEvent) => {
       // ensure the message is from the iframe we're interested in
-      if (e.source === ref.current?.contentWindow) {
+      if (e.source === (ref as React.RefObject<HTMLIFrameElement>)?.current?.contentWindow) {
         if (e.data.type === MESSAGE_NAME.HEIGHT_CHECK) {
           if (typeof e.data.height === 'number') {
             // Stop checking iframe periodically if it tells us what height it is.
@@ -47,7 +50,7 @@ const CardIframe: React.FC<Props> = ({ path }) => {
     // If not, wait for a postMessage from the iframe to set the height.
     const checkHeight = () => {
       try {
-        body = ref.current?.contentWindow?.document.body;
+        body = (ref as React.RefObject<HTMLIFrameElement>)?.current?.contentWindow?.document.body;
         if (body) {
           const h = Math.max(body?.scrollHeight ?? 0, body?.clientHeight ?? 0, body?.offsetHeight ?? 0);
           if (h) {
@@ -102,7 +105,7 @@ const CardIframe: React.FC<Props> = ({ path }) => {
       />
     </div>
   );
-};
+});
 
 const StyledCardIframe = styled.iframe`
   width: 100%;

@@ -36,7 +36,7 @@ import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
 import { getTagOfType } from '../../utils/run';
 import useTaskCards, { taskCardPath } from '../../components/MFCard/useTaskCards';
-import CardIframe from '../../components/MFCard/CardIframe';
+import DynamicCardIframe from '../../components/MFCard/DynamicCardIframe';
 import Button from '../../components/Button';
 import Icon from '../../components/Icon';
 
@@ -457,7 +457,7 @@ const Task: React.FC<TaskViewProps> = ({
                           </a>
                         </>
                       ),
-                      component: <CardIframe path={`${taskCardPath(task, def.hash)}?embed=true`} />,
+                      component: <DynamicCardIframe task={task} hash={def.hash} />,
                     }))
                   : []),
                 // Show spinner if any cards are still loading
