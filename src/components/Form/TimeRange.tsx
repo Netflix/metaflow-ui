@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import Icon from '../Icon';
 import { InputLabel } from './InputLabel';
@@ -40,14 +40,7 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
   const [selectedPreset, setPreset] = useState<string>('none');
   const { timezone } = useContext(TimezoneContext);
 
-  const startValue = initialValues && initialValues[0];
-  const endValue = initialValues && initialValues[1];
-
   useOnKeyPress('Escape', () => setShow(false));
-
-  useEffect(() => {
-    setValues({ start: startValue || null, end: endValue || null });
-  }, [startValue, endValue]);
 
   const HandleSubmit = () => {
     onSubmit({

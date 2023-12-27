@@ -171,14 +171,6 @@ const Home: React.FC = () => {
     } else if (historyAction !== 'POP' || scrollValue === 0) {
       HomeStateCache.active = true;
     }
-
-    if (historyAction !== 'POP' && initialised) {
-      if (isDefaultParams(rawParams, false, timezone)) {
-        // We want to add timerange filter if we are rolling with default params
-        // but not in back event. In back event we should keep state we had
-        setQp({ timerange_start: getTimeFromPastByDays(DEFAULT_TIME_FILTER_DAYS, timezone).toString() });
-      }
-    }
   }, [historyAction, initialised, rawParams, setQp, timezone]);
 
   // Update cache page on page change

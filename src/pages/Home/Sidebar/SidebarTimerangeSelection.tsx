@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SidebarSectionWrapper } from '.';
@@ -26,18 +26,21 @@ const SidebarTimerangeSelection: React.FC<Props> = ({ params, updateField }) => 
   const hasSelectedTimeRange = startTime || endTime;
   const { t } = useTranslation();
 
-  const shouldShowWarning = !hasSelectedTimeRange && !params.flow_id && !params._tags && !params.suer;
+  const shouldShowWarning = !hasSelectedTimeRange && !params.flow_id && !params._tags && !params.user;
+
+  const handleSubmit = ({ start, end }: { start: number | null; end: number | null }) => {
+    updateField('timerange_start', start ? start.toString() : '');
+    updateField('timerange_end', end ? end.toString() : '');
+  };
+
+  const initialValues: [number | null, number | null] = useMemo(
+    () => [startTime ? parseInt(startTime) : null, endTime ? parseInt(endTime) : null],
+    [startTime, endTime],
+  );
 
   return (
     <SidebarSectionWrapper>
-      <TimeRange
-        initialValues={[startTime ? parseInt(startTime) : null, endTime ? parseInt(endTime) : null]}
-        onSubmit={({ start, end }) => {
-          updateField('timerange_start', start ? start.toString() : '');
-          updateField('timerange_end', end ? end.toString() : '');
-        }}
-        sectionLabel="Time frame"
-      />
+      <TimeRange initialValues={initialValues} onSubmit={handleSubmit} sectionLabel="Time frame" />
 
       {hasSelectedTimeRange && (
         <ParameterList>
