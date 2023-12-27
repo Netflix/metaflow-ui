@@ -65,7 +65,7 @@ const HomeContentArea: React.FC<Props> = ({
           <GenericError icon="searchNotFound" message={t('error.no-results')} />
         </ItemRow>
       )}
-
+      {/* TODO */}
       <BigLoader visible={showLoader && resultAmount > 0}>
         <Spinner md />
       </BigLoader>
