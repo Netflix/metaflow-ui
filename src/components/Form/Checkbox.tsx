@@ -11,7 +11,8 @@ type CheckboxFieldProps = {
   label: string;
   checked: boolean;
   className?: string;
-  onChange: () => void;
+  onChange?: () => void;
+  disabled?: boolean;
   'data-testid'?: string;
 };
 
@@ -22,8 +23,11 @@ type CheckboxFieldProps = {
 export const CheckboxField: React.FC<CheckboxFieldProps> = ({
   label,
   checked = false,
-  onChange,
+  onChange = () => {
+    /*empty*/
+  },
   className,
+  disabled = false,
   ...rest
 }) => {
   const [id] = useState(uuid());
@@ -34,6 +38,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
       data-testid={testid}
       className={className}
       onClick={() => onChange !== undefined && onChange()}
+      disabled={disabled}
     >
       <span className={`checkbox ${id}`}>{checked && <Icon name="check" />}</span>
       <label htmlFor={id}>{label}</label>
@@ -45,12 +50,12 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
 // Style
 //
 
-const CheckboxWrapper = styled.div<{ checked: boolean }>`
+const CheckboxWrapper = styled.div<{ checked: boolean; disabled: boolean }>`
   display: flex;
   align-items: center;
   width: auto;
   position: relative;
-  cursor: pointer;
+  cursor: ${(p) => (p.disabled ? 'not-allowed' : 'pointer')};
 
   label {
     display: inline-block;
