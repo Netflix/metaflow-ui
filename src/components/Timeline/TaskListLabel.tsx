@@ -212,7 +212,7 @@ const StepLabel = styled.div<{ isLoading: boolean }>`
   }
 
   svg path {
-    fill: ${(p) => (p.isLoading ? '#717171' : '#fff')};
+    fill: ${(p) => (p.isLoading ? '#717171' : undefined)};
   }
 `;
 
