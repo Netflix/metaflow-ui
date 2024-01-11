@@ -7,6 +7,8 @@ declare global {
     APP_BASE_PATH: string | undefined;
     FEATURES: FeatureFlags;
     MF_DEFAULT_TIME_FILTER_DAYS: string;
+    METAFLOW_RELOAD_TOKEN: string;
+    metaflow_card_update: (payload: object) => void;
   }
 }
 /**
@@ -51,3 +53,9 @@ export const DEFAULT_TIME_FILTER_DAYS: number =
   (process.env.REACT_APP_MF_DEFAULT_TIME_FILTER_DAYS &&
     parseInt(process.env.REACT_APP_MF_DEFAULT_TIME_FILTER_DAYS, DEFAULT_NUM_DAYS)) ||
   30;
+
+// The time between polls for new data for cards
+export const DYNAMIC_CARDS_REFRESH_INTERVAL =
+  process.env.REACT_APP_DYNAMIC_CARDS_REFRESH_INTERVAL !== undefined
+    ? Number(process.env.REACT_APP_DYNAMIC_CARDS_REFRESH_INTERVAL)
+    : 2000;

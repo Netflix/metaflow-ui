@@ -36,7 +36,7 @@ import { apiHttp } from '../../constants';
 import useTaskMetadata from './useTaskMetadata';
 import { getTagOfType } from '../../utils/run';
 import useTaskCards, { taskCardPath } from '../../components/MFCard/useTaskCards';
-import CardIframe from '../../components/MFCard/CardIframe';
+import DynamicCardIframe from '../../components/MFCard/DynamicCardIframe';
 import Button from '../../components/Button';
 import Icon from '../../components/Icon';
 
@@ -244,8 +244,8 @@ const Task: React.FC<TaskViewProps> = ({
       : emptyDecoratorArray,
   );
 
-  // Show cards if feature flag is set and the task has not failed
-  const showCards = task?.status !== 'failed' && FEATURE_FLAGS.CARDS;
+  // Show cards if feature flag is set
+  const showCards = FEATURE_FLAGS.CARDS;
 
   const setSection = useCallback((value: string | null) => setQp({ section: value }, 'replaceIn'), [setQp]);
   const selectHandler = useCallback((att?: string | null) => setQp({ attempt: att }), [setQp]);
@@ -457,7 +457,7 @@ const Task: React.FC<TaskViewProps> = ({
                           </a>
                         </>
                       ),
-                      component: <CardIframe path={`${taskCardPath(task, def.hash)}?embed=true`} />,
+                      component: <DynamicCardIframe task={task} hash={def.hash} />,
                     }))
                   : []),
                 // Show spinner if any cards are still loading
@@ -513,12 +513,12 @@ const Task: React.FC<TaskViewProps> = ({
         <FullPageContainer
           onClose={closeHandler}
           actionbar={
-            fullscreen.type === 'logs' ? null : (
+            fullscreen.type === 'artifact' ? (
               <ArtifactActionBar
                 data={fullscreen.artifactdata}
                 name={`${fullscreen.name}-${task.ts_epoch}-${getTaskId(task)}-attempt${task.attempt_id}`}
               />
-            )
+            ) : null
           }
           title={fullscreen.type === 'logs' ? fullscreen.logtype : fullscreen.name}
           component={fullPageComponent}
