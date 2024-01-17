@@ -152,6 +152,7 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
           }
 
           const newEndTime = !row.finished_at || endTime > row.finished_at ? endTime : row.finished_at;
+
           return {
             ...obj,
             [key]: {
@@ -164,16 +165,19 @@ export function rowDataReducer(state: RowDataModel, action: RowDataAction): RowD
           };
         }
         // New step entry
+
+        const data = grouped[key].reduce<Record<number, Task[]>>((dataobj, item) => {
+          return { ...dataobj, [item.task_id]: makeTasksForStep(dataobj, item) };
+        }, {});
+
         return {
           ...obj,
           [key]: {
             isOpen: true,
-            status: getStepStatus(grouped),
+            status: getStepStatus(data),
             finished_at: endTime,
             duration: startTime ? endTime - startTime : 0,
-            data: grouped[key].reduce<Record<number, Task[]>>((dataobj, item) => {
-              return { ...dataobj, [item.task_id]: makeTasksForStep(dataobj, item) };
-            }, {}),
+            data,
           },
         };
       }, state);
