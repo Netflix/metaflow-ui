@@ -8,7 +8,7 @@ import { defaultHomeParameters } from './useHomeParameters';
 export function makeActiveRequestParameters(params: Record<string, string>): Record<string, string> {
   const { timerange_start, timerange_end, ...rest } = params;
   let newParams = rest;
-  // We want to remove groupping from request in some cases
+  // We want to remove grouping from request in some cases
   // 1) When grouping is flow_id and only 1 flow_id filter is active, we want to show all runs of this group
   // 2) When grouping is user and only 1 user filter is active, we want to show all runs of this group
   if (newParams._group) {

@@ -4,6 +4,7 @@ import logo from '../../assets/logo_dark_horizontal.svg';
 import Icon from '../Icon';
 import useComponentSize from '@rehooks/component-size';
 import useOnKeyPress from '../../hooks/useOnKeyPress';
+import FEATURE_FLAGS from '../../utils/FEATURE';
 
 //
 // Typedef
@@ -41,7 +42,7 @@ const FullPageContainer: React.FC<FullPageContainerProps> = ({ children, onClose
     <FullPageStyleContainer>
       <FullPageContainerHeader>
         <HeaderSection>
-          <Logo src={logo} />
+          {!FEATURE_FLAGS.HIDE_LOGO && <Logo src={logo} />}
           {title && <HeaderTitle>{title}</HeaderTitle>}
         </HeaderSection>
 

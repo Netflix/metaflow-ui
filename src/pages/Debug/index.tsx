@@ -3,10 +3,10 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import ContentHeader from '../../components/Content/ContentHeader';
 import { ItemRow } from '../../components/Structure';
-import StatusIndicator from '../../components/Status';
 import { BigButton } from '../../components/Button';
 import FEATURE_FLAGS, { FeatureFlags } from '../../utils/FEATURE';
 import useLogger from '../../hooks/useLogger';
+import { CheckboxField } from '../../components/Form/Checkbox';
 
 const DebugPage: React.FC = () => {
   const { t } = useTranslation();
@@ -53,7 +53,7 @@ const FeatureFlagItem: React.FC<{ flag: string; active: boolean }> = ({ flag, ac
   return (
     <DebugSectionContainer>
       <DebugSectionTitle>
-        <StatusIndicator status={active ? 'completed' : 'failed'} />
+        <CheckboxField label={''} checked={active} disabled />
         {flag}
       </DebugSectionTitle>
 
