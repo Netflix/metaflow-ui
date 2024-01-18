@@ -1,4 +1,4 @@
-import React, { ReactEventHandler, forwardRef, useEffect, useState } from 'react';
+import React, { ReactEventHandler, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { MESSAGE_NAME } from '../Plugins/PluginManager';
 import { apiHttp } from '../../constants';
@@ -8,6 +8,7 @@ const CHECK_HEIGHT_INTERVAL = 1000;
 
 type Props = {
   path: string;
+  onLoad: (iframe: HTMLIFrameElement) => void;
 };
 
 const FALLBACK_HEIGHT = 750; // arbitrary height that should show enough
@@ -16,14 +17,11 @@ const FALLBACK_HEIGHT = 750; // arbitrary height that should show enough
 // Render single card in iframe.
 //
 
-const CardIframe = forwardRef(function (
-  { path }: Props,
-  ref: React.RefObject<HTMLIFrameElement> | ((instance: HTMLIFrameElement | null) => void) | null | undefined,
-) {
-  // const ref = useRef<HTMLIFrameElement>(null);
+const CardIframe = ({ path, onLoad }: Props) => {
   const [elementHeight, setElementHeight] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const ref = useRef<HTMLIFrameElement>(null);
 
   // Check iframe height every second in case it changes somehow.
   useEffect(() => {
@@ -77,6 +75,9 @@ const CardIframe = forwardRef(function (
 
   const handleIframeLoad = () => {
     setLoading(false);
+    if (ref?.current) {
+      onLoad(ref?.current);
+    }
   };
 
   const handleIframeError: ReactEventHandler<HTMLIFrameElement> = (e) => {
@@ -85,7 +86,7 @@ const CardIframe = forwardRef(function (
   };
 
   return (
-    <div>
+    <div style={{ width: '100%' }}>
       {error && <div>Something went wrong</div>}
       {loading && (
         <SpinnerContainer>
@@ -105,7 +106,7 @@ const CardIframe = forwardRef(function (
       />
     </div>
   );
-});
+};
 
 const StyledCardIframe = styled.iframe`
   width: 100%;

@@ -73,7 +73,6 @@ describe('useResource hook', () => {
   // Without subscribeToEvents hook should just fetch data initially
   //
   it('useResource - Basic fetch', () => {
-    console.log(server.url);
     mount(<ResourceListComponent />);
     cy.waitUntil(() => connected, {}).then(() => {
       // Check that content was fetched
