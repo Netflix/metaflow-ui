@@ -18,7 +18,6 @@ const FALLBACK_HEIGHT = 750; // arbitrary height that should show enough
 //
 
 const CardIframe = ({ path, onLoad }: Props) => {
-  // const ref = useRef<HTMLIFrameElement>(null);
   const [elementHeight, setElementHeight] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
