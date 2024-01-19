@@ -75,7 +75,7 @@ const TaskListingHeader: React.FC<TaskListingProps> = ({
             collapse={() => onToggleCollapse('collapse')}
             isAnyGroupOpen={isAnyGroupOpen}
           />
-          {FEATURE_FLAGS.ARTIFACT_SEARCH && (
+          {(FEATURE_FLAGS.ARTIFACT_SEARCH || FEATURE_FLAGS.FOREACH_VAR_SEARCH) && (
             <SearchField
               initialValue={searchField.fieldProps.text}
               onUpdate={searchField.fieldProps.setText}
