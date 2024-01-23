@@ -48,13 +48,18 @@ interface SearchTerm {
   value?: string;
 }
 
+enum SearchScope {
+  Artifact = 'ARTIFACT',
+  ForeachVariable = 'FOREACH_VARIABLE',
+}
+
 export const parseSearchValue = (searchValue: string): SearchTerm | null => {
   const scope: string[] = [];
   if (FEATURE_FLAGS.ARTIFACT_SEARCH) {
-    scope.push('ARTIFACT');
+    scope.push(SearchScope.Artifact);
   }
   if (FEATURE_FLAGS.FOREACH_VAR_SEARCH) {
-    scope.push('FOREACH_VARIABLE');
+    scope.push(SearchScope.ForeachVariable);
   }
 
   const components = (searchValue || '').trim().split(':').filter(Boolean);
