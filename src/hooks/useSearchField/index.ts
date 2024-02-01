@@ -124,7 +124,7 @@ export default function useSearchField(flowID: string, runNumber: string): Searc
   }, [flowID, runNumber]);
 
   useSearchRequest({
-    url: `/flows/${flowID}/runs/${runNumber}/search`,
+    url: `/search/flows/${flowID}/runs/${runNumber}`,
     searchValue: searchValue,
     onUpdate,
     onConnecting,

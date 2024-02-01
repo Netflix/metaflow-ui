@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import useWebsocketRequest, { OnOpen, OnUpdate, OnClose, OnError } from '../useWebsocketRequest';
+import FEATURE_FLAGS from '../../utils/FEATURE';
 
 export type SearchResult =
   | {
@@ -41,18 +42,32 @@ export interface HookConfig {
   enabled?: boolean;
 }
 
-interface SearchKeyValuePair {
+interface SearchTerm {
   key: string;
+  scope: string;
   value?: string;
 }
 
-export const parseSearchValue = (searchValue: string): SearchKeyValuePair | null => {
+enum SearchScope {
+  Artifact = 'ARTIFACT',
+  ForeachVariable = 'FOREACH_VARIABLE',
+}
+
+export const parseSearchValue = (searchValue: string): SearchTerm | null => {
+  const scope: string[] = [];
+  if (FEATURE_FLAGS.ARTIFACT_SEARCH) {
+    scope.push(SearchScope.Artifact);
+  }
+  if (FEATURE_FLAGS.FOREACH_VAR_SEARCH) {
+    scope.push(SearchScope.ForeachVariable);
+  }
+
   const components = (searchValue || '').trim().split(':').filter(Boolean);
   if (components.length > 0) {
     if (components[1]) {
-      return { key: components[0], value: components[1] };
+      return { key: components[0], value: components[1], scope: scope.join(',') };
     }
-    return { key: components[0] };
+    return { key: components[0], scope: scope.join(',') };
   }
   return null;
 };
@@ -67,14 +82,14 @@ export default function useSearchRequest({
   onOpen,
   enabled = true,
 }: HookConfig): void {
-  const searchKv = useMemo(() => {
+  const searchTerm = useMemo(() => {
     return parseSearchValue(searchValue);
   }, [searchValue]);
 
   useWebsocketRequest<SearchResult>({
     url,
-    queryParams: searchKv !== null ? (searchKv as unknown as Record<string, string>) : {},
-    enabled: searchKv !== null && enabled,
+    queryParams: searchTerm !== null ? (searchTerm as unknown as Record<string, string>) : {},
+    enabled: searchTerm !== null && enabled,
     onConnecting,
     onUpdate,
     onClose,

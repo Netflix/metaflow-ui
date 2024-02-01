@@ -39,7 +39,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
   return (
     <SearchFieldContainer title={t('task.search-tasks-tip') ?? ''}>
       <FilterInput
-        sectionLabel={t('search.artifact')}
+        sectionLabel={t('search.filter')}
         initialValue={initialValue}
         onChange={handleChange}
         onSubmit={handleSubmit}
@@ -50,7 +50,7 @@ const SearchField: React.FC<SearchFieldProps> = ({
         autoCompleteEnabled={autoCompleteEnabled}
         tip="key:value"
         status={results.status}
-        infoMsg={t('search.artifactInfo') ?? ''}
+        infoMsg={t('search.filterInfo') ?? ''}
         errorMsg={(results.status === 'Error' && results.errorMsg) || undefined}
       />
     </SearchFieldContainer>
