@@ -56,7 +56,7 @@ const ALLOWED_SLOTS: AllowedSlot[] = ['task-details', 'run-header', 'header', 't
 //
 
 export function pluginPath(config: Plugin, baseurl?: string): string {
-  const path = `${config.name}/${config.config.entrypoint}`;
+  const path = `${config.name}/${config.config.entrypoint}?v=${config.config.version}`;
   return baseurl ? `${baseurl}/${path}` : apiHttp(`/plugin/${path}`);
 }
 
