@@ -61,17 +61,18 @@ describe('Plugins utils', () => {
   });
 
   it('pluginPath', () => {
+    const version = '1.2.3';
     expect(pluginPath(createPluginManifest())).to.equal(
-      `http://${window.location.host}/api/plugin/Plugin name/index.html`,
+      `http://${window.location.host}/api/plugin/Plugin name/index.html?v=1.0.0`,
     );
     expect(
       pluginPath(
         createPluginManifest({
           name: 'another_name',
-          config: { name: 'another_name', entrypoint: 'plugin.html', version: '0', slot: 'run-header' },
+          config: { name: 'another_name', entrypoint: 'plugin.html', version, slot: 'run-header' },
         }),
       ),
-    ).to.equal(`http://${window.location.host}/api/plugin/another_name/plugin.html`);
+    ).to.equal(`http://${window.location.host}/api/plugin/another_name/plugin.html?v=${version}`);
   });
 
   it('PluginCommuncationsAPI.isPluginMessage', () => {
@@ -122,7 +123,9 @@ describe('Plugins utils', () => {
       PluginCommunicationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent' } } as MessageEvent),
     ).to.equal(false);
     expect(
-      PluginCommunicationsAPI.isRegisterMessage({ data: { type: 'PluginRegisterEvent', name: 'test' } } as MessageEvent),
+      PluginCommunicationsAPI.isRegisterMessage({
+        data: { type: 'PluginRegisterEvent', name: 'test' },
+      } as MessageEvent),
     ).to.equal(false);
 
     // Correct message
