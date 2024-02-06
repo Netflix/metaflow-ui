@@ -21,7 +21,7 @@ type Props = {
   rows: Row[];
   rowDataDispatch: (action: RowDataAction) => void;
   taskStatus: AsyncStatus;
-  activeTaskId: string;
+  activeTask: string;
   results: SearchResultModel;
   grouped: boolean;
   paramsString?: string;
@@ -31,7 +31,7 @@ const TaskList: React.FC<Props> = ({
   rows,
   rowDataDispatch,
   taskStatus,
-  activeTaskId,
+  activeTask,
   results,
   grouped,
   paramsString,
@@ -76,12 +76,12 @@ const TaskList: React.FC<Props> = ({
               ? () => (item.data ? rowDataDispatch({ type: 'toggle', id: item.data.step_name }) : null)
               : undefined
           }
-          active={item.type === 'task' && getTaskId(item.data[0]) === activeTaskId}
+          active={item.type === 'task' && item.data[0].step_name + '/' + getTaskId(item.data[0]) === activeTask}
           isOpen={item.type === 'step' && item.rowObject.isOpen}
         />
       );
     },
-    [activeTaskId, grouped, paramsString, rowDataDispatch, rows],
+    [activeTask, grouped, paramsString, rowDataDispatch, rows],
   );
 
   return (
