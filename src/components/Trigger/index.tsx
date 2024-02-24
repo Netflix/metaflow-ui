@@ -2,6 +2,7 @@ import React from 'react';
 import Icon from '../Icon';
 import styled from 'styled-components';
 import Tooltip from '../Tooltip';
+import { Link } from 'react-router-dom';
 
 const MAX_LABEL_WIDTH = 20; // number of characters to show before truncating
 
@@ -44,10 +45,12 @@ const Trigger: React.FC<Props> = ({ triggerEventsValue, className, showToolTip =
 
   return (
     <TriggerLine key={id} data-tip data-for={tooltipId} className={className}>
-      <TriggerLink href={link}>
-        <StyledIcon name="arrow" linkToRun={linkToRun} />
-        {showToolTip ? displayLabel : id}
-      </TriggerLink>
+      {link && (
+        <TriggerLink to={link}>
+          <StyledIcon name="arrow" linkToRun={linkToRun} />
+          {showToolTip ? displayLabel : id}
+        </TriggerLink>
+      )}
       {showToolTip && <Tooltip id={tooltipId}>{label}</Tooltip>}
     </TriggerLine>
   );
@@ -63,7 +66,7 @@ const TriggerLine = styled.div`
   position: relative;
 `;
 
-const TriggerLink = styled.a`
+const TriggerLink = styled(Link)`
   text-decoration: none;
   color: inherit;
 `;
