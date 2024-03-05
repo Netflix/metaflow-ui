@@ -18,6 +18,7 @@ import styled from 'styled-components';
 import RenderMetadata from '../../../components/RenderMetadata';
 import DataHeader from '../../../components/DataHeader';
 import { Resource } from '../../../hooks/useResource';
+import AutoUpdating from '../../../components/AutoUpdating';
 
 type Props = {
   run: Run;
@@ -68,7 +69,7 @@ const TaskDetails: React.FC<Props> = ({ task, metadata, metadataResource, develo
     },
     {
       label: t('fields.duration'),
-      value: getAttemptDuration(task),
+      value: <AutoUpdating enabled={!task.finished_at} content={() => getAttemptDuration(task)} />,
     },
   ];
 
