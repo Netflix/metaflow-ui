@@ -32,7 +32,7 @@ const SectionLoader: React.FC<Props> = ({ status, error, component, customNotFou
       </SectionLoaderDefaultContainer>
     );
   }
-  return component;
+  return <div style={{ minHeight: minHeight || 'unset' }}>{component}</div>;
 };
 
 //
