@@ -4,7 +4,7 @@ import { DataModel } from '../../hooks/useResource';
 import { Task } from '../../types';
 import { Decorator } from '../DAG/DAGUtils';
 
-const POSTLOAD_POLL_INTERVAL = 5000;
+const POSTLOAD_POLL_INTERVAL = 500;
 
 type CardResultState = 'loading' | 'timeout' | 'success' | 'error';
 export type CardDefinition = {
@@ -112,10 +112,9 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
   // Poll for new cards
   useEffect(() => {
     let t: number;
+
     // Check if polling is activated (activated after finished requests).
     if (poll) {
-      // Timeout timer is: task.finished_at + timeout from decorator attributes + 30seconds extra time.
-      const timeout = taskFinishedAt ? taskFinishedAt + (maxTimeout + 30) * 1000 : false;
       // if we have enough cards (as presented by decorators list) or timeout has passed, skip request.
       if (expectedCards.length <= taskCards[url]?.cards.length) {
         setPoll(false);
@@ -126,14 +125,6 @@ export default function useTaskCards(task: Task | null, decorators: Decorator[])
           }));
         }
         // If the timeout has been reached
-      } else if (timeout && timeout < Date.now()) {
-        setPoll(false);
-        if (taskCards[url]?.status !== 'timeout') {
-          setTaskCards((prev) => ({
-            ...prev,
-            [url]: { cards: prev[url]?.cards ?? [], status: 'timeout' },
-          }));
-        }
       } else {
         // Otherwise set the status to loading and continue polling
         if (taskCards[url]?.status !== 'loading') {
