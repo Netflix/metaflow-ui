@@ -58,4 +58,4 @@ export const DEFAULT_TIME_FILTER_DAYS: number =
 export const DYNAMIC_CARDS_REFRESH_INTERVAL =
   process.env.REACT_APP_DYNAMIC_CARDS_REFRESH_INTERVAL !== undefined
     ? Number(process.env.REACT_APP_DYNAMIC_CARDS_REFRESH_INTERVAL)
-    : 2000;
+    : 400;
