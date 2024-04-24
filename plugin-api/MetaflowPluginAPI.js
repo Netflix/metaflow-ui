@@ -43,6 +43,8 @@ function messageHandler(event) {
         }
         return;
       }
+      default:
+        return;
     }
   }
 }
@@ -153,7 +155,7 @@ const Metaflow = {
   //
   // Request to be removed?
   //
-  remove(fn) {
+  remove() {
     window.parent.postMessage({ name: window.name, type: 'PluginRemoveRequest' }, '*');
   },
 
@@ -169,20 +171,12 @@ const Metaflow = {
     this.subscribe(['task-info'], (data) => fn(data));
   },
 
-  subscribeToInfo(fn) {
-    this.subscribe(['info'], (event) => fn(event.data));
-  },
-
   subscribeToRunMetadata(fn) {
     this.subscribe(['run-metadata'], (data) => fn(data));
   },
 
   subscribeToRunInfo(fn) {
     this.subscribe(['run-info'], (data) => fn(data));
-  },
-  
-  subscribeToRunInfo(fn) {
-    this.subscribe(['run-info'], (event) => fn(event.data));
   },
 };
 

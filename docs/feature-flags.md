@@ -23,7 +23,7 @@ ui_backed:
 | TASK_METADATA       | Show metadata for each task on task view                                | true    |
 | TIMELINE_MINIMAP    | Show rough presentation of lines in timeline minimap                    | true    |
 | ARTIFACT_TABLE      | Show artifact table on task view                                        | false   |
-| ARTIFACT_SEARCH     | In timeline view, filter tasks by artifact values                       | false   |
+| ARTIFACT_SEARCH     | Enable search field in timeline view to filter tasks by artifact values | false   |
 | FOREACH_VAR_SEARCH  | In timeline view, filter tasks by foreach variable or values            | false   |
 | DEBUG_VIEW          | Expose this view in help menu as a link                                 | true    |
 | CARDS               | Show cards on task view                                                 | true    |

@@ -89,11 +89,16 @@ const DynamicCardIframe: React.FC<Props> = ({ task, hash }) => {
   const handleIframeLoad = (iframe: HTMLIFrameElement) => {
     const token = iframe?.contentWindow?.METAFLOW_RELOAD_TOKEN;
     const updateFn = iframe?.contentWindow?.metaflow_card_update;
+    const needsReload = iframe?.contentWindow?.needsReload;
     cacheTimestampRef.current = -1;
     // If the card supplies a reload token and an update function, start the refresh loop
     if (updateFn && token) {
       timeoutRef.current = setTimeout(() => {
         getNewData(token, updateFn, iframe);
+      }, DYNAMIC_CARDS_REFRESH_INTERVAL);
+    } else if (needsReload) {
+      timeoutRef.current = setTimeout(() => {
+        iframe?.contentWindow?.location?.reload();
       }, DYNAMIC_CARDS_REFRESH_INTERVAL);
     }
 

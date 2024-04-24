@@ -44,8 +44,8 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title, animated = t
           }}
           data-testid="collapsable-header"
         >
+          <Icon name="arrowDown" rotate={open ? 0 : -90} />
           <Title>{title}</Title>
-          <Icon name="arrowDown" rotate={open ? 180 : 0} />
         </CollapsableHeader>
 
         {(animated || open) && (
@@ -94,6 +94,7 @@ const Content = styled.div<{ open: boolean; visible: boolean }>`
 
 const Title = styled.div`
   margin-right: 1rem;
+  margin-left: 0.3rem;
 `;
 
 export default Collapsable;

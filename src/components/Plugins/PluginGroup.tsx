@@ -63,7 +63,10 @@ const PluginContainer: React.FC<{ plugin: Plugin; children: ReactNode }> = ({ pl
   const props = plugin.config.containerProps || {};
   if (isCollapsableContainer(plugin.config.container)) {
     return (
-      <Collapsable {...props} title={<PluginHeaderSection name={plugin.config.name} />}>
+      <Collapsable
+        {...props}
+        title={<PluginHeaderSection name={plugin.config.name} showIcon={props.showIcon === 'false' ? false : true} />}
+      >
         {children}
       </Collapsable>
     );
@@ -85,9 +88,9 @@ const PluginContainer: React.FC<{ plugin: Plugin; children: ReactNode }> = ({ pl
   return <>{children}</>;
 };
 
-const PluginHeaderSection: React.FC<{ name: string }> = ({ name }) => (
+const PluginHeaderSection: React.FC<{ name: string; showIcon?: boolean }> = ({ name, showIcon = true }) => (
   <PluginHeader>
-    <Icon name="plugin" />
+    <Icon name="plugin" visible={showIcon} />
     {name}
   </PluginHeader>
 );
