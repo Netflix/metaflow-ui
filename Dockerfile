@@ -1,4 +1,4 @@
-FROM node:14-alpine AS build
+FROM node:20-alpine AS build
 
 ARG BUILD_TIMESTAMP
 ARG BUILD_COMMIT_HASH
