@@ -22,7 +22,7 @@ describe('Collapsable test', () => {
     );
 
     // check that the component renders correctly in default closed state
-    cy.get('[data-testid="collapsable-header"]').find('.icon-arrowDown').invoke('attr', 'rotate').should('eq', '0');
+    cy.get('[data-testid="collapsable-header"]').find('.icon-arrowDown').invoke('attr', 'rotate').should('eq', '-90');
     cy.get('[data-testid="collapsable-content"]').not('visbile');
 
     // check that the component renders correctly when opened
@@ -32,7 +32,7 @@ describe('Collapsable test', () => {
         cy.get('[data-testid="collapsable-header"]')
           .find('.icon-arrowDown')
           .invoke('attr', 'rotate')
-          .should('eq', '180');
+          .should('eq', '0');
         cy.get('[data-testid="collapsable-content"]').should('be.visible');
       });
 
@@ -40,7 +40,7 @@ describe('Collapsable test', () => {
     cy.get('[data-testid="collapsable-header"]')
       .click()
       .then(() => {
-        cy.get('[data-testid="collapsable-header"]').find('.icon-arrowDown').invoke('attr', 'rotate').should('eq', '0');
+        cy.get('[data-testid="collapsable-header"]').find('.icon-arrowDown').invoke('attr', 'rotate').should('eq', '-90');
         cy.get('[data-testid="collapsable-content"]').not('visible');
       });
   });

@@ -126,13 +126,14 @@ interface IconProps {
   padRight?: boolean;
   spin?: boolean;
   title?: string;
+  visible?: boolean;
   onClick?: () => void;
 }
 
-const Icon: React.FC<IconProps> = ({ name, size = 'sm', rotate, ...rest }) => {
+const Icon: React.FC<IconProps> = ({ name, size = 'sm', visible = true, rotate, ...rest }) => {
   const IconComponent = icons[name];
   return (
-    <Wrapper className={`icon icon-${name}`} {...rest} {...{ size, rotate }}>
+    <Wrapper className={`icon icon-${name}`} {...rest} {...{ size, visible, rotate }}>
       <IconComponent />
     </Wrapper>
   );
@@ -148,9 +149,10 @@ const Wrapper = styled.i<{
   padLeft?: boolean;
   padRight?: boolean;
   title?: string;
+  visible?: boolean;
 }>`
   vertical-align: text-top;
-  display: inline-flex;
+  display: ${(p) => (p.visible ? 'inline-flex' : 'none')};
   align-items: center;
   margin: 0;
   padding: 0;
