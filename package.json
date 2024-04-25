@@ -54,6 +54,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@cypress/react": "^5.12.1",
     "@cypress/webpack-dev-server": "^1.8.0",
     "@types/node": "^18.16.3",
