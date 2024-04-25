@@ -6,6 +6,5 @@
   },
   "supportFile": "cypress/support/commands.js",
   "screenshotOnRunFailure": false,
-  "video": false,
-  "nodeVersion": "bundled"
-}
+  "video": false
+  }
