@@ -70,8 +70,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
             to < timelineControls.min
               ? timelineControls.min
               : to > timelineControls.timelineEnd - 500
-              ? timelineControls.timelineStart
-              : to,
+                ? timelineControls.timelineStart
+                : to,
           end: timelineControls.timelineEnd,
         });
       } else {
@@ -82,8 +82,8 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
             to > timelineControls.max
               ? timelineControls.max
               : to < timelineControls.timelineStart + 500
-              ? timelineControls.timelineEnd
-              : to,
+                ? timelineControls.timelineEnd
+                : to,
         });
       }
     },

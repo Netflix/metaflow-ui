@@ -156,8 +156,8 @@ const Task: React.FC<TaskViewProps> = ({
   const attemptId = qp.attempt
     ? parseInt(qp.attempt)
     : tasks
-    ? tasks.map((item) => item.attempt_id).sort((a, b) => b - a)[0]
-    : 0;
+      ? tasks.map((item) => item.attempt_id).sort((a, b) => b - a)[0]
+      : 0;
   const task = tasks?.find((item) => item.attempt_id === attemptId) || null;
 
   useEffect(() => {

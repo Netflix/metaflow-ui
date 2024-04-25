@@ -71,8 +71,8 @@ const ConnectionStatus: React.FC = () => {
         {status === 'Stale'
           ? t('connection.data-might-be-stale')
           : status === 'Connected'
-          ? t('connection.connected')
-          : t('connection.waiting-for-connection')}
+            ? t('connection.connected')
+            : t('connection.waiting-for-connection')}
       </Text>
       <StatusColorIndicator status={status} />
     </Wrapper>

@@ -15,6 +15,6 @@ export function getTaskDuration(task: Task): number | null {
   return task.status === 'running' && task.started_at
     ? Date.now() - task.started_at
     : task.duration
-    ? task.duration
-    : null;
+      ? task.duration
+      : null;
 }
