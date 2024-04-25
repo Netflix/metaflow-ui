@@ -9,6 +9,7 @@ declare global {
     MF_DEFAULT_TIME_FILTER_DAYS: string;
     METAFLOW_RELOAD_TOKEN: string;
     metaflow_card_update: (payload: object) => void;
+    needsReload: boolean;
   }
 }
 /**
@@ -58,4 +59,4 @@ export const DEFAULT_TIME_FILTER_DAYS: number =
 export const DYNAMIC_CARDS_REFRESH_INTERVAL =
   process.env.REACT_APP_DYNAMIC_CARDS_REFRESH_INTERVAL !== undefined
     ? Number(process.env.REACT_APP_DYNAMIC_CARDS_REFRESH_INTERVAL)
-    : 400;
+    : 1000;
