@@ -8,6 +8,5 @@
   "screenshotOnRunFailure": false,
   "video": false,
   "viewportWidth": 700,
-  "viewportHeight": 700,
-  "nodeVersion": "bundled"
+  "viewportHeight": 700
 }
