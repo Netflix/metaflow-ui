@@ -222,8 +222,8 @@ export default function useTimelineControls(
       mode === 'left'
         ? run.ts_epoch + getLongestRowDuration(rows)
         : run.finished_at && run.finished_at > timings.end
-        ? run.finished_at
-        : timings.end;
+          ? run.finished_at
+          : timings.end;
     if (timings.start !== 0 && endTime !== 0 && endTime !== timelineControls.max) {
       dispatch({
         type: 'update',

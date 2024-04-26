@@ -71,7 +71,9 @@ const TRHoverStyle = css`
 
 export const TR = styled.tr<{ clickable?: boolean; stale?: boolean; active?: boolean }>`
   cursor: ${(p) => (p.clickable ? 'pointer' : 'auto')};
-  transition: background 0.15s, opacity 0.15s;
+  transition:
+    background 0.15s,
+    opacity 0.15s;
   &:hover {
     ${TRHoverStyle}
   }

@@ -93,16 +93,16 @@ export function timepointsOfTasks(tasks: Task[]): [number | null, number] {
         task.finished_at && task.finished_at > val[1]
           ? task.finished_at
           : taskStartTime && taskStartTime > val[1]
-          ? taskStartTime
-          : val[1];
+            ? taskStartTime
+            : val[1];
       const lowpoint: number | null =
         taskStartTime && val[0] === null
           ? taskStartTime
           : taskStartTime && val[0] !== null
-          ? taskStartTime < val[0]
-            ? taskStartTime
-            : val[0]
-          : val[0];
+            ? taskStartTime < val[0]
+              ? taskStartTime
+              : val[0]
+            : val[0];
       return [lowpoint, highpoint];
     },
     [tasks[0] ? tasks[0].started_at || null : 0, 0],
