@@ -46,7 +46,9 @@ const MinimapLine = styled.div<{ status: TaskStatus }>`
   min-height: 2px;
   margin-bottom: 1px;
   min-width: 2px;
-  transition: width 0.5s, left 0.5s;
+  transition:
+    width 0.5s,
+    left 0.5s;
 `;
 
 export default MinimapRow;

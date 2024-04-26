@@ -257,18 +257,18 @@ const StatusColorStyles = css<{ state: TaskStatus }>`
       p.state === 'completed'
         ? p.theme.notification.success.text
         : p.state === 'running'
-        ? p.theme.notification.warning.text
-        : p.state === 'failed'
-        ? p.theme.notification.danger.text
-        : p.theme.color.border.mid};
+          ? p.theme.notification.warning.text
+          : p.state === 'failed'
+            ? p.theme.notification.danger.text
+            : p.theme.color.border.mid};
   background: ${(p) =>
     p.state === 'completed'
       ? mix(0.05, p.theme.notification.success.text, '#fff')
       : p.state === 'running'
-      ? mix(0.05, p.theme.notification.warning.text, '#fff')
-      : p.state === 'failed'
-      ? mix(0.05, p.theme.notification.danger.text, '#fff')
-      : '#fff'};
+        ? mix(0.05, p.theme.notification.warning.text, '#fff')
+        : p.state === 'failed'
+          ? mix(0.05, p.theme.notification.danger.text, '#fff')
+          : '#fff'};
 `;
 
 const NormalItem = styled.div<{ state: TaskStatus }>`

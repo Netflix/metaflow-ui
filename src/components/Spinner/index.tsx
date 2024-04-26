@@ -20,12 +20,12 @@ const getSize = (p: {
         borderWidth: p.borderWidth,
       }
     : p.sm
-    ? p.theme.spinner.sizes.sm
-    : p.md
-    ? p.theme.spinner.sizes.md
-    : p.lg
-    ? p.theme.spinner.sizes.lg
-    : p.theme.spinner.sizes.sm;
+      ? p.theme.spinner.sizes.sm
+      : p.md
+        ? p.theme.spinner.sizes.md
+        : p.lg
+          ? p.theme.spinner.sizes.lg
+          : p.theme.spinner.sizes.sm;
 
 type Props = { size?: number; borderWidth?: number; sm?: boolean; md?: boolean; lg?: boolean };
 
