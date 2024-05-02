@@ -54,6 +54,11 @@ const TaskList: React.FC<Props> = ({
       (viewScrollTop + 25 > ref.current.offsetTop ? HEADER_SIZE_PX + 25 : ref.current.offsetTop - viewScrollTop + 25)
     : 0;
 
+  // Get the index of the active task so that the list can scroll to it
+  const activeIndex = rows.findIndex(
+    (item) => item.type === 'task' && item.data[0].step_name + '/' + getTaskId(item.data[0]) === activeTask,
+  );
+
   const rowRenderer = useCallback(
     ({ index, style }: { index: number; style: CSSProperties }) => {
       const item = rows[index];
@@ -95,6 +100,8 @@ const TaskList: React.FC<Props> = ({
             rowRenderer={rowRenderer}
             height={listSize}
             width={toRelativeSize(245)}
+            scrollToIndex={activeIndex}
+            scrollToAlignment="center"
           />
         )}
 
