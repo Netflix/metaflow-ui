@@ -45,11 +45,16 @@ const Trigger: React.FC<Props> = ({ triggerEventsValue, className, showToolTip =
 
   return (
     <TriggerLine key={id} data-tip data-for={tooltipId} className={className}>
-      {link && (
+      {link ? (
         <TriggerLink to={link}>
           <StyledIcon name="arrow" linkToRun={linkToRun} />
           {showToolTip ? displayLabel : id}
         </TriggerLink>
+      ) : (
+        <>
+          <StyledIcon name="arrow" linkToRun={linkToRun} />
+          {showToolTip ? displayLabel : id}
+        </>
       )}
       {showToolTip && <Tooltip id={tooltipId}>{label}</Tooltip>}
     </TriggerLine>
