@@ -30,4 +30,23 @@ describe('Trigger test', () => {
       .should('have.attr', 'href', `/${basename}/${flow_name}/${run_id}`)
       .and('contain', 'HelloFlow/...flow-atykf');
   });
+
+  it('Shows non-run event', () => {
+    mount(
+      <ThemeProvider theme={theme}>
+        <Router basename={basename}>
+          <Trigger
+            triggerEventsValue={{
+              name: 'document_classification',
+              timestamp: '1663184739',
+              id: '6523f2a6-694a-415d-9ec6-9483afbc7903',
+              type: 'event',
+            }}
+          />
+        </Router>
+      </ThemeProvider>,
+    );
+
+    cy.get('div').should('contain', 'document_classification');
+  });
 });
