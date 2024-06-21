@@ -33,34 +33,35 @@ const LogActionBar: React.FC<LogActionBarProps> = ({
 }) => {
   const { addNotification } = useNotifications();
   const { t } = useTranslation();
+
+  console.log('LogActionBar render');
   return (
     <LogActionBarContainer spaceAround={spaceAround} data-testid="log-action-bar">
-      {data && data.length > 0 && (
-        <>
-          <SearchContainer>
-            <FilterInput
-              sectionLabel={t('task.log-search')}
-              onChange={(e) => {
-                search.search(e);
-              }}
-              onSubmit={() => {
-                search.nextResult();
-              }}
-              noClear
-              customIcon={['search', 'sm']}
-              customIconElement={
-                search.result.active &&
-                search.result.result.length > 0 && (
-                  <ResultElement>
-                    {search.result.current + 1}/{search.result.result.length}
-                  </ResultElement>
-                )
-              }
-              infoMsg={t('task.log-search-tip') ?? ''}
-            />
-          </SearchContainer>
-
-          <Buttons data-testid="log-action-bar-buttons">
+      <>
+        <SearchContainer>
+          <FilterInput
+            sectionLabel={t('task.log-search')}
+            onChange={(e) => {
+              search.search(e);
+            }}
+            onSubmit={() => {
+              search.nextResult();
+            }}
+            noClear
+            customIcon={['search', 'sm']}
+            customIconElement={
+              search.result.active &&
+              search.result.result.length > 0 && (
+                <ResultElement>
+                  {search.result.current + 1}/{search.result.result.length}
+                </ResultElement>
+              )
+            }
+            infoMsg={t('task.log-search-tip') ?? ''}
+          />
+        </SearchContainer>
+        <Buttons data-testid="log-action-bar-buttons">
+          {data && data.length > 0 && (
             <Button
               data-testid="log-action-button"
               title={t('task.copy-logs-to-clipboard') ?? ''}
@@ -75,34 +76,34 @@ const LogActionBar: React.FC<LogActionBarProps> = ({
             >
               <Icon name="copy" size="sm" />
             </Button>
+          )}
 
-            <a title={t('task.download-logs') ?? ''} href={downloadlink} download data-testid="log-action-button">
-              <Button
-                onClick={() => {
-                  addNotification({
-                    type: NotificationType.Info,
-                    message: t('task.downloading-logs'),
-                  });
-                }}
-                iconOnly
-              >
-                <Icon name="download" size="sm" />
-              </Button>
-            </a>
+          <a title={t('task.download-logs') ?? ''} href={downloadlink} download data-testid="log-action-button">
+            <Button
+              onClick={() => {
+                addNotification({
+                  type: NotificationType.Info,
+                  message: t('task.downloading-logs'),
+                });
+              }}
+              iconOnly
+            >
+              <Icon name="download" size="sm" />
+            </Button>
+          </a>
 
-            {setFullscreen && (
-              <Button
-                title={t('task.show-fullscreen') ?? ''}
-                onClick={() => setFullscreen()}
-                withIcon
-                data-testid="log-action-button"
-              >
-                <Icon name="maximize" size="sm" />
-              </Button>
-            )}
-          </Buttons>
-        </>
-      )}
+          {setFullscreen && (
+            <Button
+              title={t('task.show-fullscreen') ?? ''}
+              onClick={() => setFullscreen()}
+              withIcon
+              data-testid="log-action-button"
+            >
+              <Icon name="maximize" size="sm" />
+            </Button>
+          )}
+        </Buttons>
+      </>
     </LogActionBarContainer>
   );
 };

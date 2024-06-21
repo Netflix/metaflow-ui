@@ -147,7 +147,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
   }, [paused, url, status, fetchLogs]);
 
   useEffect(() => {
-    // For preload to happen following rules has to be matched
+    // For preload to happen following rules have to be matched
     // paused        -> Run has to be on running state
     // status        -> This should always be NotAsked if paused is on. Check just in case
     // preload       -> Run has to be runnign
@@ -172,7 +172,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
 
   // Post finish polling
   // In some cases all logs might not be there after task finishes. For this, lets poll new logs every 10sec until
-  // there is no new lines
+  // there are no new lines
   useEffect(() => {
     let t: number;
     if (status === 'Ok' && postPoll) {

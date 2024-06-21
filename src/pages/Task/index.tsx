@@ -39,6 +39,7 @@ import useTaskCards, { taskCardPath } from '../../components/MFCard/useTaskCards
 import DynamicCardIframe from '../../components/MFCard/DynamicCardIframe';
 import Button from '../../components/Button';
 import Icon from '../../components/Icon';
+import LogActionBar from '../../components/LogList/LogActionBar';
 
 //
 // Typedef
@@ -357,6 +358,14 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.std-out'),
                   component: (
                     <>
+                      <LogActionBar
+                        data={stdout.logs}
+                        downloadlink={apiHttp(`${logUrl}/out/download?attempt_id=${task.attempt_id}`)}
+                        setFullscreen={setStdOutFullscreen}
+                        search={stdout.localSearch}
+                        spaceAround={false}
+                      />
+
                       <SectionLoader
                         minHeight={110}
                         status={getLogSectionStatus(stdout)}
