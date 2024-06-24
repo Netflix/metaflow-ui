@@ -394,6 +394,13 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.std-err'),
                   component: (
                     <>
+                      <LogActionBar
+                        data={stderr.logs}
+                        downloadlink={apiHttp(`${logUrl}/err/download?attempt_id=${task.attempt_id}`)}
+                        setFullscreen={setStdErrFullscreen}
+                        search={stderr.localSearch}
+                        spaceAround={false}
+                      />
                       <SectionLoader
                         minHeight={110}
                         status={getLogSectionStatus(stderr)}
