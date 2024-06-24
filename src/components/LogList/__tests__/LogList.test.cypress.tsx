@@ -32,15 +32,7 @@ function generateLines(amount: number) {
 const LIST_CONTAINER_CLASS = 'ReactVirtualized__List';
 
 describe('LogActionBar', () => {
-  it('Should render empty wrapper in initial situation', () => {
-    mount(
-      <TestWrapper>
-        <LogList logdata={createLogData({})} downloadUrl="" />
-      </TestWrapper>,
-    );
 
-    gid('loglist-wrapper').children().should('have.length', 1);
-  });
 
   it('Should render message about empty preload when preload was empty or error and final fetch is not started', () => {
     mount(

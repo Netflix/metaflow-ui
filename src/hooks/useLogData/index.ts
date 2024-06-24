@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Log, AsyncStatus, APIError } from '../../types';
 import { DataModel, defaultError } from '../../hooks/useResource';
 import { apiHttp } from '../../constants';
@@ -78,7 +78,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
         .then((response) => response.json())
         .then((result: DataModel<Log[]> | APIError) => {
           if (isOkResult(result)) {
-            // Check if there was any new lines. If there wasnt, lets cancel post finish polling.
+            // Check if there was any new lines. If there wasn't, let's cancel post finish polling.
             // Or if was postpoll and we didnt get any results
             if (
               (result.data.length > 0 && logs.length > 0 && result.data[0].row === logs.length - 1) ||
@@ -147,7 +147,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
   }, [paused, url, status, fetchLogs]);
 
   useEffect(() => {
-    // For preload to happen following rules has to be matched
+    // For preload to happen following rules have to be matched
     // paused        -> Run has to be on running state
     // status        -> This should always be NotAsked if paused is on. Check just in case
     // preload       -> Run has to be runnign
@@ -172,7 +172,7 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
 
   // Post finish polling
   // In some cases all logs might not be there after task finishes. For this, lets poll new logs every 10sec until
-  // there is no new lines
+  // there are no new lines
   useEffect(() => {
     let t: number;
     if (status === 'Ok' && postPoll) {
@@ -213,31 +213,34 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
 
   const [searchResult, setSearchResult] = useState<SearchState>(emptySearchResult);
 
-  function search(str: string) {
-    if (!str) {
-      return setSearchResult(emptySearchResult);
-    }
-    const query = str.toLowerCase();
-    const results = logs
-      .filter(filterbySearchTerm)
-      .filter((line) => line.line.toLowerCase().indexOf(query) > -1)
-      .map((item) => {
-        const index = item.line.toLowerCase().indexOf(query);
-        return {
-          line: item.row,
-          char: [index, index + str.length] as [number, number],
-        };
-      });
-    setSearchResult({ active: true, result: results, current: 0, query: str });
-  }
+  const search = useCallback(
+    (str: string) => {
+      if (!str) {
+        return setSearchResult(emptySearchResult);
+      }
+      const query = str.toLowerCase();
+      const results = logs
+        .filter(filterbySearchTerm)
+        .filter((line) => line.line.toLowerCase().indexOf(query) > -1)
+        .map((item) => {
+          const index = item.line.toLowerCase().indexOf(query);
+          return {
+            line: item.row,
+            char: [index, index + str.length] as [number, number],
+          };
+        });
+      setSearchResult({ active: true, result: results, current: 0, query: str });
+    },
+    [logs],
+  );
 
-  function nextResult() {
+  const nextResult = useCallback(() => {
     if (searchResult.current === searchResult.result.length - 1) {
       setSearchResult((cur) => ({ ...cur, current: 0 }));
     } else {
       setSearchResult((cur) => ({ ...cur, current: cur.current + 1 }));
     }
-  }
+  }, [searchResult]);
 
   // Clean up on url change
   useEffect(() => {
@@ -251,7 +254,9 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
     };
   }, [url]);
 
-  return { logs, status, preloadStatus, error, loadMore, localSearch: { search, nextResult, result: searchResult } };
+  const localSearch = useMemo(() => ({ search, nextResult, result: searchResult }), [nextResult, search, searchResult]);
+
+  return { logs, status, preloadStatus, error, loadMore, localSearch };
 };
 
 function filterbySearchTerm(item: LogItem): item is Log {

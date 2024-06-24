@@ -2,11 +2,12 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import Button from '../Button';
-import { NotificationType, useNotifications } from '../Notifications';
+import { NotificationType, useNotifications, Notification } from '../Notifications';
 import copy from 'copy-to-clipboard';
 import Icon from '../Icon';
 import { LocalSearchType, LogItem } from '../../hooks/useLogData';
 import FilterInput from '../FilterInput';
+import { TFunction } from 'i18next';
 
 //
 // Typedef
@@ -19,6 +20,28 @@ type LogActionBarProps = {
   search: LocalSearchType;
   spaceAround?: boolean;
 };
+
+const handleFilterChange = (search: LocalSearchType) => (key: string) => {
+  search.search(key);
+};
+
+const handleFilterSubmit = (search: LocalSearchType) => () => {
+  search.nextResult();
+};
+
+const handleCopyButtonClick =
+  (
+    addNotification: (...notification: Notification[]) => void,
+    data: LogItem[],
+    t: TFunction<'translation', undefined, 'translation'>,
+  ) =>
+  () => {
+    copy(data.map((item) => (typeof item === 'object' ? item.line : item)).join('\n'));
+    addNotification({
+      type: NotificationType.Info,
+      message: t('task.all-logs-copied'),
+    });
+  };
 
 //
 // Component
@@ -33,76 +56,66 @@ const LogActionBar: React.FC<LogActionBarProps> = ({
 }) => {
   const { addNotification } = useNotifications();
   const { t } = useTranslation();
+
   return (
     <LogActionBarContainer spaceAround={spaceAround} data-testid="log-action-bar">
-      {data && data.length > 0 && (
-        <>
-          <SearchContainer>
-            <FilterInput
-              sectionLabel={t('task.log-search')}
-              onChange={(e) => {
-                search.search(e);
-              }}
-              onSubmit={() => {
-                search.nextResult();
-              }}
-              noClear
-              customIcon={['search', 'sm']}
-              customIconElement={
-                search.result.active &&
-                search.result.result.length > 0 && (
-                  <ResultElement>
-                    {search.result.current + 1}/{search.result.result.length}
-                  </ResultElement>
-                )
-              }
-              infoMsg={t('task.log-search-tip') ?? ''}
-            />
-          </SearchContainer>
-
-          <Buttons data-testid="log-action-bar-buttons">
+      <>
+        <SearchContainer>
+          <FilterInput
+            sectionLabel={t('task.log-search')}
+            onChange={handleFilterChange(search)}
+            onSubmit={handleFilterSubmit(search)}
+            noClear
+            customIcon={['search', 'sm']}
+            customIconElement={
+              search.result.active &&
+              search.result.result.length > 0 && (
+                <ResultElement>
+                  {search.result.current + 1}/{search.result.result.length}
+                </ResultElement>
+              )
+            }
+            infoMsg={t('task.log-search-tip') ?? ''}
+          />
+        </SearchContainer>
+        <Buttons data-testid="log-action-bar-buttons">
+          {data && data.length > 0 && (
             <Button
               data-testid="log-action-button"
               title={t('task.copy-logs-to-clipboard') ?? ''}
               iconOnly
-              onClick={() => {
-                copy(data.map((item) => (typeof item === 'object' ? item.line : item)).join('\n'));
-                addNotification({
-                  type: NotificationType.Info,
-                  message: t('task.all-logs-copied'),
-                });
-              }}
+              onClick={handleCopyButtonClick(addNotification, data, t)}
             >
               <Icon name="copy" size="sm" />
             </Button>
+          )}
 
-            <a title={t('task.download-logs') ?? ''} href={downloadlink} download data-testid="log-action-button">
-              <Button
-                onClick={() => {
-                  addNotification({
-                    type: NotificationType.Info,
-                    message: t('task.downloading-logs'),
-                  });
-                }}
-                iconOnly
-              >
-                <Icon name="download" size="sm" />
-              </Button>
-            </a>
+          <a title={t('task.download-logs') ?? ''} href={downloadlink} download data-testid="log-action-button">
+            <Button
+              onClick={() => {
+                addNotification({
+                  type: NotificationType.Info,
+                  message: t('task.downloading-logs'),
+                });
+              }}
+              iconOnly
+            >
+              <Icon name="download" size="sm" />
+            </Button>
+          </a>
 
-            {setFullscreen && (
-              <Button
-                title={t('task.show-fullscreen') ?? ''}
-                onClick={() => setFullscreen()}
-                withIcon
-                data-testid="log-action-button"
-              >
-                <Icon name="maximize" size="sm" />
-              </Button>
-            )}
-          </Buttons>
-        </>
-      )}
+          {setFullscreen && (
+            <Button
+              title={t('task.show-fullscreen') ?? ''}
+              onClick={() => setFullscreen()}
+              withIcon
+              data-testid="log-action-button"
+            >
+              <Icon name="maximize" size="sm" />
+            </Button>
+          )}
+        </Buttons>
+      </>
     </LogActionBarContainer>
   );
 };
