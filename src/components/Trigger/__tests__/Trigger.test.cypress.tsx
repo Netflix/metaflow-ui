@@ -49,4 +49,23 @@ describe('Trigger test', () => {
 
     cy.get('div').should('contain', 'document_classification');
   });
+
+  it('Does not break on event with null values', () => {
+    mount(
+      <ThemeProvider theme={theme}>
+        <Router basename={basename}>
+          <Trigger
+            triggerEventsValue={{
+              name: null,
+              timestamp: null,
+              id: null,
+              type: 'event',
+            }}
+          />
+        </Router>
+      </ThemeProvider>,
+    );
+
+    cy.get('div').should('contain', 'unknown');
+  });
 });

@@ -7,10 +7,10 @@ import { Link } from 'react-router-dom';
 const MAX_LABEL_WIDTH = 20; // number of characters to show before truncating
 
 export type TriggerEventsValue = {
-  id: string;
-  name: string;
+  id: string | null;
+  name: string | null;
   type: 'run' | 'event';
-  timestamp: string;
+  timestamp: string | null;
 };
 
 //
@@ -32,13 +32,13 @@ const Trigger: React.FC<Props> = ({ triggerEventsValue, className, showToolTip =
   const { id, type, name } = triggerEventsValue;
 
   // Only handles triggers from runs
-  const label = type === 'run' ? id.split('/').slice(0, 2).join('/') : name;
+  const label = (type === 'run' ? id?.split('/')?.slice(0, 2)?.join('/') : name) ?? 'unknown';
   const link = type === 'run' ? '/' + label : undefined;
   const linkToRun = Boolean(link);
   let displayLabel = label;
 
   // Truncate the label in the middle to fit to about MAX_LABEL_WIDTH characters.
-  if (label.length > MAX_LABEL_WIDTH) {
+  if (label?.length > MAX_LABEL_WIDTH) {
     displayLabel = label.slice(0, MAX_LABEL_WIDTH / 2) + '...' + label.slice((-1 * MAX_LABEL_WIDTH) / 2);
   }
   const tooltipId = `label-tooltip-${id}`;
