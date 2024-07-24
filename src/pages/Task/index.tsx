@@ -192,6 +192,7 @@ const Task: React.FC<TaskViewProps> = ({
     paused: !isCurrentTaskFinished,
     preload: task?.status === 'running',
     url: `${logUrl}out?attempt_id=${attemptId.toString()}`,
+    pagesize: 50,
   });
 
   // Error logs
@@ -199,6 +200,7 @@ const Task: React.FC<TaskViewProps> = ({
     paused: !isCurrentTaskFinished,
     preload: task?.status === 'running',
     url: `${logUrl}err?attempt_id=${attemptId.toString()}`,
+    pagesize: 50,
   });
 
   const onUpdate = useCallback((data: Artifact[]) => {
@@ -392,6 +394,13 @@ const Task: React.FC<TaskViewProps> = ({
                   label: t('task.std-err'),
                   component: (
                     <>
+                      <LogActionBar
+                        data={stderr.logs}
+                        downloadlink={apiHttp(`${logUrl}/err/download?attempt_id=${task.attempt_id}`)}
+                        setFullscreen={setStdErrFullscreen}
+                        search={stderr.localSearch}
+                        spaceAround={false}
+                      />
                       <SectionLoader
                         minHeight={110}
                         status={getLogSectionStatus(stderr)}
