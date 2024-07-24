@@ -15,14 +15,14 @@ const Search = {
 };
 
 describe('LogActionBar', () => {
-  it('Should render only download and fullscreen buttons since there is no log data', () => {
+  it('Should render empty action bar since there is no log data', () => {
     mount(
       <TestWrapper>
         <LogActionBar downloadlink="" data={[]} search={Search} />
       </TestWrapper>,
     );
 
-    gid('log-action-bar').children().should('have.length', 2);
+    gid('log-action-bar').children().should('have.length', 0);
   });
 
   it('Should render action bar with two buttons', () => {
