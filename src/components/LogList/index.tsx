@@ -109,6 +109,14 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
     [onScroll],
   );
 
+  const handleScroll = (args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
+    if (args.scrollTop + args.clientHeight >= args.scrollHeight) {
+      setStickBottom(true);
+    } else if (stickBottom) {
+      setStickBottom(false);
+    }
+  };
+
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">
       {rows.length === 0 && ['Ok', 'Error'].includes(logdata.preloadStatus) && logdata.status === 'NotAsked' && (
@@ -128,13 +136,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
                 rowHeight={cache.rowHeight}
                 onRowsRendered={onRowsRendered}
                 deferredMeasurementCache={cache}
-                onScroll={(args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
-                  if (args.scrollTop + args.clientHeight >= args.scrollHeight) {
-                    setStickBottom(true);
-                  } else if (stickBottom) {
-                    setStickBottom(false);
-                  }
-                }}
+                onScroll={handleScroll}
                 rowRenderer={({
                   index,
                   style,
