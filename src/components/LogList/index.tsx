@@ -6,7 +6,6 @@ import { LogData, LogItem, SearchState } from '../../hooks/useLogData';
 import { useDebounce } from 'use-debounce';
 import { AsyncStatus, Log } from '../../types';
 import { lighten } from 'polished';
-import LogActionBar from './LogActionBar';
 import { getTimestampString } from '../../utils/date';
 import { TimezoneContext } from '../TimezoneProvider';
 import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
@@ -29,7 +28,7 @@ type LogProps = {
 
 const LIST_MAX_HEIGHT = 400;
 
-const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadUrl, setFullscreen }) => {
+const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
   const { timezone } = useContext(TimezoneContext);
   const { t } = useTranslation();
   const rows = logdata.logs;
@@ -110,16 +109,16 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
     [onScroll],
   );
 
+  const handleScroll = (args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
+    if (args.scrollTop + args.clientHeight >= args.scrollHeight) {
+      setStickBottom(true);
+    } else if (stickBottom) {
+      setStickBottom(false);
+    }
+  };
+
   return (
     <div style={{ flex: '1 1 0' }} data-testid="loglist-wrapper">
-      <LogActionBar
-        data={logdata.logs}
-        downloadlink={downloadUrl}
-        setFullscreen={setFullscreen}
-        search={logdata.localSearch}
-        spaceAround={!!fixedHeight}
-      />
-
       {rows.length === 0 && ['Ok', 'Error'].includes(logdata.preloadStatus) && logdata.status === 'NotAsked' && (
         <div data-testid="loglist-preload-empty">{t('task.no-preload-logs')}</div>
       )}
@@ -137,13 +136,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll, downloadU
                 rowHeight={cache.rowHeight}
                 onRowsRendered={onRowsRendered}
                 deferredMeasurementCache={cache}
-                onScroll={(args: { scrollTop: number; clientHeight: number; scrollHeight: number }) => {
-                  if (args.scrollTop + args.clientHeight >= args.scrollHeight) {
-                    setStickBottom(true);
-                  } else if (stickBottom) {
-                    setStickBottom(false);
-                  }
-                }}
+                onScroll={handleScroll}
                 rowRenderer={({
                   index,
                   style,
