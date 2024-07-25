@@ -192,7 +192,7 @@ const Task: React.FC<TaskViewProps> = ({
     paused: !isCurrentTaskFinished,
     preload: task?.status === 'running',
     url: `${logUrl}out?attempt_id=${attemptId.toString()}`,
-    pagesize: 50,
+    pagesize: 20,
   });
 
   // Error logs
@@ -200,7 +200,7 @@ const Task: React.FC<TaskViewProps> = ({
     paused: !isCurrentTaskFinished,
     preload: task?.status === 'running',
     url: `${logUrl}err?attempt_id=${attemptId.toString()}`,
-    pagesize: 50,
+    pagesize: 20,
   });
 
   const onUpdate = useCallback((data: Artifact[]) => {
