@@ -41,17 +41,18 @@ const StartedAtCell: React.FC<Props> = ({ run, link, timezone }) => {
     fetchAllData: true,
   });
 
-  const hasTrigger = Boolean(metadataRecord?.['execution-triggers']);
+  const triggerEventsValue = JSON.parse(metadataRecord?.['execution-triggers'] ?? '[]');
+  const hasTrigger = Boolean(triggerEventsValue);
   const displayTime = getRunStartTime(run, timezone);
   const [date, time] = displayTime ? displayTime.split(' ') : [null, null];
 
   return (
     <TDWithLink link={hasTrigger ? undefined : link}>
-      <DisplayDate>{date}</DisplayDate>
-      <DisplayTime>{time}</DisplayTime>
-      {hasTrigger ? (
-        <Triggers showMultiple triggerEventsValue={JSON.parse(metadataRecord?.['execution-triggers'] ?? '')} />
-      ) : null}
+      <StartedAtWrapper>
+        <DisplayDate>{date}</DisplayDate>
+        <DisplayTime>{time}</DisplayTime>
+        {hasTrigger ? <Triggers showMultiple triggerEventsValue={triggerEventsValue} /> : null}
+      </StartedAtWrapper>
     </TDWithLink>
   );
 };
@@ -63,6 +64,10 @@ const DisplayDate = styled.div`
 const DisplayTime = styled.div`
   color: ${(p) => p.theme.color.text.light};
   word-break: break-word;
+`;
+
+const StartedAtWrapper = styled.div`
+  display: inline-block;
 `;
 
 export default StartedAtCell;

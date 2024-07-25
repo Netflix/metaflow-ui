@@ -48,7 +48,7 @@ const Trigger: React.FC<Props> = ({ triggerEventsValue, className, showToolTip =
       {link ? (
         <TriggerLink to={link}>
           <StyledIcon name="arrow" linkToRun={linkToRun} />
-          {showToolTip ? displayLabel : id}
+          <LabelWrapper>{showToolTip ? displayLabel : id}</LabelWrapper>
         </TriggerLink>
       ) : (
         <>
@@ -83,6 +83,19 @@ const StyledIcon = styled(Icon)<ArrowIconProps>`
   }
   svg path {
     fill: #fff;
+  }
+`;
+
+const LabelWrapper = styled.div`
+  vertical-align: middle;
+  display: inline-block;
+  white-space: nowrap;
+
+  @media (max-width: ${(p) => p.theme.breakpoint.sm}) {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 0;
+    min-width: 100%;
   }
 `;
 

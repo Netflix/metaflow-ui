@@ -7,7 +7,7 @@ import styled, { css } from 'styled-components';
 export const Page = styled.div`
   max-width: ${(p) => p.theme.layout.maxWidth}px;
   margin: 0 auto 0 auto;
-  padding: 0 ${(p) => p.theme.layout.pagePaddingX}rem ${(p) => p.theme.layout.pagePaddingY}rem;
+  padding: 0 0 ${(p) => p.theme.layout.pagePaddingY}rem ${(p) => p.theme.layout.pagePaddingX}rem;
   min-height: 100vh;
   display: flex;
   flex-direction: column;

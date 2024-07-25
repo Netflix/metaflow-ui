@@ -22,7 +22,14 @@ declare module 'styled-components' {
       /** This value is used for horizontal padding in pages and pagewide floating elements (rem) */
       pagePaddingX: number;
       pagePaddingY: number;
-      sidebarWidth: number;
+      sidebarWidth: {
+        sm: number;
+        md: number;
+      };
+    };
+
+    breakpoint: {
+      sm: string;
     };
 
     spacer: {
