@@ -42,10 +42,7 @@ const HomeSidebar: React.FC<Props> = ({ handleParamChange, updateListValue, para
   return (
     <Sidebar className="sidebar">
       {/* Add sidebar size to be 100% viewheight - (header size + 1 rem for padding) */}
-      <Scrollbars
-        style={{ height: `calc(100vh - ${HEADER_SIZE_REM + 1}rem)`, width: '15rem', paddingTop: '0.25rem' }}
-        autoHide
-      >
+      <StyledScrollbars autoHide>
         <SidebarContent>
           {FEATURE_FLAGS.RUN_GROUPS && (
             <SidebarSectionWrapper>
@@ -161,7 +158,7 @@ const HomeSidebar: React.FC<Props> = ({ handleParamChange, updateListValue, para
             </div>
           )}
         </SidebarContent>
-      </Scrollbars>
+      </StyledScrollbars>
     </Sidebar>
   );
 };
@@ -191,16 +188,31 @@ const ButtonResetAll = styled(Button)`
 
 const Sidebar = styled.div`
   position: fixed;
-  width: ${(p) => p.theme.layout.sidebarWidth}rem;
+  width: ${(p) => p.theme.layout.sidebarWidth.md}rem;
+  @media (max-width: ${(p) => p.theme.breakpoint.sm}) {
+    width: ${(p) => p.theme.layout.sidebarWidth.sm}rem;
+  }
   top: ${(p) => p.theme.layout.appbarHeight}rem;
   font-size: 0.875rem;
   padding-top: 6px;
 `;
 
 const SidebarContent = styled.div`
-  width: 14rem;
+  width: ${(p) => p.theme.layout.sidebarWidth.md}rem;
+  @media (max-width: ${(p) => p.theme.breakpoint.sm}) {
+    width: ${(p) => p.theme.layout.sidebarWidth.sm}rem;
+  }
   padding-top: 0.5rem;
   padding-left: 0.25rem;
+`;
+
+const StyledScrollbars = styled(Scrollbars)`
+  height: calc(100vh - ${HEADER_SIZE_REM + 1}rem) !important;
+  width: ${(p) => p.theme.layout.sidebarWidth.md + 1}rem !important;
+  @media (max-width: ${(p) => p.theme.breakpoint.sm}) {
+    width: ${(p) => p.theme.layout.sidebarWidth.sm + 1}rem !important;
+  }
+  padding-top: 0.25rem;
 `;
 
 export const SidebarSectionWrapper = styled.div`
