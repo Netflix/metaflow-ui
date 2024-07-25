@@ -16,6 +16,7 @@ const StatusIndicator: React.FC<{ status: keyof RunStatus | TaskStatus }> = ({ s
 const StatusColorIndicator = styled.div<{ status: string }>`
   display: flex;
   color: ${(p) => (p.status === 'failed' ? 'white' : colorByStatus(p.theme, p.status))};
+  justify-content: center;
 `;
 
 export default StatusIndicator;

@@ -32,8 +32,6 @@ function generateLines(amount: number) {
 const LIST_CONTAINER_CLASS = 'ReactVirtualized__List';
 
 describe('LogActionBar', () => {
-
-
   it('Should render message about empty preload when preload was empty or error and final fetch is not started', () => {
     mount(
       <TestWrapper>

@@ -86,9 +86,9 @@ const ResultGroup: React.FC<Props> = React.memo(
         hidden: queryParams._group === 'user',
         maxWidth: '12.5%',
       },
-      { label: t('fields.started-at'), sortable: true, key: 'ts_epoch', maxWidth: '170' },
-      { label: t('fields.finished-at'), sortable: true, key: 'finished_at', maxWidth: '170' },
-      { label: t('fields.duration'), sortable: true, key: 'duration', maxWidth: '130' },
+      { label: t('fields.started-at'), sortable: true, key: 'ts_epoch' },
+      { label: t('fields.finished-at'), sortable: true, key: 'finished_at' },
+      { label: t('fields.duration'), sortable: true, key: 'duration' },
       { label: t('fields.user-tags'), key: 'tags' },
     ].filter((item) => !item.hidden);
 

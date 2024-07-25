@@ -104,10 +104,17 @@ const defaultTheme: DefaultTheme = {
     appbarLogoHeight: 1.5,
     pagePaddingX: spacer.ml,
     pagePaddingY: spacer.lg,
-    sidebarWidth: 14,
+    sidebarWidth: {
+      md: 14,
+      sm: 12,
+    },
   },
 
   spacer,
+
+  breakpoint: {
+    sm: '1280px',
+  },
 
   color: {
     text: textColor,
