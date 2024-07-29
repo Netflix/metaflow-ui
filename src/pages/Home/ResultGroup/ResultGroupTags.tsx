@@ -18,6 +18,8 @@ type ResultGroupTagsProps = {
 const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ tags, updateListValue }) => {
   const [open, setOpen] = useState(false);
 
+  const sortedTags = tags.sort((a, b) => a.localeCompare(b));
+
   return (
     <TagsCell
       onClick={(e) => {
@@ -25,22 +27,22 @@ const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ tags, updateListValue
       }}
     >
       <TagContainer>
-        {tags.slice(0, 3).map((tag, index) => (
+        {sortedTags.slice(0, 3).map((tag, index) => (
           <span key={tag} onClick={() => updateListValue('_tags', tag)}>
             {tag}
-            {index !== tags.length - 1 && ', '}
+            {index !== sortedTags.length - 1 && ', '}
           </span>
         ))}
 
-        {tags.length > 3 && !open && <span>...</span>}
+        {sortedTags.length > 3 && !open && <span>...</span>}
       </TagContainer>
 
-      {tags.length > 3 && (
+      {sortedTags.length > 3 && (
         <AllTagsContainer open={open} onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
-          {(open ? tags : tags.slice(0, 3)).map((tag, index) => (
+          {(open ? sortedTags : sortedTags.slice(0, 3)).map((tag, index) => (
             <span key={tag} onClick={() => updateListValue('_tags', tag)}>
               {tag}
-              {index !== tags.length - 1 && ', '}
+              {index !== sortedTags.length - 1 && ', '}
             </span>
           ))}
         </AllTagsContainer>
