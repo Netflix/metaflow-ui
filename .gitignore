@@ -28,3 +28,6 @@ yarn-error.log*
 /plugin-api/dev/plugins/*
 # except dev-plugin which is used as example
 !/plugin-api/dev/plugins/dev-plugin
+
+# Do not include mock service worker
+/public/mockServiceWorker.js
