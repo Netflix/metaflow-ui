@@ -85,10 +85,10 @@ const PropertyTableContainer = styled.table`
 `;
 
 const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme; width?: string }>`
-  background: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.black : p.theme.color.bg.silver)};
-  color: ${(p) => (p.scheme === 'dark' ? p.theme.color.bg.white : p.theme.color.text.dark)};
-  border-right: ${(p) => p.theme.border.mediumWhite};
-  border-bottom: ${(p) => p.theme.border.mediumWhite};
+  background: ${(p) => (p.scheme === 'dark' ? 'var(--color-bg-heavy)' : 'var(--color-bg-neutral)')};
+  color: ${(p) => (p.scheme === 'dark' ? 'var(--color-text-alternative)' : 'var(--color-text-primary)')};
+  border-right: var(--border-alternative-medium);
+  border-bottom: var(--border-alternative-medium);
   font-size: 0.875rem;
   padding: 0.4rem 1rem;
   font-weight: 500;
@@ -103,15 +103,15 @@ const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme; widt
 
 const PropertyTableRow = styled.tr`
   &:not(:last-child) {
-    border-bottom: ${(p) => p.theme.border.mediumWhite};
+    border-bottom: var(--border-alternative-medium);
   }
 `;
 
 const PropertyTableRowItemContent = styled.td<{ scheme: PropertyTableScheme }>`
   padding: 0.75rem 1rem;
   font-size: 0.875rem;
-  border-right: ${(p) => p.theme.border.mediumWhite};
-  background: ${(p) => (p.scheme === 'bright' ? p.theme.color.bg.white : 'transparent')};
+  border-right: var(--border-alternative-medium);
+  background: ${(p) => (p.scheme === 'bright' ? 'var(--color-bg-primary)' : 'transparent')};
   word-break: break-word;
   &:last-child {
     border-right: none;

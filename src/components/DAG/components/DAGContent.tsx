@@ -8,7 +8,6 @@ import { StepLineData } from '../../Timeline/taskdataUtils';
 import Icon from '../../Icon';
 import { useTranslation } from 'react-i18next';
 import Tooltip, { TooltipTitle } from '../../Tooltip';
-import { mix } from 'polished';
 import { useHistory } from 'react-router-dom';
 import { getPath } from '../../../utils/routing';
 import { getRunId } from '../../../utils/run';
@@ -255,19 +254,19 @@ const StatusColorStyles = css<{ state: TaskStatus }>`
   border: 1px solid
     ${(p) =>
       p.state === 'completed'
-        ? p.theme.notification.success.text
+        ? 'var(--color-text-success)'
         : p.state === 'running'
-          ? p.theme.notification.warning.text
+          ? 'var(--color-text-warning)'
           : p.state === 'failed'
-            ? p.theme.notification.danger.text
-            : p.theme.color.border.mid};
+            ? 'var(--color-text-danger)'
+            : 'var(--color-border-2)'};
   background: ${(p) =>
     p.state === 'completed'
-      ? mix(0.05, p.theme.notification.success.text, '#fff')
+      ? 'color-mix(in hsl, var(--color-text-success) 5%, #fff)'
       : p.state === 'running'
-        ? mix(0.05, p.theme.notification.warning.text, '#fff')
+        ? 'color-mix(in hsl, var(--color-text-warning) 5%, #fff)'
         : p.state === 'failed'
-          ? mix(0.05, p.theme.notification.danger.text, '#fff')
+          ? 'color-mix(in hsl, var(--color-text-danger) 5%, #fff)'
           : '#fff'};
 `;
 
@@ -282,7 +281,7 @@ const NormalItem = styled.div<{ state: TaskStatus }>`
 `;
 
 const BaseContainerStyle = css`
-  border: ${(p) => p.theme.border.thinMid};
+  border: var(--border-2-thin);
   background: #f6f6f6;
   display: flex;
   border-radius: 0.5rem;

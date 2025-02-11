@@ -33,7 +33,7 @@ const DisplayDate = styled.div`
 `;
 
 const DisplayTime = styled.div`
-  color: ${(p) => p.theme.color.text.light};
+  color: var(--color-text-light);
   word-break: break-word;
 `;
 

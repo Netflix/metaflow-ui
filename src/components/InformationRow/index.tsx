@@ -19,8 +19,8 @@ const InformationRow: React.FC<{
 };
 
 const StyledRow = styled.div<{ spaceless: boolean }>`
-  background: ${(p) => p.theme.color.bg.light};
-  border-bottom: ${(p) => p.theme.border.mediumWhite};
+  background: var(--color-bg-secondary);
+  border-bottom: var(--border-alternative-medium);
   padding: ${(p) => (p.spaceless ? '0px' : '0.625rem')};
 
   &:first-of-type {

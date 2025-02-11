@@ -260,7 +260,7 @@ const SubmitIconHolder = styled.div<{ focus: boolean; status: AsyncStatus }>`
     css`
       svg,
       svg path {
-        stroke: ${(p) => p.theme.color.bg.red};
+        stroke: var(--color-bg-danger);
       }
     `}
 
@@ -269,12 +269,12 @@ const SubmitIconHolder = styled.div<{ focus: boolean; status: AsyncStatus }>`
       p.focus
         ? css`
             svg path {
-              stroke: ${p.theme.color.text.blue};
+              stroke: var(--color-text-highlight);
             }
           `
         : css`
             svg {
-              color: ${p.theme.color.text.blue};
+              color: var(--color-text-highlight);
             }
           `}} 
 
@@ -282,7 +282,7 @@ const SubmitIconHolder = styled.div<{ focus: boolean; status: AsyncStatus }>`
 `;
 
 const InfoMsgContainer = styled.div`
-  color: ${(p) => p.theme.color.bg.black};
+  color: var(--color-bg-heavy);
   font-size: 0.5rem;
   font-weight: 500;
   left: 0;
@@ -296,7 +296,7 @@ const InfoMsgContainer = styled.div`
 `;
 
 const ErrorMsgContainer = styled.div`
-  color: ${(p) => p.theme.color.bg.red};
+  color: var(--color-bg-danger);
   font-size: 0.5rem;
   font-weight: 500;
   left: 0;

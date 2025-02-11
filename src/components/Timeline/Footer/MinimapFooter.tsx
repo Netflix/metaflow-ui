@@ -186,8 +186,8 @@ const MinimapFooter: React.FC<MinimapFooterProps> = ({
 const MinimapFooterContent = styled.div`
   position: relative;
   flex: 1;
-  background: ${(p) => p.theme.color.bg.light};
-  border-bottom: ${(p) => p.theme.border.thinLight};
+  background: var(--color-bg-secondary);
+  border-bottom: var(--border-1-thin);
   height: 3.0625rem;
 `;
 

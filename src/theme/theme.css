@@ -10,16 +10,26 @@
   --color-secondary: var(--brand-color-secondary);
   --color-tertiary: var(--brand-color-tertiary);
   
-  --color-successs: #20AF2E;
+  --color-success: #20AF2E;
   --color-success-light: rgba(32, 175, 46, 0.2);
   --color-warning: #E5A90C;
   --color-danger: #EB3428;
+
+  --color-bg-primary: #fff;
+  --color-bg-secondary: rgba(0, 0, 0, 0.03);
+  --color-bg-secondary-highlight: #e4f0ff;
+  --color-bg-heavy: #444;
+
+  --color-bg-brand-primary: var(--color-primary);
+  --color-bg-brand-secondary: var(--color-secondary);
+  --color-bg-brand-tertiary: var(--color-tertiary);
 
   --color-bg-success: #4C9878;
   --color-bg-success-light: #bce307;
   --color-bg-warning: #DBAD34;
   --color-bg-danger: #e6786C;
   --color-bg-neutral: #E8EAED;
+  --color-bg-disabled: #767676;
 
   --color-border-primary: #d0d0d0;
   --color-border-1: rgba(0, 0, 0, 0.125);
@@ -29,7 +39,7 @@
   --color-text-primary: #333;
   --color-text-secondary: #666;
   --color-text-light: #767676;
-  --color-text-alternate: #fff;
+  --color-text-alternative: #fff;
   /* this is a slightly darker tone of brand blue to meet a11y standards */
   --color-text-highlight: #0C66DE;
 
@@ -37,6 +47,10 @@
   --color-text-info: #107177;
   --color-text-warning: var(--color-bg-warning);
   --color-text-danger: var(--color-bg-danger);
+
+  --color-icon-light: #d9d9d9;
+  --color-icon-secondary: var(--color-text-secondary);
+  --color-icon-primary: var(--color-text-primary);
 
   /* Spacing */
 	--spacing-1: 0.25rem; /* 4px */
@@ -105,32 +119,33 @@
     --border-1-medium: 2px solid var(--color-border-1);
     --border-2-medium: 2px solid var(--color-border-2);
     --border-3-medium: 2px solid var(--color-border-3);
+    --border-alternative-medium: 2px solid var(--color-text-alternative);
 
     /* Layout */
 
-    --layout-max-width: '160rem'; /* 2560px */
-    --layout-application-bar-height: '7rem'; /* 112px */
-    --layout-application-bar-logo-height: '1.5rem'; /* 24px */
+    --layout-max-width: 160rem; /* 2560px */
+    --layout-application-bar-height: 7rem; /* 112px */
+    --layout-application-bar-logo-height: 1.5rem; /* 24px */
     --layout-page-padding-x: var(--spacing-9);
     --layout-page-padding-y: var(--spacing-10);
 
-    --layout-breakpoint-sm: '80rem'; /* 1280px */
+    --layout-breakpoint-sm: 1280px;
 
     /* Components */
 
     /* Sidebar */
-    --sidebar-width-md: '14rem';
-    --sidebar-width-sm: '12rem';
+    --sidebar-width-md: 14rem;
+    --sidebar-width-sm: 12rem;
 
     /* Notifications */
     --notification-success-bg: var(--color-bg-success);
-    --notification-success-text-color: var(--color-text-alternate);
+    --notification-success-text-color: var(--color-text-alternative);
     --notification-info-bg: var(--color-bg-primary);
-    --notification-info-text-color: var(--color-text-alternate);
+    --notification-info-text-color: var(--color-text-alternative);
     --notification-warning-bg: var(--color-bg-warning);
-    --notification-warning-text-color: var(--color-text-alternate);
+    --notification-warning-text-color: var(--color-text-alternative);
     --notification-danger-bg: var(--color-bg-danger);
-    --notification-danger-text-color: var(--color-text-alternate);
+    --notification-danger-text-color: var(--color-text-alternative);
     --notification-default-bg: var(--color-border-primary);
     --notification-default-text-color: var(--color-text-secondary);
 
@@ -138,31 +153,37 @@
 
     --button-default-text-color: var(--color-text-secondary);
     --button-default-bg: 'transparent';
-    --button-default-border: '1px solid var(--color-border-primary)';
+    --button-default-bg-hover: var(--color-bg-secondary);
+    --button-default-border: 1px solid var(--color-border-primary);
     --button-default-active-text-color: var(--color-text-primary);
     --button-default-active-bg: var(--color-bg-neutral);
 
-    --button-textonly-text-color: var(--color-text-primary);
-    --button-textonly-bg: 'transparent';
-    --button-textonly-border: 'none';
-    --button-textonly-active-text-color: var(--color-text-primary);
-    --button-textonly-active-bg: var(--color-bg-neutral);
+    --button-text-text-color: var(--color-text-primary);
+    --button-text-bg: 'transparent';
+    --button-text-bg-hover: var(--color-bg-secondary);
+    --button-text-border: 'none';
+    --button-text-active-text-color: var(--color-text-primary);
+    --button-text-active-bg: var(--color-bg-neutral);
 
-    --button-highlighttext-text-color: var(--color-text-highlight);
-    --button-highlighttext-bg: 'transparent';
-    --button-highlighttext-border: var(--border-highlight-thin);
-    --button-highlighttext-active-text-color: var(--color-text-highlight);
-    --button-highlighttext-active-bg: var(--color-bg-neutral);
+    --button-primaryText-text-color: var(--color-text-highlight);
+    --button-primaryText-bg: 'transparent';
+    --button-primaryText-bg-hover: var(--color-bg-secondary);
+    --button-primaryText-border: var(--border-highlight-thin);
+    --button-primaryText-active-text-color: var(--color-text-highlight);
+    --button-primaryText-active-bg: var(--color-bg-neutral);
 
     /* Spinner */
 
-    --spinner-default-size: '20px';
-    --spinner-default-border-width: '2px';
-    --spinner-sm-size: '20px';
-    --spinner-sm-border-width: '2px';
-    --spinner-md-size: '32px';
-    --spinner-md-border-width: '4px';
-    --spinner-lg-size: '64px';
-    --spinner-lg-border-width: '6px';
+    --spinner-default-size: 20px;
+    --spinner-default-border-width: 2px;
+    --spinner-sm-size: 20px;
+    --spinner-sm-border-width: 2px;
+    --spinner-md-size: 32px;
+    --spinner-md-border-width: 4px;
+    --spinner-lg-size: 64px;
+    --spinner-lg-border-width: 6px;
     --spinner-color: var(--color-primary);
+
+    /* Tooltip */
+    --tooltip-bg: rgba(51, 51, 51, 0.7);
 }

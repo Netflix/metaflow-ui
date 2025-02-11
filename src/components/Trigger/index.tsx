@@ -91,7 +91,7 @@ const LabelWrapper = styled.div`
   display: inline-block;
   white-space: nowrap;
 
-  @media (max-width: ${(p) => p.theme.breakpoint.sm}) {
+  @media (max-width: var(--layout-breakpoint-sm)) {
     text-overflow: ellipsis;
     overflow: hidden;
     width: 0;

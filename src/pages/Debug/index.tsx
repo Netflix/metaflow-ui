@@ -114,7 +114,7 @@ const DebugSectionTitle = styled.div`
 const DebugSectionContent = styled.div`
   font-size: 0.75rem;
   line-height: 1rem;
-  color: ${(p) => p.theme.color.text.mid};
+  color: var(--color-text-secondary);
 `;
 
 const RecordButton = styled(BigButton)`

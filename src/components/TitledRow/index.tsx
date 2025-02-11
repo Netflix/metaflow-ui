@@ -95,7 +95,7 @@ const TitledRowTitle = styled.div`
 `;
 
 const ContentBackground = styled.div`
-  background: ${(p) => p.theme.color.bg.light};
+  background: var(--color-bg-secondary);
   border-radius: 4px;
   font-size: 0.875rem;
 `;

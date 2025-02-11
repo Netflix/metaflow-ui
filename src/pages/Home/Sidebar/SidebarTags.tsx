@@ -46,7 +46,7 @@ export const ParameterList = styled.div`
 export const StyledRemovableTag = styled(RemovableTag)`
   align-items: center;
   min-height 2rem;
-  margin-top: ${(p) => p.theme.spacer.sm}rem;
+  margin-top: var(--spacing-3);
   word-break: break-all;
-  margin-right: ${(p) => p.theme.spacer.sm}rem;
+  margin-right: var(--spacing-3);
 `;

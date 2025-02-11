@@ -378,12 +378,12 @@ export function findAdditionalButtons(routeMatch: match<KnownURLParams> | null, 
 
 const BreadcrumbGroup = styled.div`
   ${ButtonCSS}
-  border-color: ${(p) => p.theme.color.text.blue};
+  border-color: var(--color-text-highlight);
   width: 100%;
 `;
 
 const BreadcrumbEmptyInput = styled(InputWrapper)`
-  border: 1px solid ${(p) => p.theme.color.text.blue};
+  border: 1px solid var(--color-text-highlight);
 
   input {
     padding-left: 0;
@@ -405,9 +405,9 @@ const CrumbComponent = styled.div`
 const ButtonCrumb = styled(BigButton)`
   display: inline-block;
 
-  padding-left: ${(p) => p.theme.spacer.sm}rem;
-  padding-right: ${(p) => p.theme.spacer.sm}rem;
-  color: ${(p) => p.theme.color.text.dark};
+  padding-left: var(--spacing-3);
+  padding-right: var(--spacing-3);
+  color: var(--color-text-primary);
 
   overflow-x: hidden;
   max-width: 18.75rem;
@@ -420,14 +420,14 @@ const ButtonCrumb = styled(BigButton)`
 
   &:hover {
     background-color: transparent;
-    color: ${(p) => p.theme.color.text.dark};
+    color: var(--color-text-primary);
   }
 `;
 
 const BreadcrumbDivider = styled.div`
   display: inline-block;
   pointer-events: none;
-  color: ${(p) => p.theme.color.text.dark};
+  color: var(--color-text-primary);
   font-weight: bold;
   &:after {
     content: '/';
@@ -452,7 +452,7 @@ const StyledBreadcrumb = styled(ItemRow)`
 `;
 
 const BreadcrumbInputWrapper = styled(InputWrapper)`
-  border: 1px solid ${(p) => p.theme.color.text.blue};
+  border: 1px solid var(--color-text-highlight);
 `;
 
 const GoToHolder = styled.div`
@@ -466,8 +466,8 @@ const GoToHolder = styled.div`
 
 const GoToContainer = styled.div`
   position: absolute;
-  top: -${(p) => p.theme.spacer.sm}rem;
-  left: -${(p) => p.theme.spacer.sm}rem;
+  top: calc(var(--spacing-3) * -1);
+  left: calc(var(--spacing-3) * -1);
   ${PopoverStyles}
   width: 100%;
 `;
@@ -480,20 +480,20 @@ const GotoClose = styled.div`
 `;
 
 const BreadcrumbInfo = styled.div`
-  padding: ${(p) => p.theme.spacer.sm}rem;
+  padding: var(--spacing-3);
 `;
 
 const BreadcrumbWarning = styled.div`
-  color: ${(p) => p.theme.notification.danger.text};
+  color: var(--notification-danger-text-color);
 `;
 
 const KeyValueListLabel = styled.div`
-  color: ${(p) => p.theme.color.text.mid};
+  color: var(--color-text-secondary);
   width: 4.6875rem;
 `;
 
 const KeyValueListValue = styled.div`
-  color: ${(p) => p.theme.color.text.dark};
+  color: var(--color-text-primary);
 `;
 
 const KeyValueListItem = styled.div`

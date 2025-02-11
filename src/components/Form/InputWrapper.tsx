@@ -9,7 +9,7 @@ type InputWrapperProps = { active: boolean; status?: AsyncStatus; size?: 'sm' | 
 
 const InputWrapper = styled.section<InputWrapperProps>`
   align-items: center;
-  border: ${(p) => (p.status && p.status === 'Error' ? '1px solid ' + p.theme.color.bg.red : p.theme.border.thinLight)};
+  border: ${(p) => (p.status && p.status === 'Error' ? '1px solid var(--color-bg-danger)' : 'var(--border-1-thin)')};
   border-radius: 0.25rem;
   color: #333;
   background: #fff;
@@ -48,7 +48,11 @@ const InputWrapper = styled.section<InputWrapperProps>`
 
   &:hover {
     border-color: ${(p) =>
-      p.status && p.status === 'Error' ? p.theme.color.bg.red : p.active ? p.theme.color.text.blue : '#333'};
+      p.status && p.status === 'Error'
+        ? 'var(--color-bg-danger)'
+        : p.active
+          ? 'var(--color-text-highlight)'
+          : 'var(--color-text-primary)'};
   }
 `;
 

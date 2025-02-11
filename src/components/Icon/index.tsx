@@ -156,8 +156,8 @@ const Wrapper = styled.i<{
   align-items: center;
   margin: 0;
   padding: 0;
-  padding-left: ${(p) => (p.padLeft ? p.theme.spacer.sm : 0)}rem;
-  padding-right: ${(p) => (p.padRight ? p.theme.spacer.sm : 0)}rem;
+  padding-left: ${(p) => (p.padLeft ? 'var(--spacing-3)' : 0)}rem;
+  padding-right: ${(p) => (p.padRight ? 'var(--spacing-3)' : 0)}rem;
 
   ${(p) =>
     p.spin
@@ -189,13 +189,13 @@ export const SortIcon: React.FC<SortIconProps> = ({ direction, ...rest }) => (
 );
 
 const StyledSortIcon = styled(Icon)<SortIconProps>`
-  color: ${(p) => p.theme.color.icon.light};
+  color: var(--color-icon-light);
 
   #up {
-    color: ${(p) => (p.active && p.direction === 'up' ? p.theme.color.icon.dark : 'currentColor')};
+    color: ${(p) => (p.active && p.direction === 'up' ? 'var(--color-icon-primary)' : 'currentColor')};
   }
 
   #down {
-    color: ${(p) => (p.active && p.direction === 'down' ? p.theme.color.icon.dark : 'currentColor')};
+    color: ${(p) => (p.active && p.direction === 'down' ? 'var(--color-icon-primary)' : 'currentColor')};
   }
 `;

@@ -83,38 +83,38 @@ const TabsContainer = styled.div`
 
 export const TabsHeading = styled.div<{ widen?: boolean }>`
   display: flex;
-  border-bottom: ${(p) => p.theme.border.mediumLight};
-  margin: ${(p) => (p.widen ? `0 -${p.theme.layout.pagePaddingX}rem` : 'initial')};
-  padding: ${(p) => (p.widen ? `0 ${p.theme.layout.pagePaddingX}rem` : 'initial')};
-  color: ${(p) => p.theme.color.text.mid};
+  border-bottom: var(--border-1-medium);
+  margin: ${(p) => (p.widen ? '0 calc(var(--layout-page-padding-y) * -1)' : 'initial')};
+  padding: ${(p) => (p.widen ? '0 var(--layout-page-padding-x)' : 'initial')};
+  color: var(--color-text-secondary);
 
   a {
-    color: ${(p) => p.theme.color.text.mid};
+    color: var(--color-text-secondary);
     text-decoration: none;
 
     &.active {
-      color: ${(p) => p.theme.color.text.dark};
+      color: var(--color-text-primary);
     }
   }
 `;
 
 export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean }>`
-  margin-right: ${(p) => p.theme.spacer.md}rem;
+  margin-right: var(--spacing-7);
   margin-bottom: -2px;
-  padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.md}rem;
+  padding: var(--spacing-3) var(--spacing-7);
   border-top-left-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
   border-top-right-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
-  border-bottom: 2px solid ${(p) => (p.active ? p.theme.color.bg.blue : 'transparent')};
+  border-bottom: 2px solid ${(p) => (p.active ? 'var(--color-bg-secondary-highlight)' : 'transparent')};
   background: ${(p) =>
-    p.temporary && p.active ? p.theme.color.bg.blueLight : p.temporary ? '#f6f6f6' : 'transparent'};
-  color: ${(p) => (p.active ? p.theme.color.text.dark : p.theme.color.text.mid)};
+    p.temporary && p.active ? 'var(--color-bg-secondary-highlight)' : p.temporary ? '#f6f6f6' : 'transparent'};
+  color: ${(p) => (p.active ? 'var(--color-text-primary)' : 'var(--color-text-secondary)')};
   font-weight: ${(p) => (p.active ? '500' : '400')};
   cursor: pointer;
   transition: 0.15s border;
   white-space: nowrap;
 
   &:hover {
-    border-bottom-color: ${(p) => p.theme.color.bg.blue};
+    border-bottom-color: var(--color-bg-brand-primary);
     font-weight: 500;
     border-top-left-radius: 0.25rem;
     border-top-right-radius: 0.25rem;
@@ -123,7 +123,7 @@ export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean
 
 const ActiveTab = styled.div`
   display: flex;
-  padding-top: ${(p) => p.theme.spacer.sm}rem;
+  padding-top: var(--spacing-3);
   flex: 1 1;
 `;
 

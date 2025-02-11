@@ -40,7 +40,7 @@ const MiniTimelineHandle = styled.div`
   top: 0.4375rem;
   height: 1.8125rem;
   width: 0.625rem;
-  background: ${(p) => p.theme.color.bg.blue};
+  background: var(--color-bg-brand-primary);
   z-index: 2;
 
   display: flex;
@@ -52,7 +52,7 @@ const MiniTimelineHandle = styled.div`
 const MiniTimelineIconLine = styled.div`
   height: 1px;
   width: 0.25rem;
-  background: ${(p) => p.theme.color.bg.white};
+  background: var(--color-bg-primary);
   margin-bottom: 2px;
 `;
 

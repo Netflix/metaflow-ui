@@ -144,7 +144,7 @@ const TimezoneSelectorContainer = styled.div`
 
 const HelpMenuTitle = styled.div`
   align-items: center;
-  border-bottom: ${(p) => p.theme.border.thinLight};
+  border-bottom: var(--border-1-thin);
   display: flex;
   justify-content: space-between;
   margin: 0 -0.5rem 0.5rem;
@@ -156,19 +156,19 @@ const HelpMenuTitle = styled.div`
   }
 
   i {
-    color: ${(p) => p.theme.color.text.mid};
+    color: var(--color-text-secondary);
   }
 `;
 
 const HelpMenuItemStyles = css`
-  color: ${(p) => p.theme.color.text.mid};
+  color: var(--color-text-secondary);
   display: flex;
   line-height: 1rem;
   padding: 0.5rem 0.5rem;
   text-decoration: none;
 
   &:hover {
-    color: ${(p) => p.theme.color.text.blue};
+    color: var(--color-text-highlight);
   }
 `;
 
@@ -176,7 +176,7 @@ const StyledHelpMenuLink = styled.a`
   ${HelpMenuItemStyles}
 
   &:hover:after {
-    background-color: ${(p) => p.theme.color.text.blue};
+    background-color: var(--color-text-highlight);
   }
   &:after {
     background-color: #666;
@@ -221,8 +221,8 @@ export const HelpMenuRow = styled.div`
 const VersionContainer = styled.div`
   margin: 0 -0.5rem 0.25rem;
   padding: 0.25rem 0.5rem 0;
-  color: ${(p) => p.theme.color.text.mid};
-  border-top: ${(p) => p.theme.border.thinNormal};
+  color: var(--color-text-secondary);
+  border-top: var(--border-primary-thin);
   word-break: break-all;
 
   > *:last-child {

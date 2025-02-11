@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { LogData, LogItem, SearchState } from '../../hooks/useLogData';
 import { useDebounce } from 'use-debounce';
 import { AsyncStatus, Log } from '../../types';
-import { lighten } from 'polished';
 import { getTimestampString } from '../../utils/date';
 import { TimezoneContext } from '../TimezoneProvider';
 import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
+import { brightenCssVar } from '../../utils/style';
 
 //
 // Typedef
@@ -184,7 +184,7 @@ const LogList: React.FC<LogProps> = ({ logdata, fixedHeight, onScroll }) => {
 };
 
 const MatchHighlight = styled.span<{ active: boolean }>`
-  background: ${(p) => (p.active ? lighten(0.2, p.theme.color.bg.yellow) : p.theme.color.bg.yellow)};
+  background: ${(p) => (p.active ? brightenCssVar('--color-bg-warning', 20) : 'var(--color-bg-warning)')};
 `;
 
 function getLineText(item: Log, searchResult: SearchState) {
@@ -255,7 +255,7 @@ const PollWaitingIndicator = styled.div<{ show: boolean; isLoading: boolean }>`
   }
 
   .path {
-    stroke: ${(p) => p.theme.color.bg.blue};
+    stroke: var(--color-bg-brand-primary);
     stroke-linecap: round;
     stroke-dasharray: 150;
     stroke-dashoffset: ${(p) => (p.isLoading ? '-25' : '-125')};
@@ -294,8 +294,8 @@ const PollLoader: React.FC<PollLoaderProps> = ({ status, preloadStatus }) => {
 //
 
 const LogListContainer = styled.div`
-  background: ${(p) => p.theme.color.bg.light};
-  border-bottom: ${(p) => p.theme.border.thinNormal};
+  background: var(--color-bg-secondary);
+  border-bottom: var(--border-primary-thin);
   font-family: monospace;
   border-radius: 0.25rem;
   font-size: 0.875rem;
@@ -337,7 +337,7 @@ const ScrollToBottomButton = styled.div`
   border-radius: 0.25rem;
 
   background: rgba(0, 0, 0, 0.5);
-  color: ${(p) => p.theme.color.text.white};
+  color: var(--color-text-alternative);
 `;
 
 export default LogList;

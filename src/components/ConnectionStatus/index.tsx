@@ -92,8 +92,8 @@ const Text = styled(SmallText)<{ status: RealtimeStatus }>`
   position: absolute;
   right: 0;
   top: 100%;
-  color: ${(p) => p.theme.color.text.white};
-  background: ${(p) => p.theme.color.bg.tooltip};
+  color: var(--color-text-alternative);
+  background: var(--tooltip-bg);
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
   white-space: nowrap;
@@ -123,28 +123,28 @@ const StatusColorIndicator = styled.div<{ status: RealtimeStatus }>`
   background-color: ${(p) => {
     switch (p.status) {
       case 'Connected':
-        return p.theme.color.connection.green;
+        return 'var(--color-success)';
       case 'Stale':
-        return p.theme.color.connection.yellow;
+        return 'var(--color-warning)';
       case 'Disconnected':
-        return p.theme.color.connection.red;
+        return 'var(--color-danger)';
       default:
-        return p.theme.color.connection.green;
+        return 'var(--color-success)';
     }
   }};
 
   outline-color: ${(p) => {
     switch (p.status) {
       case 'Connected':
-        return p.theme.color.connection.lightGreen;
+        return 'var(--color-success-light)';
       case 'Stale':
         return 'transparent';
       case 'Disconnected':
         return 'transparent';
       default:
-        return p.theme.color.connection.lightGreen;
+        return 'var(--color-success-light)';
     }
   }};
 
-  margin-left: ${(p) => p.theme.spacer.sm}rem;
+  margin-left: var(--spacing-3);
 `;

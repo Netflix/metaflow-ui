@@ -40,7 +40,7 @@ const ScrollToTopButton = styled.div<{ show: boolean; fullWidth: number }>`
   z-index: 999;
   bottom: 1rem;
   right: 1rem;
-  background: ${(p) => p.theme.color.bg.blue};
+  background: var(--color-bg-brand-primary);
   border-radius: 1.25rem;
   overflow: hidden;
   height: 2.5rem;

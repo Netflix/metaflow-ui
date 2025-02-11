@@ -118,7 +118,7 @@ const Container = styled.div`
   }
 
   a {
-    color: ${(p) => p.theme.color.text.dark};
+    color: var(--color-text-primary);
   }
 `;
 

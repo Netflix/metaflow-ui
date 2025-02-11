@@ -128,13 +128,13 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   font-size: ${(p) => (p.type === 'task' ? '0.75rem' : '0.875rem')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
   line-height: 1.6875rem;
-  border-left: ${(p) => p.theme.border.thinLight};
+  border-left: var(--border-1-thin);
   padding-left: ${(p) => (p.type === 'task' ? '0.5rem' : undefined)};
 
   a {
     display: flex;
     width: 100%;
-    color: ${(p) => p.theme.color.text.dark};
+    color: var(--color-text-primary);
     text-decoration: none;
     max-width: 100%;
     white-space: nowrap;

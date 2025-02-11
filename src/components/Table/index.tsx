@@ -2,10 +2,10 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { SortIcon } from '../Icon';
 import { parseOrderParam } from '../../utils/url';
-import { darken } from 'polished';
+import { darkenCssVar } from '../../utils/style';
 
 export const CellStyle = css`
-  padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.md}rem;
+  padding: var(--spacing-3) var(--spacing-7);
   font-size: 0.875rem;
   text-align: left;
   border: 1px solid #fff;
@@ -13,12 +13,12 @@ export const CellStyle = css`
 
 export default styled.table`
   width: 100%;
-  margin-bottom: ${(p) => p.theme.spacer.hg}rem;
+  margin-bottom: var(--spacing-12);
 `;
 
 export const THBasicStyle = css`
-  background: ${(p) => p.theme.color.bg.white};
-  color: ${(p) => p.theme.color.text.light};
+  background: var(--color-bg-primary);
+  color: var(--color-text-light);
   font-weight: 400;
   white-space: nowrap;
 `;
@@ -29,12 +29,12 @@ export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
   ${CellStyle};
 
   .icon {
-    color: ${(p) => darken(0.1, p.theme.color.icon.light)};
+    color: ${darkenCssVar('--color-icon-light', 10)};
   }
 
   &:hover {
     i {
-      color: ${(p) => darken(0.2, p.theme.color.icon.light)};
+      color: ${darkenCssVar('--color-icon-light', 20)};
     }
   }
 
@@ -42,7 +42,7 @@ export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
     p.active &&
     css`
        {
-        color: ${(p) => p.theme.color.text.dark};
+        color: var(--color-text-primary);
         font-weight: 500;
       }
     `}
@@ -50,11 +50,11 @@ export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
 
 export const TDBasicStyle = css`
   transition: background 0.15s;
-  background: ${(p) => p.theme.color.bg.light};
+  background: var(--color-bg-secondary);
   ${CellStyle};
 
   &:hover {
-    background: ${(p) => p.theme.color.bg.blueLight};
+    background: var(--color-bg-secondary-highlight);
   }
 `;
 
@@ -64,8 +64,8 @@ export const TD = styled.td`
 
 const TRHoverStyle = css`
   ${TD} {
-    background: ${(p) => p.theme.color.bg.blueLight};
-    color: ${(p) => p.theme.color.text.blue};
+    background: var(--color-bg-secondary-highlight);
+    color: var(--color-text-highlight);
   }
 `;
 

@@ -40,7 +40,7 @@ const DataHeaderItem: React.FC<{ label: string; value: React.ReactNode }> = ({ l
 //
 
 const DataHeaderContainer = styled.div<{ isWide: boolean }>`
-  background: ${(p) => p.theme.color.bg.black};
+  background: var(--color-bg-heavy);
   font-size: 0.875rem;
   color: #fff;
   margin: 0 ${(p) => (p.isWide ? '-3rem' : '0')};
@@ -49,7 +49,7 @@ const DataHeaderContainer = styled.div<{ isWide: boolean }>`
 
 const DataHeaderContent = styled.div`
   display: flex;
-  max-width: ${(p) => p.theme.layout.maxWidth}px;
+  max-width: var(--layout-max-width);
   width: 100%;
 `;
 

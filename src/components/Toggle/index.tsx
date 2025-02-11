@@ -35,7 +35,7 @@ const Toggle: React.FC<ToggleProps> = ({ value, onClick }) => {
 const ToggleContainer = styled.div<{ selected: boolean }>`
   height: 24px;
   width: 42px;
-  background: ${(p) => (p.selected ? p.theme.color.bg.blue : p.theme.color.bg.dark)};
+  background: ${(p) => (p.selected ? 'var(--color-bg-brand-primary)' : 'var(--color-bg-disabled)')};
   border-radius: 12px;
   transition: background 0.15s;
 `;

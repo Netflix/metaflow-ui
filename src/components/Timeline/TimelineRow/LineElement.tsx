@@ -1,16 +1,16 @@
 import React, { useContext } from 'react';
-import styled, { DefaultTheme, keyframes, css } from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { Step, Task } from '../../../types';
 import { StepRowData } from '../useTaskData';
 import { lineColor, getRowStatus, getLengthLabelPosition } from './utils';
 import { formatDuration } from '../../../utils/format';
-import { lighten } from 'polished';
 import { useHistory } from 'react-router';
 import { getPathFor } from '../../../utils/routing';
 import { TasksSortBy } from '../useTaskListSettings';
 import { useTranslation } from 'react-i18next';
 import { getTimestampString } from '../../../utils/date';
 import { TimezoneContext } from '../../TimezoneProvider';
+import { brightenCssVar } from '../../../utils/style';
 
 //
 // Typedef
@@ -165,16 +165,16 @@ export const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
 const BoxGraphic = styled.div<{ root: boolean; dragging: boolean }>`
   position: absolute;
   cursor: pointer;
-  color: ${(p) => p.theme.color.text.dark};
+  color: var(--color-text-primary);
   min-width: 0.3125rem;
   height: 1.6875rem;
   line-height: 1.6875rem;
   transition: ${(p) => (p.dragging ? 'none' : '0.5s width')};
 `;
 
-const UnkownAnimation = (theme: DefaultTheme) => keyframes`
-  0%, 100% { background: ${lighten(0.4, theme.color.bg.dark)} }
-  50% { background: ${theme.color.bg.dark} }
+const UnkownAnimation = () => keyframes`
+  0%, 100% { background: ${brightenCssVar('--color-bg-disabled', 40)} }
+  50% { background: var(--color-bg-disabled) }
 `;
 
 const UnkownMoveAnimation = keyframes`
@@ -184,7 +184,7 @@ const UnkownMoveAnimation = keyframes`
 
 const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttempt: boolean }>`
   position: absolute;
-  background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isLastAttempt)};
+  background: ${(p) => lineColor(p.grayed || false, p.state, p.isLastAttempt)};
   width: 100%;
   height: 0.375rem;
   top: 50%;
@@ -195,7 +195,7 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
   ${(p) =>
     p.state === 'refining' &&
     css`
-      animation: 5s ${UnkownAnimation(p.theme)} infinite;
+      animation: 5s ${UnkownAnimation()} infinite;
       &::after {
         content: '';
         position: absolute;
@@ -215,14 +215,14 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
     `}
 
   &:hover {
-    background: ${(p) => lineColor(p.theme, p.grayed || false, p.state, p.isLastAttempt)};
+    background: ${(p) => lineColor(p.grayed || false, p.state, p.isLastAttempt)};
   }
 `;
 
 const BoxGraphicMarker = css`
   height: 0.1875rem;
   width: 1px;
-  background: ${(p) => p.theme.color.bg.dark};
+  background: var(--color-bg-disabled);
   position: absolute;
   bottom: 0;
 `;

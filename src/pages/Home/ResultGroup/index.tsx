@@ -144,16 +144,16 @@ const ResultGroup: React.FC<Props> = React.memo(
 //
 
 export const StyledResultGroup = styled(Section)`
-  margin-bottom: ${(p) => p.theme.spacer.md}rem;
+  margin-bottom: var(--spacing-7);
 
   table {
-    margin-bottom: ${(p) => p.theme.spacer.sm}rem;
+    margin-bottom: var(--spacing-3);
     word-break: break-all;
   }
 
   thead,
   th {
-    background: ${(p) => p.theme.color.bg.white};
+    background: var(--color-bg-primary);
     z-index: 10;
   }
 `;

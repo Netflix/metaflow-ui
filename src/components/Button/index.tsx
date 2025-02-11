@@ -1,11 +1,12 @@
 import React, { ReactNode } from 'react';
-import styled, { css, ButtonColors } from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
-import { darken } from 'polished';
 
 //
 // Typedef
 //
+
+type ButtonVariant = 'default' | 'text' | 'primaryText';
 
 export type ButtonProps = {
   className?: string;
@@ -14,7 +15,7 @@ export type ButtonProps = {
   textOnly?: boolean;
   iconOnly?: boolean;
   size?: 'sm' | 'md' | 'lg';
-  variant?: 'default' | 'text' | 'primaryText';
+  variant?: ButtonVariant;
   tabIndex?: number;
   withIcon?: boolean | 'left' | 'right';
   onClick: (e?: React.MouseEvent<HTMLButtonElement>) => void;
@@ -78,10 +79,10 @@ const StyledButtonLink = styled(Link)`
 `;
 
 const DisabledButtonCSS = css`
-  border-color: ${(p) => p.theme.color.bg.light};
-  color: ${(p) => p.theme.color.text.light};
+  border-color: var(--color-bg-secondary);
+  color: var(--color-text-light);
   cursor: not-allowed;
-  background: ${(p) => p.theme.color.bg.light};
+  background: var(--color-bg-secondary);
 `;
 
 const ActiveButtonCSS = css`
@@ -120,23 +121,22 @@ type StyledButtonProps = {
   withIcon: NonNullable<ButtonProps['withIcon']>;
 };
 
-const getButtonColors = (variant: ButtonColors) => css`
-  background: ${variant.bg};
-  color: ${variant.text};
-
-  ${variant.border && `border: ${variant.border};`}
+const getButtonColors = (variant: ButtonVariant) => css`
+  background: var(--button-${variant}-bg, --button-default-bg);
+  color: var(--button-${variant}-text-color, --button-default-text-color);
+  border: var(--button-${variant}-border, --button-default-border);
 
   &:hover {
-    background: ${(p) => (variant.bg === 'transparent' ? p.theme.color.bg.light : darken(0.05, variant.bg))};
+    background: var(--button-${variant}-bg-hover, --button-default-bg-hover);
   }
 
   &:active {
-    background: ${darken(0.1, variant.bg === 'transparent' ? '#fff' : variant.bg)};
+    background: var(--button-${variant}-active-bg, --button-default-active-bg);
   }
 
   &.active {
-    background: ${variant.activeBg};
-    color: ${variant.activeText};
+    background: var(--button-${variant}-active-bg, --button-default-active-bg);
+    color: var(--button-${variant}-active-text-color, --button-default-active-active-text-color);
   }
 `;
 
@@ -148,15 +148,15 @@ export const ButtonCSS = css`
   cursor: pointer;
   text-decoration: none;
   border-radius: 0.25rem;
-  border: ${(p) => p.theme.border.thinNormal};
+  border: var(--border-primary-thin);
   min-height: 1.75rem;
   transition: background 0.15s;
 `;
 
 const StyledButton = styled.button<StyledButtonProps>`
   ${ButtonCSS};
-  padding: ${(p) => p.theme.spacer.xs}rem ${(p) => (p.iconOnly ? p.theme.spacer.xs : p.theme.spacer.sm)}rem;
-  ${(p) => getButtonColors(p.theme.color.button[p.variant])};
+  padding: var(--spacing-1) ${(p) => (p.iconOnly ? 'var(--spacing-1)' : 'var(--spacing-3)')};
+  ${(p) => getButtonColors(p.variant)};
   ${(p) => p.active && ActiveButtonCSS};
   ${(p) => p.disabled && DisabledButtonCSS};
   ${(p) => p.textOnly && TextOnlyButtonCSS};

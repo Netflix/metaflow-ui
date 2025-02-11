@@ -3,6 +3,7 @@ import { DefaultTheme } from 'styled-components';
 import { Step, Task, TaskStatus } from '../../../types';
 import { StepRowData } from '../useTaskData';
 import { LabelPosition } from './LineElement';
+import { brightenCssVar } from '../../../utils/style';
 
 /**
  * Finds place for duration label in timeline. Default right, if not space left, if no space then none.
@@ -42,24 +43,24 @@ export function getRowStatus(
   }
 }
 
-export function lineColor(theme: DefaultTheme, grayed: boolean, state: string, isFirst: boolean): string {
+export function lineColor(grayed: boolean, state: string, isFirst: boolean): string {
   if (grayed) {
     return '#c7c7c7';
   } else {
     switch (state) {
       case 'completed':
       case 'ok':
-        return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.green;
+        return !isFirst ? brightenCssVar('--color-bg-danger', 30) : 'var(--color-bg-success)';
       case 'running':
-        return theme.color.bg.greenLight;
+        return 'var(--color-bg-success-light)';
       case 'pending':
-        return theme.color.bg.yellow;
+        return 'var(--color-bg-warning';
       case 'failed':
-        return !isFirst ? lighten(0.3, theme.color.bg.red) : theme.color.bg.red;
+        return !isFirst ? brightenCssVar('--color-bg-danger', 30) : 'var(--color-bg-danger)';
       case 'unknown':
-        return !isFirst ? lighten(0.3, theme.color.bg.dark) : theme.color.bg.dark;
+        return !isFirst ? brightenCssVar('--color-bg-disabled', 30) : 'var(--color-bg-disabled)';
       default:
-        return lighten(0.5, theme.color.bg.dark);
+        return brightenCssVar('--color-bg-disabled', 50);
     }
   }
 }

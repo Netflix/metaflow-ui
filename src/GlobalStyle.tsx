@@ -1,5 +1,6 @@
 import { createGlobalStyle, css } from 'styled-components';
 import { normalize } from 'polished';
+import './theme/theme.css';
 
 // Introduce global css as `css` ttl for prettier formatting
 const globalCSS = css`
@@ -13,34 +14,18 @@ const globalCSS = css`
   }
 
   body {
-    font-family:
-      'Roboto',
-      -apple-system,
-      BlinkMacSystemFont,
-      'Segoe UI',
-      'Roboto',
-      'Oxygen',
-      'Ubuntu',
-      'Cantarell',
-      'Fira Sans',
-      'Droid Sans',
-      'Helvetica Neue',
-      sans-serif;
+    font-family: var(--font-family-primary);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: ${(p) => p.theme.color.text.dark};
+    color: var(--color-text-primary);
   }
 
   a {
-    color: ${(p) => p.theme.color.text.blue};
-  }
-
-  code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+    color: var(--color-text-highlight);
   }
 
   dt {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   }
 
   dd {
@@ -48,7 +33,7 @@ const globalCSS = css`
   }
 
   .muted {
-    color: ${(p) => p.theme.color.text.light};
+    color: var(--color-text-light);
   }
 
   h1,
@@ -56,7 +41,7 @@ const globalCSS = css`
   h3,
   h4,
   h5 {
-    font-weight: 600;
+    font-weight: var(--font-weight-semibold);
   }
 
   * {
@@ -69,8 +54,8 @@ const globalCSS = css`
   }
 
   code {
-    font-family: 'RobotoMono', monospace;
-    font-size: 0.75rem;
+    font-family: var(--font-family-code);
+    font-size: var(--font-size-4);
   }
 `;
 

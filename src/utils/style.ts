@@ -32,18 +32,18 @@ export function toRelativeSize(normalsize: number): number {
 /**
  * Default colors for different statuses
  */
-export function colorByStatus(theme: DefaultTheme, status: string): string {
+export function colorByStatus(status: string): string {
   switch (status) {
     case 'completed':
-      return theme.color.bg.green;
+      return 'var(--color-bg-success)';
     case 'failed':
-      return theme.color.bg.red;
+      return 'var(--color-bg-danger)';
     case 'running':
-      return theme.color.bg.greenLight;
+      return 'var(--color-bg-success-light)';
     case 'pending':
-      return theme.color.bg.yellow;
+      return 'var(--color-bg-warning)';
     default:
-      return theme.color.bg.dark;
+      return 'var(--color-bg-disabled)';
   }
 }
 
@@ -61,4 +61,12 @@ export function iconByStatus(status: keyof RunStatus | TaskStatus): keyof Suppor
     default:
       return 'pending';
   }
+}
+
+export function darkenCssVar(cssVar: `--${string}`, amount: number): string {
+  return `hsl(from var(${cssVar}) h s calc(l - ${amount}))`;
+}
+
+export function brightenCssVar(cssVar: `--${string}`, amount: number): string {
+  return `hsl(from var(${cssVar}) h s calc(l + ${amount}))`;
 }

@@ -72,7 +72,7 @@ const FullPageStyleContainer = styled.div`
   left: 0;
   top: 0;
   z-index: 9999;
-  background: ${(p) => p.theme.color.bg.white};
+  background: var(--color-bg-primary);
 
   display: flex;
   flex-direction: column;
@@ -108,7 +108,7 @@ const FullPageContainerClose = styled.div`
 `;
 
 const Logo = styled.img`
-  height: ${(p) => p.theme.layout.appbarLogoHeight}rem;
+  height: var(--layout-application-bar-logo-height);
 `;
 
 export default FullPageContainer;

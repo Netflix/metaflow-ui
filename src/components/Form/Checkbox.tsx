@@ -60,8 +60,8 @@ const CheckboxWrapper = styled.div<{ checked: boolean; disabled: boolean }>`
   label {
     display: inline-block;
     margin-bottom: 0rem;
-    margin-right: ${(p) => p.theme.spacer.sm}rem;
-    margin-left: ${(p) => p.theme.spacer.sm}rem;
+    margin-right: var(--spacing-3);
+    margin-left: var(--spacing-3);
     cursor: pointer;
   }
 
@@ -73,8 +73,8 @@ const CheckboxWrapper = styled.div<{ checked: boolean; disabled: boolean }>`
     display: inline-block;
     border-radius: 0.125rem;
     text-align: center;
-    background: ${(p) => p.theme.color.bg.light};
-    border: ${(p) => p.theme.border.thinNormal};
+    background: var(--color-bg-secondary);
+    border: var(--border-primary-thin);
   }
 
   span.checkbox svg path {
@@ -85,23 +85,23 @@ const CheckboxWrapper = styled.div<{ checked: boolean; disabled: boolean }>`
     p.checked &&
     css`
       span.checkbox {
-        color: ${(p) => p.theme.color.text.white};
-        border-color: ${(p) => p.theme.color.bg.blue};
-        color: ${(p) => p.theme.color.bg.blue};
-        background: ${(p) => p.theme.color.bg.white};
+        color: var(--color-text-alternative);
+        border-color: var(--color-bg-brand-primary);
+        color: var(--color-bg-brand-primary);
+        background: var(--color-bg-primary);
       }
 
       &.status-running span.checkbox {
-        border-color: ${(p) => p.theme.color.bg.greenLight};
-        color: ${(p) => p.theme.color.bg.greenLight};
+        border-color: var(--color-bg-success-light);
+        color: var(--color-bg-success-light);
       }
       &.status-failed span.checkbox {
-        border-color: ${(p) => p.theme.color.bg.red};
-        color: ${(p) => p.theme.color.bg.red};
+        border-color: var(--color-bg-danger);
+        color: var(--color-bg-danger);
       }
       &.status-completed span.checkbox {
-        border-color: ${(p) => p.theme.color.bg.green};
-        color: ${(p) => p.theme.color.bg.green};
+        border-color: var(--color-bg-success);
+        color: var(--color-bg-success);
       }
     `}
 `;

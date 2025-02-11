@@ -23,7 +23,7 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
     }
 
     &.active {
-      background: ${(p) => p.theme.color.button.default.activeBg};
+      background: var(--button-default-active-bg);
     }
 
     &:first-of-type {

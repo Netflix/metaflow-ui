@@ -163,7 +163,7 @@ const DropdownWrapper = styled.div`
     outline: 0;
     line-height: 1.25rem;
     border: 0;
-    padding: ${(p) => p.theme.spacer.xs}rem 0rem;
+    padding: var(--spacing-1) 0rem;
   }
 `;
 

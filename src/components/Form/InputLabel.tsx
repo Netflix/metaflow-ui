@@ -16,7 +16,7 @@ export const InputLabel = styled(ForceNoWrapText)<{ active: boolean; status?: As
   left: 0.75rem;
   transition: all 125ms linear;
 
-  color: ${(p) => (p.status === 'Error' ? p.theme.color.bg.red : 'inherit')};
+  color: ${(p) => (p.status === 'Error' ? 'var(--color-bg-danger)' : 'inherit')};
 
   ${(p) =>
     p.active

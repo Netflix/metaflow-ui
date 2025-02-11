@@ -56,7 +56,7 @@ const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ tags, updateListValue
 //
 
 const TagsCell = styled(TD)`
-  color: ${(p) => p.theme.color.text.dark};
+  color: var(--color-text-primary);
   position: relative;
   line-height: 1.25rem;
 
@@ -81,7 +81,7 @@ const AllTagsContainer = styled.div<{ open: boolean }>`
   width: 100%;
   left: 0;
   padding: 0.5rem 1rem;
-  border-bottom: ${(p) => p.theme.border.thinNormal};
+  border-bottom: var(--border-primary-thin);
   transition: 0.15s all;
   overflow: hidden;
 

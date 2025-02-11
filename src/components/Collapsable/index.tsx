@@ -74,7 +74,7 @@ const CollapsableHeader = styled.div`
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.5rem;
-  border-bottom: ${(p) => p.theme.border.thinLight};
+  border-bottom: var(--border-1-thin);
   cursor: pointer;
 
   svg path {

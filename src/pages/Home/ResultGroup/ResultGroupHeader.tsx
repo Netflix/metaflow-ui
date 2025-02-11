@@ -57,7 +57,7 @@ const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
   display: inline-block;
 
   &:hover {
-    ${(p) => (p.clickable ? `color: ${p.theme.color.text.blue};` : '')}
+    ${(p) => (p.clickable ? `color: var(--color-text-highlight);` : '')}
   }
 `;
 

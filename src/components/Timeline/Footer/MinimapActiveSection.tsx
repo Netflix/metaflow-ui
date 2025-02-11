@@ -62,9 +62,9 @@ const MiniTimelineActiveSection = styled.div<{ dragging: boolean }>`
   position: relative;
   height: 3.0625rem;
   background #fff;
-  border-left: ${(p) => p.theme.border.thinLight};
-  border-right: ${(p) => p.theme.border.thinLight};
-  border-bottom: 0.5rem solid ${(p) => p.theme.color.border.light};
+  border-left: var(--border-1-thin);
+  border-right: var(--border-1-thin);
+  border-bottom: 0.5rem solid var(--color-border-1);
   cursor: grab;
   transition: ${(p) => (p.dragging ? 'none' : '0.5s left, 0.5s width')};
 `;

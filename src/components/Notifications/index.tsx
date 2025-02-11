@@ -247,8 +247,8 @@ function isNotificationsMessage(value: unknown): value is { type: string; messag
 const NotificationsWrapper = styled.div`
   z-index: 99999;
   position: fixed;
-  top: ${(p) => p.theme.spacer.md}rem;
-  right: ${(p) => p.theme.spacer.md}rem;
+  top: var(--spacing-7);
+  right: var(--spacing-7);
   display: flex;
   flex-direction: column;
   min-width: 18.75rem;
@@ -258,8 +258,8 @@ const NotificationsWrapper = styled.div`
 const NotificationWrapper = styled.div<{ type: NotificationType; state: NotificationState }>`
   display: flex;
   align-items: center;
-  padding: ${(p) => p.theme.spacer.md}rem;
-  margin: ${(p) => p.theme.spacer.xs}rem;
+  padding: var(--spacing-7);
+  margin: var(--spacing-1);
   border-radius: 0.5rem;
   background: ${({ theme, type }) => theme.notification[type].bg};
   color: ${({ theme, type }) => theme.notification[type].fg};
@@ -269,5 +269,5 @@ const NotificationWrapper = styled.div<{ type: NotificationType; state: Notifica
 `;
 
 const NotificationMessage = styled.span`
-  margin-left: ${(p) => p.theme.spacer.sm}rem;
+  margin-left: var(--spacing-3);
 `;
