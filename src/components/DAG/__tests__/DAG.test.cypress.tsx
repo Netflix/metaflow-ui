@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
 import TestWrapper from '../../../utils/testing';
-import theme from '../../../theme';
 import DAG, { isDAGError } from '..';
 import { createResource } from '../../../utils/testhelper';
 import { Run } from '../../../types';
