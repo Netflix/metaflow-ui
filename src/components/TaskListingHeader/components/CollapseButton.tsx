@@ -23,7 +23,7 @@ const CollapseButton: React.FC<{
           }
         }}
         data-testid="timeline-collapse-button"
-        title={isAnyGroupOpen ? t('timeline.collapse-all') ?? '' : t('timeline.expand-all') ?? ''}
+        title={(isAnyGroupOpen ? t('timeline.collapse-all') : t('timeline.expand-all')) ?? ''}
       >
         <Icon name={isAnyGroupOpen ? 'collapse' : 'expand'} rotate={isAnyGroupOpen ? 180 : 0} />
       </Button>
