@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import DataHeader from '..';
 
 const itemsList = [
@@ -26,16 +25,16 @@ describe('DataHeader test', () => {
   it('DataHeader basic', () => {
     cy.viewport(1000, 600);
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <DataHeader items={itemsList} wide={false} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="data-header-container"]').should('not.have.css', 'width', '984px');
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <DataHeader items={itemsList} wide={true} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="data-header-container"]').should('have.css', 'width', '984px');
   });

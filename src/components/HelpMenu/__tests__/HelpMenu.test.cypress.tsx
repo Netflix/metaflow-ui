@@ -1,21 +1,14 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { QueryParamProvider } from 'use-query-params';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import HelpMenu from '..';
 
 describe('HelpMenu test', () => {
   it('<HelpMenu />', () => {
     mount(
-      <ThemeProvider theme={theme}>
-        <Router>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <HelpMenu />
-          </QueryParamProvider>
-        </Router>
-      </ThemeProvider>,
+      <TestWrapper>
+        <HelpMenu />
+      </TestWrapper>,
     );
 
     // Should not be visible

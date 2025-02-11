@@ -140,7 +140,7 @@
     /* Notifications */
     --notification-success-bg: var(--color-bg-success);
     --notification-success-text-color: var(--color-text-alternative);
-    --notification-info-bg: var(--color-bg-primary);
+    --notification-info-bg: var(--color-bg-brand-primary);
     --notification-info-text-color: var(--color-text-alternative);
     --notification-warning-bg: var(--color-bg-warning);
     --notification-warning-text-color: var(--color-text-alternative);

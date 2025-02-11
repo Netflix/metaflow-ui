@@ -1,11 +1,8 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { createTask, createStep } from '../../../utils/testhelper';
 import TaskListLabel from '../TaskListLabel';
-import { MemoryRouter, Route } from 'react-router-dom';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
-import { QueryParamProvider } from 'use-query-params';
+import TestWrapper from '../../../utils/testing';
 
 const MockT = (str: any) => str;
 
@@ -13,17 +10,7 @@ const BASE_PROPS = {
   open: true,
   grouped: true,
   t: MockT,
-  status: 'Ok',
-};
-
-const TestWrapper: React.FC<{ children: ReactNode; route?: string }> = ({ children, route = '/' }) => {
-  return (
-    <ThemeProvider theme={theme}>
-      <MemoryRouter initialEntries={[route]}>
-        <QueryParamProvider ReactRouterRoute={Route}>{children}</QueryParamProvider>
-      </MemoryRouter>
-    </ThemeProvider>
-  );
+  status: 'completed' as const,
 };
 
 function get(dataid: string) {

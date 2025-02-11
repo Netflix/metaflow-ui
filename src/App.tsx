@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
-import { ThemeProvider } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
 import Root from './pages/Root';
 
 import GlobalStyle from './GlobalStyle';
 import './theme/font/roboto.css';
-import theme from './theme';
 
 import { Page } from './components/Structure';
 import AppBar from './components/AppBar';
@@ -42,38 +40,36 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <ThemeProvider theme={theme}>
-      <ErrorBoundary message={t('error.application-error')}>
-        <NotificationsProvider>
-          <TimezoneProvider>
-            <PluginsProvider>
-              <LoggingProvider>
-                <GlobalStyle />
-                <Router basename={appBasePath}>
-                  <QueryParamProvider ReactRouterRoute={Route}>
-                    {flagsReceived ? (
-                      <>
-                        <TopNavPlugin />
-                        <Notifications />
-                        <Announcements />
-                        <AppBar />
-                        <Page>
-                          <Root />
-                        </Page>
-                        <Logger />
-                      </>
-                    ) : (
-                      <FeatureFlagLoader />
-                    )}
-                  </QueryParamProvider>
-                </Router>
-              </LoggingProvider>
-              <PluginRegisterSystem />
-            </PluginsProvider>
-          </TimezoneProvider>
-        </NotificationsProvider>
-      </ErrorBoundary>
-    </ThemeProvider>
+    <ErrorBoundary message={t('error.application-error')}>
+      <NotificationsProvider>
+        <TimezoneProvider>
+          <PluginsProvider>
+            <LoggingProvider>
+              <GlobalStyle />
+              <Router basename={appBasePath}>
+                <QueryParamProvider ReactRouterRoute={Route}>
+                  {flagsReceived ? (
+                    <>
+                      <TopNavPlugin />
+                      <Notifications />
+                      <Announcements />
+                      <AppBar />
+                      <Page>
+                        <Root />
+                      </Page>
+                      <Logger />
+                    </>
+                  ) : (
+                    <FeatureFlagLoader />
+                  )}
+                </QueryParamProvider>
+              </Router>
+            </LoggingProvider>
+            <PluginRegisterSystem />
+          </PluginsProvider>
+        </TimezoneProvider>
+      </NotificationsProvider>
+    </ErrorBoundary>
   );
 };
 

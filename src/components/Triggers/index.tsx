@@ -50,7 +50,7 @@ const Triggers: React.FC<Props> = ({ triggerEventsValue, showMultiple = false })
 const PopoverWrapper = styled.div<{ open: boolean }>`
   position: relative;
   visibility: ${(props) => (props.open ? 'visible' : 'hidden')};
-  color: ${(props) => props.theme.color.text.light};
+  color: var(--color-text-light);
 `;
 
 const StyledIcon = styled(Icon)`

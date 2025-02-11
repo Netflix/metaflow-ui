@@ -1,17 +1,16 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
+import TestWrapper from '../../../utils/testing';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
-import theme from '../../../theme';
 import Tabs, { TabDefinition } from '..';
 
 describe('Tabs test', () => {
   it('<Tabs /> - health check', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Tabs activeTab="" tabs={[]} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
   });
 
@@ -23,13 +22,13 @@ describe('Tabs test', () => {
     ];
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Router>
           <QueryParamProvider ReactRouterRoute={Route}>
             <Tabs activeTab="sndTab" tabs={tabs} />
           </QueryParamProvider>
         </Router>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
 
     cy.get('[data-testid="tab-heading-item"]')
@@ -49,13 +48,13 @@ describe('Tabs test', () => {
     cy.get('[data-testid="tab-active-content"]').contains('Second tab here');
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Router>
           <QueryParamProvider ReactRouterRoute={Route}>
             <Tabs activeTab="fstTab" tabs={tabs} />
           </QueryParamProvider>
         </Router>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="tab-active-content"]').contains('First tab here');
   });

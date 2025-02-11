@@ -1,15 +1,14 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import InformationRow from '..';
 
 describe('InformationRow test', () => {
   it('<InformationRow /> - health check', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <InformationRow data-testid="information-row">Hello</InformationRow>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="information-row"]').should('exist');
   });

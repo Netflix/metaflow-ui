@@ -59,4 +59,6 @@ const globalCSS = css`
   }
 `;
 
+export const GlobalTheme = createGlobalStyle``;
+
 export default createGlobalStyle`${globalCSS}`;

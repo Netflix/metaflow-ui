@@ -1,39 +1,38 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import Status from '..';
 
 describe('Icon test', () => {
   it('<Icon /> - health check', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Status status="completed" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
     cy.get('[data-testid="status-container-color"]').should('have.css', 'color', 'rgb(76, 152, 120)');
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Status status="failed" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
     cy.get('[data-testid="status-container-color"]').should('have.css', 'color', 'rgb(255, 255, 255)');
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Status status="running" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
     cy.get('[data-testid="status-container-color"]').should('have.css', 'color', 'rgb(188, 227, 7)');
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Status status="pending" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="status-container"]').should('exist');
     cy.get('[data-testid="status-container-color"]').should('have.css', 'color', 'rgb(219, 173, 52)');

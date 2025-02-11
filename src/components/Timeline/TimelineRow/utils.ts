@@ -1,5 +1,3 @@
-import { lighten } from 'polished';
-import { DefaultTheme } from 'styled-components';
 import { Step, Task, TaskStatus } from '../../../types';
 import { StepRowData } from '../useTaskData';
 import { LabelPosition } from './LineElement';

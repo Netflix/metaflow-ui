@@ -1,11 +1,8 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { QueryParamProvider } from 'use-query-params';
-import theme from '../../../theme';
 import { AutoCompleteItem } from '../../../hooks/useAutoComplete';
 import AutoComplete from '..';
+import TestWrapper from '../../../utils/testing';
 
 const resultsTestList = [
   { value: 'test_1', label: 'Test 1' },
@@ -17,25 +14,17 @@ describe('AutoComplete test', () => {
   it('AutoComplete basic', () => {
     cy.viewport(1000, 600);
     mount(
-      <ThemeProvider theme={theme}>
-        <Router>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <AutoComplete result={[] as AutoCompleteItem[]} setActiveOption={() => {}} onSelect={() => {}} />
-          </QueryParamProvider>
-        </Router>
-      </ThemeProvider>,
+      <TestWrapper>
+        <AutoComplete result={[] as AutoCompleteItem[]} setActiveOption={() => {}} onSelect={() => {}} />
+      </TestWrapper>,
     );
 
     cy.get('[data-testid="autocomplete-popup"]').children().should('have.length', 0);
 
     mount(
-      <ThemeProvider theme={theme}>
-        <Router>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <AutoComplete result={resultsTestList} setActiveOption={() => {}} onSelect={() => {}} />
-          </QueryParamProvider>
-        </Router>
-      </ThemeProvider>,
+      <TestWrapper>
+        <AutoComplete result={resultsTestList} setActiveOption={() => {}} onSelect={() => {}} />
+      </TestWrapper>,
     );
 
     cy.get('[data-testid="autocomplete-popup"]').children().should('have.length', 3);

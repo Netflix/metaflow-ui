@@ -1,15 +1,14 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import Popover from '..';
 
 describe('Icon test', () => {
   it('<Icon /> - health check', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Popover>Hei maailma!</Popover>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="popup-wrapper"]').should('exist').contains('Hei maailma!');
   });

@@ -1,10 +1,7 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
-import { BrowserRouter as Router, MemoryRouter, Route } from 'react-router-dom';
-import { QueryParamProvider } from 'use-query-params';
 import Breadcrumb, { findAdditionalButtons, notEmptyAndEqual, pathFromString } from '..';
+import TestWrapper from '../../../utils/testing';
 
 const matchWithParams = (params: Record<string, string>) => ({
   isExact: true,
@@ -95,38 +92,28 @@ describe('Breadcrumb component', () => {
   // Rendering
   it('<Breadcrumb /> - health check', () => {
     mount(
-      <ThemeProvider theme={theme}>
-        <Router>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <Breadcrumb />
-          </QueryParamProvider>
-        </Router>
-      </ThemeProvider>,
+      <TestWrapper>
+        <Breadcrumb />
+      </TestWrapper>,
     );
   });
 
-  const makeBreadcrumb: React.FC<{ route?: string }> = (route) => (
-    <ThemeProvider theme={theme}>
-      <Router>
-        <MemoryRouter initialEntries={[route as Location]}>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <Breadcrumb />
-          </QueryParamProvider>
-        </MemoryRouter>
-      </Router>
-    </ThemeProvider>
+  const makeBreadcrumb = (route: string) => (
+    <TestWrapper route={route}>
+      <Breadcrumb />
+    </TestWrapper>
   );
 
   // Conditional rendering
   it('<Breadcrumb /> - Should render home and empty field', () => {
-    mount(makeBreadcrumb('/' as {}));
+    mount(makeBreadcrumb('/'));
 
     cy.get('[data-testid="home-button"]');
     cy.get('[data-testid="breadcrumb-goto-input-inactive"]');
   });
 
   it('<Breadcrumb /> - Should render button container', () => {
-    mount(makeBreadcrumb('/HugeFlow/4/views/timeline' as {}));
+    mount(makeBreadcrumb('/HugeFlow/4/views/timeline'));
 
     cy.get('[data-testid="home-button"]');
     cy.get('[data-testid="breadcrumb-button-container"]').within(($container) => {
@@ -136,7 +123,7 @@ describe('Breadcrumb component', () => {
   });
 
   it('<Breadcrumb /> - Should render home and after click input field', () => {
-    mount(makeBreadcrumb('/' as {}));
+    mount(makeBreadcrumb('/'));
 
     cy.get('[data-testid="breadcrumb-goto-input-inactive"]')
       .click()

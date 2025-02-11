@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
+import TestWrapper from '../../../utils/testing';
 import theme from '../../../theme';
 import DAG, { isDAGError } from '..';
 import { createResource } from '../../../utils/testhelper';
@@ -22,7 +22,7 @@ const run: Run = {
 describe('DAG test', () => {
   it('<DAG /> - health check', async () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <DAG
           run={run}
           steps={[]}
@@ -31,7 +31,7 @@ describe('DAG test', () => {
             {},
           )}
         />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     // Expect to see error here since we don't mock websocket
     cy.get('[data-testid="dag-container-Error"]').should('exist');

@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import TaskListingHeader, { getMode } from '../TaskListingHeader';
 import useSearchField from '../../../hooks/useSearchField';
 import CollapseButton from '../components/CollapseButton';
@@ -42,9 +41,9 @@ describe('TaskListingHeader test', () => {
     const Component = () => {
       const searchField = useSearchField('a', 'b');
       return (
-        <ThemeProvider theme={theme}>
+        <TestWrapper>
           <TaskListingHeader settings={createTaskListSettings({})} searchField={searchField} {...headerFunctionProps} />
-        </ThemeProvider>
+        </TestWrapper>
       );
     };
     mount(<Component />);
@@ -101,9 +100,9 @@ describe('TaskListingHeader test', () => {
       isAnyGroupOpen: true,
     };
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <CollapseButton {...props} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
 
     cy.get('[data-testid="timeline-collapse-button"]')
@@ -113,9 +112,9 @@ describe('TaskListingHeader test', () => {
       });
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <CollapseButton {...props} isAnyGroupOpen={false} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
 
     cy.get('[data-testid="timeline-collapse-button"]')

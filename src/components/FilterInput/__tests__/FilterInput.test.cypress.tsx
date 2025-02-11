@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import FilterInput from '..';
 
 describe('FilterInput test', () => {
@@ -9,9 +8,9 @@ describe('FilterInput test', () => {
     const onSubmit = cy.stub();
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <FilterInput onSubmit={onSubmit} sectionLabel="Hello" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
 
     const input = cy.get('[data-testid="filter-input-field"]');

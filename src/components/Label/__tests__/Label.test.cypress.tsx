@@ -1,15 +1,14 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import Label from '..';
 
 describe('Icon test', () => {
   it('<Icon /> - health check', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Label className="test-label">Hei maailma!</Label>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('.test-label').should('exist').contains('Hei maailma!');
   });

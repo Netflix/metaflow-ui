@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import TitledRow, { valueToRenderableType } from '..';
 
 describe('TitledRow test', () => {
@@ -33,9 +32,9 @@ describe('TitledRow test', () => {
 
   it('<TitledRow /> - default mode', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <TitledRow type="default" title="Hello" content={<h1>hello world</h1>} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
 
     cy.get('[data-testid="titled-row-title"]').contains('Hello');
@@ -44,9 +43,9 @@ describe('TitledRow test', () => {
 
   it('<TitledRow /> - table mode', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <TitledRow type="table" title="Hello" content={{ 'react-node': <h1>hello world</h1>, booleanvalue: true }} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="titledrow-row-title"]').eq(0).contains('react-node');
     cy.get('[data-testid="titledrow-row-value"]').eq(0).contains('hello world');

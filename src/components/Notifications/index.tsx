@@ -261,8 +261,8 @@ const NotificationWrapper = styled.div<{ type: NotificationType; state: Notifica
   padding: var(--spacing-7);
   margin: var(--spacing-1);
   border-radius: 0.5rem;
-  background: ${({ theme, type }) => theme.notification[type].bg};
-  color: ${({ theme, type }) => theme.notification[type].fg};
+  background: ${({ type }) => `var(--notification-${type}-bg, --notification-default-bg)`};
+  color: ${({ type }) => `var(--notification-${type}-text-color, --notification-default-text-color)`};
   cursor: pointer;
   opacity: ${(p) => (p.state === NotificationState.Visible ? '1' : '0')};
   transition: ${(p) => (p.state === NotificationState.Mounted ? 'none' : 'all 0.25s')};

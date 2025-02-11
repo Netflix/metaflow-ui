@@ -1,24 +1,17 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { QueryParamProvider } from 'use-query-params';
-import theme from '../../../theme';
 import Collapsable from '..';
+import TestWrapper from '../../../utils/testing';
 
 describe('Collapsable test', () => {
   it('Collapsable basic', () => {
     cy.viewport(1000, 600);
     mount(
-      <ThemeProvider theme={theme}>
-        <Router>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <Collapsable title="Test child div">
-              <div>test_child_div</div>
-            </Collapsable>
-          </QueryParamProvider>
-        </Router>
-      </ThemeProvider>,
+      <TestWrapper>
+        <Collapsable title="Test child div">
+          <div>test_child_div</div>
+        </Collapsable>
+      </TestWrapper>,
     );
 
     // check that the component renders correctly in default closed state

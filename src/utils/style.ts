@@ -1,4 +1,3 @@
-import { DefaultTheme } from 'styled-components';
 import { SupportedIcons } from '../components/Icon';
 import { RunStatus, TaskStatus } from '../types';
 

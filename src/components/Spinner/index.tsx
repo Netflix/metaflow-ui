@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import styled, { keyframes, DefaultTheme } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 const Keyframes = keyframes`
   from { transform: rotate(0deg); }

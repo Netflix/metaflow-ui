@@ -1,24 +1,23 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import Tag, { RemovableTag } from '..';
 
 describe('Tag test', () => {
   it('<Tag /> - health check', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Tag>Yo!</Tag>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
   });
 
   it('<RemovableTag /> - health check', () => {
     const fn = cy.stub();
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <RemovableTag onClick={fn}>Hoy!</RemovableTag>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
 
     cy.get('.removable-tag')
