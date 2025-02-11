@@ -45,7 +45,7 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
     let t1: ReturnType<typeof setTimeout>;
     if (isTransitioning(rowState)) {
       t1 = setTimeout(() => {
-        setRowState((rs) => (rs === RowState.Opening ? RowState.Open : RowState.Closing ? RowState.Closed : rs));
+        setRowState((rs) => (rs === RowState.Opening ? RowState.Open : rs === RowState.Closing ? RowState.Closed : rs));
       }, 250);
     }
     return () => {
