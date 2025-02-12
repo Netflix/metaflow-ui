@@ -28,6 +28,8 @@ const StatusColorCell: React.FC<StatusColorCellProps> = ({ status, title }) => {
 const StatusCell = styled(TD)`
   text-align: center;
   position: relative;
+  padding: var(--result-group-status-cell-padding);
+
   i {
     vertical-align: middle;
   }

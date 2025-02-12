@@ -5,21 +5,28 @@ import { parseOrderParam } from '../../utils/url';
 import { darkenCssVar } from '../../utils/style';
 
 export const CellStyle = css`
-  padding: var(--spacing-3) var(--spacing-7);
-  font-size: 0.875rem;
+  padding: var(--table-cell-padding);
+  font-size: var(--table-cell-font-size);
   text-align: left;
-  border: 1px solid #fff;
+  border-top: var(--table-cell-border-top);
+  border-right: var(--table-cell-border-right);
+  border-bottom: var(--table-cell-border-bottom);
+  border-left: var(--table-cell-border-left);
 `;
 
 export default styled.table`
   width: 100%;
   margin-bottom: var(--spacing-12);
+  background: var(--table-bg);
+  border: var(--table-border);
+  box-shadow: var(--table-shadow);
+  border-radius: var(--table-border-radius);
 `;
 
 export const THBasicStyle = css`
-  background: var(--color-bg-primary);
-  color: var(--color-text-light);
-  font-weight: 400;
+  background: var(--table-head-bg);
+  color: var(--table-head-text-color);
+  font-weight: var(--table-head-font-weight);
   white-space: nowrap;
 `;
 
@@ -27,6 +34,8 @@ export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
   ${THBasicStyle}
   cursor: ${(p) => (p.clickable ? 'pointer' : 'auto')};
   ${CellStyle};
+  padding: var(--table-head-padding);
+  font-size: var(--table-head-font-size);
 
   .icon {
     color: ${darkenCssVar('--color-icon-light', 10)};
@@ -38,23 +47,35 @@ export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
     }
   }
 
+  &:first-child {
+    border-top-left-radius: var(--table-border-radius);
+  }
+
+  &:last-child {
+    border-top-right-radius: var(--table-border-radius);
+  }
+
   ${(p) =>
     p.active &&
     css`
        {
-        color: var(--color-text-primary);
-        font-weight: 500;
+        background: var(--table-head-active-bg);
+        color: var(--table-head-active-text-color);
+        font-weight: var(--table-head-active-font-weight);
       }
     `}
 `;
 
 export const TDBasicStyle = css`
   transition: background 0.15s;
-  background: var(--color-bg-secondary);
+  background: var(--table-cell-bg);
   ${CellStyle};
 
+  color: var(--table-cell-text-color);
+  font-weight: var(--table-cell-font-weight);
+
   &:hover {
-    background: var(--color-bg-secondary-highlight);
+    background: var(--table-cell-hover-bg);
   }
 `;
 
@@ -64,8 +85,8 @@ export const TD = styled.td`
 
 const TRHoverStyle = css`
   ${TD} {
-    background: var(--color-bg-secondary-highlight);
-    color: var(--color-text-highlight);
+    background: var(--table-cell-hover-bg);
+    color: var(--table-cell-hover-text-color);
   }
 `;
 

@@ -378,18 +378,22 @@ export function findAdditionalButtons(routeMatch: match<KnownURLParams> | null, 
 
 const BreadcrumbGroup = styled.div`
   ${ButtonCSS}
-  border-color: var(--color-text-highlight);
+  border: var(--breadcrumb-border);
   width: 100%;
 `;
 
 const BreadcrumbEmptyInput = styled(InputWrapper)`
-  border: 1px solid var(--color-text-highlight);
+  border: var(--breadcrumb-border);
 
   input {
     padding-left: 0;
     margin-left: -0.25rem;
+    font-size: var(--breadcrumb-input-font-size);
+    font-weight: var(--breadcrumb-input-font-weight);
+
     &::placeholder {
-      color: #808080;
+      color: var(--breadcrumb-placeholder-color);
+      font-weight: var(--breadcrumb-input-font-weight);
     }
   }
 `;
@@ -443,16 +447,18 @@ const StyledBreadcrumb = styled(ItemRow)`
   }
 
   input[type='text'] {
-    line-height: 1.875rem;
-    font-size: 0.875rem;
-    background: #fff;
+    line-height: var(--breadcrumb-input-line-height);
+    font-size: var(--breadcrumb-input-font-size);
+    font-weight: var(--breadcrumb-input-font-weight);
+    background: var(--input-bg);
+    color: var(--input-text-color);
     padding-left: 0;
     margin-left: -0.25rem;
   }
 `;
 
 const BreadcrumbInputWrapper = styled(InputWrapper)`
-  border: 1px solid var(--color-text-highlight);
+  border: var(--breadcrumb-border);
 `;
 
 const GoToHolder = styled.div`

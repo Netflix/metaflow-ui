@@ -188,6 +188,59 @@
     --spinner-lg-border-width: 6px;
     --spinner-color: var(--color-primary);
 
+    /* Table */
+    --table-bg: transparent;
+    --table-border: none;
+    --table-shadow: none;
+    --table-border-radius: none;
+
+    --table-head-padding: var(--spacing-3) var(--spacing-7);
+    --table-head-bg: var(--color-bg-primary);
+    --table-head-border: none;
+    --table-head-text-color: var(--color-text-light);
+    --table-head-font-weight: var(--font-weight-regular);
+    --table-head-font-size: var(--font-size-5);
+    --table-head-active-bg: var(--color-bg-primary);
+    --table-head-active-text-color: var(--color-text-primary);
+    --table-head-active-font-weight: var(--font-weight-medium);
+
+    --table-cell-padding: var(--spacing-3) var(--spacing-7);
+    --table-cell-border: 1px solid #fff;
+    --table-cell-border-top: var(--table-cell-border);
+    --table-cell-border-right: var(--table-cell-border);
+    --table-cell-border-bottom: var(--table-cell-border);
+    --table-cell-border-left: var(--table-cell-border);
+    --table-cell-font-size: var(--font-size-5);
+    --table-cell-text-color: var(--color-text-primary);
+    --table-cell-font-weight: inherit;
+    --table-cell-bg: var(--color-bg-secondary);
+    --table-cell-hover-bg: var(--color-bg-secondary-highlight);
+    --table-cell-hover-text-color: var(--color-text-highlight);
+
+    /* Result group (Runs table) */
+    --result-group-status-cell-padding: var(--table-cell-padding);
+
+    /* Breadcrumb */
+    --breadcrumb-border: 1px solid var(--color-text-highlight);
+    --breadcrumb-placeholder-color: #808080;
+    --breadcrumb-input-font-size: var(--font-size-5);
+    --breadcrumb-input-line-height: 1.875rem;
+    --breadcrumb-input-font-weight: 500;
+
     /* Tooltip */
     --tooltip-bg: rgba(51, 51, 51, 0.7);
+
+    /* Input */
+    --input-border: var(--border-1-thin);
+    --input-border-danger: 1px solid var(--color-bg-danger);
+    --input-text-color: var(--color-text-primary);
+    --input-bg: var(--color-bg-primary);
+    
+    --input-height: 2.5rem;
+    --input-height-sm: 2rem;
+    --input-font-size: 1rem;
+    --input-padding: 0.5rem 1rem;
+    --input-padding-sm: 0.5rem;
+
+
 }

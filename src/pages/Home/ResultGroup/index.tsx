@@ -151,9 +151,13 @@ export const StyledResultGroup = styled(Section)`
     word-break: break-all;
   }
 
-  thead,
+  thead {
+    border-top-left-radius: var(--table-border-radius);
+    border-top-right-radius: var(--table-border-radius);
+  }
+
   th {
-    background: var(--color-bg-primary);
+    background: var(--table-head-bg);
     z-index: 10;
   }
 `;

@@ -7,7 +7,7 @@ import { AsyncStatus } from '../../types';
 //
 
 export const InputLabel = styled(ForceNoWrapText)<{ active: boolean; status?: AsyncStatus }>`
-  background: #fff;
+  background: var(--color-bg-primary);
   font-size: 0.875rem;
   font-weight: bold;
   padding: 0 0.25rem;

@@ -9,14 +9,14 @@ type InputWrapperProps = { active: boolean; status?: AsyncStatus; size?: 'sm' | 
 
 const InputWrapper = styled.section<InputWrapperProps>`
   align-items: center;
-  border: ${(p) => (p.status && p.status === 'Error' ? '1px solid var(--color-bg-danger)' : 'var(--border-1-thin)')};
+  border: ${(p) => (p.status && p.status === 'Error' ? 'var(--input-border-danger)' : 'var(--input-border)')};
   border-radius: var(--radius-primary);
-  color: #333;
-  background: #fff;
+  color: var(--input-text-color);
+  background: var(--input-bg);
   display: flex;
-  height: ${(p) => (p.size === 'sm' ? '2.0rem' : '2.5rem')};
+  height: ${(p) => (p.size === 'sm' ? 'var(--input-height-sm)' : 'var(--input-height)')};
   width: 100%;
-  padding: ${(p) => (p.size === 'sm' ? '0.5rem' : '0.5rem 1rem')};
+  padding: ${(p) => (p.size === 'sm' ? 'var(--input-padding-sm)' : 'var(--input-padding)')};
   position: relative;
   transition: border 0.15s;
 
@@ -26,6 +26,7 @@ const InputWrapper = styled.section<InputWrapperProps>`
     cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
     background-color: transparent;
     padding-right: 1.5rem;
+    font-size: var(--input-font-size);
 
     &:focus {
       outline: none;
@@ -33,7 +34,7 @@ const InputWrapper = styled.section<InputWrapperProps>`
     }
 
     &::placeholder {
-      color: #333;
+      color: var(--color-text-primary);
       font-weight: 500;
       opacity: 1;
     }
