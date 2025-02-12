@@ -24,7 +24,7 @@ const Tag = styled.span<{ highlighted?: boolean; dark?: boolean }>`
   display: inline-flex;
   color: var(--color-text-secondary);
   padding: 0.375rem var(--spacing-3);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
   border: 0;
   font-size: 0.875rem;
   font-weight: 400;

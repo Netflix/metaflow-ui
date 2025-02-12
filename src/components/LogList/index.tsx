@@ -297,7 +297,7 @@ const LogListContainer = styled.div`
   background: var(--color-bg-secondary);
   border-bottom: var(--border-primary-thin);
   font-family: monospace;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
   font-size: 0.875rem;
   position: relative;
   overflow: hidden;
@@ -334,7 +334,7 @@ const ScrollToBottomButton = styled.div`
   right: 2rem;
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
 
   background: rgba(0, 0, 0, 0.5);
   color: var(--color-text-alternative);

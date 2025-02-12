@@ -68,19 +68,19 @@ const PropertyTableContainer = styled.table`
   width: 100%;
 
   thead tr:first-child th:first-child {
-    border-top-left-radius: 0.25rem;
+    border-top-left-radius: var(--radius-primary);
   }
 
   thead tr:first-child th:last-child {
-    border-top-right-radius: 0.25rem;
+    border-top-right-radius: var(--radius-primary);
   }
 
   tbody tr:last-child td:first-child {
-    border-bottom-left-radius: 0.25rem;
+    border-bottom-left-radius: var(--radius-primary);
   }
 
   tbody tr:last-child td:last-child {
-    border-bottom-right-radius: 0.25rem;
+    border-bottom-right-radius: var(--radius-primary);
   }
 `;
 

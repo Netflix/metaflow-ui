@@ -214,7 +214,7 @@ export const HelpMenuRow = styled.div`
   .field {
     width: 100%;
     border: 1px solid #e9e9e9;
-    border-radius: 0.1875rem;
+    border-radius: var(--radius-primary);
   }
 `;
 

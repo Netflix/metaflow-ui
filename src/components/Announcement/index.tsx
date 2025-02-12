@@ -195,7 +195,7 @@ const AnnouncementItemContainer = styled.div<{ type: NotificationType; open: boo
   background: ${({ type }) => `var(--notification-${type}-bg, --notification-default-bg)`};
   color: ${({ type }) => `var(--notification-${type}-text-color, --notification-default-text-color)`};
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
   transition: opacity 0.25s;
   font-size: 1rem;
   line-height: 1.5rem;

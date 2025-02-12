@@ -22,7 +22,7 @@ export const PopoverStyles = css`
   filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.25));
   padding: var(--spacing-3);
   background: var(--color-bg-primary);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
 `;
 
 export const PopoverWrapper = styled.div<{ show: boolean; alignment?: 'left' | 'right' }>`

@@ -121,6 +121,10 @@
     --border-3-medium: 2px solid var(--color-border-3);
     --border-alternative-medium: 2px solid var(--color-text-alternative);
 
+    /* Border radius */
+    --radius-primary: 0.25rem; /* 4px */
+    --radius-secondary: 0.5rem; /* 8px */
+
     /* Layout */
 
     --layout-max-width: 160rem; /* 2560px */

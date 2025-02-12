@@ -55,11 +55,11 @@ const TemplateSlot = styled.div`
   }
 
   th:first-child {
-    border-top-left-radius: 0.25rem;
+    border-top-left-radius: var(--radius-primary);
   }
 
   th:last-child {
-    border-top-right-radius: 0.25rem;
+    border-top-right-radius: var(--radius-primary);
   }
 
   td {

@@ -28,13 +28,13 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
 
     &:first-of-type {
       margin-left: 0;
-      border-top-left-radius: 0.25rem;
-      border-bottom-left-radius: 0.25rem;
+      border-top-left-radius: var(--radius-primary);
+      border-bottom-left-radius: var(--radius-primary);
     }
 
     &:last-of-type {
-      border-top-right-radius: 0.25rem;
-      border-bottom-right-radius: 0.25rem;
+      border-top-right-radius: var(--radius-primary);
+      border-bottom-right-radius: var(--radius-primary);
     }
 
     i {
@@ -49,13 +49,13 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
 
     &:first-of-type {
       margin-left: 0;
-      border-top-left-radius: 0.25rem;
-      border-bottom-left-radius: 0.25rem;
+      border-top-left-radius: var(--radius-primary);
+      border-bottom-left-radius: var(--radius-primary);
     }
 
     &:last-of-type {
-      border-top-right-radius: 0.25rem;
-      border-bottom-right-radius: 0.25rem;
+      border-top-right-radius: var(--radius-primary);
+      border-bottom-right-radius: var(--radius-primary);
     }
 
     > .button {

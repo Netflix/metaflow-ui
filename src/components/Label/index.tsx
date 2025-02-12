@@ -24,7 +24,7 @@ const Label: React.FC<LabelProps> = ({ type = LabelType.Default, children, class
 };
 
 const Wrapper = styled.div<{ type: LabelType }>`
-  border-radius: 0.5rem;
+  border-radius: var(--radius-secondary);
   color: ${({ type }) => `var(--color-text-${type}, --color-secondary)`};
 `;
 

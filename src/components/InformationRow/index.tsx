@@ -24,12 +24,12 @@ const StyledRow = styled.div<{ spaceless: boolean }>`
   padding: ${(p) => (p.spaceless ? '0px' : '0.625rem')};
 
   &:first-of-type {
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
+    border-top-left-radius: var(--radius-primary);
+    border-top-right-radius: var(--radius-primary);
   }
   &:last-of-type {
-    border-bottom-left-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius: var(--radius-primary);
+    border-bottom-right-radius: var(--radius-primary);
   }
 `;
 

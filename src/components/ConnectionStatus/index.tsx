@@ -94,7 +94,7 @@ const Text = styled(SmallText)<{ status: RealtimeStatus }>`
   top: 100%;
   color: var(--color-text-alternative);
   background: var(--tooltip-bg);
-  border-radius: 6px;
+  border-radius: var(--radius-primary);
   padding: 0.5rem 0.75rem;
   white-space: nowrap;
 `;

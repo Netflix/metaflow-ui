@@ -147,7 +147,7 @@ export const ButtonCSS = css`
   outline: 0;
   cursor: pointer;
   text-decoration: none;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
   border: var(--border-primary-thin);
   min-height: 1.75rem;
   transition: background 0.15s;

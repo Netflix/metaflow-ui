@@ -96,7 +96,7 @@ const TitledRowTitle = styled.div`
 
 const ContentBackground = styled.div`
   background: var(--color-bg-secondary);
-  border-radius: 4px;
+  border-radius: var(--radius-primary);
   font-size: 0.875rem;
 `;
 

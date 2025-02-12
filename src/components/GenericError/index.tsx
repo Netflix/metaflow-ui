@@ -249,7 +249,7 @@ const StackButtonsContainer = styled.div`
 const DetailsLog = styled.div`
   background: var(--color-bg-secondary);
   border: var(--border-primary-thin);
-  border-radius: 0.1875rem;
+  border-radius: var(--radius-primary);
   color: var(--color-text-primary);
   font-family: monospace;
   font-size: 1rem;

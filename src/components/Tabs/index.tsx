@@ -116,8 +116,8 @@ export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean
   &:hover {
     border-bottom-color: var(--color-bg-brand-primary);
     font-weight: 500;
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
+    border-top-left-radius: var(--radius-primary);
+    border-top-right-radius: var(--radius-primary);
   }
 `;
 

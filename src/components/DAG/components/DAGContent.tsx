@@ -275,7 +275,7 @@ const NormalItem = styled.div<{ state: TaskStatus }>`
   padding: 0.75rem 1.5rem;
 
   position: relative;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
   transition: 0.15s border;
   cursor: pointer;
 `;
@@ -284,7 +284,7 @@ const BaseContainerStyle = css`
   border: var(--border-2-thin);
   background: #f6f6f6;
   display: flex;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-secondary);
   position: relative;
   z-index: 1;
 `;

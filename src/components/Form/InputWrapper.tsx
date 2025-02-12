@@ -10,7 +10,7 @@ type InputWrapperProps = { active: boolean; status?: AsyncStatus; size?: 'sm' | 
 const InputWrapper = styled.section<InputWrapperProps>`
   align-items: center;
   border: ${(p) => (p.status && p.status === 'Error' ? '1px solid var(--color-bg-danger)' : 'var(--border-1-thin)')};
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
   color: #333;
   background: #fff;
   display: flex;

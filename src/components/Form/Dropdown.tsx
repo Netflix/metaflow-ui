@@ -159,7 +159,7 @@ const DropdownWrapper = styled.div`
 
   select {
     width: 100%;
-    border-radius: 0.25rem;
+    border-radius: var(--radius-primary);
     outline: 0;
     line-height: 1.25rem;
     border: 0;
@@ -168,7 +168,7 @@ const DropdownWrapper = styled.div`
 `;
 
 const DropdownButton = styled(Button)`
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
   height: ${(p) => (p.size ? '2rem' : '2.5rem')};
   line-height: 1rem;
   padding: 0.5rem 0rem 0.5rem 0rem;
