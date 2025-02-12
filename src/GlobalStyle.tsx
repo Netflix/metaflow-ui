@@ -18,6 +18,7 @@ const globalCSS = css`
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: var(--color-text-primary);
+    background: var(--layout-color-bg);
   }
 
   a {

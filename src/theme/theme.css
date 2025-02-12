@@ -126,7 +126,7 @@
     --radius-secondary: 0.5rem; /* 8px */
 
     /* Layout */
-
+    --layout-color-bg: var(--color-bg-primary);
     --layout-max-width: 160rem; /* 2560px */
     --layout-application-bar-height: 7rem; /* 112px */
     --layout-application-bar-logo-height: 1.5rem; /* 24px */
