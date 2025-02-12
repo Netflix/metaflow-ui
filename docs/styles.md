@@ -4,18 +4,17 @@ Styles are implemented with [styled-components](https://styled-components.com/).
 
 ## Theme
 
-The theme mostly includes colors and some component-specific styles. Colors should mostly be used from the theme e.g.
+Theming is implemented with CSS variables. You can implement your own theme by providing your own theme css file to index.html or editing existing theme and rebuilding the application.
 
 ```javascript
 import styled from 'styled-components';
 
 const StyledElement = styled.div`
-  background: ${(props) => props.theme.color.bg.dark};
+  background: var(--color-bg-primary);
 `;
 ```
 
-- [Theme file](../src/theme/index.tsx)
-- [Theme type definition](../src/styled.d.ts)
+- [Theme file](../src/theme/theme.css)
 
 ## Notes
 
