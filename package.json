@@ -40,7 +40,7 @@
     "eject": "react-scripts eject",
     "format": "prettier --write src",
     "dev:plugin": "concurrently --kill-others --names \"PLUGIN-SERVE,DEV\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm:dev-plugin-serve\" \"npm:dev-plugin-cypress\"",
-    "dev-plugin-serve": "serve ./plugin-api",
+    "dev-plugin-serve": "serve ./plugin-api -p 5000",
     "dev-plugin-cypress": "cypress open-ct --config-file ./cypress.plugin-dev.config.ts",
     "init-mocks": "msw init ./public --save"
   },
