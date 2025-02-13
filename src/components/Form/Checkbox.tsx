@@ -78,7 +78,7 @@ const CheckboxWrapper = styled.div<{ checked: boolean; disabled: boolean }>`
   }
 
   span.checkbox svg path {
-    fill: #fff;
+    fill: transparent;
   }
 
   ${(p) =>

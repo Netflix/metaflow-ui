@@ -197,8 +197,8 @@ const SettingsRowLeft = styled.div`
 `;
 
 const ExpandButton = styled(Button)`
-  height: 2.5rem;
-  width: 2.5rem;
+  height: var(--input-height);
+  width: var(--input-height);
 
   i {
     margin: 0 auto;

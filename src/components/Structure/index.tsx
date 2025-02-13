@@ -47,6 +47,8 @@ function sizeToSpacingVar(size?: 'xs' | 'sm' | 'md' | 'lg' | 'hg') {
       return 'spacing-10';
     case 'hg':
       return 'spacing-12';
+    default:
+      return 'spacing-3';
   }
 }
 
@@ -65,11 +67,11 @@ export const ItemRow = styled.div<{
   ${(p) =>
     p.margin &&
     css`
-      margin: var(--${sizeToSpacingVar(p.margin)}, --spacing-3) 0;
+      margin: var(--${sizeToSpacingVar(p.margin)}) 0;
     `}
 
   > * {
-    margin-right: var(--${(p) => sizeToSpacingVar(p.pad)}, --spacing-3);
+    margin-right: var(--${(p) => sizeToSpacingVar(p.pad)});
 
     &:last-child {
       margin-right: 0;

@@ -78,7 +78,7 @@ const CollapsableHeader = styled.div`
   cursor: pointer;
 
   svg path {
-    fill: #fff;
+    fill: transparent;
   }
 `;
 

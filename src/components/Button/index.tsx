@@ -25,9 +25,9 @@ export type ButtonProps = {
 };
 
 const buttonFontSizes = {
-  sm: 0.875,
-  md: 1,
-  lg: 1.25,
+  sm: 'var(--button-font-size-sm)',
+  md: 'var(--button-font-size-md)',
+  lg: 'var(--button-font-size-lg)',
 };
 
 //
@@ -86,7 +86,7 @@ const DisabledButtonCSS = css`
 `;
 
 const ActiveButtonCSS = css`
-  font-weight: 500;
+  font-weight: var(--button-active-font-weight);
 `;
 
 const TextOnlyButtonCSS = css`
@@ -149,7 +149,7 @@ export const ButtonCSS = css`
   text-decoration: none;
   border-radius: var(--radius-primary);
   border: var(--border-primary-thin);
-  min-height: 1.75rem;
+  min-height: var(--button-min-height);
   transition: background 0.15s;
 `;
 
@@ -162,12 +162,12 @@ const StyledButton = styled.button<StyledButtonProps>`
   ${(p) => p.textOnly && TextOnlyButtonCSS};
   ${(p) => (p.withIcon === true || p.withIcon === 'left') && IconOnLeftCSS};
   ${(p) => p.withIcon === 'right' && IconOnRightCSS};
-  font-size: ${(p) => buttonFontSizes[p.size]}rem;
+  font-size: ${(p) => buttonFontSizes[p.size]};
 `;
 
 export const BigButton = styled(Button)`
-  line-height: 1.875rem;
-  font-size: 0.875rem;
+  line-height: var(--big-button-line-height);
+  font-size: var(--big-button-font-size);
   white-space: nowrap;
 
   padding-left: 0.75rem;

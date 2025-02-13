@@ -440,16 +440,16 @@ const BreadcrumbDivider = styled.div`
 `;
 
 const StyledBreadcrumb = styled(ItemRow)`
-  font-size: 0.875rem;
+  font-size: var(--breadcrumb-font-size);
 
   .button {
-    font-size: 0.875rem;
+    font-size: var(--breadcrumb-font-size);
   }
 
   input[type='text'] {
-    line-height: var(--breadcrumb-input-line-height);
-    font-size: var(--breadcrumb-input-font-size);
-    font-weight: var(--breadcrumb-input-font-weight);
+    line-height: var(--breadcrumb-line-height);
+    font-size: var(--breadcrumb-font-size);
+    font-weight: var(--breadcrumb-font-weight);
     background: var(--input-bg);
     color: var(--input-text-color);
     padding-left: 0;

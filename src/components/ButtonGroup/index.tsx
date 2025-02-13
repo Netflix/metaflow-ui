@@ -11,15 +11,15 @@ const ButtonGroup = styled.div<{ big?: boolean }>`
   > .button {
     border-radius: 0;
     margin-left: -1px;
-    min-height: ${(p) => (p.big ? '2.5rem' : '1.75rem')};
-    min-width: ${(p) => (p.big ? '2.5rem' : '1.75rem')};
-    font-size: ${(p) => (p.big ? '1rem' : '0.875rem')};
-    border-color: #d0d0d0;
+    min-height: ${(p) => (p.big ? 'var(--button-group-big-height)' : 'var(--button-group-height)')};
+    min-width: ${(p) => (p.big ? 'var(--button-group-big-width)' : 'var(--button-group-width)')};
+    font-size: ${(p) => (p.big ? 'var(--button-group-big-font-size)' : 'var(--button-group-font-size)')};
+    border-color: var(--color-border-primary);
 
     white-space: nowrap;
 
     &:not(.active):not(:hover) {
-      background: #fff;
+      background: var(--color-bg-primary);
     }
 
     &.active {

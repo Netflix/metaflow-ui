@@ -40,9 +40,9 @@ const DataHeaderItem: React.FC<{ label: string; value: React.ReactNode }> = ({ l
 //
 
 const DataHeaderContainer = styled.div<{ isWide: boolean }>`
-  background: var(--color-bg-heavy);
-  font-size: 0.875rem;
-  color: #fff;
+  background: var(--data-header-bg);
+  font-size: var(--data-header-font-size);
+  color: var(--data-header-text-color);
   margin: 0 ${(p) => (p.isWide ? '-3rem' : '0')};
   padding: 1rem ${(p) => (p.isWide ? '3rem' : '0.5rem')};
 `;
@@ -63,7 +63,9 @@ const DataHeaderItemContainer = styled.div`
 `;
 
 const DataHeaderItemLabel = styled.div`
-  font-weight: 500;
+  font-weight: var(--data-header-label-font-weight);
+  font-size: var(--data-header-label-font-size);
+  color: var(--data-header-label-text-color);
 `;
 
 export default DataHeader;

@@ -174,7 +174,7 @@ const RunHeaderContainer = styled.div`
 `;
 
 const StyledLink = styled(Link)`
-  color: #fff;
+  color: var(--data-header-link-color);
   text-decoration: none;
 
   &:hover {
@@ -188,7 +188,7 @@ const PluginWrapper = styled.div`
 
 const TriggersInHeader = styled(Triggers)`
   a {
-    color: #fff;
+    color: var(--data-header-link-color);
   }
 `;
 
