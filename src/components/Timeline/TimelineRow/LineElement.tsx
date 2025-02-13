@@ -158,7 +158,7 @@ export const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
     top: 50%;
     transform: translateY(-50%);
     z-index: -1;
-    background: rgba(255, 255, 255, 0.8);
+    background: var(--color-bg-primary);
   }
 `;
 
