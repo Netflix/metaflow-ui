@@ -69,6 +69,14 @@ const StickyHeaderTHead = styled.thead`
       top: 10.3125rem;
     }
   }
+
+  &.sticky {
+    th:first-child,
+    th:last-child {
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
+    }
+  }
 `;
 
 export default StickyHeader;

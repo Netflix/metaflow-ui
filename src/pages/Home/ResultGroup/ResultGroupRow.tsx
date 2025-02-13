@@ -92,13 +92,13 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
           timezone={timezone}
           infoOpen={visible}
         />
-        <td>
+        <ExpandCell>
           <VerticalToggle
             visible={visible || isHovering}
             active={rowState === RowState.Opening || rowState === RowState.Open}
             onClick={handleToggleClick}
           />
-        </td>
+        </ExpandCell>
       </StyledTR>
       {visible && (
         <tr>
@@ -152,6 +152,13 @@ const StyledSection = styled(Section)<{ closing: boolean }>`
   border-bottom: var(--border-1-thin);
   ${(p) => p.closing && 'position: absolute;'}
   width: 100%;
+`;
+
+const ExpandCell = styled.td`
+  border-top: var(--result-group-expand-cell-border-top);
+  border-right: var(--result-group-expand-cell-border-right);
+  border-bottom: var(--result-group-expand-cell-border-bottom);
+  border-left: var(--result-group-expand-cell-border-left);
 `;
 
 export default ResultGroupRow;
