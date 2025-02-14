@@ -57,11 +57,11 @@ const StickyHeaderTHead = styled.thead`
   }
 
   .result-group-title th {
-    top: 7rem;
+    top: var(--layout-application-bar-height);
   }
 
   .result-group-columns th {
-    top: 7rem;
+    top: var(--layout-application-bar-height);
   }
 
   .result-group-title + .result-group-columns {
