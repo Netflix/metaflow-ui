@@ -128,7 +128,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   font-size: ${(p) => (p.type === 'task' ? '0.75rem' : '0.875rem')};
   font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
   line-height: 1.6875rem;
-  border-left: var(--border-1-thin);
+  border-left: var(--border-thin-1);
   padding-left: ${(p) => (p.type === 'task' ? '0.5rem' : undefined)};
 
   a {

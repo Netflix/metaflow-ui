@@ -281,7 +281,7 @@ const NormalItem = styled.div<{ state: TaskStatus }>`
 `;
 
 const BaseContainerStyle = css`
-  border: var(--border-2-thin);
+  border: var(--border-thin-2);
   background: #f6f6f6;
   display: flex;
   border-radius: var(--radius-secondary);

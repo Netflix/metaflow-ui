@@ -144,7 +144,7 @@ const TimezoneSelectorContainer = styled.div`
 
 const HelpMenuTitle = styled.div`
   align-items: center;
-  border-bottom: var(--border-1-thin);
+  border-bottom: var(--border-thin-1);
   display: flex;
   justify-content: space-between;
   margin: 0 -0.5rem 0.5rem;

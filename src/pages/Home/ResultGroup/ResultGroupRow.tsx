@@ -148,8 +148,8 @@ const StyledTD = styled.td`
 const StyledSection = styled(Section)<{ closing: boolean }>`
   padding: 0.5rem 0.5rem 0;
   margin-bottom 0;
-  border-right: var(--border-1-thin);
-  border-bottom: var(--border-1-thin);
+  border-right: var(--border-thin-1);
+  border-bottom: var(--border-thin-1);
   ${(p) => p.closing && 'position: absolute;'}
   width: 100%;
 `;

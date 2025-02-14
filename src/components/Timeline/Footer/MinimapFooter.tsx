@@ -187,7 +187,7 @@ const MinimapFooterContent = styled.div`
   position: relative;
   flex: 1;
   background: var(--color-bg-secondary);
-  border-bottom: var(--border-1-thin);
+  border-bottom: var(--border-thin-1);
   height: 3.0625rem;
 `;
 

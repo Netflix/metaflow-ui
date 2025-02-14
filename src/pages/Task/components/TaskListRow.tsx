@@ -63,7 +63,7 @@ const TaskListRow: React.FC<Props> = ({
 };
 
 const TaskListRowContainer = styled.div<{ active: boolean }>`
-  border-bottom: var(--border-1-thin);
+  border-bottom: var(--border-thin-1);
 
   transition: 0.15s background;
   background: ${(p) => (p.active ? 'var(--color-bg-secondary-highlight)' : 'transparent')};

@@ -34,7 +34,7 @@ const TimelineFooterContainer = styled.div`
   width: 100%;
   height: 2.5rem;
   margin-bottom: 1.5625rem;
-  border-top: var(--border-1-medium);
+  border-top: var(--border-medium-1);
 `;
 
 const TimelineFooterLeft = styled.div`

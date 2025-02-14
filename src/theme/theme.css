@@ -110,15 +110,15 @@
     /* Borders */
 
     --border-primary-thin: 1px solid var(--color-border-primary);
-    --border-1-thin: 1px solid var(--color-border-1);
-    --border-2-thin: 1px solid var(--color-border-2);
-    --border-3-thin: 1px solid var(--color-border-3);
+    --border-thin-1: 1px solid var(--color-border-1);
+    --border-thin-2: 1px solid var(--color-border-2);
+    --border-thin-3: 1px solid var(--color-border-3);
     --border-highlight-thin: 1px solid var(--color-text-highlight);
 
     --border-primary-medium: 2px solid var(--color-border-primary);
-    --border-1-medium: 2px solid var(--color-border-1);
-    --border-2-medium: 2px solid var(--color-border-2);
-    --border-3-medium: 2px solid var(--color-border-3);
+    --border-medium-1: 2px solid var(--color-border-1);
+    --border-medium-2: 2px solid var(--color-border-2);
+    --border-medium-3: 2px solid var(--color-border-3);
     --border-alternative-medium: 2px solid var(--color-text-alternative);
 
     /* Border radius */
@@ -255,7 +255,7 @@
     --tooltip-bg: rgba(51, 51, 51, 0.7);
 
     /* Input */
-    --input-border: var(--border-1-thin);
+    --input-border: var(--border-thin-1);
     --input-border-danger: 1px solid var(--color-bg-danger);
     --input-text-color: var(--color-text-primary);
     --input-bg: var(--color-bg-primary);

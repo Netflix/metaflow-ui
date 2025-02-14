@@ -74,7 +74,7 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
 const TimelinePreviewContainer = styled.div`
   max-height: 30rem;
   margin-top: 1rem;
-  border-top: var(--border-1-medium);
+  border-top: var(--border-medium-1);
 `;
 
 export default TimelinePreview;
