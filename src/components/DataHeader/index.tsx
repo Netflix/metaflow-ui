@@ -43,8 +43,8 @@ const DataHeaderContainer = styled.div<{ isWide: boolean }>`
   background: var(--data-header-bg);
   font-size: var(--data-header-font-size);
   color: var(--data-header-text-color);
-  margin: 0 ${(p) => (p.isWide ? '-3rem' : '0')};
-  padding: 1rem ${(p) => (p.isWide ? '3rem' : '0.5rem')};
+  margin: 0 ${(p) => (p.isWide ? '-1.5rem' : '0')};
+  padding: 1rem ${(p) => (p.isWide ? '1.5rem' : '0.5rem')};
 `;
 
 const DataHeaderContent = styled.div`

@@ -106,8 +106,8 @@ function hasVersionTag(run: Run): boolean {
 
 const Container = styled.div`
   background: #e5a90c;
-  padding: 0.5rem 3rem;
-  margin: 0 -3rem;
+  padding: 0.5rem 1.5rem;
+  margin: 0 -1.5rem;
   font-size: 0.875rem;
   display: flex;
   align-items: center;
