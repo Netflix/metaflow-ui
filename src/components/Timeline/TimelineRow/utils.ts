@@ -43,22 +43,22 @@ export function getRowStatus(
 
 export function lineColor(grayed: boolean, state: string, isFirst: boolean): string {
   if (grayed) {
-    return '#c7c7c7';
+    return 'var(--timeline-line-color-neutral)';
   } else {
     switch (state) {
       case 'completed':
       case 'ok':
-        return !isFirst ? brightenCssVar('--color-bg-danger', 30) : 'var(--color-bg-success)';
+        return !isFirst ? brightenCssVar('--timeline-line-color-danger', 30) : 'var(--timeline-line-color-success)';
       case 'running':
-        return 'var(--color-bg-success-light)';
+        return 'var(--timeline-line-color-running)';
       case 'pending':
-        return 'var(--color-bg-warning';
+        return 'var(--timeline-line-color-warning)';
       case 'failed':
-        return !isFirst ? brightenCssVar('--color-bg-danger', 30) : 'var(--color-bg-danger)';
+        return !isFirst ? brightenCssVar('--timeline-line-color-danger', 30) : 'var(--timeline-line-color-danger)';
       case 'unknown':
-        return !isFirst ? brightenCssVar('--color-bg-disabled', 30) : 'var(--color-bg-disabled)';
+        return !isFirst ? brightenCssVar('--timeline-line-color-unknown', 30) : 'var(--timeline-line-color-unknown)';
       default:
-        return brightenCssVar('--color-bg-disabled', 50);
+        return brightenCssVar('--timeline-line-color-unknown', 50);
     }
   }
 }

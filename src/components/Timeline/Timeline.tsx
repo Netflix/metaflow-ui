@@ -281,6 +281,11 @@ const ListContainer = styled.div<{ customMinHeight: number }>`
   min-height: ${(p) => `${p.customMinHeight}rem`};
   max-width: 100%;
   position: relative;
+
+  background: var(--timeline-bg);
+  border-radius: var(--timeline-border-radius);
+  padding: var(--timeline-padding);
+  box-shadow: var(--timeline-shadow);
 `;
 
 export default Timeline;

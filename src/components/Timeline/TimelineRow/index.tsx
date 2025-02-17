@@ -134,7 +134,6 @@ const StyledRow = styled.div`
   display: flex;
   width: 100%;
   min-height: 1.75rem;
-  border-bottom: var(--border-thin-1);
   transition: background 0.15s;
 
   &:hover {
@@ -158,7 +157,8 @@ const StickyStyledRow = styled(StyledRow)`
 const RowContainerStyles = css`
   position: relative;
   width: 100%;
-  border-left: var(--border-thin-1);
+  border-left: var(--timeline-row-separator-border);
+  border-bottom: var(--timeline-row-border-bottom);
   overflow-x: hidden;
 `;
 

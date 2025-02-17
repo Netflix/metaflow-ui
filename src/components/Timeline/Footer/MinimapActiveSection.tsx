@@ -61,7 +61,7 @@ const MinimapActiveSection: React.FC<ActiveSectionProps> = ({ timeline, dragging
 const MiniTimelineActiveSection = styled.div<{ dragging: boolean }>`
   position: relative;
   height: 3.0625rem;
-  background var(--color-bg-primary);
+  background var(--timeline-footer-selected-bg);
   border-left: var(--border-thin-1);
   border-right: var(--border-thin-1);
   border-bottom: 0.5rem solid var(--color-border-1);

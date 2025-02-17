@@ -281,4 +281,44 @@
     --data-header-label-font-weight: var(--font-weight-medium);
 
     --data-header-link-color: #fff;
+
+    /* Timeline */
+
+    --timeline-bg: none;
+    --timeline-border-radius: none;
+    --timeline-padding: none;
+    --timeline-shadow: none;
+
+    --timeline-line-border-radius: none;
+    --timeline-line-color-neutral: #c7c7c7;
+    --timeline-line-color-success: var(--color-bg-success);
+    --timeline-line-color-running: var(--color-bg-success-light);
+    --timeline-line-color-warning: var(--color-bg-warning);
+    --timeline-line-color-danger: var(--color-bg-danger);
+    --timeline-line-color-unknown: var(--color-bg-disabled);
+
+    --timeline-row-border-bottom: var(--border-thin-1);
+    --timeline-row-separator-border: var(--border-thin-1);
+    --timeline-row-label-border-left: var(--border-thin-1);
+    --timeline-row-label-border-bottom: var(--border-thin-1);
+
+    --timeline-row-label-task-font-size: var(--font-size-4);
+    --timeline-row-label-task-font-weight: var(--font-weight-regular);
+    --timeline-row-label-task-text-color: var(--color-text-primary);
+
+    --timeline-row-label-step-font-size: var(--font-size-4);
+    --timeline-row-label-step-font-weight: var(--font-weight-semibold);
+    --timeline-row-label-step-text-color: var(--color-text-primary);
+
+    --timeline-footer-border: var(--border-medium-1);
+    --timeline-footer-bg: var(--color-bg-secondary);
+    --timeline-footer-selected-bg: var(--color-bg-primary);
+    
+    /* Task content */
+    --task-content-bg: none;
+    --task-content-border-radius: none;
+    --task-content-padding: 0 2rem 0 1rem;
+    --task-content-margin: none;
+    --task-content-shadow: none;
+    
 }

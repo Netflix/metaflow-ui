@@ -158,7 +158,6 @@ export const BoxGraphicValue = styled.div<{ position: LabelPosition }>`
     top: 50%;
     transform: translateY(-50%);
     z-index: -1;
-    background: var(--color-bg-primary);
   }
 `;
 
@@ -185,6 +184,7 @@ const UnkownMoveAnimation = keyframes`
 const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttempt: boolean }>`
   position: absolute;
   background: ${(p) => lineColor(p.grayed || false, p.state, p.isLastAttempt)};
+  border-radius: var(--timeline-line-border-radius);
   width: 100%;
   height: 0.375rem;
   top: 50%;
