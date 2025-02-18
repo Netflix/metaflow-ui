@@ -176,8 +176,10 @@ function omitFromString(partToOmit: string, str: string): string {
 //
 
 const ButtonResetAll = styled(Button)`
-  color: #333;
-  height: 2.25rem;
+  color: var(--reset-button-color);
+  border-color: var(--reset-button-border-color);
+  height: var(--reset-button-height);
+  font-weight: var(--reset-button-font-weight);
   width: 100%;
 
   span {
@@ -188,19 +190,19 @@ const ButtonResetAll = styled(Button)`
 
 const Sidebar = styled.div`
   position: fixed;
-  width: ${(p) => p.theme.layout.sidebarWidth.md}rem;
-  @media (max-width: ${(p) => p.theme.breakpoint.sm}) {
-    width: ${(p) => p.theme.layout.sidebarWidth.sm}rem;
+  width: var(--sidebar-width-md);
+  @media (max-width: var(--layout-breakpoint-sm)) {
+    width: var(--sidebar-width-sm);
   }
-  top: ${(p) => p.theme.layout.appbarHeight}rem;
-  font-size: 0.875rem;
+  top: var(--layout-application-bar-height);
+  font-size: var(--font-size-primary);
   padding-top: 6px;
 `;
 
 const SidebarContent = styled.div`
-  width: ${(p) => p.theme.layout.sidebarWidth.md}rem;
-  @media (max-width: ${(p) => p.theme.breakpoint.sm}) {
-    width: ${(p) => p.theme.layout.sidebarWidth.sm}rem;
+  width: var(--sidebar-width-md);
+  @media (max-width: var(--layout-breakpoint-sm)) {
+    width: var(--sidebar-width-sm);
   }
   padding-top: 0.5rem;
   padding-left: 0.25rem;
@@ -208,15 +210,15 @@ const SidebarContent = styled.div`
 
 const StyledScrollbars = styled(Scrollbars)`
   height: calc(100vh - ${HEADER_SIZE_REM + 1}rem) !important;
-  width: ${(p) => p.theme.layout.sidebarWidth.md + 1}rem !important;
-  @media (max-width: ${(p) => p.theme.breakpoint.sm}) {
-    width: ${(p) => p.theme.layout.sidebarWidth.sm + 1}rem !important;
+  width: calc(var(--sidebar-width-md) + 1rem) !important;
+  @media (max-width: var(--layout-breakpoint-sm)) {
+    width: calc(var(--sidebar-width-sm) + 1rem) !important;
   }
   padding-top: 0.25rem;
 `;
 
 export const SidebarSectionWrapper = styled.div`
-  margin: 0 0 1rem;
+  margin: var(--sidebar-section-margin);
 `;
 
 export default HomeSidebar;

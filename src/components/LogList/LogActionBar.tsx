@@ -147,7 +147,7 @@ const Buttons = styled.div`
 `;
 
 const ResultElement = styled.div`
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   line-height: 1.25rem;
 `;
 

@@ -125,16 +125,20 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
   max-width: 15.3125rem;
   overflow: hidden;
   cursor: pointer;
-  font-size: ${(p) => (p.type === 'task' ? '0.75rem' : '0.875rem')};
-  font-weight: ${(p) => (p.type === 'step' ? '600' : 'normal')};
+  font-size: ${(p) =>
+    p.type === 'task' ? 'var(--timeline-row-label-task-font-size)' : 'var(--timeline-row-label-step-font-size)'};
+  font-weight: ${(p) =>
+    p.type === 'step' ? 'var(--timeline-row-label-step-font-weight)' : 'var(--timeline-row-label-task-font-weight)'};
   line-height: 1.6875rem;
-  border-left: ${(p) => p.theme.border.thinLight};
+  border-left: var(--timeline-row-label-border-left);
+  border-bottom: var(--timeline-row-label-border-bottom);
   padding-left: ${(p) => (p.type === 'task' ? '0.5rem' : undefined)};
 
   a {
     display: flex;
     width: 100%;
-    color: ${(p) => p.theme.color.text.dark};
+    color: ${(p) =>
+      p.type === 'task' ? 'var(--timeline-row-label-task-text-color)' : '--timeline-row-label-step-text-color'};
     text-decoration: none;
     max-width: 100%;
     white-space: nowrap;
@@ -200,7 +204,8 @@ const StepLabel = styled.div<{ isLoading: boolean }>`
   display: flex;
   align-items: center;
   user-select: text;
-  font-size: 0.75rem;
+  font-size: var(--timeline-row-label-step-font-size);
+  color: var(--timeline-row-label-step-text-color);
 
   i {
     width: 1.875rem;

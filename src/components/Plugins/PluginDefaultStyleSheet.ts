@@ -1,16 +1,20 @@
-import defaultTheme from '../../theme';
+// eslint-disable-next-line
+// @ts-ignore Load CSS as a string to be appended to injected plugin stylesheet.
+// eslint-disable-next-line import/no-webpack-loader-syntax
+import css from '!!css-loader?{"sourceMap":false,"exportType":"string"}!../../theme/theme.css';
 
 const PLUGIN_STYLESHEET = `
+  ${css}
   body {
     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
       'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: ${defaultTheme.color.text.dark};
+    color: var(--color-text-primary);
   }
 
   a {
-    color: ${defaultTheme.color.text.blue};
+    color: var(--color-text-highlight);
   }
 
   table {
@@ -18,27 +22,27 @@ const PLUGIN_STYLESHEET = `
   }
 
   table th {
-    background: ${defaultTheme.color.bg.white};
-    color: ${defaultTheme.color.text.light};
+    background: var(--color-bg-primary);
+    color: var(--color-text-disabled);
     font-weight: 400;
     white-space: nowrap;
-    padding: ${defaultTheme.spacer.sm}rem ${defaultTheme.spacer.md}rem;
-    font-size: 0.875rem;
+    padding: var(--spacing-3) var(--spacing-7);
+    font-size: var(--font-size-primary);
     text-align: left;
     border: 1px solid #fff;
   }
 
   table td {
     transition: background 0.15s;
-    background: ${defaultTheme.color.bg.light};
-    padding: ${defaultTheme.spacer.sm}rem ${defaultTheme.spacer.md}rem;
-    font-size: 0.875rem;
+    background: var(--color-bg-secondary);
+    padding: var(--spacing-3) var(--spacing-7);
+    font-size: var(--font-size-primary);
     text-align: left;
     border: 1px solid #fff;
   }
 
   table td:hover {
-    background: ${defaultTheme.color.bg.blueLight};
+    background: var(--color-bg-secondary-highlight);
   }
 
   button {
@@ -47,17 +51,17 @@ const PLUGIN_STYLESHEET = `
     outline: 0;
     cursor: pointer;
     text-decoration: none;
-    border-radius: 0.25rem;
-    border: ${defaultTheme.border.thinNormal};
+    border-radius: var(--radius-primary);
+    border: var(--border-primary-thin);
     min-height: 1.75rem;
     transition: background 0.15s;
   }
 
   button[disabled] {
-    border-color: ${defaultTheme.color.bg.light};
-    color: ${defaultTheme.color.text.light};
+    border-color: var(--color-bg-secondary);
+    color: var(--color-text-light);
     cursor: not-allowed;
-    background: ${defaultTheme.color.bg.light};
+    background: var(--color-bg-secondary);
   }
 `;
 

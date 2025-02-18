@@ -19,17 +19,17 @@ const InformationRow: React.FC<{
 };
 
 const StyledRow = styled.div<{ spaceless: boolean }>`
-  background: ${(p) => p.theme.color.bg.light};
-  border-bottom: ${(p) => p.theme.border.mediumWhite};
+  background: var(--color-bg-secondary);
+  border-bottom: var(--border-alternative-medium);
   padding: ${(p) => (p.spaceless ? '0px' : '0.625rem')};
 
   &:first-of-type {
-    border-top-left-radius: 0.25rem;
-    border-top-right-radius: 0.25rem;
+    border-top-left-radius: var(--radius-primary);
+    border-top-right-radius: var(--radius-primary);
   }
   &:last-of-type {
-    border-bottom-left-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
+    border-bottom-left-radius: var(--radius-primary);
+    border-bottom-right-radius: var(--radius-primary);
   }
 `;
 

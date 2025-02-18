@@ -41,7 +41,7 @@ const MinimapRow: React.FC<MinimapRowProps> = ({ started, finished, status, time
 
 const MinimapLine = styled.div<{ status: TaskStatus }>`
   position: relative;
-  background: ${(p) => lineColor(p.theme, false, p.status, true)};
+  background: ${(p) => lineColor(false, p.status, true)};
   height: 2px;
   min-height: 2px;
   margin-bottom: 1px;

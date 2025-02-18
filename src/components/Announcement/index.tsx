@@ -192,10 +192,10 @@ const AnnouncementItemContainer = styled.div<{ type: NotificationType; open: boo
   text-align: left;
   margin: 0rem auto ${(p) => (p.last ? '2.5rem' : '1rem')};
   width: 100%;
-  background: ${({ theme, type }) => theme.notification[type].bg};
-  color: ${({ theme, type }) => theme.notification[type].fg};
+  background: ${({ type }) => `var(--notification-${type}-bg, --notification-default-bg)`};
+  color: ${({ type }) => `var(--notification-${type}-text-color, --notification-default-text-color)`};
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25);
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
   transition: opacity 0.25s;
   font-size: 1rem;
   line-height: 1.5rem;
@@ -204,7 +204,7 @@ const AnnouncementItemContainer = styled.div<{ type: NotificationType; open: boo
   align-items: center;
 
   a {
-    color: ${({ theme, type }) => theme.notification[type].fg};
+    color: ${({ type }) => `var(--notification-${type}-text-color, --notification-default-text-color)`};
   }
 
   img {

@@ -40,7 +40,7 @@ export default AppBar;
 //
 
 const Wrapper = styled.header`
-  max-width: ${(p) => p.theme.layout.maxWidth}px;
+  max-width: var(--layout-max-width);
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -48,16 +48,16 @@ const Wrapper = styled.header`
   top: 0;
   left: 0;
   right: 0;
-  min-height: ${(p) => p.theme.layout.appbarHeight}rem;
+  min-height: var(--layout-application-bar-height);
   margin: 0 auto;
-  padding: ${(p) => p.theme.layout.pagePaddingY}rem ${(p) => p.theme.layout.pagePaddingX}rem;
-  background: ${(p) => p.theme.color.bg.white};
+  padding: var(--layout-page-padding-y) var(--layout-page-padding-x);
+  background: var(--color-bg-primary);
   z-index: 999;
   flex-direction: column;
 `;
 
 const Logo = styled.img`
-  height: ${(p) => p.theme.layout.appbarLogoHeight}rem;
+  height: var(--layout-application-bar-logo-height);
 `;
 
 const LogoLink = styled(Link)`

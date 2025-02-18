@@ -40,16 +40,16 @@ const DataHeaderItem: React.FC<{ label: string; value: React.ReactNode }> = ({ l
 //
 
 const DataHeaderContainer = styled.div<{ isWide: boolean }>`
-  background: ${(p) => p.theme.color.bg.black};
-  font-size: 0.875rem;
-  color: #fff;
-  margin: 0 ${(p) => (p.isWide ? '-3rem' : '0')};
-  padding: 1rem ${(p) => (p.isWide ? '3rem' : '0.5rem')};
+  background: var(--data-header-bg);
+  font-size: var(--data-header-font-size);
+  color: var(--data-header-text-color);
+  margin: 0 ${(p) => (p.isWide ? 'calc(var(--layout-page-padding-x) * -1)' : '0')};
+  padding: 1rem ${(p) => (p.isWide ? 'var(--layout-page-padding-x)' : '0.5rem')};
 `;
 
 const DataHeaderContent = styled.div`
   display: flex;
-  max-width: ${(p) => p.theme.layout.maxWidth}px;
+  max-width: var(--layout-max-width);
   width: 100%;
 `;
 
@@ -63,7 +63,9 @@ const DataHeaderItemContainer = styled.div`
 `;
 
 const DataHeaderItemLabel = styled.div`
-  font-weight: 500;
+  font-weight: var(--data-header-label-font-weight);
+  font-size: var(--data-header-label-font-size);
+  color: var(--data-header-label-text-color);
 `;
 
 export default DataHeader;

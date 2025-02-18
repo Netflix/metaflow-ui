@@ -40,7 +40,7 @@ const MiniTimelineHandle = styled.div`
   top: 0.4375rem;
   height: 1.8125rem;
   width: 0.625rem;
-  background: ${(p) => p.theme.color.bg.blue};
+  background: var(--color-bg-brand-primary);
   z-index: 2;
 
   display: flex;
@@ -52,7 +52,7 @@ const MiniTimelineHandle = styled.div`
 const MiniTimelineIconLine = styled.div`
   height: 1px;
   width: 0.25rem;
-  background: ${(p) => p.theme.color.bg.white};
+  background: var(--color-bg-primary);
   margin-bottom: 2px;
 `;
 
@@ -69,7 +69,7 @@ const MiniTimelineLabel = styled.div<{ which: 'left' | 'right'; isZoomed: boolea
   top: 3.125rem;
 
   right: ${(p) => (p.which === 'right' ? '100%' : 'none')};
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   white-space: ${(p) => (p.stackText && p.isZoomed ? 'none' : 'pre')};
 
   ${(p) => (p.which === 'left' ? LeftLabelPositioning : RightLabelPositioning)}

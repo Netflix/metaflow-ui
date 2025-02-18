@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import GenericError, { APIErrorDetails, APIErrorRenderer } from '..';
 
 const DEFAULT_ERROR = {
@@ -16,57 +15,57 @@ const DEFAULT_ERROR = {
 describe('GenericError test', () => {
   it('<GenericError /> - renders', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <GenericError message="STOP RIGHT THERE!" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     expect(cy.contains('STOP RIGHT THERE!')).to.exist;
   });
 
   it('<GenericError /> - renders with custom icon', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <GenericError
           message="STOP RIGHT THERE!"
           icon={<div data-testid="error-custom-icon">you have violated the law</div>}
         />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     expect(cy.get('[data-testid="error-custom-icon"]')).to.exist;
   });
 
   it('<APIErrorRenderer /> - renders', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <APIErrorRenderer error={DEFAULT_ERROR} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     expect(cy.get('[data-testid="generic-error"]')).to.exist;
   });
 
   it('<APIErrorRenderer /> - renders with custom message', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <APIErrorRenderer error={DEFAULT_ERROR} message="they are hacking the mainframe" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     expect(cy.contains('they are hacking the mainframe')).to.exist;
   });
 
   it('<APIErrorRenderer /> - renders APIErrorDetails', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <APIErrorRenderer error={DEFAULT_ERROR} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     expect(cy.get('[data-testid="error-details"]')).to.exist;
   });
 
   it('<APIErrorDetails /> - renders error details accordingly', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <APIErrorDetails error={DEFAULT_ERROR} noIcon={false} t={(str: any) => str} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
 
     cy.get('[data-testid="collapsable-header"]')

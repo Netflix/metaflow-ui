@@ -45,7 +45,7 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
     let t1: ReturnType<typeof setTimeout>;
     if (isTransitioning(rowState)) {
       t1 = setTimeout(() => {
-        setRowState((rs) => (rs === RowState.Opening ? RowState.Open : RowState.Closing ? RowState.Closed : rs));
+        setRowState((rs) => (rs === RowState.Opening ? RowState.Open : rs === RowState.Closing ? RowState.Closed : rs));
       }, 250);
     }
     return () => {
@@ -92,13 +92,13 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
           timezone={timezone}
           infoOpen={visible}
         />
-        <td>
+        <ExpandCell>
           <VerticalToggle
             visible={visible || isHovering}
             active={rowState === RowState.Opening || rowState === RowState.Open}
             onClick={handleToggleClick}
           />
-        </td>
+        </ExpandCell>
       </StyledTR>
       {visible && (
         <tr>
@@ -148,10 +148,17 @@ const StyledTD = styled.td`
 const StyledSection = styled(Section)<{ closing: boolean }>`
   padding: 0.5rem 0.5rem 0;
   margin-bottom 0;
-  border-right: ${(p) => p.theme.border.thinLight};
-  border-bottom: ${(p) => p.theme.border.thinLight};
+  border-right: var(--border-thin-1);
+  border-bottom: var(--border-thin-1);
   ${(p) => p.closing && 'position: absolute;'}
   width: 100%;
+`;
+
+const ExpandCell = styled.td`
+  border-top: var(--result-group-expand-cell-border-top);
+  border-right: var(--result-group-expand-cell-border-right);
+  border-bottom: var(--result-group-expand-cell-border-bottom);
+  border-left: var(--result-group-expand-cell-border-left);
 `;
 
 export default ResultGroupRow;

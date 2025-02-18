@@ -14,7 +14,7 @@ export const TitledSectionHeader: React.FC<HeaderProps> = ({ label, actionbar })
 );
 
 export const TitledSectionHeaderContainer = styled.div`
-  border-bottom: ${(p) => p.theme.border.thinNormal};
+  border-bottom: var(--border-primary-thin);
   display: flex;
   justify-content: space-between;
   align-items: center;

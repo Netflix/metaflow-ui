@@ -1,18 +1,18 @@
 import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
-import { darken } from 'polished';
 import Icon from '../Icon';
+import { darkenCssVar } from '../../utils/style';
 
 const ActiveTagCSS = css`
   cursor: pointer;
-  background: ${(p) => p.theme.color.bg.blueLight};
-  color: ${(p) => p.theme.color.text.blue};
-  border-bottom: 1px solid ${(p) => darken(0.1, p.theme.color.bg.blueLight)};
+  background: var(--color-bg-secondary-highlight);
+  color: var(--color-text-highlight);
+  border-bottom: 1px solid ${darkenCssVar('--color-bg-secondary-highlight', 10)};
   font-weight: 400;
   box-shadow: none;
 
   &:hover {
-    background: ${(p) => darken(0.03, p.theme.color.bg.blueLight)};
+    background: ${darkenCssVar('--color-bg-secondary-highlight', 3)};
   }
 `;
 
@@ -22,11 +22,11 @@ const DarkTagCSS = css`
 
 const Tag = styled.span<{ highlighted?: boolean; dark?: boolean }>`
   display: inline-flex;
-  color: ${(p) => p.theme.color.text.mid};
-  padding: 0.375rem ${(p) => p.theme.spacer.sm}rem;
-  border-radius: 0.25rem;
+  color: var(--color-text-secondary);
+  padding: 0.375rem var(--spacing-3);
+  border-radius: var(--radius-primary);
   border: 0;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   font-weight: 400;
   line-height: 1rem;
   cursor: ${(p) => (p.onClick ? 'pointer' : 'default')};
@@ -34,7 +34,7 @@ const Tag = styled.span<{ highlighted?: boolean; dark?: boolean }>`
   transition: all 0.15s;
 
   &:hover {
-    background: ${(p) => p.theme.color.bg.white};
+    background: var(--color-bg-primary);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.4);
   }
 

@@ -107,14 +107,14 @@ const DebugSectionTitle = styled.div`
   align-items: center;
   margin-bottom: 0.25rem;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   line-height: 1.25rem;
 `;
 
 const DebugSectionContent = styled.div`
   font-size: 0.75rem;
   line-height: 1rem;
-  color: ${(p) => p.theme.color.text.mid};
+  color: var(--color-text-secondary);
 `;
 
 const RecordButton = styled(BigButton)`

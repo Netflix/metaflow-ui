@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import ButtonGroup from '..';
 import Button from '../../Button';
 
@@ -9,13 +8,13 @@ describe('ButtonGroup test', () => {
   it('ButtonGroup click states', () => {
     const onClick = cy.stub();
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <ButtonGroup>
           <Button onClick={onClick}>test1</Button>
           <Button onClick={onClick}>test2</Button>
           <Button onClick={onClick}>test3</Button>
         </ButtonGroup>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('button').eq(0).should('have.css', 'border-radius', '4px 0px 0px 4px');
     cy.get('button').eq(1).should('have.css', 'border-radius', '0px');

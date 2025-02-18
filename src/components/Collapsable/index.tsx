@@ -71,14 +71,14 @@ const CollapseContainer = styled.div`
 const CollapsableHeader = styled.div`
   display: flex;
   justify-content: flex-start;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   font-weight: 500;
   line-height: 1.5rem;
-  border-bottom: ${(p) => p.theme.border.thinLight};
+  border-bottom: var(--border-thin-1);
   cursor: pointer;
 
   svg path {
-    fill: #fff;
+    fill: transparent;
   }
 `;
 

@@ -84,7 +84,7 @@ const AutoCompletePopup = styled.div`
 export const AutoCompleteLine = styled.div<{ active: boolean }>`
   padding: 8px 0;
   cursor: pointer;
-  color: ${(p) => (p.active ? p.theme.color.text.blue : p.theme.color.text.dark)};
+  color: ${(p) => (p.active ? 'var(--color-text-highlight)' : 'var(--color-text-primary)')};
 `;
 
 export default AutoComplete;

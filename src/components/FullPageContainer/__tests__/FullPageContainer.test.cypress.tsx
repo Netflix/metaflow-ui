@@ -1,16 +1,15 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import FullPageContainer from '..';
 
 describe('FullPageContainer test', () => {
   it('<FullPageContainer> - closing', () => {
     const onClose = cy.stub();
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <FullPageContainer onClose={onClose}>Hello world</FullPageContainer>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
 
     cy.get('[data-testid="fullpage-close-button"]')
@@ -24,19 +23,19 @@ describe('FullPageContainer test', () => {
     const onClose = cy.stub();
     // With children
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <FullPageContainer onClose={onClose}>Hello world</FullPageContainer>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="fullpage-content"]').should('contain', 'Hello world');
 
     // With component
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <FullPageContainer onClose={onClose} component={() => <>Hei maailma</>}>
           Hello world
         </FullPageContainer>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="fullpage-content"]').should('contain', 'Hei maailma');
   });

@@ -91,9 +91,9 @@ export default HomeContentArea;
 
 const Content = styled.div`
   position: relative;
-  margin-left: ${(p) => p.theme.layout.sidebarWidth.md + 1}rem;
-  @media (max-width: ${(p) => p.theme.breakpoint.sm}) {
-    margin-left: ${(p) => p.theme.layout.sidebarWidth.sm + 1}rem;
+  margin-left: calc(var(--sidebar-width-md) + 1rem);
+  @media (max-width: var(--layout-breakpoint-sm)) {
+    margin-left: calc(var(--sidebar-width-sm) + 1rem);
   }
   max-width: 100%;
   display: flex;

@@ -105,10 +105,10 @@ function hasVersionTag(run: Run): boolean {
 //
 
 const Container = styled.div`
-  background: #e5a90c;
-  padding: 0.5rem 3rem;
-  margin: 0 -3rem;
-  font-size: 0.875rem;
+  background: var(--color-warning);
+  padding: 0.5rem var(--layout-page-padding-x);
+  margin: 0 calc(var(--layout-page-padding-x) * -1);
+  font-size: var(--font-size-primary);
   display: flex;
   align-items: center;
   font-weight: 500;
@@ -118,7 +118,7 @@ const Container = styled.div`
   }
 
   a {
-    color: ${(p) => p.theme.color.text.dark};
+    color: var(--color-text-primary);
   }
 `;
 

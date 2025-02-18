@@ -9,14 +9,14 @@ type InputWrapperProps = { active: boolean; status?: AsyncStatus; size?: 'sm' | 
 
 const InputWrapper = styled.section<InputWrapperProps>`
   align-items: center;
-  border: ${(p) => (p.status && p.status === 'Error' ? '1px solid ' + p.theme.color.bg.red : p.theme.border.thinLight)};
-  border-radius: 0.25rem;
-  color: #333;
-  background: #fff;
+  border: ${(p) => (p.status && p.status === 'Error' ? 'var(--input-border-danger)' : 'var(--input-border)')};
+  border-radius: var(--radius-primary);
+  color: var(--input-text-color);
+  background: var(--input-bg);
   display: flex;
-  height: ${(p) => (p.size === 'sm' ? '2.0rem' : '2.5rem')};
+  height: ${(p) => (p.size === 'sm' ? 'var(--input-height-sm)' : 'var(--input-height)')};
   width: 100%;
-  padding: ${(p) => (p.size === 'sm' ? '0.5rem' : '0.5rem 1rem')};
+  padding: ${(p) => (p.size === 'sm' ? 'var(--input-padding-sm)' : 'var(--input-padding)')};
   position: relative;
   transition: border 0.15s;
 
@@ -26,6 +26,7 @@ const InputWrapper = styled.section<InputWrapperProps>`
     cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
     background-color: transparent;
     padding-right: 1.5rem;
+    font-size: var(--input-font-size);
 
     &:focus {
       outline: none;
@@ -33,7 +34,7 @@ const InputWrapper = styled.section<InputWrapperProps>`
     }
 
     &::placeholder {
-      color: #333;
+      color: var(--color-text-primary);
       font-weight: 500;
       opacity: 1;
     }
@@ -48,7 +49,11 @@ const InputWrapper = styled.section<InputWrapperProps>`
 
   &:hover {
     border-color: ${(p) =>
-      p.status && p.status === 'Error' ? p.theme.color.bg.red : p.active ? p.theme.color.text.blue : '#333'};
+      p.status && p.status === 'Error'
+        ? 'var(--color-bg-danger)'
+        : p.active
+          ? 'var(--color-text-highlight)'
+          : 'var(--color-text-primary)'};
   }
 `;
 

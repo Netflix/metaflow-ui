@@ -26,7 +26,7 @@ const ShowDetailsButton: React.FC<Props> = ({ toggle, visible, showText, hideTex
 };
 
 const ShowDetailsRow = styled.div`
-  padding-top: ${(p) => p.theme.spacer.sm}rem;
+  padding-top: var(--spacing-3);
   display: flex;
   justify-content: flex-end;
 `;

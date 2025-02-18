@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import VerticalToggle from '..';
 
 describe('VerticalToggle test', () => {
@@ -10,16 +9,16 @@ describe('VerticalToggle test', () => {
 
     cy.viewport(1000, 600);
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <VerticalToggle active={false} onClick={click} visible={false} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="vertical-toggle"]').should('not.be.visible');
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <VerticalToggle active={false} onClick={click} visible={true} />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="vertical-toggle"]').should('be.visible');
   });

@@ -247,10 +247,10 @@ const StackButtonsContainer = styled.div`
 `;
 
 const DetailsLog = styled.div`
-  background: ${(p) => p.theme.color.bg.light};
-  border: ${(p) => p.theme.border.thinNormal};
-  border-radius: 0.1875rem;
-  color: ${(p) => p.theme.color.text.dark};
+  background: var(--color-bg-secondary);
+  border: var(--border-primary-thin);
+  border-radius: var(--radius-primary);
+  color: var(--color-text-primary);
   font-family: monospace;
   font-size: 1rem;
   line-height: 1.2rem;

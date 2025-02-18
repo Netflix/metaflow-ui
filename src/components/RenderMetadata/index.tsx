@@ -48,23 +48,23 @@ const TemplateSlot = styled.div`
     color: #fff;
     border-right: 2px solid #fff;
     border-bottom: 2px solid #fff;
-    font-size: 0.875rem;
+    font-size: var(--font-size-primary);
     padding: 0.4rem 1rem;
     font-weight: 400;
     text-align: left;
   }
 
   th:first-child {
-    border-top-left-radius: 0.25rem;
+    border-top-left-radius: var(--radius-primary);
   }
 
   th:last-child {
-    border-top-right-radius: 0.25rem;
+    border-top-right-radius: var(--radius-primary);
   }
 
   td {
     padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+    font-size: var(--font-size-primary);
     border-right: 2px solid #fff;
     border-bottom: 2px solid #fff;
     background: rgba(0, 0, 0, 0.03);

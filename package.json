@@ -8,6 +8,7 @@
     "i18next": "^22.4.15",
     "idb": "^7.1.1",
     "markdown-to-jsx": "^7.2.0",
+    "msw": "^2.7.0",
     "polished": "^4.2.2",
     "query-string": "^6.13.1",
     "react": "^18.2.0",
@@ -27,6 +28,7 @@
   },
   "scripts": {
     "start": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts start",
+    "start-with-mocks": "cross-env DISABLE_NEW_JSX_TRANSFORM=true REACT_APP_ENABLE_MOCKS=true react-scripts start",
     "build": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts build",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
@@ -38,8 +40,9 @@
     "eject": "react-scripts eject",
     "format": "prettier --write src",
     "dev:plugin": "concurrently --kill-others --names \"PLUGIN-SERVE,DEV\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm:dev-plugin-serve\" \"npm:dev-plugin-cypress\"",
-    "dev-plugin-serve": "serve ./plugin-api",
-    "dev-plugin-cypress": "cypress open-ct --config-file ./cypress.plugin-dev.config.ts"
+    "dev-plugin-serve": "serve ./plugin-api -p 5000",
+    "dev-plugin-cypress": "cypress open-ct --config-file ./cypress.plugin-dev.config.ts",
+    "init-mocks": "msw init ./public --save"
   },
   "browserslist": {
     "production": [
@@ -87,5 +90,10 @@
   },
   "resolutions": {
     "@types/react": "^18.0.0"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

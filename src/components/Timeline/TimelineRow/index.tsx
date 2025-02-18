@@ -134,15 +134,14 @@ const StyledRow = styled.div`
   display: flex;
   width: 100%;
   min-height: 1.75rem;
-  border-bottom: ${(p) => p.theme.border.thinLight};
   transition: background 0.15s;
 
   &:hover {
-    background: ${(p) => p.theme.color.bg.blueLight};
+    background: var(--color-bg-secondary-highlight);
 
     ${BoxGraphicValue} {
       &::after {
-        background: ${(p) => p.theme.color.bg.blueLight};
+        background: var(--color-bg-secondary-highlight);
       }
     }
   }
@@ -150,7 +149,7 @@ const StyledRow = styled.div`
 
 const StickyStyledRow = styled(StyledRow)`
   position: absolute;
-  background: ${(p) => p.theme.color.bg.white};
+  background: var(--color-bg-primary);
   top: 0;
   left: 0;
 `;
@@ -158,7 +157,8 @@ const StickyStyledRow = styled(StyledRow)`
 const RowContainerStyles = css`
   position: relative;
   width: 100%;
-  border-left: ${(p) => p.theme.border.thinLight};
+  border-left: var(--timeline-row-separator-border);
+  border-bottom: var(--timeline-row-border-bottom);
   overflow-x: hidden;
 `;
 

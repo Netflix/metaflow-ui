@@ -1,15 +1,14 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import Icon from '..';
 
 describe('Icon test', () => {
   it('<Icon /> - health check', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <Icon name="timeline" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('.icon-timeline').should('exist');
   });

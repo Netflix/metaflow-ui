@@ -86,7 +86,7 @@ const AnchorMenuItem = styled.div<{ active?: boolean }>`
   line-height: 2rem;
   padding: 0 1rem;
   margin-bottom 0.5rem;
-  border-left: 2px solid ${(p) => (p.active ? p.theme.color.text.blue : p.theme.color.border.light)};
+  border-left: 2px solid ${(p) => (p.active ? 'var(--color-text-highlight)' : 'var(--color-border-1)')};
   transition: 0.15s border;
 `;
 

@@ -7,23 +7,23 @@ import { AsyncStatus } from '../../types';
 //
 
 export const InputLabel = styled(ForceNoWrapText)<{ active: boolean; status?: AsyncStatus }>`
-  background: #fff;
-  font-size: 0.875rem;
-  font-weight: bold;
+  background: var(--color-bg-primary);
+  font-size: var(--input-label-font-size);
+  font-weight: var(--input-label-font-weight);
   padding: 0 0.25rem;
   position: absolute;
   top: 0;
   left: 0.75rem;
   transition: all 125ms linear;
 
-  color: ${(p) => (p.status === 'Error' ? p.theme.color.bg.red : 'inherit')};
+  color: ${(p) => (p.status === 'Error' ? 'var(--color-bg-danger)' : 'inherit')};
 
   ${(p) =>
     p.active
       ? css`
-          transform: scale(0.75) translate(-0.625rem, -0.75rem);
+          transform: var(--input-label-transform-active);
         `
       : css`
-          transform: scale(1) translate(-0.25rem, 0.6875rem);
+          transform: var(--input-label-transform);
         `}
 `;

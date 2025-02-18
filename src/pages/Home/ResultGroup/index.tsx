@@ -144,16 +144,20 @@ const ResultGroup: React.FC<Props> = React.memo(
 //
 
 export const StyledResultGroup = styled(Section)`
-  margin-bottom: ${(p) => p.theme.spacer.md}rem;
+  margin-bottom: var(--spacing-7);
 
   table {
-    margin-bottom: ${(p) => p.theme.spacer.sm}rem;
+    margin-bottom: var(--spacing-3);
     word-break: break-all;
   }
 
-  thead,
+  thead {
+    border-top-left-radius: var(--table-border-radius);
+    border-top-right-radius: var(--table-border-radius);
+  }
+
   th {
-    background: ${(p) => p.theme.color.bg.white};
+    background: var(--table-head-bg);
     z-index: 10;
   }
 `;

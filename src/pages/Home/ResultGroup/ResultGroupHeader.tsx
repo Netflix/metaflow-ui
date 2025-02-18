@@ -42,7 +42,7 @@ const ResultGroupHeader: React.FC<ResultGroupHeaderProps> = React.memo(
           />
         ))}
 
-        <th style={{ width: '2.5rem' }}></th>
+        <ExpandCellHeading style={{ width: '2.5rem' }}></ExpandCellHeading>
       </TR>
     </>
   ),
@@ -57,8 +57,16 @@ const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
   display: inline-block;
 
   &:hover {
-    ${(p) => (p.clickable ? `color: ${p.theme.color.text.blue};` : '')}
+    ${(p) => (p.clickable ? `color: var(--color-text-highlight);` : '')}
   }
+`;
+
+const ExpandCellHeading = styled.th`
+  border-top-right-radius: var(--table-border-radius);
+  border-top: var(--result-group-expand-cell-border-top);
+  border-right: var(--result-group-expand-cell-border-right);
+  border-bottom: var(--result-group-expand-cell-border-bottom);
+  border-left: var(--result-group-expand-cell-border-left);
 `;
 
 export default ResultGroupHeader;

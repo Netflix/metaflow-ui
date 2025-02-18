@@ -6,6 +6,12 @@ export default defineConfig({
       framework: "create-react-app",
       bundler: "webpack",
     },
-    specPattern: "**/*.test.cypress.{js,ts,jsx,tsx}"
+    specPattern: "**/*.test.cypress.{js,ts,jsx,tsx}",
+  },
+
+  e2e: {
+    setupNodeEvents(on, config) {
+      // implement node event listeners here
+    },
   },
 });

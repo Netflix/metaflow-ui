@@ -11,7 +11,7 @@ export const Text = styled.span`
 
 export const SmallText = styled.small`
   ${TextCSS};
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
 `;
 
 export const ForceBreakText = styled.span`

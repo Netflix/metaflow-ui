@@ -2,24 +2,31 @@ import React from 'react';
 import styled, { css } from 'styled-components';
 import { SortIcon } from '../Icon';
 import { parseOrderParam } from '../../utils/url';
-import { darken } from 'polished';
+import { darkenCssVar } from '../../utils/style';
 
 export const CellStyle = css`
-  padding: ${(p) => p.theme.spacer.sm}rem ${(p) => p.theme.spacer.md}rem;
-  font-size: 0.875rem;
+  padding: var(--table-cell-padding);
+  font-size: var(--table-cell-font-size);
   text-align: left;
-  border: 1px solid #fff;
+  border-top: var(--table-cell-border-top);
+  border-right: var(--table-cell-border-right);
+  border-bottom: var(--table-cell-border-bottom);
+  border-left: var(--table-cell-border-left);
 `;
 
 export default styled.table`
   width: 100%;
-  margin-bottom: ${(p) => p.theme.spacer.hg}rem;
+  margin-bottom: var(--spacing-12);
+  background: var(--table-bg);
+  border: var(--table-border);
+  box-shadow: var(--table-shadow);
+  border-radius: var(--table-border-radius);
 `;
 
 export const THBasicStyle = css`
-  background: ${(p) => p.theme.color.bg.white};
-  color: ${(p) => p.theme.color.text.light};
-  font-weight: 400;
+  background: var(--table-head-bg);
+  color: var(--table-head-text-color);
+  font-weight: var(--table-head-font-weight);
   white-space: nowrap;
 `;
 
@@ -27,34 +34,48 @@ export const TH = styled.th<{ active?: boolean; clickable?: boolean }>`
   ${THBasicStyle}
   cursor: ${(p) => (p.clickable ? 'pointer' : 'auto')};
   ${CellStyle};
+  padding: var(--table-head-padding);
+  font-size: var(--table-head-font-size);
 
   .icon {
-    color: ${(p) => darken(0.1, p.theme.color.icon.light)};
+    color: ${darkenCssVar('--color-icon-light', 10)};
   }
 
   &:hover {
     i {
-      color: ${(p) => darken(0.2, p.theme.color.icon.light)};
+      color: ${darkenCssVar('--color-icon-light', 20)};
     }
+  }
+
+  &:first-child {
+    border-top-left-radius: var(--table-border-radius);
+  }
+
+  &:last-child {
+    border-top-right-radius: var(--table-border-radius);
   }
 
   ${(p) =>
     p.active &&
     css`
        {
-        color: ${(p) => p.theme.color.text.dark};
-        font-weight: 500;
+        background: var(--table-head-active-bg);
+        color: var(--table-head-active-text-color);
+        font-weight: var(--table-head-active-font-weight);
       }
     `}
 `;
 
 export const TDBasicStyle = css`
   transition: background 0.15s;
-  background: ${(p) => p.theme.color.bg.light};
+  background: var(--table-cell-bg);
   ${CellStyle};
 
+  color: var(--table-cell-text-color);
+  font-weight: var(--table-cell-font-weight);
+
   &:hover {
-    background: ${(p) => p.theme.color.bg.blueLight};
+    background: var(--table-cell-hover-bg);
   }
 `;
 
@@ -64,8 +85,8 @@ export const TD = styled.td`
 
 const TRHoverStyle = css`
   ${TD} {
-    background: ${(p) => p.theme.color.bg.blueLight};
-    color: ${(p) => p.theme.color.text.blue};
+    background: var(--table-cell-hover-bg);
+    color: var(--table-cell-hover-text-color);
   }
 `;
 

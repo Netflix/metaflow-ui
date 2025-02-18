@@ -23,7 +23,7 @@ const CollapseButton: React.FC<{
           }
         }}
         data-testid="timeline-collapse-button"
-        title={isAnyGroupOpen ? t('timeline.collapse-all') ?? '' : t('timeline.expand-all') ?? ''}
+        title={(isAnyGroupOpen ? t('timeline.collapse-all') : t('timeline.expand-all')) ?? ''}
       >
         <Icon name={isAnyGroupOpen ? 'collapse' : 'expand'} rotate={isAnyGroupOpen ? 180 : 0} />
       </Button>
@@ -35,8 +35,8 @@ const StyledCollapseButton = styled.div`
   position: relative;
   margin-right: 0.25rem;
   button {
-    height: 2.5rem;
-    width: 2.5rem;
+    height: var(--input-height);
+    width: var(--input-height);
     justify-content: center;
   }
 `;

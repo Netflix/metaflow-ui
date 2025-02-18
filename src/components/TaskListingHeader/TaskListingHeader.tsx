@@ -179,8 +179,8 @@ export function getMode(settings: TaskSettingsState): TaskListMode {
 //
 
 const TaskListingContainer = styled.div`
-  border-bottom: ${(p) => p.theme.border.mediumLight};
-  font-size: 0.875rem;
+  border-bottom: var(--border-medium-1);
+  font-size: var(--font-size-primary);
   position: relative;
 `;
 
@@ -197,8 +197,8 @@ const SettingsRowLeft = styled.div`
 `;
 
 const ExpandButton = styled(Button)`
-  height: 2.5rem;
-  width: 2.5rem;
+  height: var(--input-height);
+  width: var(--input-height);
 
   i {
     margin: 0 auto;

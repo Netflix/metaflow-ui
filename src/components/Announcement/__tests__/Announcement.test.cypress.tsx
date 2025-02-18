@@ -1,12 +1,9 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { QueryParamProvider } from 'use-query-params';
-import theme from '../../../theme';
 import Announcements from '..';
 
 import NotificationsResponse from '../../../../cypress/fixtures/notifications_response.json';
+import TestWrapper from '../../../utils/testing';
 
 describe('Announcements test', () => {
   it('Announcements basic', () => {
@@ -20,13 +17,9 @@ describe('Announcements test', () => {
     }).as('NotificationsMockData');
 
     mount(
-      <ThemeProvider theme={theme}>
-        <Router>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <Announcements />
-          </QueryParamProvider>
-        </Router>
-      </ThemeProvider>,
+      <TestWrapper>
+        <Announcements />
+      </TestWrapper>,
     );
 
     // test that the notifications are rendered correctly

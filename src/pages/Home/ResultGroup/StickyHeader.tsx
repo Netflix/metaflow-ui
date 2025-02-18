@@ -57,16 +57,24 @@ const StickyHeaderTHead = styled.thead`
   }
 
   .result-group-title th {
-    top: 7rem;
+    top: var(--layout-application-bar-height);
   }
 
   .result-group-columns th {
-    top: 7rem;
+    top: var(--layout-application-bar-height);
   }
 
   .result-group-title + .result-group-columns {
     th {
       top: 10.3125rem;
+    }
+  }
+
+  &.sticky {
+    th:first-child,
+    th:last-child {
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
     }
   }
 `;

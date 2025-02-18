@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import ErrorBoundary from '..';
 
 describe('GeneralErrorBoundary test', () => {
@@ -12,9 +11,9 @@ describe('GeneralErrorBoundary test', () => {
 
   it('<GeneralErrorBoundary /> - Without error', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <ErrorBoundary message="error happened">hello world</ErrorBoundary>
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('div').should('contain', 'hello world');
   });
@@ -27,11 +26,11 @@ describe('GeneralErrorBoundary test', () => {
     });
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <ErrorBoundary message="error happened">
           <CrashingComponent />
         </ErrorBoundary>
-      </ThemeProvider>,
+      </TestWrapper>,
     ).then(() => {
       cy.get('div').should('have.attr', 'message');
     });

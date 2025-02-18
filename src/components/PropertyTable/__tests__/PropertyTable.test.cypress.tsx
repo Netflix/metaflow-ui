@@ -1,7 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import PropertyTable, { PropertyTableColumns } from '..';
 
 type MyTestType = {
@@ -13,9 +12,9 @@ type MyTestType = {
 describe('PropertyTable test', () => {
   it('<PropertyTable /> - health check', () => {
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <PropertyTable items={[]} columns={[]} data-testid="test-propertytable" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="test-propertytable"]').should('exist');
   });
@@ -33,9 +32,9 @@ describe('PropertyTable test', () => {
     ];
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <PropertyTable items={items} columns={columns} data-testid="test-propertytable" />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
 
     // Check header labels

@@ -177,7 +177,7 @@ const SubmitIconHolder = styled.div<{ focus: boolean }>`
 
   &:hover {
     svg {
-      color: ${(p) => p.theme.color.text.blue};
+      color: var(--color-text-highlight);
     }
   }
 `;

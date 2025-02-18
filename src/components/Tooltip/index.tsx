@@ -33,7 +33,7 @@ const CustomTooltip = styled.div`
     color: #333;
     padding: 1rem;
     font-size: 0.75rem;
-    border-radius: 0.25rem;
+    border-radius: var(--radius-primary);
     border: 1px solid #d0d0d0;
     box-shadow: 2px 2px 4px rgb(0 0 0 / 25%);
     white-space: pre;

@@ -28,6 +28,8 @@ const StatusColorCell: React.FC<StatusColorCellProps> = ({ status, title }) => {
 const StatusCell = styled(TD)`
   text-align: center;
   position: relative;
+  padding: var(--result-group-status-cell-padding);
+
   i {
     vertical-align: middle;
   }
@@ -43,8 +45,8 @@ const Text = styled(SmallText)`
   position: absolute;
   left: 50%;
   top: 75%;
-  color: ${(p) => p.theme.color.text.white};
-  background: ${(p) => p.theme.color.bg.tooltip};
+  color: var(--color-text-alternative);
+  background: var(--tooltip-bg);
   border-radius: 6px;
   padding: 0.5rem 0.75rem;
   white-space: nowrap;

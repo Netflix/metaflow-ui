@@ -3,10 +3,7 @@ import 'setimmediate';
 
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { QueryParamProvider } from 'use-query-params';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import ConnectionStatus from '..';
 import { Server } from 'mock-websocket';
 
@@ -28,13 +25,9 @@ describe('ConnectionStatus test', () => {
     cy.viewport(1000, 600);
 
     mount(
-      <ThemeProvider theme={theme}>
-        <Router>
-          <QueryParamProvider ReactRouterRoute={Route}>
-            <ConnectionStatus />
-          </QueryParamProvider>
-        </Router>
-      </ThemeProvider>,
+      <TestWrapper>
+        <ConnectionStatus />
+      </TestWrapper>,
     );
 
     // check that the connectionStatus is rendered correctly when the connection is ok

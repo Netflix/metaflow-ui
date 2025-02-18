@@ -378,18 +378,22 @@ export function findAdditionalButtons(routeMatch: match<KnownURLParams> | null, 
 
 const BreadcrumbGroup = styled.div`
   ${ButtonCSS}
-  border-color: ${(p) => p.theme.color.text.blue};
+  border: var(--breadcrumb-border);
   width: 100%;
 `;
 
 const BreadcrumbEmptyInput = styled(InputWrapper)`
-  border: 1px solid ${(p) => p.theme.color.text.blue};
+  border: var(--breadcrumb-border);
 
   input {
     padding-left: 0;
     margin-left: -0.25rem;
+    font-size: var(--breadcrumb-input-font-size);
+    font-weight: var(--breadcrumb-input-font-weight);
+
     &::placeholder {
-      color: #808080;
+      color: var(--breadcrumb-placeholder-color);
+      font-weight: var(--breadcrumb-input-font-weight);
     }
   }
 `;
@@ -405,9 +409,9 @@ const CrumbComponent = styled.div`
 const ButtonCrumb = styled(BigButton)`
   display: inline-block;
 
-  padding-left: ${(p) => p.theme.spacer.sm}rem;
-  padding-right: ${(p) => p.theme.spacer.sm}rem;
-  color: ${(p) => p.theme.color.text.dark};
+  padding-left: var(--spacing-3);
+  padding-right: var(--spacing-3);
+  color: var(--color-text-primary);
 
   overflow-x: hidden;
   max-width: 18.75rem;
@@ -420,14 +424,14 @@ const ButtonCrumb = styled(BigButton)`
 
   &:hover {
     background-color: transparent;
-    color: ${(p) => p.theme.color.text.dark};
+    color: var(--color-text-primary);
   }
 `;
 
 const BreadcrumbDivider = styled.div`
   display: inline-block;
   pointer-events: none;
-  color: ${(p) => p.theme.color.text.dark};
+  color: var(--color-text-primary);
   font-weight: bold;
   &:after {
     content: '/';
@@ -436,28 +440,30 @@ const BreadcrumbDivider = styled.div`
 `;
 
 const StyledBreadcrumb = styled(ItemRow)`
-  font-size: 0.875rem;
+  font-size: var(--breadcrumb-font-size);
 
   .button {
-    font-size: 0.875rem;
+    font-size: var(--breadcrumb-font-size);
   }
 
   input[type='text'] {
-    line-height: 1.875rem;
-    font-size: 0.875rem;
-    background: #fff;
+    line-height: var(--breadcrumb-line-height);
+    font-size: var(--breadcrumb-font-size);
+    font-weight: var(--breadcrumb-font-weight);
+    background: var(--input-bg);
+    color: var(--input-text-color);
     padding-left: 0;
     margin-left: -0.25rem;
   }
 `;
 
 const BreadcrumbInputWrapper = styled(InputWrapper)`
-  border: 1px solid ${(p) => p.theme.color.text.blue};
+  border: var(--breadcrumb-border);
 `;
 
 const GoToHolder = styled.div`
   position: relative;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   height: 2rem;
   margin-top: -0.5625rem;
   z-index: 2;
@@ -466,8 +472,8 @@ const GoToHolder = styled.div`
 
 const GoToContainer = styled.div`
   position: absolute;
-  top: -${(p) => p.theme.spacer.sm}rem;
-  left: -${(p) => p.theme.spacer.sm}rem;
+  top: calc(var(--spacing-3) * -1);
+  left: calc(var(--spacing-3) * -1);
   ${PopoverStyles}
   width: 100%;
 `;
@@ -480,20 +486,20 @@ const GotoClose = styled.div`
 `;
 
 const BreadcrumbInfo = styled.div`
-  padding: ${(p) => p.theme.spacer.sm}rem;
+  padding: var(--spacing-3);
 `;
 
 const BreadcrumbWarning = styled.div`
-  color: ${(p) => p.theme.notification.danger.text};
+  color: var(--notification-danger-text-color);
 `;
 
 const KeyValueListLabel = styled.div`
-  color: ${(p) => p.theme.color.text.mid};
+  color: var(--color-text-secondary);
   width: 4.6875rem;
 `;
 
 const KeyValueListValue = styled.div`
-  color: ${(p) => p.theme.color.text.dark};
+  color: var(--color-text-primary);
 `;
 
 const KeyValueListItem = styled.div`

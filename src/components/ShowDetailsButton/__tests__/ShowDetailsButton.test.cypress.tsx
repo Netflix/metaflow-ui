@@ -1,14 +1,13 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import { ThemeProvider } from 'styled-components';
-import theme from '../../../theme';
+import TestWrapper from '../../../utils/testing';
 import ShowDetailsButton from '..';
 
 describe('ShowDetailsButton test', () => {
   it('ShowDetailsButton health check', () => {
     const toggle = cy.stub();
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <ShowDetailsButton
           toggle={toggle}
           visible={false}
@@ -16,12 +15,12 @@ describe('ShowDetailsButton test', () => {
           hideText="Nop"
           data-testid="test-showDetailsButton"
         />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="test-showDetailsButton"]').should('have.text', 'Yep');
 
     mount(
-      <ThemeProvider theme={theme}>
+      <TestWrapper>
         <ShowDetailsButton
           toggle={toggle}
           visible={true}
@@ -29,7 +28,7 @@ describe('ShowDetailsButton test', () => {
           hideText="Nop"
           data-testid="test-showDetailsButton"
         />
-      </ThemeProvider>,
+      </TestWrapper>,
     );
     cy.get('[data-testid="test-showDetailsButton"]').should('have.text', 'Nop');
   });

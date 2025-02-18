@@ -54,6 +54,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
             const iframeContent = _iframe?.current?.contentDocument;
             if (iframeContent) {
               iframeContent.head.innerHTML = `<style>${PLUGIN_STYLESHEET}</style>` + iframeContent.head.innerHTML;
+              // TODO: ADD VARIABLES
             }
           }
         } else {

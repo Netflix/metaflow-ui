@@ -159,16 +159,16 @@ const DropdownWrapper = styled.div`
 
   select {
     width: 100%;
-    border-radius: 0.25rem;
+    border-radius: var(--radius-primary);
     outline: 0;
     line-height: 1.25rem;
     border: 0;
-    padding: ${(p) => p.theme.spacer.xs}rem 0rem;
+    padding: var(--spacing-1) 0rem;
   }
 `;
 
 const DropdownButton = styled(Button)`
-  border-radius: 0.25rem;
+  border-radius: var(--radius-primary);
   height: ${(p) => (p.size ? '2rem' : '2.5rem')};
   line-height: 1rem;
   padding: 0.5rem 0rem 0.5rem 0rem;
@@ -183,7 +183,7 @@ const DropdownButton = styled(Button)`
 const DropdownOptions = styled(PopoverWrapper)`
   position: absolute;
   width: 100%;
-  min-width: 9.375rem;
+  min-width: var(--dropdown-options-min-width);
 
   top: 100%;
   margin-top: 0.375rem;

@@ -46,8 +46,8 @@ const TagRow: React.FC<TagRowProps> = ({ tags, label, noTagsMsg }) => {
 
 const RunTag = styled(Link)`
   cursor: pointer;
-  font-size: 0.875rem;
-  color: ${(p) => p.theme.color.text.dark};
+  font-size: var(--font-size-primary);
+  color: var(--color-text-primary);
   text-decoration: none;
 
   &:hover {

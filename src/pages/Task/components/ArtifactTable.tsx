@@ -208,7 +208,7 @@ const OpenContenButton = styled.div`
 
 const CodeBlock = styled(InformationRow)`
   font-family: 'RobotoMono';
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   white-space: pre-wrap;
   overflow-wrap: break-word;
 `;
