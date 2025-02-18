@@ -90,14 +90,14 @@ const StyledTitledRow = styled.div`
 
 const TitledRowTitle = styled.div`
   font-weight: 500;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   margin: 0.5rem 0;
 `;
 
 const ContentBackground = styled.div`
   background: var(--color-bg-secondary);
   border-radius: var(--radius-primary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
 `;
 
 const ContentSection = styled.div`

@@ -180,7 +180,7 @@ export function getMode(settings: TaskSettingsState): TaskListMode {
 
 const TaskListingContainer = styled.div`
   border-bottom: var(--border-medium-1);
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   position: relative;
 `;
 

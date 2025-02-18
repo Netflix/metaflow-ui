@@ -4,7 +4,7 @@ const ContentHeader = styled.div`
   border-bottom: 1px solid #e9e9e9;
   color: #333;
   display: inline-flex;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   font-weight: 500;
   line-height: 1.5rem;
   margin: 1.5rem 0 1rem;

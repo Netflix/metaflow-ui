@@ -89,7 +89,7 @@ const PropertyTableRowItemHeader = styled.th<{ scheme: PropertyTableScheme; widt
   color: ${(p) => (p.scheme === 'dark' ? 'var(--color-text-alternative)' : 'var(--color-text-primary)')};
   border-right: var(--border-alternative-medium);
   border-bottom: var(--border-alternative-medium);
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   padding: 0.4rem 1rem;
   font-weight: 500;
   text-align: left;
@@ -109,7 +109,7 @@ const PropertyTableRow = styled.tr`
 
 const PropertyTableRowItemContent = styled.td<{ scheme: PropertyTableScheme }>`
   padding: 0.75rem 1rem;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   border-right: var(--border-alternative-medium);
   background: ${(p) => (p.scheme === 'bright' ? 'var(--color-bg-primary)' : 'transparent')};
   word-break: break-word;

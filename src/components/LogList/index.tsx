@@ -298,7 +298,7 @@ const LogListContainer = styled.div`
   border-bottom: var(--border-primary-thin);
   font-family: monospace;
   border-radius: var(--radius-primary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   position: relative;
   overflow: hidden;
   white-space: pre-wrap;

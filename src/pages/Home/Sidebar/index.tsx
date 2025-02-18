@@ -176,8 +176,10 @@ function omitFromString(partToOmit: string, str: string): string {
 //
 
 const ButtonResetAll = styled(Button)`
-  color: #333;
-  height: 2.25rem;
+  color: var(--reset-button-color);
+  border-color: var(--reset-button-border-color);
+  height: var(--reset-button-height);
+  font-weight: var(--reset-button-font-weight);
   width: 100%;
 
   span {
@@ -188,17 +190,17 @@ const ButtonResetAll = styled(Button)`
 
 const Sidebar = styled.div`
   position: fixed;
-  width: var(--sizebar-width-md);
+  width: var(--sidebar-width-md);
   @media (max-width: var(--layout-breakpoint-sm)) {
     width: var(--sidebar-width-sm);
   }
   top: var(--layout-application-bar-height);
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   padding-top: 6px;
 `;
 
 const SidebarContent = styled.div`
-  width: var(--sizebar-width-md);
+  width: var(--sidebar-width-md);
   @media (max-width: var(--layout-breakpoint-sm)) {
     width: var(--sidebar-width-sm);
   }
@@ -216,7 +218,7 @@ const StyledScrollbars = styled(Scrollbars)`
 `;
 
 export const SidebarSectionWrapper = styled.div`
-  margin: 0 0 1rem;
+  margin: var(--sidebar-section-margin);
 `;
 
 export default HomeSidebar;

@@ -104,7 +104,7 @@ export const PluginHeader = styled.div`
     margin-right: 0.375rem;
   }
 
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   font-weight: 500;
   line-height: 1.5rem;
 

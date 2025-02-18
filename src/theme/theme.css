@@ -52,6 +52,12 @@
   --color-icon-secondary: var(--color-text-secondary);
   --color-icon-primary: var(--color-text-primary);
 
+  /* Reset button is one-off custom button to be refactored */
+  --reset-button-color: var(--color-text-primary);
+  --reset-button-border-color: var(--color-border-primary);
+  --reset-button-height: 2.25rem; 
+  --reset-button-font-weight: none;
+
   /* Spacing */
 	--spacing-1: 0.25rem; /* 4px */
 	--spacing-2: 0.375rem; /* 6px */
@@ -81,6 +87,8 @@
   --font-size-7: 1.125rem; /* 18px */
   --font-size-8: 2rem; /* 32px */
   --font-size-9: 4rem; /* 64px */
+
+  --font-size-primary: var(--font-size-5);
 
   --font-weight-light: 300;
   --font-weight-regular: 400; /* Normal */
@@ -140,6 +148,7 @@
     /* Sidebar */
     --sidebar-width-md: 14rem;
     --sidebar-width-sm: 12rem;
+    --sidebar-section-margin: 0 0 1rem;
 
     /* Notifications */
     --notification-success-bg: var(--color-bg-success);
@@ -158,16 +167,16 @@
     --button-min-height: 1.75rem;
     --button-active-font-weight: 500;
 
-    --button-font-size-sm: 0.875rem;
+    --button-font-size-sm: var(--font-size-primary);
     --button-font-size-md: 1rem;
     --button-font-size-lg: 1.25rem;
 
     --big-button-line-height: 1.875rem;
-    --big-button-font-size: 0.875rem;
+    --big-button-font-size: var(--font-size-primary);
 
     --button-group-height: 1.75rem;
     --button-group-width: 1.75rem;
-    --button-group-font-size: 0.875rem;
+    --button-group-font-size: var(--font-size-primary);
     --button-group-big-height: var(--input-height);
     --button-group-big-width: var(--input-height);
     --button-group-big-font-size: var(--input-font-size);
@@ -217,7 +226,7 @@
     --table-head-border: none;
     --table-head-text-color: var(--color-text-light);
     --table-head-font-weight: var(--font-weight-regular);
-    --table-head-font-size: var(--font-size-5);
+    --table-head-font-size: var(--font-size-primary);
     --table-head-active-bg: var(--color-bg-primary);
     --table-head-active-text-color: var(--color-text-primary);
     --table-head-active-font-weight: var(--font-weight-medium);
@@ -228,7 +237,7 @@
     --table-cell-border-right: var(--table-cell-border);
     --table-cell-border-bottom: var(--table-cell-border);
     --table-cell-border-left: var(--table-cell-border);
-    --table-cell-font-size: var(--font-size-5);
+    --table-cell-font-size: var(--font-size-primary);
     --table-cell-text-color: var(--color-text-primary);
     --table-cell-font-weight: inherit;
     --table-cell-bg: var(--color-bg-secondary);
@@ -247,7 +256,7 @@
     /* Breadcrumb */
     --breadcrumb-border: 1px solid var(--color-text-highlight);
     --breadcrumb-placeholder-color: #808080;
-    --breadcrumb-font-size: var(--font-size-5);
+    --breadcrumb-font-size: var(--font-size-primary);
     --breadcrumb-line-height: 1.875rem;
     --breadcrumb-font-weight: 500;
 
@@ -266,17 +275,20 @@
     --input-padding: 0.5rem 1rem;
     --input-padding-sm: 0.5rem;
 
-    --input-label-font-size: 0.875rem;
+    --input-label-font-size: var(--font-size-primary);
     --input-label-font-weight: bold;
     --input-label-transform: scale(1) translate(-0.25rem, 0.6875rem);
     --input-label-transform-active: scale(0.75) translate(-0.625rem, -0.75rem);
 
+    /* Dropdown */
+    --dropdown-options-min-width: 9.375rem;
+
     /* Data header */
     --data-header-bg: var(--color-bg-heavy);
-    --data-header-font-size: var(--font-size-5);
+    --data-header-font-size: var(--font-size-primary);
     --data-header-text-color: var(--color-text-alternative);
 
-    --data-header-label-font-size: var(--font-size-5);
+    --data-header-label-font-size: var(--font-size-primary);
     --data-header-label-text-color: var(--color-text-alternative);
     --data-header-label-font-weight: var(--font-weight-medium);
 

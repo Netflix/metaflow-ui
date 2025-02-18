@@ -463,7 +463,7 @@ const BreadcrumbInputWrapper = styled(InputWrapper)`
 
 const GoToHolder = styled.div`
   position: relative;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   height: 2rem;
   margin-top: -0.5625rem;
   z-index: 2;

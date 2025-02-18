@@ -183,7 +183,7 @@ const DropdownButton = styled(Button)`
 const DropdownOptions = styled(PopoverWrapper)`
   position: absolute;
   width: 100%;
-  min-width: 9.375rem;
+  min-width: var(--dropdown-options-min-width);
 
   top: 100%;
   margin-top: 0.375rem;

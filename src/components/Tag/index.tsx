@@ -26,7 +26,7 @@ const Tag = styled.span<{ highlighted?: boolean; dark?: boolean }>`
   padding: 0.375rem var(--spacing-3);
   border-radius: var(--radius-primary);
   border: 0;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   font-weight: 400;
   line-height: 1rem;
   cursor: ${(p) => (p.onClick ? 'pointer' : 'default')};

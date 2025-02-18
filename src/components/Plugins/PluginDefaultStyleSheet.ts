@@ -27,7 +27,7 @@ const PLUGIN_STYLESHEET = `
     font-weight: 400;
     white-space: nowrap;
     padding: var(--spacing-3) var(--spacing-7);
-    font-size: 0.875rem;
+    font-size: var(--font-size-primary);
     text-align: left;
     border: 1px solid #fff;
   }
@@ -36,7 +36,7 @@ const PLUGIN_STYLESHEET = `
     transition: background 0.15s;
     background: var(--color-bg-secondary);
     padding: var(--spacing-3) var(--spacing-7);
-    font-size: 0.875rem;
+    font-size: var(--font-size-primary);
     text-align: left;
     border: 1px solid #fff;
   }

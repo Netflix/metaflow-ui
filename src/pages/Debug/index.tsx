@@ -107,7 +107,7 @@ const DebugSectionTitle = styled.div`
   align-items: center;
   margin-bottom: 0.25rem;
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--font-size-primary);
   line-height: 1.25rem;
 `;
 
