@@ -14,7 +14,8 @@ WORKDIR /app
 
 COPY package.json ./
 COPY yarn.lock ./
-RUN yarn --frozen-lockfile
+# timeout is a required fix for arm64 builds
+RUN yarn --frozen-lockfile --network-timeout 1000000
 
 COPY . ./
 RUN yarn build
