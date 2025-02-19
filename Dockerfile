@@ -1,4 +1,6 @@
-FROM node:20-alpine AS build
+FROM node:20-alpine AS amd64-build
+FROM arm64v8/node:20-alpine AS arm64-build
+FROM ${TARGETARCH}-build AS build
 
 ARG BUILD_TIMESTAMP
 ARG BUILD_COMMIT_HASH
@@ -17,7 +19,10 @@ RUN yarn --frozen-lockfile
 COPY . ./
 RUN yarn build
 
-FROM nginx
+# https://github.com/docker-library/official-images#architectures-other-than-amd64
+FROM nginx AS amd64-nginx
+FROM arm64v8/nginx AS arm64-nginx
+FROM ${TARGETARCH}-nginx
 
 ENV PORT=3000
 ENV METAFLOW_SERVICE=/api
@@ -28,6 +33,5 @@ ENV METAFLOW_HEAD=''
 ENV METAFLOW_BODY_BEFORE=''
 ENV METAFLOW_BODY_AFTER=''
 ENV MF_DEFAULT_TIME_FILTER_DAYS=''
-
 COPY --from=build /app/build /usr/share/nginx/html
 COPY nginx.conf.template /etc/nginx/templates/default.conf.template
