@@ -29,7 +29,7 @@ const DataHeader: React.FC<Props> = ({ items, wide = false }) => {
 };
 
 const DataHeaderItem: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
-  <DataHeaderItemContainer>
+  <DataHeaderItemContainer data-testid="data-header-element">
     <DataHeaderItemLabel>{label}</DataHeaderItemLabel>
     <div>{value}</div>
   </DataHeaderItemContainer>

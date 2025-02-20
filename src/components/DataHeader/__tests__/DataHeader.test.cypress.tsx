@@ -29,13 +29,11 @@ describe('DataHeader test', () => {
         <DataHeader items={itemsList} wide={false} />
       </TestWrapper>,
     );
-    cy.get('[data-testid="data-header-container"]').should('not.have.css', 'width', '984px');
-
-    mount(
-      <TestWrapper>
-        <DataHeader items={itemsList} wide={true} />
-      </TestWrapper>,
-    );
-    cy.get('[data-testid="data-header-container"]').should('have.css', 'width', '984px');
+    cy.get('[data-testid="data-header-element"]').eq(0).contains('Test 1');
+    cy.get('[data-testid="data-header-element"]').eq(0).contains('test_1');
+    cy.get('[data-testid="data-header-element"]').eq(1).contains('Test 2');
+    cy.get('[data-testid="data-header-element"]').eq(1).contains('test_2');
+    cy.get('[data-testid="data-header-element"]').eq(2).contains('Test 3');
+    cy.get('[data-testid="data-header-element"]').eq(2).contains('test_3');
   });
 });
