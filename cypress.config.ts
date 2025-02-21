@@ -7,6 +7,7 @@ export default defineConfig({
       bundler: "webpack",
     },
     specPattern: "**/*.test.cypress.{js,ts,jsx,tsx}",
+    excludeSpecPattern: "**/*.plugin-dev.*",
   },
 
   e2e: {

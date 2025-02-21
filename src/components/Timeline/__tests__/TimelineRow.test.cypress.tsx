@@ -103,7 +103,9 @@ describe('TimelineRow component', () => {
 
     mount(
       <TestWrapper>
-        <LineElement {...props} />
+        <div style={{ width: '484px' }}>
+          <LineElement {...props} />
+        </div>
       </TestWrapper>,
     );
     // Values of container and boxgraphic should be weird since we are extending timeline over selected value
@@ -116,7 +118,9 @@ describe('TimelineRow component', () => {
     // rendered quite a lot to the left (translateX -100%)
     mount(
       <TestWrapper>
-        <LineElement {...props} timeline={createTimelineMetrics({ visibleStartTime: 300, visibleEndTime: 500 })} />
+        <div style={{ width: '484px' }}>
+          <LineElement {...props} timeline={createTimelineMetrics({ visibleStartTime: 300, visibleEndTime: 500 })} />
+        </div>
       </TestWrapper>,
     );
 
@@ -127,7 +131,9 @@ describe('TimelineRow component', () => {
     // Same as default graph but alignment is from left so every element should start from left
     mount(
       <TestWrapper>
-        <LineElement {...props} timeline={createTimelineMetrics({ sortBy: 'duration' })} />
+        <div style={{ width: '484px' }}>
+          <LineElement {...props} timeline={createTimelineMetrics({ sortBy: 'duration' })} />
+        </div>
       </TestWrapper>,
     );
 
@@ -138,7 +144,9 @@ describe('TimelineRow component', () => {
     // Try with unfinished item. No label since bar takes so wide space
     mount(
       <TestWrapper>
-        <LineElement {...props} timeline={createTimelineMetrics({})} duration={null} />
+        <div style={{ width: '484px' }}>
+          <LineElement {...props} timeline={createTimelineMetrics({})} duration={null} />
+        </div>
       </TestWrapper>,
     );
 

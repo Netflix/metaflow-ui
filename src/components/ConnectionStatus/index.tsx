@@ -67,7 +67,7 @@ const ConnectionStatus: React.FC = () => {
         }
       }}
     >
-      <Text status={status}>
+      <Text status={status} data-testid={status}>
         {status === 'Stale'
           ? t('connection.data-might-be-stale')
           : status === 'Connected'
