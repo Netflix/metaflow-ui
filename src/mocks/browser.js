@@ -399,6 +399,7 @@ export const worker = setupWorker(
   rawGetEndpoint('api/features', {}),
   stantardGetEndpoint('api/links', []),
   stantardGetEndpoint('api/notifications', []),
+  stantardGetEndpoint('api/flows/autocomplete', ['BasicFlow', 'NewFlow']),
   wsApi.addEventListener('connection', ({ client }) => {
     client.addEventListener('message', (event) => {
       if (event.data === '__ping__') {

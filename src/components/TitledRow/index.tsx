@@ -89,19 +89,21 @@ const StyledTitledRow = styled.div`
 `;
 
 const TitledRowTitle = styled.div`
-  font-weight: 500;
-  font-size: var(--font-size-primary);
-  margin: 0.5rem 0;
+  font-weight: var(--titled-row-head-font-weight);
+  font-size: var(--titled-row-head-font-size);
+  margin: var(--titled-row-head-margin);
+  color: var(--titled-row-head-text-color);
 `;
 
 const ContentBackground = styled.div`
-  background: var(--color-bg-secondary);
-  border-radius: var(--radius-primary);
-  font-size: var(--font-size-primary);
+  background: var(--titled-row-bg);
+  border-radius: var(--titled-row-border-radius);
+  font-size: var(--titled-row-font-size);
+  color: var(--titled-row-text-color);
 `;
 
 const ContentSection = styled.div`
-  padding: 0.5rem 1rem;
+  padding: var(--titled-row-padding);
   white-space: pre-wrap;
   word-break: break-all;
 `;

@@ -105,10 +105,13 @@ function hasVersionTag(run: Run): boolean {
 //
 
 const Container = styled.div`
-  background: var(--color-warning);
-  padding: 0.5rem var(--layout-page-padding-x);
-  margin: 0 calc(var(--layout-page-padding-x) * -1);
-  font-size: var(--font-size-primary);
+  background: var(--run-warning-bg);
+  padding: var(--run-warning-padding);
+  margin: var(--run-warning-margin);
+  font-size: var(--run-warning-font-size);
+  color: var(--run-warning-text-color);
+  border-radius: var(--run-warning-border-radius);
+
   display: flex;
   align-items: center;
   font-weight: 500;
@@ -118,7 +121,7 @@ const Container = styled.div`
   }
 
   a {
-    color: var(--color-text-primary);
+    color: var(--run-warning-text-color);
   }
 `;
 

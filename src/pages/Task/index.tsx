@@ -294,7 +294,7 @@ const Task: React.FC<TaskViewProps> = ({
         setQueryParam={setQueryParam}
       />
 
-      <div style={{ display: 'flex' }}>
+      <TaskContentContainer>
         <TaskList
           rows={rows}
           rowDataDispatch={rowDataDispatch}
@@ -526,7 +526,8 @@ const Task: React.FC<TaskViewProps> = ({
             />
           </>
         )}
-      </div>
+      </TaskContentContainer>
+
       {fullscreen && task && (
         <FullPageContainer
           onClose={closeHandler}
@@ -597,6 +598,15 @@ const TaskLoaderContainer = styled.div`
   justify-content: center;
   width: 100%;
   padding: 2rem;
+`;
+
+const TaskContentContainer = styled.div`
+  display: flex;
+  background: var(--task-view-bg);
+  border-radius: var(--task-view-border-radius);
+  margin: var(--task-view-margin);
+  padding: var(--task-view-padding);
+  box-shadow: var(--task-view-shadow);
 `;
 
 const Space = styled.div`

@@ -1,5 +1,5 @@
 import React, { ChangeEventHandler, useState, useMemo } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useLocation, match, Link, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getPath, getRouteMatch, KnownURLParams } from '../../utils/routing';
@@ -376,24 +376,30 @@ export function findAdditionalButtons(routeMatch: match<KnownURLParams> | null, 
 // Styles
 //
 
+const ContainerBaseStyle = css`
+  border: var(--breadcrumb-border);
+  height: var(--breadcrumb-height);
+  background: var(--breadcrumb-bg);
+`;
+
 const BreadcrumbGroup = styled.div`
   ${ButtonCSS}
-  border: var(--breadcrumb-border);
+  ${ContainerBaseStyle}
   width: 100%;
 `;
 
 const BreadcrumbEmptyInput = styled(InputWrapper)`
-  border: var(--breadcrumb-border);
+  ${ContainerBaseStyle}
 
   input {
     padding-left: 0;
     margin-left: -0.25rem;
-    font-size: var(--breadcrumb-input-font-size);
-    font-weight: var(--breadcrumb-input-font-weight);
+    font-size: var(--breadcrumb-font-size);
+    font-weight: var(--breadcrumb-font-weight);
 
     &::placeholder {
       color: var(--breadcrumb-placeholder-color);
-      font-weight: var(--breadcrumb-input-font-weight);
+      font-weight: var(--breadcrumb-font-weight);
     }
   }
 `;
@@ -450,7 +456,7 @@ const StyledBreadcrumb = styled(ItemRow)`
     line-height: var(--breadcrumb-line-height);
     font-size: var(--breadcrumb-font-size);
     font-weight: var(--breadcrumb-font-weight);
-    background: var(--input-bg);
+    background: var(--breadcrumb-bg);
     color: var(--input-text-color);
     padding-left: 0;
     margin-left: -0.25rem;
@@ -458,14 +464,13 @@ const StyledBreadcrumb = styled(ItemRow)`
 `;
 
 const BreadcrumbInputWrapper = styled(InputWrapper)`
-  border: var(--breadcrumb-border);
+  ${ContainerBaseStyle}
 `;
 
 const GoToHolder = styled.div`
   position: relative;
   font-size: var(--font-size-primary);
-  height: 2rem;
-  margin-top: -0.5625rem;
+  height: var(--breadcrumb-height);
   z-index: 2;
   width: 100%;
 `;

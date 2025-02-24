@@ -18,11 +18,11 @@ const Popover: React.FC<{ children: ReactNode; show?: boolean }> = ({ children, 
 //
 
 export const PopoverStyles = css`
-  border: 1px solid #d0d0d0;
-  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.25));
-  padding: var(--spacing-3);
-  background: var(--color-bg-primary);
-  border-radius: var(--radius-primary);
+  border: var(--popover-border);
+  box-shadow: var(--popover-shadow);
+  padding: var(--popover-padding);
+  background: var(--popover-background);
+  border-radius: var(--popover-border-radius);
 `;
 
 export const PopoverWrapper = styled.div<{ show: boolean; alignment?: 'left' | 'right' }>`
