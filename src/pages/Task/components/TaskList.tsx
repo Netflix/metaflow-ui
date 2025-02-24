@@ -91,7 +91,7 @@ const TaskList: React.FC<Props> = ({
 
   return (
     <TaskListContainer ref={ref}>
-      <FixedList style={{ position: 'sticky', top: HEADER_SIZE_PX + 'px' }}>
+      <FixedList style={{ position: 'sticky', top: 'var(--layout-application-bar-height)' }}>
         {rows.length > 0 && (
           <List
             overscanRowCount={5}
@@ -125,8 +125,9 @@ const TaskList: React.FC<Props> = ({
 };
 
 const TaskListContainer = styled.div`
+  padding: var(--task-list-padding);
+  width: var(--task-list-width);
   font-size: 0.75rem;
-  width: 15.25rem;
   flex-shrink: 0;
 `;
 

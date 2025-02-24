@@ -203,6 +203,12 @@
     --button-primaryText-active-text-color: var(--color-text-highlight);
     --button-primaryText-active-bg: var(--color-bg-neutral);
 
+    /* Collapsable */
+    --collapsable-header-padding: 0;
+    --collapsable-header-text-color: var(---color-text-primary);
+    --collapsable-header-border-bottom: var(--border-thin-1);
+    --collapsable-content-border-bottom: none;
+
     /* Spinner */
 
     --spinner-default-size: 20px;
@@ -244,6 +250,31 @@
     --table-cell-hover-bg: var(--color-bg-secondary-highlight);
     --table-cell-hover-text-color: var(--color-text-highlight);
 
+    /* Tabs */
+    --tab-heading-border-bottom: var(--border-medium-1);
+    --tab-heading-margin: 0 var(--spacing-7) -2px 0;
+    --tab-heading-padding: var(--spacing-3) var(--spacing-7);
+    --tab-heading-text-color: var(--color-text-secondary);
+    --tab-heading-font-weight: var(--font-weight-regular);
+    --tab-heading-bg: transparent;
+    --tab-heading-item-border-bottom: 2px solid transparent;
+    --tab-heading-border-radius: none;
+
+    --tab-heading-active-text-color: var(--color-text-primary);
+    --tab-heading-active-font-weight: var(--font-weight-medium);
+    --tab-heading-item-active-border-bottom: 2px solid var(--color-bg-secondary-highlight);
+
+    /* Titled row */
+    --titled-row-head-font-size: var(--font-size-primary);
+    --titled-row-head-font-weight: var(--font-weight-medium);
+    --titled-row-head-text-color: var(--color-text-primary);
+    --titled-row-head-margin: 0.5rem 0;
+    --titled-row-padding: 0.5rem 1rem;
+    --titled-row-bg: var(--color-bg-secondary);
+    --titled-row-border-radius: var(--radius-primary);
+    --titled-row-font-size: var(--font-size-primary);
+    --titled-row-text-color: var(--color-text-primary);
+
     /* Result group (Runs table) */
     --result-group-status-cell-padding: var(--table-cell-padding);
     --result-group-expand-cell-border: none;
@@ -254,9 +285,12 @@
 
 
     /* Breadcrumb */
+    --breadcrumb-height: 2.5rem;
+    --breadcrumb-bg: var(--input-bg);
+    --breadcrumb-text-color: var(--color-text-primary);
+    --breadcrumb-font-size: var(--font-size-primary);
     --breadcrumb-border: 1px solid var(--color-text-highlight);
     --breadcrumb-placeholder-color: #808080;
-    --breadcrumb-font-size: var(--font-size-primary);
     --breadcrumb-line-height: 1.875rem;
     --breadcrumb-font-weight: 500;
 
@@ -294,8 +328,22 @@
 
     --data-header-link-color: #fff;
 
-    /* Timeline */
+    /* Popover */
+    --popover-border: 1px solid #d0d0d0;
+    --popover-shadow: 1px 1px 6px rgba(0, 0, 0, 0.25);
+    --popover-padding: var(--spacing-3);
+    --popover-background: var(--color-bg-primary);
+    --popover-border-radius: var(--radius-primary);
 
+    /* Run warning */
+    --run-warning-bg: var(--color-warning);
+    --run-warning-text-color: var(--color-text-primary);
+    --run-warning-font-size: var(--font-size-primary);
+    --run-warning-padding: 0.5rem var(--layout-page-padding-x);
+    --run-warning-margin: 0 calc(-1 * var(--layout-page-padding-x));
+    --run-warning-border-radius: 0;
+
+    /* Timeline */
     --timeline-bg: none;
     --timeline-border-radius: none;
     --timeline-padding: none;
@@ -313,6 +361,7 @@
     --timeline-row-separator-border: var(--border-thin-1);
     --timeline-row-label-border-left: var(--border-thin-1);
     --timeline-row-label-border-bottom: var(--border-thin-1);
+    --timeline-row-label-border-radius: none;
 
     --timeline-row-label-task-font-size: var(--font-size-4);
     --timeline-row-label-task-font-weight: var(--font-weight-regular);
@@ -326,11 +375,21 @@
     --timeline-footer-bg: var(--color-bg-secondary);
     --timeline-footer-selected-bg: var(--color-bg-primary);
     
-    /* Task content */
+    /* Task view/content. View is full width page including menus, content is middle sector with task content only. */
+    --task-view-bg: none;
+    --task-view-border-radius: none;
+    --task-view-padding: none;
+    --task-view-margin: none;
+    --task-view-shadow: none;
+
+    --task-list-padding: 0;
+    --task-list-width: 15.25rem;
+
     --task-content-bg: none;
     --task-content-border-radius: none;
-    --task-content-padding: 0 2rem 0 1rem;
+    --task-content-padding: 0.75rem 2rem 3rem 1rem;
     --task-content-margin: none;
     --task-content-shadow: none;
-    
+    --task-content-border-left: none;
+    --task-content-border-right: none;
 }

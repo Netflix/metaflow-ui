@@ -83,7 +83,7 @@ const TabsContainer = styled.div`
 
 export const TabsHeading = styled.div<{ widen?: boolean }>`
   display: flex;
-  border-bottom: var(--border-medium-1);
+  border-bottom: var(--tab-heading-border-bottom);
   margin: ${(p) => (p.widen ? '0 calc(var(--layout-page-padding-y) * -1)' : 'initial')};
   padding: ${(p) => (p.widen ? '0 var(--layout-page-padding-x)' : 'initial')};
   color: var(--color-text-secondary);
@@ -99,23 +99,29 @@ export const TabsHeading = styled.div<{ widen?: boolean }>`
 `;
 
 export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean }>`
-  margin-right: var(--spacing-7);
-  margin-bottom: -2px;
-  padding: var(--spacing-3) var(--spacing-7);
-  border-top-left-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
-  border-top-right-radius: ${(p) => (p.temporary ? '0.25rem' : 'none')};
-  border-bottom: 2px solid ${(p) => (p.active ? 'var(--color-bg-secondary-highlight)' : 'transparent')};
+  margin: var(--tab-heading-margin);
+  padding: var(--tab-heading-padding);
+  border-radius: var(--tab-heading-border-radius);
+  border-top-left-radius: ${(p) => (p.temporary ? 'var(--radius-primary)' : 'var(--tab-heading-border-radius)')};
+  border-top-right-radius: ${(p) => (p.temporary ? 'var(--radius-primary)' : 'var(--tab-heading-border-radius)')};
+  border-bottom: ${(p) =>
+    p.active ? 'var(--tab-heading-item-active-border-bottom)' : 'var(--tab-heading-item-border-bottom)'};
   background: ${(p) =>
-    p.temporary && p.active ? 'var(--color-bg-secondary-highlight)' : p.temporary ? '#f6f6f6' : 'transparent'};
-  color: ${(p) => (p.active ? 'var(--color-text-primary)' : 'var(--color-text-secondary)')};
-  font-weight: ${(p) => (p.active ? '500' : '400')};
+    p.temporary && p.active
+      ? 'var(--color-bg-secondary-highlight)'
+      : p.temporary
+        ? '#f6f6f6'
+        : 'var(--tab-heading-bg)'};
+  color: ${(p) => (p.active ? 'var(--tab-heading-active-text-color)' : 'var(--tab-heading-text-color)')};
+  font-weight: ${(p) => (p.active ? 'var(--tab-heading-active-font-weight)' : 'var(--tab-heading-font-weight)')};
   cursor: pointer;
   transition: 0.15s border;
   white-space: nowrap;
+  font-size: var(--font-size-primary);
 
   &:hover {
     border-bottom-color: var(--color-bg-brand-primary);
-    font-weight: 500;
+    font-weight: var(--tab-heading-active-font-weight);
     border-top-left-radius: var(--radius-primary);
     border-top-right-radius: var(--radius-primary);
   }

@@ -103,7 +103,6 @@ const HeightTracker: React.FC<{ children: ReactNode; updateLastSectionHeight: (h
 
 const AnchoredViewContainer = styled.div`
   display: flex;
-  padding: 0.75rem 0 3rem 0;
   width 100%;
 `;
 
@@ -114,6 +113,8 @@ const TaskContent = styled.div`
   margin: var(--task-content-margin);
   padding: var(--task-content-padding);
   box-shadow: var(--task-content-shadow);
+  border-left: var(--task-content-border-left);
+  border-right: var(--task-content-border-right);
 `;
 
 export default AnchoredView;

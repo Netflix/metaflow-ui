@@ -72,9 +72,11 @@ const CollapsableHeader = styled.div`
   display: flex;
   justify-content: flex-start;
   font-size: var(--font-size-primary);
+  color: var(--collapsable-header-text-color);
   font-weight: 500;
   line-height: 1.5rem;
-  border-bottom: var(--border-thin-1);
+  padding: var(--collapsable-header-padding);
+  border-bottom: var(--collapsable-header-border-bottom);
   cursor: pointer;
 
   svg path {
@@ -84,6 +86,7 @@ const CollapsableHeader = styled.div`
 
 const ContentContainer = styled.div`
   position: relative;
+  border-bottom: var(--collapsable-content-border-bottom);
 `;
 
 const Content = styled.div<{ open: boolean; visible: boolean }>`
