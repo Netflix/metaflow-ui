@@ -380,6 +380,8 @@ const ContainerBaseStyle = css`
   border: var(--breadcrumb-border);
   height: var(--breadcrumb-height);
   background: var(--breadcrumb-bg);
+  box-shadow: var(--breadcrumb-shadow);
+  border-radius: var(--breadcrumb-border-radius);
 `;
 
 const BreadcrumbGroup = styled.div`
@@ -417,7 +419,8 @@ const ButtonCrumb = styled(BigButton)`
 
   padding-left: var(--spacing-3);
   padding-right: var(--spacing-3);
-  color: var(--color-text-primary);
+  font-weight: var(--breadcrumb-font-weight);
+  color: var(--breadcrumb-text-color);
 
   overflow-x: hidden;
   max-width: 18.75rem;
@@ -426,6 +429,8 @@ const ButtonCrumb = styled(BigButton)`
 
   &.active {
     background: transparent;
+    font-weight: var(--breadcrumb-highlight-font-weight);
+    color: var(--breadcrumb-highlight-text-color);
   }
 
   &:hover {
@@ -437,7 +442,7 @@ const ButtonCrumb = styled(BigButton)`
 const BreadcrumbDivider = styled.div`
   display: inline-block;
   pointer-events: none;
-  color: var(--color-text-primary);
+  color: var(--breadcrumb-text-color);
   font-weight: bold;
   &:after {
     content: '/';
@@ -465,9 +470,11 @@ const StyledBreadcrumb = styled(ItemRow)`
 
 const BreadcrumbInputWrapper = styled(InputWrapper)`
   ${ContainerBaseStyle}
+  box-shadow: none;
 `;
 
 const GoToHolder = styled.div`
+  margin-right: 0;
   position: relative;
   font-size: var(--font-size-primary);
   height: var(--breadcrumb-height);
@@ -480,7 +487,7 @@ const GoToContainer = styled.div`
   top: calc(var(--spacing-3) * -1);
   left: calc(var(--spacing-3) * -1);
   ${PopoverStyles}
-  width: 100%;
+  width: calc(100% + var(--spacing-3));
 `;
 
 const GotoClose = styled.div`

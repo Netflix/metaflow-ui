@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { HEADER_SIZE_PX } from '../../../constants';
 import styled from 'styled-components';
+import { getHeaderSizePx } from '../../../utils/style';
 
 //
 // Typedef
@@ -39,7 +39,7 @@ const StickyHeader: React.FC<Props> = ({ tableRef, children }) => {
 //
 
 function headerShouldStick(rect: DOMRect | undefined) {
-  if (rect && rect.y < HEADER_SIZE_PX && rect.y + rect.height > 84) {
+  if (rect && rect.y < getHeaderSizePx() && rect.y + rect.height > 84) {
     return true;
   }
   return false;

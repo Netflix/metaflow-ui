@@ -85,7 +85,7 @@ export function valueToRenderableType(
 //
 
 const StyledTitledRow = styled.div`
-  margin: 1rem 0 0.5rem 0;
+  margin: var(--titled-row-margin);
 `;
 
 const TitledRowTitle = styled.div`

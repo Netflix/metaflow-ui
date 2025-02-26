@@ -154,8 +154,17 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({
     >
       <HeaderColumnWrapper>
         {label}
-        {sortable && <SortIcon active={active} direction={direction} padLeft />}
+        {sortable && (
+          <SortIconContainer>
+            <SortIcon active={active} direction={direction} padLeft />
+          </SortIconContainer>
+        )}
       </HeaderColumnWrapper>
     </TH>
   );
 };
+
+const SortIconContainer = styled.div`
+  display: inline-flex;
+  margin-left: var(--spacing-1);
+`;

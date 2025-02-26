@@ -22,8 +22,6 @@ const SidebarStatusSelection: React.FC<Props> = ({ updateField, status }) => {
         <SectionHeader>{t('fields.filter-by')}</SectionHeader>
       ) : (
         <>
-          <SectionHeader>{t('fields.status')}</SectionHeader>
-
           <CheckboxContainer>
             <StatusCheckboxField
               label={t('filters.completed')}

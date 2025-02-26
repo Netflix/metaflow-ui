@@ -1,5 +1,4 @@
 import { FeatureFlags } from './utils/FEATURE';
-import { toRelativeSize } from './utils/style';
 
 declare global {
   interface Window {
@@ -36,9 +35,6 @@ export const METAFLOW_SERVICE_WS =
 export const formatUrl = (base: string, path: string): string => `${base}/${path}`.replace(/([^:]\/)\/+/g, '$1');
 export const apiHttp = (path: string): string => formatUrl(METAFLOW_SERVICE, path);
 export const apiWs = (path: string): string => formatUrl(METAFLOW_SERVICE_WS, path);
-
-export const HEADER_SIZE_PX = 112;
-export const HEADER_SIZE_REM = toRelativeSize(112 / 16);
 
 /**
  * Look for number of days to display in following order:

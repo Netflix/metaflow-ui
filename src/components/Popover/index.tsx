@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
+import InputWrapper from '../Form/InputWrapper';
 
 //
 // Fixed container for popups
@@ -23,6 +24,10 @@ export const PopoverStyles = css`
   padding: var(--popover-padding);
   background: var(--popover-background);
   border-radius: var(--popover-border-radius);
+
+  ${InputWrapper} {
+    background: var(--popover-background);
+  }
 `;
 
 export const PopoverWrapper = styled.div<{ show: boolean; alignment?: 'left' | 'right' }>`

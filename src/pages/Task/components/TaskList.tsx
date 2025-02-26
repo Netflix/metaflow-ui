@@ -6,12 +6,11 @@ import { SearchResultModel } from '../../../hooks/useSearchField';
 import { RowDataAction } from '../../../components/Timeline/useTaskData';
 import TaskListRow from './TaskListRow';
 import { Row } from '../../../components/Timeline/VirtualizedTimeline';
-import { HEADER_SIZE_PX } from '../../../constants';
 import { getTaskId } from '../../../utils/task';
 import { AsyncStatus } from '../../../types';
 import Spinner from '../../../components/Spinner';
 import { getStepDuration } from '../../../components/Timeline/TimelineRow/utils';
-import { toRelativeSize } from '../../../utils/style';
+import { getHeaderSizePx, toRelativeSize } from '../../../utils/style';
 
 //
 // Tasklist
@@ -51,7 +50,7 @@ const TaskList: React.FC<Props> = ({
 
   const listSize = ref?.current
     ? window.innerHeight -
-      (viewScrollTop + 25 > ref.current.offsetTop ? HEADER_SIZE_PX + 25 : ref.current.offsetTop - viewScrollTop + 25)
+      (viewScrollTop + 25 > ref.current.offsetTop ? getHeaderSizePx() + 25 : ref.current.offsetTop - viewScrollTop + 25)
     : 0;
 
   // Get the index of the active task so that the list can scroll to it

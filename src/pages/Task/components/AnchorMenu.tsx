@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import { HEADER_SIZE_PX } from '../../../constants';
+import { getHeaderSizePx } from '../../../utils/style';
 
 //
 // Anchor menu
@@ -22,12 +22,13 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSectio
   const [active, setActive] = useState<string | undefined>(activeSection || items[0]?.key);
   const [initialised, setInitialised] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
+  const headerSize = getHeaderSizePx();
 
   useEffect(() => {
     const listener = () => {
       const current = [...items]
         .reverse()
-        .find((item) => item.position && item.position < window.scrollY + HEADER_SIZE_PX + 20);
+        .find((item) => item.position && item.position < window.scrollY + headerSize + 20);
       setActive((current && current.key) || items[0]?.key);
       const newKey = (current && current.key) || null;
       if (activeSection !== newKey) {
@@ -37,31 +38,31 @@ const AnchorMenu: React.FC<AnchorMenuProps> = ({ items, activeSection, setSectio
 
     window.addEventListener('scroll', listener);
     return () => window.removeEventListener('scroll', listener);
-  }, [items, setSection, activeSection]);
+  }, [items, setSection, activeSection, headerSize]);
 
   useEffect(() => {
     if (activeSection) {
       const s = items.find((item) => item.key === activeSection);
 
       if (s && s.position && !initialised) {
-        window.scrollTo({ top: s.position - HEADER_SIZE_PX + 2, behavior: 'smooth' });
+        window.scrollTo({ top: s.position - headerSize + 2, behavior: 'smooth' });
         setInitialised(true);
       }
     } else {
       setInitialised(true);
     }
-  }, [items, activeSection, initialised]);
+  }, [items, activeSection, initialised, headerSize]);
 
   return (
     <AnchorMenuContainer ref={ref}>
-      <div style={{ position: 'sticky', top: HEADER_SIZE_PX + 'px' }}>
+      <div style={{ position: 'sticky', top: headerSize + 'px' }}>
         {items.map(({ key, label, position }) => (
           <AnchorMenuItem
             key={key}
             active={key === active}
             onClick={() => {
               if (position) {
-                window.scroll({ top: position - HEADER_SIZE_PX + 2 });
+                window.scroll({ top: position - headerSize + 2 });
                 setSection(key);
                 setActive(key);
               }

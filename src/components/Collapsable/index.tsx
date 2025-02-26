@@ -38,6 +38,7 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title, animated = t
     <CollapseContainer>
       <Container active={transitioning}>
         <CollapsableHeader
+          open={open}
           onClick={() => {
             setTransitioning(true);
             setOpen(!open);
@@ -65,15 +66,16 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title, animated = t
 //
 
 const CollapseContainer = styled.div`
-  margin: 0.5rem 0 1rem 0;
+  margin: var(--collapsable-margin);
 `;
 
-const CollapsableHeader = styled.div`
+const CollapsableHeader = styled.div<{ open: boolean }>`
   display: flex;
   justify-content: flex-start;
+  font-family: var(--collapsable-header-font-family);
   font-size: var(--font-size-primary);
-  color: var(--collapsable-header-text-color);
   font-weight: 500;
+  color: ${(p) => (p.open ? 'var(--collapsable-header-open-text-color)' : 'var(--collapsable-header-text-color)')};
   line-height: 1.5rem;
   padding: var(--collapsable-header-padding);
   border-bottom: var(--collapsable-header-border-bottom);

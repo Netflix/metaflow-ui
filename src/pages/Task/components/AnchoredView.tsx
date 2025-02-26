@@ -1,8 +1,8 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { HEADER_SIZE_PX } from '../../../constants';
 import AnchorMenu from './AnchorMenu';
 import TaskSection from './TaskSection';
+import { getHeaderSizePx } from '../../../utils/style';
 
 //
 // Anchored View
@@ -27,6 +27,8 @@ type AnchoredViewProps = {
 const AnchoredView: React.FC<AnchoredViewProps> = ({ sections, header, activeSection, setSection }) => {
   const [sectionPositions, setSectionPositions] = useState<Record<number, number>>({});
   const [lastSectionHeight, setLastSectionHeight] = useState(0);
+
+  const headerSize = getHeaderSizePx();
 
   return (
     <AnchoredViewContainer>
@@ -64,8 +66,8 @@ const AnchoredView: React.FC<AnchoredViewProps> = ({ sections, header, activeSec
         <div
           style={{
             height:
-              lastSectionHeight < window.innerHeight - HEADER_SIZE_PX
-                ? `${window.innerHeight - HEADER_SIZE_PX - lastSectionHeight}px`
+              lastSectionHeight < window.innerHeight - headerSize
+                ? `${window.innerHeight - headerSize - lastSectionHeight}px`
                 : 0,
           }}
         />

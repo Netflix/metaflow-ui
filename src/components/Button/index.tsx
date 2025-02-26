@@ -155,7 +155,7 @@ export const ButtonCSS = css`
 
 const StyledButton = styled.button<StyledButtonProps>`
   ${ButtonCSS};
-  padding: var(--spacing-1) ${(p) => (p.iconOnly ? 'var(--spacing-1)' : 'var(--spacing-3)')};
+  padding: ${(p) => (p.iconOnly ? 'var(--icon-button-padding)' : 'var(--button-padding)')};
   ${(p) => getButtonColors(p.variant)};
   ${(p) => p.active && ActiveButtonCSS};
   ${(p) => p.disabled && DisabledButtonCSS};

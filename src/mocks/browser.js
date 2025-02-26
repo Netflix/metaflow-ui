@@ -91,7 +91,7 @@ export const worker = setupWorker(
     ts_epoch: 1739390473221,
     tags: ['testingtag'],
     status: 'completed',
-    system_tags: ['user:SanteriCM'],
+    system_tags: ['user:SanteriCM', 'Another_tag', 'Hello world'],
   }),
   stantardGetEndpoint('api/flows/:flowid/runs/:id/metadata', [
     {
@@ -395,6 +395,50 @@ export const worker = setupWorker(
     decorators: [],
     extensions: {},
   }),
+  stantardGetEndpoint('api/flows/:flowid/runs/:runid/steps/:stepid/tasks/:taskid/logs/out', [
+    {
+      row: 0,
+      timestamp: 1730493994529,
+      line: 'Start of std out logs',
+    },
+    {
+      row: 1,
+      timestamp: 1730493994529,
+      line: 'Log message: Hello world',
+    },
+    {
+      row: 2,
+      timestamp: 1730493994529,
+      line: 'Log message: Hello world',
+    },
+    {
+      row: 3,
+      timestamp: 1730493994529,
+      line: 'End of logs',
+    },
+  ]),
+  stantardGetEndpoint('api/flows/:flowid/runs/:runid/steps/:stepid/tasks/:taskid/logs/err', [
+    {
+      row: 0,
+      timestamp: 1730493994529,
+      line: 'Start of error logs',
+    },
+    {
+      row: 1,
+      timestamp: 1730493994529,
+      line: 'Critical error in some background system:',
+    },
+    {
+      row: 2,
+      timestamp: 1730493994529,
+      line: 'Error: 404 Not Found',
+    },
+    {
+      row: 3,
+      timestamp: 1730493994529,
+      line: 'End of error logs',
+    },
+  ]),
   rawGetEndpoint('api/plugin', []),
   rawGetEndpoint('api/features', {}),
   stantardGetEndpoint('api/links', []),
