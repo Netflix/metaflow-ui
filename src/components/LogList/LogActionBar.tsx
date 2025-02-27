@@ -127,6 +127,7 @@ const SearchContainer = styled.div`
 const LogActionBarContainer = styled.div<{ spaceAround: boolean }>`
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 1rem;
   padding: ${(p) => (p.spaceAround ? '0 1rem' : '0')};
 `;

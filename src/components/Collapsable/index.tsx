@@ -67,6 +67,7 @@ const Collapsable: React.FC<CollapsableProps> = ({ children, title, animated = t
 
 const CollapseContainer = styled.div`
   margin: var(--collapsable-margin);
+  border-bottom: var(--collapsable-content-border-bottom);
 `;
 
 const CollapsableHeader = styled.div<{ open: boolean }>`
@@ -88,7 +89,6 @@ const CollapsableHeader = styled.div<{ open: boolean }>`
 
 const ContentContainer = styled.div`
   position: relative;
-  border-bottom: var(--collapsable-content-border-bottom);
 `;
 
 const Content = styled.div<{ open: boolean; visible: boolean }>`

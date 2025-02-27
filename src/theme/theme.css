@@ -107,13 +107,7 @@
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
-  --font-family-code: 'RobotoMono',
-    source-code-pro,
-    Menlo,
-    Monaco,
-    Consolas,
-    'Courier New',
-    monospace;
+  --font-family-code: 'RobotoMono', monospace;
 
     /* Borders */
 
@@ -206,6 +200,19 @@
     --button-primaryText-active-text-color: var(--color-text-highlight);
     --button-primaryText-active-bg: var(--color-bg-neutral);
 
+    /* <code> block */
+    --code-bg: #f7f7f7;
+    --code-text-color: var(--color-text-primary);
+    --code-font-size: var(--font-size-4);
+    --code-font-family: var(--font-family-code);
+    --code-font-weight: var(--font-weight-regular);
+    --code-padding: var(--spacing-1);
+    --code-border-bottom: var(--border-primary-thin);
+    --code-border-left: none;
+    --code-border-right: none;
+    --code-border-top: none;
+    --code-border-radius: var(--radius-primary);
+
     /* Collapsable */
     --collapsable-margin: 0.5rem 0 1rem 0;
     --collapsable-header-padding: 0;
@@ -283,6 +290,14 @@
     --titled-row-border-radius: var(--radius-primary);
     --titled-row-font-size: var(--font-size-primary);
     --titled-row-text-color: var(--color-text-primary);
+
+    --titled-row-table-title-cell-width: 200px;
+    --titled-row-table-border-bottom: 2px solid #fff;
+    --titled-row-table-separator-border: 2px solid #fff;
+    --titled-row-table-value-font-size: var(--titled-row-font-size);
+    --titled-row-table-value-text-color: var(--titled-row-text-color);
+    --titled-row-table-value-font-weight: var(--font-weight-regular);
+    --titled-row-table-value-padding: var(--titled-row-padding);
 
     /* Result group (Runs table) */
     --result-group-status-cell-padding: var(--table-cell-padding);

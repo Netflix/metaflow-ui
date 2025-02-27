@@ -85,11 +85,12 @@ const AnchorMenuContainer = styled.div`
 
 const AnchorMenuItem = styled.div<{ active?: boolean }>`
   cursor: pointer;
-  line-height: 2rem;
-  padding: 0 1rem;
+  font-size: var(--font-size-primary);
+  padding: 0.5rem 1rem;
   margin-bottom 0.5rem;
   border-left: 2px solid ${(p) => (p.active ? 'var(--color-text-highlight)' : 'var(--color-border-1)')};
   transition: 0.15s border;
+  word-break: break-word;
 `;
 
 export default AnchorMenu;

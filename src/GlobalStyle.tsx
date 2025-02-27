@@ -55,8 +55,18 @@ const globalCSS = css`
   }
 
   code {
-    font-family: var(--font-family-code);
-    font-size: var(--font-size-4);
+    display: block;
+    background: var(--code-bg);
+    color: var(--code-text-color);
+    font-size: var(--code-font-size);
+    font-family: var(--code-font-family);
+    font-weight: var(--code-font-weight);
+    padding: var(--code-padding);
+    border-bottom: var(--code-border-bottom);
+    border-top: var(--code-border-top);
+    border-left: var(--code-border-left);
+    border-right: var(--code-border-right);
+    border-radius: var(--code-border-radius);
   }
 `;
 
