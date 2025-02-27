@@ -22,6 +22,7 @@ import Triggers from '../../components/Triggers';
 import TitledRow from '../../components/TitledRow';
 import { getISOString } from '../../utils/date';
 import { TriggerEventsValue } from '../../components/Trigger';
+import { PluginsContext } from '../../components/Plugins/PluginManager';
 
 //
 // Typedef
@@ -47,6 +48,8 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const { timezone } = useContext(TimezoneContext);
+  const { getPluginsBySlot } = useContext(PluginsContext);
+  const hasPlugins = getPluginsBySlot('run-header').length > 0;
 
   const headerItems = [
     { label: t('fields.run-id'), value: getRunId(run) },
@@ -131,7 +134,7 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
             push={history.push}
             noTagsMsg={t('run.no-system-tags')}
           />
-          <PluginWrapper>
+          <PluginWrapper active={hasPlugins}>
             <PluginGroup id={getRunId(run)} title="Extensions" slot="run-header" />
           </PluginWrapper>
         </>
@@ -182,8 +185,8 @@ const StyledLink = styled(Link)`
   }
 `;
 
-const PluginWrapper = styled.div`
-  margin-top: 1rem;
+const PluginWrapper = styled.div<{ active: boolean }>`
+  margin-top: ${(p) => (p.active ? '1rem' : '0')};
 `;
 
 const TriggersInHeader = styled(Triggers)`

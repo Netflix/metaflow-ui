@@ -69,3 +69,26 @@ export function darkenCssVar(cssVar: `--${string}`, amount: number): string {
 export function brightenCssVar(cssVar: `--${string}`, amount: number): string {
   return `hsl(from var(${cssVar}) h s calc(l + ${amount}))`;
 }
+
+export function readDocumentCSSVariable(variableName: string): string {
+  const style = window.getComputedStyle(document.body);
+  return style.getPropertyValue(variableName).trim();
+}
+
+const DEFAULT_HEADER_SIZE = 112;
+
+export function getHeaderSizePx(): number {
+  const value = readDocumentCSSVariable('--layout-application-bar-height');
+  if (value && value.indexOf('px') > -1) {
+    return parseFloat(value.split('px')[0]);
+  } else if (value && value.indexOf('rem') > -1) {
+    const documentFontSize = getDocumentDefaultFontSize();
+    return parseFloat(value.split('rem')[0]) * (documentFontSize || 16);
+  }
+  return DEFAULT_HEADER_SIZE;
+}
+
+export function getHeaderSizeRem(): number {
+  const documentFontSize = getDocumentDefaultFontSize();
+  return getHeaderSizePx() / (documentFontSize || 16);
+}

@@ -91,7 +91,7 @@ export const worker = setupWorker(
     ts_epoch: 1739390473221,
     tags: ['testingtag'],
     status: 'completed',
-    system_tags: ['user:SanteriCM'],
+    system_tags: ['user:SanteriCM', 'Another_tag', 'Hello world'],
   }),
   stantardGetEndpoint('api/flows/:flowid/runs/:id/metadata', [
     {
@@ -112,7 +112,11 @@ export const worker = setupWorker(
       system_tags: null,
     },
   ]),
-  stantardGetEndpoint('api/flows/:flowid/runs/:runid/parameters', {}),
+  stantardGetEndpoint('api/flows/:flowid/runs/:runid/parameters', {
+    parameter_1: { value: 'string value' },
+    parameter_2: { value: '{"json_data":{"a":1},"b":5}' },
+    parameter_3: { value: 'string value' },
+  }),
   stantardGetEndpoint('api/flows/:flowid/runs/:runid/artifacts', {}),
   stantardGetEndpoint('api/flows/:flowid/runs/:runid/steps', [
     {
@@ -395,6 +399,86 @@ export const worker = setupWorker(
     decorators: [],
     extensions: {},
   }),
+  stantardGetEndpoint('api/flows/:flowid/runs/:runid/steps/:stepid/tasks/:taskid/metadata', [
+    {
+      id: 10926826,
+      flow_id: 'BasicFlow',
+      run_number: 1,
+      run_id: null,
+      step_name: 'start',
+      task_id: 492603,
+      task_name: null,
+      attempt_id: 0,
+      field_name: 'attempt',
+      value: '0',
+      type: 'attempt',
+      user_name: 'santeri@outerbounds.co',
+      ts_epoch: 1732143950264,
+      tags: ['attempt_id:0'],
+      system_tags: null,
+    },
+    {
+      id: 10926826,
+      flow_id: 'BasicFlow',
+      run_number: 1,
+      run_id: null,
+      step_name: 'start',
+      task_id: 492603,
+      task_name: null,
+      attempt_id: 0,
+      field_name: 'attempt_ok',
+      value: 'true',
+      type: 'attempt',
+      user_name: 'santeri@outerbounds.co',
+      ts_epoch: 1732143950264,
+      tags: ['attempt_id:0'],
+      system_tags: null,
+    },
+  ]),
+  stantardGetEndpoint('api/flows/:flowid/runs/:runid/steps/:stepid/tasks/:taskid/logs/out', [
+    {
+      row: 0,
+      timestamp: 1730493994529,
+      line: 'Start of std out logs',
+    },
+    {
+      row: 1,
+      timestamp: 1730493994529,
+      line: 'Log message: Hello world',
+    },
+    {
+      row: 2,
+      timestamp: 1730493994529,
+      line: 'Log message: Hello world',
+    },
+    {
+      row: 3,
+      timestamp: 1730493994529,
+      line: 'End of logs',
+    },
+  ]),
+  stantardGetEndpoint('api/flows/:flowid/runs/:runid/steps/:stepid/tasks/:taskid/logs/err', [
+    {
+      row: 0,
+      timestamp: 1730493994529,
+      line: 'Start of error logs',
+    },
+    {
+      row: 1,
+      timestamp: 1730493994529,
+      line: 'Critical error in some background system:',
+    },
+    {
+      row: 2,
+      timestamp: 1730493994529,
+      line: 'Error: 404 Not Found',
+    },
+    {
+      row: 3,
+      timestamp: 1730493994529,
+      line: 'End of error logs',
+    },
+  ]),
   rawGetEndpoint('api/plugin', []),
   rawGetEndpoint('api/features', {}),
   stantardGetEndpoint('api/links', []),

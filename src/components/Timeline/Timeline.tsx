@@ -276,7 +276,7 @@ const StickyHeader: React.FC<{
 // Style
 //
 
-const ListContainer = styled.div<{ customMinHeight: number }>`
+export const ListContainer = styled.div<{ customMinHeight: number }>`
   flex: 1;
   min-height: ${(p) => `${p.customMinHeight}rem`};
   max-width: 100%;

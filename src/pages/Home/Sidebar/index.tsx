@@ -11,10 +11,10 @@ import SidebarStatusSelection from './SidebarStatusSelection';
 import { TagParameterList } from './SidebarTags';
 import SidebarTimerangeSelection from './SidebarTimerangeSelection';
 import { isDefaultParams } from '../Home.utils';
-import { HEADER_SIZE_REM } from '../../../constants';
 import { Scrollbars } from 'react-custom-scrollbars-2';
 import { TimezoneContext } from '../../../components/TimezoneProvider';
 import FEATURE_FLAGS from '../../../utils/FEATURE';
+import { getHeaderSizeRem } from '../../../utils/style';
 
 //
 // Typedef
@@ -209,7 +209,7 @@ const SidebarContent = styled.div`
 `;
 
 const StyledScrollbars = styled(Scrollbars)`
-  height: calc(100vh - ${HEADER_SIZE_REM + 1}rem) !important;
+  height: calc(100vh - ${getHeaderSizeRem() + 1}rem) !important;
   width: calc(var(--sidebar-width-md) + 1rem) !important;
   @media (max-width: var(--layout-breakpoint-sm)) {
     width: calc(var(--sidebar-width-sm) + 1rem) !important;

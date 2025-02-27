@@ -28,9 +28,8 @@ const TagRow: React.FC<TagRowProps> = ({ tags, label, noTagsMsg }) => {
         <ItemRow pad="xs" style={{ flexWrap: 'wrap', width: 'auto' }}>
           {tags.length > 0
             ? tags.map((tag, index) => (
-                <RunTag key={tag} to={'/?_tags=' + encodeURIComponent(tag)}>
-                  {tag}
-                  {index !== tags.length - 1 && ', '}
+                <RunTag key={tag} last={index === tags.length - 1}>
+                  <TagContent to={'/?_tags=' + encodeURIComponent(tag)}>{tag}</TagContent>
                 </RunTag>
               ))
             : noTagsMsg}
@@ -44,10 +43,22 @@ const TagRow: React.FC<TagRowProps> = ({ tags, label, noTagsMsg }) => {
 // Style
 //
 
-const RunTag = styled(Link)`
+const RunTag = styled.div<{ last: boolean }>`
+  display: flex;
+  &:after {
+    content: ${(p) => (p.last ? "''" : 'var(--run-tag-divider)')};
+  }
+`;
+
+const TagContent = styled(Link)`
   cursor: pointer;
-  font-size: var(--font-size-primary);
-  color: var(--color-text-primary);
+  font-size: var(--run-tag-font-size);
+  font-weight: var(--run-tag-font-weight);
+  color: var(--run-tag-text-color);
+  background: var(--run-tag-bg);
+  border: var(--run-tag-border);
+  border-radius: var(--run-tag-border-radius);
+  padding: var(--run-tag-padding);
   text-decoration: none;
 
   &:hover {

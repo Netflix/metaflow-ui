@@ -37,7 +37,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTab, widen }) => {
 
   return (
     <TabsContainer>
-      <Scrollbars style={{ height: '2.875rem', width: '100%' }} autoHide>
+      <Scrollbars style={{ height: 'var(--tab-heading-height)', width: '100%' }} autoHide>
         <TabsHeading widen={widen}>
           {tabs.map((tab) =>
             tab.linkTo ? (
@@ -108,10 +108,12 @@ export const TabsHeadingItem = styled.div<{ active: boolean; temporary?: boolean
     p.active ? 'var(--tab-heading-item-active-border-bottom)' : 'var(--tab-heading-item-border-bottom)'};
   background: ${(p) =>
     p.temporary && p.active
-      ? 'var(--color-bg-secondary-highlight)'
+      ? 'var(--tab-heading-active-bg)'
       : p.temporary
         ? '#f6f6f6'
-        : 'var(--tab-heading-bg)'};
+        : p.active
+          ? 'var(--tab-heading-active-bg)'
+          : 'var(--tab-heading-bg)'};
   color: ${(p) => (p.active ? 'var(--tab-heading-active-text-color)' : 'var(--tab-heading-text-color)')};
   font-weight: ${(p) => (p.active ? 'var(--tab-heading-active-font-weight)' : 'var(--tab-heading-font-weight)')};
   cursor: pointer;

@@ -293,12 +293,9 @@ const PollLoader: React.FC<PollLoaderProps> = ({ status, preloadStatus }) => {
 // Style
 //
 
-const LogListContainer = styled.div`
-  background: var(--color-bg-secondary);
-  border-bottom: var(--border-primary-thin);
-  font-family: monospace;
-  border-radius: var(--radius-primary);
+const LogListContainer = styled.code`
   font-size: var(--font-size-primary);
+  padding: 0.25rem;
   position: relative;
   overflow: hidden;
   white-space: pre-wrap;
@@ -326,6 +323,7 @@ const LogLineText = styled.div`
   word-break: break-all;
   flex: 1;
   padding-right: 0.5rem;
+  line-height: 1rem;
 `;
 
 const ScrollToBottomButton = styled.div`

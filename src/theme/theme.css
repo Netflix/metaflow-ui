@@ -107,13 +107,7 @@
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
-  --font-family-code: 'RobotoMono',
-    source-code-pro,
-    Menlo,
-    Monaco,
-    Consolas,
-    'Courier New',
-    monospace;
+  --font-family-code: 'RobotoMono', monospace;
 
     /* Borders */
 
@@ -171,6 +165,9 @@
     --button-font-size-md: 1rem;
     --button-font-size-lg: 1.25rem;
 
+    --button-padding: var(--spacing-1) var(--spacing-3);
+    --icon-button-padding: var(--spacing-1) var(--spacing-1);
+
     --big-button-line-height: 1.875rem;
     --big-button-font-size: var(--font-size-primary);
 
@@ -203,9 +200,25 @@
     --button-primaryText-active-text-color: var(--color-text-highlight);
     --button-primaryText-active-bg: var(--color-bg-neutral);
 
+    /* <code> block */
+    --code-bg: #f7f7f7;
+    --code-text-color: var(--color-text-primary);
+    --code-font-size: var(--font-size-4);
+    --code-font-family: var(--font-family-code);
+    --code-font-weight: var(--font-weight-regular);
+    --code-padding: var(--spacing-1);
+    --code-border-bottom: var(--border-primary-thin);
+    --code-border-left: none;
+    --code-border-right: none;
+    --code-border-top: none;
+    --code-border-radius: var(--radius-primary);
+
     /* Collapsable */
+    --collapsable-margin: 0.5rem 0 1rem 0;
     --collapsable-header-padding: 0;
+    --collapsable-header-font-familty: var(--font-family-primary);
     --collapsable-header-text-color: var(---color-text-primary);
+    --collapsable-header-open-text-color: var(---color-text-primary);
     --collapsable-header-border-bottom: var(--border-thin-1);
     --collapsable-content-border-bottom: none;
 
@@ -251,6 +264,7 @@
     --table-cell-hover-text-color: var(--color-text-highlight);
 
     /* Tabs */
+    --tab-heading-height: 2.875rem;
     --tab-heading-border-bottom: var(--border-medium-1);
     --tab-heading-margin: 0 var(--spacing-7) -2px 0;
     --tab-heading-padding: var(--spacing-3) var(--spacing-7);
@@ -262,9 +276,11 @@
 
     --tab-heading-active-text-color: var(--color-text-primary);
     --tab-heading-active-font-weight: var(--font-weight-medium);
+    --tab-heading-active-bg: transparent;
     --tab-heading-item-active-border-bottom: 2px solid var(--color-bg-secondary-highlight);
 
     /* Titled row */
+    --titled-row-margin: 1rem 0 0.5rem 0;
     --titled-row-head-font-size: var(--font-size-primary);
     --titled-row-head-font-weight: var(--font-weight-medium);
     --titled-row-head-text-color: var(--color-text-primary);
@@ -275,6 +291,14 @@
     --titled-row-font-size: var(--font-size-primary);
     --titled-row-text-color: var(--color-text-primary);
 
+    --titled-row-table-title-cell-width: 200px;
+    --titled-row-table-border-bottom: 2px solid #fff;
+    --titled-row-table-separator-border: 2px solid #fff;
+    --titled-row-table-value-font-size: var(--titled-row-font-size);
+    --titled-row-table-value-text-color: var(--titled-row-text-color);
+    --titled-row-table-value-font-weight: var(--font-weight-regular);
+    --titled-row-table-value-padding: var(--titled-row-padding);
+
     /* Result group (Runs table) */
     --result-group-status-cell-padding: var(--table-cell-padding);
     --result-group-expand-cell-border: none;
@@ -282,7 +306,8 @@
     --result-group-expand-cell-border-right: var(--result-group-expand-cell-border);
     --result-group-expand-cell-border-bottom: var(--result-group-expand-cell-border);
     --result-group-expand-cell-border-left: var(--result-group-expand-cell-border);
-
+    --result-group-expand-padding: 0.5rem 0.5rem 0;
+    --result-group-timeline-preview-margin: 1rem 0 0 0;
 
     /* Breadcrumb */
     --breadcrumb-height: 2.5rem;
@@ -290,9 +315,13 @@
     --breadcrumb-text-color: var(--color-text-primary);
     --breadcrumb-font-size: var(--font-size-primary);
     --breadcrumb-border: 1px solid var(--color-text-highlight);
+    --breadcrumb-border-radius: var(--radius-primary);
     --breadcrumb-placeholder-color: #808080;
     --breadcrumb-line-height: 1.875rem;
     --breadcrumb-font-weight: 500;
+    --breadcrumb-shadow: none;
+    --breadcrumb-highlight-font-weight: var(--font-weight-medium);
+    --breadcrumb-highlight-text-color: var(--color-text-primary);
 
     /* Tooltip */
     --tooltip-bg: rgba(51, 51, 51, 0.7);
@@ -321,6 +350,8 @@
     --data-header-bg: var(--color-bg-heavy);
     --data-header-font-size: var(--font-size-primary);
     --data-header-text-color: var(--color-text-alternative);
+    --data-header-padding: 1rem 0.5rem;
+    --data-header-padding-wide: 1rem var(--layout-page-padding-x);
 
     --data-header-label-font-size: var(--font-size-primary);
     --data-header-label-text-color: var(--color-text-alternative);
@@ -334,6 +365,16 @@
     --popover-padding: var(--spacing-3);
     --popover-background: var(--color-bg-primary);
     --popover-border-radius: var(--radius-primary);
+
+    /* Run tags */
+    --run-tag-divider: ', ';
+    --run-tag-font-size: var(--font-size-primary);
+    --run-tag-font-weight: var(--font-weight-regular);
+    --run-tag-text-color: var(--color-text-primary);
+    --run-tag-bg: transparent;
+    --run-tag-border: none;
+    --run-tag-border-radius: none;
+    --run-tag-padding: 0;
 
     /* Run warning */
     --run-warning-bg: var(--color-warning);

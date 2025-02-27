@@ -146,7 +146,7 @@ const StyledTD = styled.td`
 `;
 
 const StyledSection = styled(Section)<{ closing: boolean }>`
-  padding: 0.5rem 0.5rem 0;
+  padding: var(--result-group-expand-padding);
   margin-bottom 0;
   border-right: var(--border-thin-1);
   border-bottom: var(--border-thin-1);

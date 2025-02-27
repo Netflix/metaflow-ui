@@ -22,7 +22,7 @@ const AttemptSelector: React.FC<Props> = ({ tasks, currentAttempt, onSelect }) =
   const { t } = useTranslation();
   if (tasks === null) return null;
   return (
-    <Scrollbars style={{ height: '2.875rem', width: '100%' }} autoHide>
+    <Scrollbars style={{ width: '100%' }} autoHeight autoHide>
       <TabsHeading>
         {tasks.sort(sortTaskAttempts).map((item: Task, index) => (
           <TabsHeadingItem

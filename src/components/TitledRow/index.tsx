@@ -85,7 +85,7 @@ export function valueToRenderableType(
 //
 
 const StyledTitledRow = styled.div`
-  margin: 1rem 0 0.5rem 0;
+  margin: var(--titled-row-margin);
 `;
 
 const TitledRowTitle = styled.div`
@@ -112,13 +112,21 @@ const Row = styled.div`
   display: flex;
 
   &:not(:last-child) {
-    border-bottom: 2px solid #fff;
+    border-bottom: var(--titled-row-table-border-bottom);
   }
 
   div:first-child {
-    width: 200px;
-    min-width: 200px;
-    border-right: 2px solid #fff;
+    width: var(--titled-row-table-title-cell-width);
+    min-width: var(--titled-row-table-title-cell-width);
+    border-right: var(--titled-row-table-separator-border);
+  }
+
+  div:nth-child(2) {
+    flex: 1;
+    font-size: var(--titled-row-table-value-font-size);
+    font-weight: var(--titled-row-table-value-font-weight);
+    padding: var(--titled-row-table-value-padding);
+    color: var(--titled-row-table-value-text-color);
   }
 `;
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import Collapsable from '../../../components/Collapsable';
-import Timeline, { ROW_HEIGHT, SPACE_UNDER_TIMELINE } from '../../../components/Timeline/Timeline';
+import Timeline, { ListContainer, ROW_HEIGHT, SPACE_UNDER_TIMELINE } from '../../../components/Timeline/Timeline';
 import useTaskData from '../../../components/Timeline/useTaskData';
 import TimelineNoRows from '../../../components/Timeline/TimelineNoRows';
 import { makeVisibleRows } from '../../Run/Run.utils';
@@ -73,8 +73,13 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
 
 const TimelinePreviewContainer = styled.div`
   max-height: 30rem;
-  margin-top: 1rem;
+  margin: var(--result-group-timeline-preview-margin);
   border-top: var(--border-medium-1);
+
+  ${ListContainer} {
+    border-radius: none;
+    box-shadow: none;
+  }
 `;
 
 export default TimelinePreview;
