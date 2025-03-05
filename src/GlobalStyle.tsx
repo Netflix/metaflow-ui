@@ -6,7 +6,13 @@ import './theme/theme.css';
 const globalCSS = css`
   ${normalize}
 
-  body, html, #root {
+  html {
+    font-size: var(--html-document-font-size);
+  }
+
+  body,
+  html,
+  #root {
     margin: 0;
     padding: 0;
     min-width: 100%;

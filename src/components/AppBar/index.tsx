@@ -24,7 +24,7 @@ const AppBar: React.FC = () => {
         )}
         <Breadcrumb />
         {!FEATURE_FLAGS.HIDE_QUICK_LINKS && <HelpMenu />}
-        <ConnectionStatus />
+        {!FEATURE_FLAGS.HIDE_CONNECTION_STATUS && <ConnectionStatus />}
       </ItemRow>
       <ItemRow pad="lg">
         <PluginGroup id="header" title="Extensions" slot="header" />

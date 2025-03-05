@@ -128,6 +128,8 @@
     --radius-secondary: 0.5rem; /* 8px */
 
     /* Layout */
+    --html-document-font-size: 16px;
+
     --layout-color-bg: var(--color-bg-primary);
     --layout-max-width: 160rem; /* 2560px */
     --layout-application-bar-height: 7rem; /* 112px */
@@ -423,6 +425,7 @@
     --task-view-margin: none;
     --task-view-shadow: none;
 
+    --task-list-header-border-bottom: var(--border-medium-1);
     --task-list-padding: 0;
     --task-list-width: 15.25rem;
 
@@ -433,4 +436,6 @@
     --task-content-shadow: none;
     --task-content-border-left: none;
     --task-content-border-right: none;
+
+    --loglist-button-size: 2.5rem;
 }

@@ -137,8 +137,9 @@ const Buttons = styled.div`
   flex: 0;
 
   button {
-    width: 2.5rem;
-    height: 2.5rem;
+    width: var(--loglist-button-size);
+    height: var(--loglist-button-size);
+    padding: 0;
     margin-left: 0.5rem;
 
     i {
