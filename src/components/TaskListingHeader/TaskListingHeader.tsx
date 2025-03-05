@@ -179,7 +179,7 @@ export function getMode(settings: TaskSettingsState): TaskListMode {
 //
 
 const TaskListingContainer = styled.div`
-  border-bottom: var(--border-medium-1);
+  border-bottom: var(--task-list-header-border-bottom);
   font-size: var(--font-size-primary);
   position: relative;
 `;

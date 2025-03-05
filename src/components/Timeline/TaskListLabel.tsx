@@ -121,8 +121,8 @@ export default TaskListLabel;
 //
 
 const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: boolean; status: string }>`
-  flex: 0 0 15.3125rem;
-  max-width: 15.3125rem;
+  flex: 0 0 var(--task-list-width);
+  max-width: var(--task-list-width);
   overflow: hidden;
   cursor: pointer;
   font-size: ${(p) =>
