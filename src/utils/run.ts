@@ -1,4 +1,4 @@
-import { Run } from '../types';
+import { Run } from '@/types';
 import { getISOString } from './date';
 import { formatDuration } from './format';
 

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useMemo } from 'react';
-import { PluginsContext } from '../../components/Plugins/PluginManager';
-import useResource, { Resource } from '../../hooks/useResource';
-import { Metadata } from '../../types';
-import { metadataToRecord } from '../../utils/metadata';
+import { PluginsContext } from '@components/Plugins/PluginManager';
+import useResource, { Resource } from '@hooks/useResource';
+import { Metadata } from '@/types';
+import { metadataToRecord } from '@utils/metadata';
 
 type TaskMetadataConfig = {
   url: string;

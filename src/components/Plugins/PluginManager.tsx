@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { apiHttp } from '../../constants';
+import { apiHttp } from '@/constants';
 
 /**
  * How plugins works:

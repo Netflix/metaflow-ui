@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import useIsInViewport from 'use-is-in-viewport';
-import { AsyncStatus } from '../../../types';
+import { AsyncStatus } from '@/types';
 
-import Spinner from '../../../components/Spinner';
-import { ItemRow } from '../../../components/Structure';
+import Spinner from '@components/Spinner';
+import { ItemRow } from '@components/Structure';
 
 //
 // Component which triggers update function when ever in viewport. Max once per 250ms

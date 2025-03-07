@@ -2,13 +2,13 @@ import React, { useState, useRef, useEffect, useContext, useCallback, CSSPropert
 import styled, { css, keyframes } from 'styled-components';
 import { List, AutoSizer, CellMeasurer, CellMeasurerCache } from 'react-virtualized';
 import { useTranslation } from 'react-i18next';
-import { LogData, LogItem, SearchState } from '../../hooks/useLogData';
+import { LogData, LogItem, SearchState } from '@hooks/useLogData';
 import { useDebounce } from 'use-debounce';
-import { AsyncStatus, Log } from '../../types';
-import { getTimestampString } from '../../utils/date';
-import { TimezoneContext } from '../TimezoneProvider';
+import { AsyncStatus, Log } from '@/types';
+import { getTimestampString } from '@utils/date';
+import { TimezoneContext } from '@components/TimezoneProvider';
 import { MeasuredCellParent } from 'react-virtualized/dist/es/CellMeasurer';
-import { brightenCssVar } from '../../utils/style';
+import { brightenCssVar } from '@utils/style';
 
 //
 // Typedef

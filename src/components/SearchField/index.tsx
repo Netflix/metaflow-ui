@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import FilterInput, { InputAutocompleteSettings } from '../FilterInput';
-import { SearchResultModel } from '../../hooks/useSearchField';
-import Icon from '../Icon';
+import FilterInput, { InputAutocompleteSettings } from '@components/FilterInput';
+import { SearchResultModel } from '@hooks/useSearchField';
+import Icon from '@components/Icon';
 
 type SearchFieldProps = {
   initialValue?: string;

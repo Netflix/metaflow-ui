@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { RemovableTag } from '../../../components/Tag';
-import { paramList } from '../Home.utils';
+import { RemovableTag } from '@components/Tag';
+import { paramList } from '@pages/Home/Home.utils';
 
 //
 // Tag list

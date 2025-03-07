@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Run } from '../../../types';
-import { getRunEndTime } from '../../../utils/run';
-import { TDWithLink } from './ResultGroupCells';
+import { Run } from '@/types';
+import { getRunEndTime } from '@utils/run';
+import { TDWithLink } from '@pages/Home/ResultGroup/ResultGroupCells';
 
 type Props = {
   run: Run;

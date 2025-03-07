@@ -1,7 +1,7 @@
 import React from 'react';
-import Icon from '../Icon';
+import Icon from '@components/Icon';
 import styled from 'styled-components';
-import Tooltip from '../Tooltip';
+import Tooltip from '@components/Tooltip';
 import { Link } from 'react-router-dom';
 
 const MAX_LABEL_WIDTH = 20; // number of characters to show before truncating

@@ -1,7 +1,7 @@
 import React from 'react';
-import App from './App';
-import './utils/i18n';
-import './utils/VERSION';
+import App from '@/App';
+import '@utils/i18n';
+import '@utils/VERSION';
 import { createRoot } from 'react-dom/client';
 import { worker } from './mocks/browser';
 

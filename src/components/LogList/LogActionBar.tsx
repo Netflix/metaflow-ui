@@ -1,12 +1,12 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import Button from '../Button';
-import { NotificationType, useNotifications, Notification } from '../Notifications';
+import Button from '@components/Button';
+import { NotificationType, useNotifications, Notification } from '@components/Notifications';
 import copy from 'copy-to-clipboard';
-import Icon from '../Icon';
-import { LocalSearchType, LogItem } from '../../hooks/useLogData';
-import FilterInput from '../FilterInput';
+import Icon from '@components/Icon';
+import { LocalSearchType, LogItem } from '@hooks/useLogData';
+import FilterInput from '@components/FilterInput';
 import { TFunction } from 'i18next';
 
 //

@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import TestWrapper from '../../../utils/testing';
+import TestWrapper from '@utils/testing';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
 import Tabs, { TabDefinition } from '..';

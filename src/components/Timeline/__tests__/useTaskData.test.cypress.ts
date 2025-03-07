@@ -1,4 +1,4 @@
-import { Task, Step, TaskStatus } from '../../../types';
+import { Task, Step, TaskStatus } from '@/types';
 import { rowDataReducer } from '../useTaskData';
 
 export function createTask(partialTask: Partial<Task>): Task {

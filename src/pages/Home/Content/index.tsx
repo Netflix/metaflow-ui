@@ -1,13 +1,13 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { APIError, AsyncStatus, Run as IRun } from '../../../types';
+import { APIError, AsyncStatus, Run as IRun } from '@/types';
 
-import ResultGroup from '../ResultGroup';
-import GenericError, { APIErrorRenderer } from '../../../components/GenericError';
-import { ItemRow } from '../../../components/Structure';
-import AutoLoadTrigger from './AutoLoadTrigger';
-import Spinner from '../../../components/Spinner';
+import ResultGroup from '@pages/Home/ResultGroup';
+import GenericError, { APIErrorRenderer } from '@components/GenericError';
+import { ItemRow } from '@components/Structure';
+import AutoLoadTrigger from '@pages/Home/Content/AutoLoadTrigger';
+import Spinner from '@components/Spinner';
 
 type Props = {
   error: APIError | null;

@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { useLocation } from 'react-router';
 import styled from 'styled-components';
-import PLUGIN_STYLESHEET from './PluginDefaultStyleSheet';
-import { PluginCommunicationsAPI, MESSAGE_NAME, PluginsContext, Plugin } from './PluginManager';
-import { getRouteMatch, KnownURLParams } from '../../utils/routing';
-import { TimezoneContext } from '../TimezoneProvider';
+import PLUGIN_STYLESHEET from '@components/Plugins/PluginDefaultStyleSheet';
+import { PluginCommunicationsAPI, MESSAGE_NAME, PluginsContext, Plugin } from '@components/Plugins/PluginManager';
+import { getRouteMatch, KnownURLParams } from '@utils/routing';
+import { TimezoneContext } from '@components/TimezoneProvider';
 
 //
 // Typedef

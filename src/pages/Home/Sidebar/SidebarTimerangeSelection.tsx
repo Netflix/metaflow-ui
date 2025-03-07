@@ -2,12 +2,12 @@ import React, { useContext, useMemo } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SidebarSectionWrapper } from '.';
-import TimeRange from '../../../components/Form/TimeRange';
+import TimeRange from '@components/Form/TimeRange';
 import { ParameterList, StyledRemovableTag } from './SidebarTags';
-import { TimezoneContext } from '../../../components/TimezoneProvider';
-import { getTimeRangeString, getTimeFromPastByDays } from '../../../utils/date';
+import { TimezoneContext } from '@components/TimezoneProvider';
+import { getTimeRangeString, getTimeFromPastByDays } from '@utils/date';
 import { TFunction } from 'i18next';
-import Icon from '../../../components/Icon';
+import Icon from '@components/Icon';
 
 //
 // Typedef

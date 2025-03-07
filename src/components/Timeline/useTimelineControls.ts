@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from 'react';
-import { Run } from '../../types';
-import { getLongestRowDuration, startAndEndpointsOfRows } from '../../utils/row';
-import { Row } from './VirtualizedTimeline';
+import { Run } from '@/types';
+import { getLongestRowDuration, startAndEndpointsOfRows } from '@utils/row';
+import { Row } from '@components/Timeline/VirtualizedTimeline';
 
 //
 // Hook for controlling timeline. Timeline does not require use of this but this hook will provide functions

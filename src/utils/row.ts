@@ -1,5 +1,5 @@
-import { Row } from '../components/Timeline/VirtualizedTimeline';
-import { Task, TaskStatus } from '../types';
+import { Row } from '@components/Timeline/VirtualizedTimeline';
+import { Task, TaskStatus } from '@/types';
 
 const takeSmallest = (a: Row): number | null =>
   a.type === 'task' ? a.data[0].started_at || Number.MAX_VALUE : a.data.ts_epoch;

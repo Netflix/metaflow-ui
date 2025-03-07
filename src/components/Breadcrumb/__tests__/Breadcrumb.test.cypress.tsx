@@ -1,7 +1,7 @@
 import React from 'react';
 import { mount } from '@cypress/react';
 import Breadcrumb, { findAdditionalButtons, notEmptyAndEqual, pathFromString } from '..';
-import TestWrapper from '../../../utils/testing';
+import TestWrapper from '@utils/testing';
 
 const matchWithParams = (params: Record<string, string>) => ({
   isExact: true,

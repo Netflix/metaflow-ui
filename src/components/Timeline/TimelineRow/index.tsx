@@ -2,15 +2,15 @@ import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
 import { Row } from '../VirtualizedTimeline';
 import { Link } from 'react-router-dom';
-import { getPathFor } from '../../../utils/routing';
+import { getPathFor } from '@utils/routing';
 import { TFunction } from 'i18next';
 import TaskListLabel from '../TaskListLabel';
 import LineElement, { BoxGraphicValue } from './LineElement';
 
-import { getTaskDuration } from '../../../utils/task';
-import { getRowStatus, getStepDuration } from './utils';
+import { getTaskDuration } from '@utils/task';
+import { getRowStatus, getStepDuration } from '@components/Timeline/TimelineRow/utils';
 import { TimelineMetrics } from '../Timeline';
-import { AsyncStatus } from '../../../types';
+import { AsyncStatus } from '@/types';
 
 type TimelineRowProps = {
   // Row type and data

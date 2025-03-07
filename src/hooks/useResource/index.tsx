@@ -1,11 +1,11 @@
 import { useState, useEffect, useReducer, useCallback, useMemo } from 'react';
-import { apiHttp } from '../../constants';
+import { apiHttp } from '@/constants';
 import { Event, EventType } from '../../ws';
 import useWebsocket from '../useWebsocket';
 import useInterval from '../useInterval';
-import { APIError, AsyncStatus } from '../../types';
-import { setLogItem } from '../../utils/debugdb';
-import { logWarning } from '../../utils/errorlogger';
+import { APIError, AsyncStatus } from '@/types';
+import { setLogItem } from '@utils/debugdb';
+import { logWarning } from '@utils/errorlogger';
 
 //
 // Typedef

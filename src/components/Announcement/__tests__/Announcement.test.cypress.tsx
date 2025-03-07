@@ -3,7 +3,7 @@ import { mount } from '@cypress/react';
 import Announcements from '..';
 
 import NotificationsResponse from '../../../../cypress/fixtures/notifications_response.json';
-import TestWrapper from '../../../utils/testing';
+import TestWrapper from '@utils/testing';
 
 describe('Announcements test', () => {
   it('Announcements basic', () => {

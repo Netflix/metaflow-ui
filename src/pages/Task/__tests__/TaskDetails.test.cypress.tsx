@@ -1,5 +1,5 @@
-import { createTask } from '../../../utils/testhelper';
-import { getAttemptDuration } from '../components/TaskDetails';
+import { createTask } from '@utils/testhelper';
+import { getAttemptDuration } from '@pages/Task/components/TaskDetails';
 
 describe('TaskDetails component', () => {
   it('Util - getAttemptDuration', () => {

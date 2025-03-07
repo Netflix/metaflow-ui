@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import Icon from '../../../components/Icon';
-import { isVersionEqualOrHigher } from '../../../components/Plugins/PluginManager';
-import { Run } from '../../../types';
+import Icon from '@components/Icon';
+import { isVersionEqualOrHigher } from '@components/Plugins/PluginManager';
+import { Run } from '@/types';
 
 //
 // Typedef

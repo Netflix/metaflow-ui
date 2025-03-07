@@ -1,10 +1,10 @@
 import React, { useRef, useEffect } from 'react';
 import styled from 'styled-components';
-import logo from '../../assets/logo_dark_horizontal.svg';
-import Icon from '../Icon';
+import logo from '@assets/logo_dark_horizontal.svg';
+import Icon from '@components/Icon';
 import useComponentSize from '@rehooks/component-size';
-import useOnKeyPress from '../../hooks/useOnKeyPress';
-import FEATURE_FLAGS from '../../utils/FEATURE';
+import useOnKeyPress from '@hooks/useOnKeyPress';
+import FEATURE_FLAGS from '@utils/FEATURE';
 
 //
 // Typedef

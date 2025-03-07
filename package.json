@@ -27,9 +27,9 @@
     "uuid": "^9.0.0"
   },
   "scripts": {
-    "start": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts start",
-    "start-with-mocks": "cross-env DISABLE_NEW_JSX_TRANSFORM=true REACT_APP_ENABLE_MOCKS=true react-scripts start",
-    "build": "cross-env DISABLE_NEW_JSX_TRANSFORM=true react-scripts build",
+    "start": "cross-env DISABLE_NEW_JSX_TRANSFORM=true craco start",
+    "start-with-mocks": "cross-env DISABLE_NEW_JSX_TRANSFORM=true REACT_APP_ENABLE_MOCKS=true craco start",
+    "build": "cross-env DISABLE_NEW_JSX_TRANSFORM=true craco build",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "test": "cypress open --component",
@@ -58,6 +58,8 @@
   },
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@craco/craco": "^7.1.0",
+    "@craco/types": "^7.1.0",
     "@cypress/react": "^8.0.0",
     "@types/node": "^20.12.7",
     "@types/react": "^18.2.5",
@@ -95,5 +97,6 @@
     "workerDirectory": [
       "public"
     ]
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

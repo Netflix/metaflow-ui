@@ -3,27 +3,24 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
 import { useTranslation } from 'react-i18next';
 
-import Root from './pages/Root';
+import GlobalStyle from '@/GlobalStyle';
+import '@theme/font/roboto.css';
 
-import GlobalStyle from './GlobalStyle';
-import './theme/font/roboto.css';
-
-import { Page } from './components/Structure';
-import AppBar from './components/AppBar';
-import { NotificationsProvider, Notifications } from './components/Notifications';
-import ErrorBoundary from './components/GeneralErrorBoundary';
-import { TimezoneProvider } from './components/TimezoneProvider';
-import { LoggingProvider } from './hooks/useLogger';
-import FeatureFlagLoader from './components/FeatureLoader';
-import Logger from './components/Logger';
-
-import { fetchServiceVersion } from './utils/VERSION';
-import { fetchFeaturesConfig } from './utils/FEATURE';
-import Announcements from './components/Announcement';
-import { PluginsProvider } from './components/Plugins/PluginManager';
-import PluginRegisterSystem from './components/Plugins/PluginRegisterSystem';
-import TopNavPlugin from './components/Plugins/TopNavPlugin';
-
+import Root from '@pages/Root';
+import AppBar from '@components/AppBar';
+import ErrorBoundary from '@components/GeneralErrorBoundary';
+import FeatureFlagLoader from '@components/FeatureLoader';
+import Logger from '@components/Logger';
+import Announcements from '@components/Announcement';
+import PluginRegisterSystem from '@components/Plugins/PluginRegisterSystem';
+import TopNavPlugin from '@components/Plugins/TopNavPlugin';
+import { Page } from '@components/Structure';
+import { NotificationsProvider, Notifications } from '@components/Notifications';
+import { TimezoneProvider } from '@components/TimezoneProvider';
+import { PluginsProvider } from '@components/Plugins/PluginManager';
+import { LoggingProvider } from '@hooks/useLogger';
+import { fetchServiceVersion } from '@utils/VERSION';
+import { fetchFeaturesConfig } from '@utils/FEATURE';
 import { appBasePath } from './constants';
 
 const App: React.FC = () => {

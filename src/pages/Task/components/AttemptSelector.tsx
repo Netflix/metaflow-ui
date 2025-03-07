@@ -1,8 +1,8 @@
 import React from 'react';
 import Scrollbars from 'react-custom-scrollbars-2';
 import { useTranslation } from 'react-i18next';
-import { TabsHeading, TabsHeadingItem } from '../../../components/Tabs';
-import { Task } from '../../../types';
+import { TabsHeading, TabsHeadingItem } from '@components/Tabs';
+import { Task } from '@/types';
 
 //
 // Typedef

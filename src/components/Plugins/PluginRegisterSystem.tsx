@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { apiHttp } from '../../constants';
-import { Plugin, PluginCommunicationsAPI, pluginPath, PluginsContext } from './PluginManager';
+import { apiHttp } from '@/constants';
+import { Plugin, PluginCommunicationsAPI, pluginPath, PluginsContext } from '@components/Plugins/PluginManager';
 
 //
 // Plugin register system will add iframes to DOM until it gets register message

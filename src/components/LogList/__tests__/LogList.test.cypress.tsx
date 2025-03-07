@@ -1,8 +1,8 @@
 import { mount } from '@cypress/react';
 import React from 'react';
 import LogList from '..';
-import { LogData } from '../../../hooks/useLogData';
-import TestWrapper, { gid } from '../../../utils/testing';
+import { LogData } from '@hooks/useLogData';
+import TestWrapper, { gid } from '@utils/testing';
 
 function createLogData(props: Partial<LogData>): LogData {
   return {

@@ -2,19 +2,19 @@ import React, { useContext } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-import DropdownField from '../../../components/Form/Dropdown';
-import Button from '../../../components/Button';
-import { Text } from '../../../components/Text';
-import FilterInput from '../../../components/FilterInput';
+import DropdownField from '@components/Form/Dropdown';
+import Button from '@components/Button';
+import { Text } from '@components/Text';
+import FilterInput from '@components/FilterInput';
 
-import SidebarStatusSelection from './SidebarStatusSelection';
-import { TagParameterList } from './SidebarTags';
-import SidebarTimerangeSelection from './SidebarTimerangeSelection';
-import { isDefaultParams } from '../Home.utils';
+import SidebarStatusSelection from '@pages/Home/Sidebar/SidebarStatusSelection';
+import { TagParameterList } from '@pages/Home/Sidebar/SidebarTags';
+import SidebarTimerangeSelection from '@pages/Home/Sidebar/SidebarTimerangeSelection';
+import { isDefaultParams } from '@pages/Home/Home.utils';
 import { Scrollbars } from 'react-custom-scrollbars-2';
-import { TimezoneContext } from '../../../components/TimezoneProvider';
-import FEATURE_FLAGS from '../../../utils/FEATURE';
-import { getHeaderSizeRem } from '../../../utils/style';
+import { TimezoneContext } from '@components/TimezoneProvider';
+import FEATURE_FLAGS from '@utils/FEATURE';
+import { getHeaderSizeRem } from '@utils/style';
 
 //
 // Typedef

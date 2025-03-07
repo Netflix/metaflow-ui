@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Button from '../../../components/Button';
-import { NotificationType, useNotifications } from '../../../components/Notifications';
-import { ItemRow } from '../../../components/Structure';
+import Button from '@components/Button';
+import { NotificationType, useNotifications } from '@components/Notifications';
+import { ItemRow } from '@components/Structure';
 import copy from 'copy-to-clipboard';
-import Icon from '../../../components/Icon';
-import { downloadString } from '../../../utils/file';
+import Icon from '@components/Icon';
+import { downloadString } from '@utils/file';
 
 //
 // Typedef

@@ -1,5 +1,5 @@
 import React from 'react';
-import PluginGroup from './PluginGroup';
+import PluginGroup from '@components/Plugins/PluginGroup';
 
 // Component to hold the plugin for the `top-nav` slot
 const TopNavPlugin: React.FC = () => {

@@ -1,19 +1,19 @@
 import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import Icon from '../Icon';
-import { InputLabel } from './InputLabel';
-import Popover from '../Popover';
-import { BigButton } from '../Button';
-import { TimezoneContext } from '../TimezoneProvider';
-import { getDateTimeLocalString } from '../../utils/date';
+import Icon from '@components/Icon';
+import { InputLabel } from '@components/Form/InputLabel';
+import Popover from '@components/Popover';
+import { BigButton } from '@components/Button';
+import { TimezoneContext } from '@components/TimezoneProvider';
+import { getDateTimeLocalString } from '@utils/date';
 import spacetime from 'spacetime';
 import { useTranslation } from 'react-i18next';
-import { isFirefox } from '../../utils/browser';
-import InputWrapper from './InputWrapper';
-import DateInput from './DateInput';
-import Dropdown from './Dropdown';
-import { getTimeFromPastByDays } from '../../utils/date';
-import useOnKeyPress from '../../hooks/useOnKeyPress';
+import { isFirefox } from '@utils/browser';
+import InputWrapper from '@components/Form/InputWrapper';
+import DateInput from '@components/Form/DateInput';
+import Dropdown from '@components/Form/Dropdown';
+import { getTimeFromPastByDays } from '@utils/date';
+import useOnKeyPress from '@hooks/useOnKeyPress';
 
 //
 // Typedef

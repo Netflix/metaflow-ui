@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useReducer, useState } from 'react';
-import { Task, Step, AsyncStatus, APIError, TaskStatus } from '../../types';
-import useResource, { DataModel } from '../../hooks/useResource';
+import { Task, Step, AsyncStatus, APIError, TaskStatus } from '@/types';
+import useResource, { DataModel } from '@hooks/useResource';
 import {
   countTaskRowsByStatus,
   getStepStatus,
@@ -9,8 +9,8 @@ import {
   RowCounts,
   StepLineData,
   timepointsOfTasks,
-} from './taskdataUtils';
-import { apiHttp } from '../../constants';
+} from '@components/Timeline/taskdataUtils';
+import { apiHttp } from '@/constants';
 
 //
 // useTaskData hook is responsible of fetching all step and task data for given run. It automatically

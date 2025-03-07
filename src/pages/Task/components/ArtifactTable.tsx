@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import PropertyTable, { PropertyTableColumns } from '../../../components/PropertyTable';
-import InformationRow from '../../../components/InformationRow';
-import { Artifact } from '../../../types';
-import { ItemRow } from '../../../components/Structure';
-import Icon from '../../../components/Icon';
-import GenericError from '../../../components/GenericError';
-import { valueToRenderableType } from '../../../components/TitledRow';
-import Dropdown from '../../../components/Form/Dropdown';
-import Modal from '../../../components/Modal';
-import Button from '../../../components/Button';
+import PropertyTable, { PropertyTableColumns } from '@components/PropertyTable';
+import InformationRow from '@components/InformationRow';
+import { Artifact } from '@/types';
+import { ItemRow } from '@components/Structure';
+import Icon from '@components/Icon';
+import GenericError from '@components/GenericError';
+import { valueToRenderableType } from '@components/TitledRow';
+import Dropdown from '@components/Form/Dropdown';
+import Modal from '@components/Modal';
+import Button from '@components/Button';
 import copy from 'copy-to-clipboard';
 
 type Props = { artifacts: Artifact[]; onOpenContentClick: (artifactName: string, data: string) => void };

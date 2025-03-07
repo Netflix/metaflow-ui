@@ -1,9 +1,9 @@
 import styled from 'styled-components';
-import { TD } from '../../../components/Table';
+import { TD } from '@components/Table';
 import React from 'react';
-import { RunStatus } from '../../../types';
-import { SmallText } from '../../../components/Text';
-import StatusIndicator from '../../../components/StatusIndicator';
+import { RunStatus } from '@/types';
+import { SmallText } from '@components/Text';
+import StatusIndicator from '@components/StatusIndicator';
 
 //
 // Small status indicator on left side of the rows

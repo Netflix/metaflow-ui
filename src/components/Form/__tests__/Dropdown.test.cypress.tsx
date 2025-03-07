@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import TestWrapper, { gid } from '../../../utils/testing';
+import TestWrapper, { gid } from '@utils/testing';
 import Dropdown from '../Dropdown';
 
 const OPTIONS: [string, string][] = [

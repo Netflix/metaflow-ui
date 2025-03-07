@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { getHeaderSizePx } from '../../../utils/style';
+import { getHeaderSizePx } from '@utils/style';
 
 //
 // Typedef

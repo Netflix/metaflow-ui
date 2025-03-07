@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { isFirefox } from '../../utils/browser';
-import { InputLabel } from './InputLabel';
-import InputWrapper from './InputWrapper';
-import InputTip from './InputTip';
+import { isFirefox } from '@utils/browser';
+import { InputLabel } from '@components/Form/InputLabel';
+import InputWrapper from '@components/Form/InputWrapper';
+import InputTip from '@components/Form/InputTip';
 
 //
 // Typedef

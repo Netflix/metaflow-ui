@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouteMatch } from 'react-router-dom';
-import useResource from '../../hooks/useResource';
-import { Run as IRun } from '../../types';
+import useResource from '@hooks/useResource';
+import { Run as IRun } from '@/types';
 
-import Spinner from '../../components/Spinner';
-import { APIErrorRenderer } from '../../components/GenericError';
-import RunPage from './RunPage';
+import Spinner from '@components/Spinner';
+import { APIErrorRenderer } from '@components/GenericError';
+import RunPage from '@pages/Run/RunPage';
 
 //
 // Typedef

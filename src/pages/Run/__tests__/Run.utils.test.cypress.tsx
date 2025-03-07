@@ -1,4 +1,4 @@
-import { StepRow } from '../../../components/Timeline/VirtualizedTimeline';
+import { StepRow } from '@components/Timeline/VirtualizedTimeline';
 import {
   createRowDataModel,
   createStepRow,
@@ -6,7 +6,7 @@ import {
   createTask,
   createTaskListSettings,
   createTaskRow,
-} from '../../../utils/testhelper';
+} from '@utils/testhelper';
 import {
   getTaskFromList,
   getTaskPageLink,

@@ -1,16 +1,16 @@
 import React, { useRef } from 'react';
 import styled, { css } from 'styled-components';
 import useComponentSize, { ComponentSize } from '@rehooks/component-size';
-import useWindowSize from '../../../hooks/useWindowSize';
-import { Run, TaskStatus } from '../../../types';
-import { GraphModel, DAGModelItem, GraphStructureModel, DAGNodeTypes } from '../DAGUtils';
-import { StepLineData } from '../../Timeline/taskdataUtils';
-import Icon from '../../Icon';
+import useWindowSize from '@hooks/useWindowSize';
+import { Run, TaskStatus } from '@/types';
+import { GraphModel, DAGModelItem, GraphStructureModel, DAGNodeTypes } from '@components/DAG/DAGUtils';
+import { StepLineData } from '@components/Timeline/taskdataUtils';
+import Icon from '@components/Icon';
 import { useTranslation } from 'react-i18next';
-import Tooltip, { TooltipTitle } from '../../Tooltip';
+import Tooltip, { TooltipTitle } from '@components/Tooltip';
 import { useHistory } from 'react-router-dom';
-import { getPath } from '../../../utils/routing';
-import { getRunId } from '../../../utils/run';
+import { getPath } from '@utils/routing';
+import { getRunId } from '@utils/run';
 
 //
 // DAG Content section for when we have dag data

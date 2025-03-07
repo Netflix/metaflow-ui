@@ -3,16 +3,16 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import useIsInViewport from 'use-is-in-viewport';
 
-import { Run as IRun } from '../../../types';
+import { Run as IRun } from '@/types';
 
-import Table from '../../../components/Table';
-import { Section } from '../../../components/Structure';
-import StickyHeader from './StickyHeader';
-import { TimezoneContext } from '../../../components/TimezoneProvider';
+import Table from '@components/Table';
+import { Section } from '@components/Structure';
+import { TimezoneContext } from '@components/TimezoneProvider';
 
-import ResultGroupHeader from './ResultGroupHeader';
-import ResultGroupFooter from './ResultGroupFooter';
-import ResultGroupRow from './ResultGroupRow';
+import StickyHeader from '@pages/Home/ResultGroup/StickyHeader';
+import ResultGroupHeader from '@pages/Home/ResultGroup/ResultGroupHeader';
+import ResultGroupFooter from '@pages/Home/ResultGroup/ResultGroupFooter';
+import ResultGroupRow from '@pages/Home/ResultGroup/ResultGroupRow';
 
 //
 // Typedef

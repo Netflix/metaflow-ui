@@ -1,6 +1,6 @@
 import ReconnectingWebSocket, { Event as OpenEvent, CloseEvent, ErrorEvent } from 'reconnecting-websocket';
 
-import { apiWs } from '../../constants';
+import { apiWs } from '@/constants';
 
 import { useEffect } from 'react';
 

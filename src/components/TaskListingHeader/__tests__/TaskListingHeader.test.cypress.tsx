@@ -1,11 +1,11 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import TestWrapper from '../../../utils/testing';
+import TestWrapper from '@utils/testing';
 import TaskListingHeader, { getMode } from '../TaskListingHeader';
-import useSearchField from '../../../hooks/useSearchField';
-import CollapseButton from '../components/CollapseButton';
-import { createTaskListSettings } from '../../../utils/testhelper';
-import { Run } from '../../../types';
+import useSearchField from '@hooks/useSearchField';
+import CollapseButton from '@components/TaskListingHeader/components/CollapseButton';
+import { createTaskListSettings } from '@utils/testhelper';
+import { Run } from '@/types';
 
 const mockRun: Run = {
   run_number: 1,

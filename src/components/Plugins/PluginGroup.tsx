@@ -1,10 +1,10 @@
 import React, { useContext, useState, useMemo, ReactNode } from 'react';
 import styled from 'styled-components';
-import Collapsable from '../Collapsable';
-import Icon from '../Icon';
+import Collapsable from '@components/Collapsable';
+import Icon from '@components/Icon';
 
-import { AllowedSlot, pluginPath, PluginsContext, Plugin } from './PluginManager';
-import PluginSlot from './PluginSlot';
+import { AllowedSlot, pluginPath, PluginsContext, Plugin } from '@components/Plugins/PluginManager';
+import PluginSlot from '@components/Plugins/PluginSlot';
 
 //
 // Typedef

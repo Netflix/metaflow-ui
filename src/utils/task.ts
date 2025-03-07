@@ -1,4 +1,4 @@
-import { Task } from '../types';
+import { Task } from '@/types';
 
 /**
  * Task id might come as string or number. Make sure we have string

@@ -2,44 +2,40 @@ import React, { useContext, useState, useEffect, useCallback, useMemo } from 're
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
-import { Run as IRun, Task as ITask, AsyncStatus, Artifact } from '../../types';
-import useResource, { Resource } from '../../hooks/useResource';
-import { SearchFieldReturnType } from '../../hooks/useSearchField';
+import { Run as IRun, Task as ITask, AsyncStatus, Artifact } from '@/types';
+import useResource, { Resource } from '@hooks/useResource';
+import { SearchFieldReturnType } from '@hooks/useSearchField';
 
-import Spinner from '../../components/Spinner';
-import LogList from '../../components/LogList';
-import FullPageContainer from '../../components/FullPageContainer';
-import TaskListingHeader from '../../components/TaskListingHeader';
-import { Row } from '../../components/Timeline/VirtualizedTimeline';
-import { RowCounts } from '../../components/Timeline/taskdataUtils';
-import { RowDataAction } from '../../components/Timeline/useTaskData';
-import GenericError, { APIErrorRenderer } from '../../components/GenericError';
-import TaskList from './components/TaskList';
-import AnchoredView from './components/AnchoredView';
-import SectionLoader from './components/SectionLoader';
-import TaskDetails from './components/TaskDetails';
-import AttemptSelector from './components/AttemptSelector';
-import ArtifactTable from './components/ArtifactTable';
-import ArtifactViewer from './components/ArtifactViewer';
-import ArtifactActionBar from './components/ArtifactActionBar';
-import { getTaskId } from '../../utils/task';
-import {
-  TaskListMode,
-  TaskSettingsQueryParameters,
-  TaskSettingsState,
-} from '../../components/Timeline/useTaskListSettings';
-import FEATURE_FLAGS from '../../utils/FEATURE';
-import { PluginsContext, isVersionEqualOrHigher } from '../../components/Plugins/PluginManager';
-import { Decorator, GraphModel } from '../../components/DAG/DAGUtils';
-import useLogData, { LogData } from '../../hooks/useLogData';
-import { apiHttp } from '../../constants';
-import useTaskMetadata from './useTaskMetadata';
-import { getTagOfType } from '../../utils/run';
-import useTaskCards, { taskCardPath } from '../../components/MFCard/useTaskCards';
-import DynamicCardIframe from '../../components/MFCard/DynamicCardIframe';
-import Button from '../../components/Button';
-import Icon from '../../components/Icon';
-import LogActionBar from '../../components/LogList/LogActionBar';
+import Spinner from '@components/Spinner';
+import LogList from '@components/LogList';
+import FullPageContainer from '@components/FullPageContainer';
+import TaskListingHeader from '@components/TaskListingHeader';
+import { Row } from '@components/Timeline/VirtualizedTimeline';
+import { RowCounts } from '@components/Timeline/taskdataUtils';
+import { RowDataAction } from '@components/Timeline/useTaskData';
+import GenericError, { APIErrorRenderer } from '@components/GenericError';
+import TaskList from '@pages/Task/components/TaskList';
+import AnchoredView from '@pages/Task/components/AnchoredView';
+import SectionLoader from '@pages/Task/components/SectionLoader';
+import TaskDetails from '@pages/Task/components/TaskDetails';
+import AttemptSelector from '@pages/Task/components/AttemptSelector';
+import ArtifactTable from '@pages/Task/components/ArtifactTable';
+import ArtifactViewer from '@pages/Task/components/ArtifactViewer';
+import ArtifactActionBar from '@pages/Task/components/ArtifactActionBar';
+import { getTaskId } from '@utils/task';
+import { TaskListMode, TaskSettingsQueryParameters, TaskSettingsState } from '@components/Timeline/useTaskListSettings';
+import FEATURE_FLAGS from '@utils/FEATURE';
+import { PluginsContext, isVersionEqualOrHigher } from '@components/Plugins/PluginManager';
+import { Decorator, GraphModel } from '@components/DAG/DAGUtils';
+import useLogData, { LogData } from '@hooks/useLogData';
+import { apiHttp } from '@/constants';
+import useTaskMetadata from '@pages/Task/useTaskMetadata';
+import { getTagOfType } from '@utils/run';
+import useTaskCards, { taskCardPath } from '@components/MFCard/useTaskCards';
+import DynamicCardIframe from '@components/MFCard/DynamicCardIframe';
+import Button from '@components/Button';
+import Icon from '@components/Icon';
+import LogActionBar from '@components/LogList/LogActionBar';
 
 //
 // Typedef

@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import Collapsable from '../../../components/Collapsable';
-import Timeline, { ListContainer, ROW_HEIGHT, SPACE_UNDER_TIMELINE } from '../../../components/Timeline/Timeline';
-import useTaskData from '../../../components/Timeline/useTaskData';
-import TimelineNoRows from '../../../components/Timeline/TimelineNoRows';
-import { makeVisibleRows } from '../../Run/Run.utils';
-import { startAndEndpointsOfRows } from '../../../utils/row';
+import Collapsable from '@components/Collapsable';
+import Timeline, { ListContainer, ROW_HEIGHT, SPACE_UNDER_TIMELINE } from '@components/Timeline/Timeline';
+import useTaskData from '@components/Timeline/useTaskData';
+import TimelineNoRows from '@components/Timeline/TimelineNoRows';
+import { makeVisibleRows } from '@pages/Run/Run.utils';
+import { startAndEndpointsOfRows } from '@utils/row';
 import styled from 'styled-components';
-import { Row } from '../../../components/Timeline/VirtualizedTimeline';
-import { Run } from '../../../types';
+import { Row } from '@components/Timeline/VirtualizedTimeline';
+import { Run } from '@/types';
 
 const zeroCounts = { all: 0, failed: 0, running: 0, completed: 0, unknown: 0, pending: 0 };
 

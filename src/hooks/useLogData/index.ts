@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Log, AsyncStatus, APIError } from '../../types';
-import { DataModel, defaultError } from '../../hooks/useResource';
-import { apiHttp } from '../../constants';
+import { Log, AsyncStatus, APIError } from '@/types';
+import { DataModel, defaultError } from '@hooks/useResource';
+import { apiHttp } from '@/constants';
 
 export type LogItem = Log | 'Loading' | 'Error' | undefined;
 

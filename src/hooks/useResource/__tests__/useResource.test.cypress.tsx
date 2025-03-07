@@ -2,7 +2,7 @@ import React from 'react';
 import useResource, { HookConfig } from '..';
 import { Server } from 'mock-websocket';
 import { mount } from '@cypress/react';
-import { gid } from '../../../utils/testing';
+import { gid } from '@utils/testing';
 import 'setimmediate';
 
 type BasicReponseData = { id: string; label: string };

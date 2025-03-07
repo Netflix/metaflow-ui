@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import TestWrapper from '../../../utils/testing';
+import TestWrapper from '@utils/testing';
 import DateInput from '../DateInput';
 
 describe('DateInput', () => {

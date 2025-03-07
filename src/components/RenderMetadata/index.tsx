@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Metadata } from '../../types';
-import MarkdownRenderer from '../MarkdownRenderer';
+import { Metadata } from '@/types';
+import MarkdownRenderer from '@components/MarkdownRenderer';
 
 type Props = {
   metadata: Metadata[];

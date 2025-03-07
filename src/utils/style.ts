@@ -1,5 +1,5 @@
-import { SupportedIcons } from '../components/Icon';
-import { RunStatus, TaskStatus } from '../types';
+import { SupportedIcons } from '@components/Icon';
+import { RunStatus, TaskStatus } from '@/types';
 
 /**
  * Get browsers font size. User might have changed default of 16px.

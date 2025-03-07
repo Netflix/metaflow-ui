@@ -1,7 +1,7 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import HeightAnimatedContainer from '../HeightAnimatedContainer';
-import Icon from '../Icon';
+import HeightAnimatedContainer from '@components/HeightAnimatedContainer';
+import Icon from '@components/Icon';
 
 //
 // Typedef

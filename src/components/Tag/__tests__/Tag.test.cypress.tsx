@@ -1,6 +1,6 @@
 import React from 'react';
 import { mount } from '@cypress/react';
-import TestWrapper from '../../../utils/testing';
+import TestWrapper from '@utils/testing';
 import Tag, { RemovableTag } from '..';
 
 describe('Tag test', () => {

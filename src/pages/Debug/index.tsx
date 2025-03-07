@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import ContentHeader from '../../components/Content/ContentHeader';
-import { ItemRow } from '../../components/Structure';
-import { BigButton } from '../../components/Button';
-import FEATURE_FLAGS, { FeatureFlags } from '../../utils/FEATURE';
-import useLogger from '../../hooks/useLogger';
-import { CheckboxField } from '../../components/Form/Checkbox';
+import ContentHeader from '@components/Content/ContentHeader';
+import { ItemRow } from '@components/Structure';
+import { BigButton } from '@components/Button';
+import FEATURE_FLAGS, { FeatureFlags } from '@utils/FEATURE';
+import useLogger from '@hooks/useLogger';
+import { CheckboxField } from '@components/Form/Checkbox';
 
 const DebugPage: React.FC = () => {
   const { t } = useTranslation();
