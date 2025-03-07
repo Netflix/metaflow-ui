@@ -1,8 +1,6 @@
-import ReconnectingWebSocket, { Event as OpenEvent, CloseEvent, ErrorEvent } from 'reconnecting-websocket';
-
-import { apiWs } from '@/constants';
-
 import { useEffect } from 'react';
+import ReconnectingWebSocket, { CloseEvent, ErrorEvent, Event as OpenEvent } from 'reconnecting-websocket';
+import { apiWs } from '@/constants';
 
 export interface Event<T> {
   event: T;

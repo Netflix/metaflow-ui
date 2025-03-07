@@ -1,9 +1,8 @@
 import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
-
+import { ReactComponent as ArrowPointTop } from '@assets/arrow-point-up.svg';
 import { ReactComponent as Arrow } from '@assets/arrow.svg';
 import { ReactComponent as ArrowDown } from '@assets/arrow_down.svg';
-import { ReactComponent as ArrowPointTop } from '@assets/arrow-point-up.svg';
 import { ReactComponent as Calendar } from '@assets/calendar.svg';
 import { ReactComponent as CaretDown } from '@assets/caret_down.svg';
 import { ReactComponent as Check } from '@assets/check.svg';
@@ -18,13 +17,13 @@ import { ReactComponent as Enter } from '@assets/enter.svg';
 import { ReactComponent as Error } from '@assets/error.svg';
 import { ReactComponent as Expand } from '@assets/expand.svg';
 import { ReactComponent as External } from '@assets/external.svg';
-import { ReactComponent as Info } from '@assets/info.svg';
 import { ReactComponent as InfoSmall } from '@assets/info-small.svg';
+import { ReactComponent as Info } from '@assets/info.svg';
 import { ReactComponent as InfoThick } from '@assets/info_thick.svg';
 import { ReactComponent as Link } from '@assets/link.svg';
-import { ReactComponent as Listing } from '@assets/listing.svg';
 import { ReactComponent as ListItemNotFound } from '@assets/list-item-not-found.svg';
 import { ReactComponent as ListNotFound } from '@assets/list-not-found.svg';
+import { ReactComponent as Listing } from '@assets/listing.svg';
 import { ReactComponent as Maximize } from '@assets/maximize.svg';
 import { ReactComponent as Minus } from '@assets/minus.svg';
 import { ReactComponent as NoDag } from '@assets/no-dag.svg';
@@ -37,8 +36,8 @@ import { ReactComponent as QuestionCircled } from '@assets/question-circled.svg'
 import { ReactComponent as Return } from '@assets/return.svg';
 import { ReactComponent as RowLoader } from '@assets/row-loader.svg';
 import { ReactComponent as Running } from '@assets/running.svg';
-import { ReactComponent as Search } from '@assets/search.svg';
 import { ReactComponent as SearchNotFound } from '@assets/search-not-found.svg';
+import { ReactComponent as Search } from '@assets/search.svg';
 import { ReactComponent as Sort } from '@assets/sort.svg';
 import { ReactComponent as Success } from '@assets/success.svg';
 import { ReactComponent as Timeline } from '@assets/timeline.svg';

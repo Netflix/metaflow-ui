@@ -1,8 +1,8 @@
 import React from 'react';
-import App from '@/App';
-import '@utils/i18n';
-import '@utils/VERSION';
 import { createRoot } from 'react-dom/client';
+import App from '@/App';
+import '@utils/VERSION';
+import '@utils/i18n';
 import { worker } from './mocks/browser';
 
 const container = document.getElementById('root');

@@ -1,28 +1,24 @@
 import React, { useContext } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-
-import { Artifact, Run, RunParam } from '@/types';
-
-import StatusField from '@components/Status';
 import { Link, useHistory } from 'react-router-dom';
-
-import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '@utils/run';
-import { TimezoneContext } from '@components/TimezoneProvider';
-import TagRow from '@pages/Run/components/TagRow';
-
+import styled from 'styled-components';
+import { Artifact, Run, RunParam } from '@/types';
 import RunParameterTable from '@pages/Run/RunParameterTable';
-import Collapsable from '@components/Collapsable';
-import PluginGroup from '@components/Plugins/PluginGroup';
-import AutoUpdating from '@components/AutoUpdating';
-import DataHeader from '@components/DataHeader';
 import RunWarning from '@pages/Run/components/RunWarning';
-import useResource from '@hooks/useResource';
-import Triggers from '@components/Triggers';
-import TitledRow from '@components/TitledRow';
-import { getISOString } from '@utils/date';
-import { TriggerEventsValue } from '@components/Trigger';
+import TagRow from '@pages/Run/components/TagRow';
+import AutoUpdating from '@components/AutoUpdating';
+import Collapsable from '@components/Collapsable';
+import DataHeader from '@components/DataHeader';
+import PluginGroup from '@components/Plugins/PluginGroup';
 import { PluginsContext } from '@components/Plugins/PluginManager';
+import StatusField from '@components/Status';
+import { TimezoneContext } from '@components/TimezoneProvider';
+import TitledRow from '@components/TitledRow';
+import { TriggerEventsValue } from '@components/Trigger';
+import Triggers from '@components/Triggers';
+import useResource from '@hooks/useResource';
+import { getISOString } from '@utils/date';
+import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '@utils/run';
 
 //
 // Typedef

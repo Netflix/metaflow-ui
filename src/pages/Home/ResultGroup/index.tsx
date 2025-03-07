@@ -1,18 +1,15 @@
-import React, { useRef, useContext } from 'react';
-import styled from 'styled-components';
+import React, { useContext, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
 import useIsInViewport from 'use-is-in-viewport';
-
 import { Run as IRun } from '@/types';
-
-import Table from '@components/Table';
-import { Section } from '@components/Structure';
-import { TimezoneContext } from '@components/TimezoneProvider';
-
-import StickyHeader from '@pages/Home/ResultGroup/StickyHeader';
-import ResultGroupHeader from '@pages/Home/ResultGroup/ResultGroupHeader';
 import ResultGroupFooter from '@pages/Home/ResultGroup/ResultGroupFooter';
+import ResultGroupHeader from '@pages/Home/ResultGroup/ResultGroupHeader';
 import ResultGroupRow from '@pages/Home/ResultGroup/ResultGroupRow';
+import StickyHeader from '@pages/Home/ResultGroup/StickyHeader';
+import { Section } from '@components/Structure';
+import Table from '@components/Table';
+import { TimezoneContext } from '@components/TimezoneProvider';
 
 //
 // Typedef

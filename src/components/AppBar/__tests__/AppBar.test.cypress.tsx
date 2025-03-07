@@ -1,8 +1,8 @@
-import React from 'react';
 import { mount } from '@cypress/react';
+import React from 'react';
+import TestWrapper from '@utils/testing';
 import AppBar from '..';
 import { PluginsProvider } from '../../Plugins/PluginManager';
-import TestWrapper from '@utils/testing';
 
 describe('AppBar test', () => {
   it('AppBar basic', () => {

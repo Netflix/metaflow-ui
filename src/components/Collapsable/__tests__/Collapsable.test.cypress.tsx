@@ -1,7 +1,7 @@
-import React from 'react';
 import { mount } from '@cypress/react';
-import Collapsable from '..';
+import React from 'react';
 import TestWrapper from '@utils/testing';
+import Collapsable from '..';
 
 describe('Collapsable test', () => {
   it('Collapsable basic', () => {

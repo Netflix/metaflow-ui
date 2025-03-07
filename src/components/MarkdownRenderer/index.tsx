@@ -1,6 +1,6 @@
+import Markdown from 'markdown-to-jsx';
 import React from 'react';
 import styled from 'styled-components';
-import Markdown from 'markdown-to-jsx';
 import LaunchIconBlack from '@assets/launch_black.svg';
 
 const MarkdownRenderer: React.FC<{ content: string }> = ({ content }) => (

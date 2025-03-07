@@ -3,11 +3,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { AsyncStatus, Step, Task, TaskStatus } from '@/types';
+import Icon from '@components/Icon';
+import StatusIndicator from '@components/StatusIndicator';
 import { formatDuration } from '@utils/format';
 import { getPath } from '@utils/routing';
 import { getTaskDuration, getTaskId } from '@utils/task';
-import Icon from '@components/Icon';
-import StatusIndicator from '@components/StatusIndicator';
 
 //
 // Typedef

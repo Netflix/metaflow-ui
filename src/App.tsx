@@ -1,26 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { QueryParamProvider } from 'use-query-params';
-import { useTranslation } from 'react-i18next';
-
-import GlobalStyle from '@/GlobalStyle';
 import '@theme/font/roboto.css';
-
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Route, BrowserRouter as Router } from 'react-router-dom';
+import { QueryParamProvider } from 'use-query-params';
+import GlobalStyle from '@/GlobalStyle';
 import Root from '@pages/Root';
-import AppBar from '@components/AppBar';
-import ErrorBoundary from '@components/GeneralErrorBoundary';
-import FeatureFlagLoader from '@components/FeatureLoader';
-import Logger from '@components/Logger';
 import Announcements from '@components/Announcement';
+import AppBar from '@components/AppBar';
+import FeatureFlagLoader from '@components/FeatureLoader';
+import ErrorBoundary from '@components/GeneralErrorBoundary';
+import Logger from '@components/Logger';
+import { Notifications, NotificationsProvider } from '@components/Notifications';
+import { PluginsProvider } from '@components/Plugins/PluginManager';
 import PluginRegisterSystem from '@components/Plugins/PluginRegisterSystem';
 import TopNavPlugin from '@components/Plugins/TopNavPlugin';
 import { Page } from '@components/Structure';
-import { NotificationsProvider, Notifications } from '@components/Notifications';
 import { TimezoneProvider } from '@components/TimezoneProvider';
-import { PluginsProvider } from '@components/Plugins/PluginManager';
 import { LoggingProvider } from '@hooks/useLogger';
-import { fetchServiceVersion } from '@utils/VERSION';
 import { fetchFeaturesConfig } from '@utils/FEATURE';
+import { fetchServiceVersion } from '@utils/VERSION';
 import { appBasePath } from './constants';
 
 const App: React.FC = () => {

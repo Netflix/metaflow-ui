@@ -1,5 +1,5 @@
-import React from 'react';
 import { mount } from '@cypress/react';
+import React from 'react';
 import DAGControlBar from '@components/DAG/components/DAGControlBar';
 import TestWrapper from '@utils/testing';
 

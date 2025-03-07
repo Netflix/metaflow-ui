@@ -1,9 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import TaskListLabel from '@components/Timeline/TaskListLabel';
-import { useTranslation } from 'react-i18next';
-import { Row } from '@components/Timeline/VirtualizedTimeline';
 import { getRowStatus } from '@components/Timeline/TimelineRow/utils';
+import { Row } from '@components/Timeline/VirtualizedTimeline';
 
 type Props = {
   index: number;

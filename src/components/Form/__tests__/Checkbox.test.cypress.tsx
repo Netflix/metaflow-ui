@@ -1,7 +1,7 @@
-import React from 'react';
 import { mount } from '@cypress/react';
-import { CheckboxField } from '../Checkbox';
+import React from 'react';
 import TestWrapper, { gid } from '@utils/testing';
+import { CheckboxField } from '../Checkbox';
 
 describe('Checkbox', () => {
   it('Checkbox', () => {

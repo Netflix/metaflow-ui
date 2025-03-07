@@ -1,5 +1,5 @@
-import React from 'react';
 import { mount } from '@cypress/react';
+import React from 'react';
 import TestWrapper, { gid } from '@utils/testing';
 import Dropdown from '../Dropdown';
 

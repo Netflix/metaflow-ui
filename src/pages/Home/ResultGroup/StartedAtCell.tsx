@@ -1,11 +1,11 @@
 import React, { useCallback, useState } from 'react';
 import styled from 'styled-components';
+import { Metadata, Run } from '@/types';
+import { TDWithLink } from '@pages/Home/ResultGroup/ResultGroupCells';
 import Triggers from '@components/Triggers';
 import useResource from '@hooks/useResource';
-import { Metadata, Run } from '@/types';
 import { metadataToRecord } from '@utils/metadata';
 import { getRunStartTime } from '@utils/run';
-import { TDWithLink } from '@pages/Home/ResultGroup/ResultGroupCells';
 
 const emptyArray: Metadata[] = [];
 const initialQueryParams = {

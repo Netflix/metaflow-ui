@@ -1,9 +1,9 @@
+import { APIError, Artifact, Metadata, Run, Step, Task, TaskStatus } from '@/types';
 import { TimelineMetrics } from '@components/Timeline/Timeline';
+import { Row } from '@components/Timeline/VirtualizedTimeline';
 import { RowDataModel, StepRowData } from '@components/Timeline/useTaskData';
 import { TaskSettingsState } from '@components/Timeline/useTaskListSettings';
-import { Row } from '@components/Timeline/VirtualizedTimeline';
 import { DataModel, Resource } from '@hooks/useResource';
-import { Task, Step, Run, Metadata, APIError, TaskStatus, Artifact } from '@/types';
 
 //
 // LOT OF TESTS DEPEND ON THESE VALUES AS DEFAULTS SO DONT CHANGE THESE!!!

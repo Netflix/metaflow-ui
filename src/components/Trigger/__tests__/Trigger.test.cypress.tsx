@@ -1,5 +1,5 @@
-import React from 'react';
 import { mount } from '@cypress/react';
+import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Trigger from '..';
 import GlobalStyle from '../../../GlobalStyle';

@@ -1,8 +1,8 @@
 import { mount } from '@cypress/react';
 import React from 'react';
+import ArtifactTable from '@pages/Task/components/ArtifactTable';
 import { createArtifact } from '@utils/testhelper';
 import TestWrapper, { gid } from '@utils/testing';
-import ArtifactTable from '@pages/Task/components/ArtifactTable';
 
 describe('ArtifactTable', () => {
   it('Should render warning about no artifacts', () => {

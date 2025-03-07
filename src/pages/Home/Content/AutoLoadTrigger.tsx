@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useIsInViewport from 'use-is-in-viewport';
 import { AsyncStatus } from '@/types';
-
 import Spinner from '@components/Spinner';
 import { ItemRow } from '@components/Structure';
 

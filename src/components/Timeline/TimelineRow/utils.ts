@@ -1,7 +1,7 @@
 import { Step, Task, TaskStatus } from '@/types';
+import { brightenCssVar } from '@utils/style';
 import { StepRowData } from '../useTaskData';
 import { LabelPosition } from './LineElement';
-import { brightenCssVar } from '@utils/style';
 
 /**
  * Finds place for duration label in timeline. Default right, if not space left, if no space then none.

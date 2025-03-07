@@ -1,8 +1,8 @@
 import { mount } from '@cypress/react';
 import React, { useState } from 'react';
-import useLogData, { LogDataSettings } from '..';
 import { createDataModel } from '@utils/testhelper';
 import { gid } from '@utils/testing';
+import useLogData, { LogDataSettings } from '..';
 
 const TestComponent: React.FC<Partial<LogDataSettings>> = (props) => {
   const [paused, setPaused] = useState(typeof props.paused === 'boolean' ? props.paused : true);

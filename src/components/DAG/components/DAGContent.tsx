@@ -1,14 +1,14 @@
-import React, { useRef } from 'react';
-import styled, { css } from 'styled-components';
 import useComponentSize, { ComponentSize } from '@rehooks/component-size';
-import useWindowSize from '@hooks/useWindowSize';
-import { Run, TaskStatus } from '@/types';
-import { GraphModel, DAGModelItem, GraphStructureModel, DAGNodeTypes } from '@components/DAG/DAGUtils';
-import { StepLineData } from '@components/Timeline/taskdataUtils';
-import Icon from '@components/Icon';
+import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import Tooltip, { TooltipTitle } from '@components/Tooltip';
 import { useHistory } from 'react-router-dom';
+import styled, { css } from 'styled-components';
+import { Run, TaskStatus } from '@/types';
+import { DAGModelItem, DAGNodeTypes, GraphModel, GraphStructureModel } from '@components/DAG/DAGUtils';
+import Icon from '@components/Icon';
+import { StepLineData } from '@components/Timeline/taskdataUtils';
+import Tooltip, { TooltipTitle } from '@components/Tooltip';
+import useWindowSize from '@hooks/useWindowSize';
 import { getPath } from '@utils/routing';
 import { getRunId } from '@utils/run';
 

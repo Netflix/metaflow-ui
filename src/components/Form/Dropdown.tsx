@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import Icon from '@components/Icon';
 import Button from '@components/Button';
-import InputWrapper from '@components/Form/InputWrapper';
 import { InputLabel } from '@components/Form/InputLabel';
+import InputWrapper from '@components/Form/InputWrapper';
+import Icon from '@components/Icon';
 import { PopoverWrapper } from '@components/Popover';
 import useOnKeyPress from '@hooks/useOnKeyPress';
 

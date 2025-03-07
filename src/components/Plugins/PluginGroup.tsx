@@ -1,9 +1,8 @@
-import React, { useContext, useState, useMemo, ReactNode } from 'react';
+import React, { ReactNode, useContext, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import Collapsable from '@components/Collapsable';
 import Icon from '@components/Icon';
-
-import { AllowedSlot, pluginPath, PluginsContext, Plugin } from '@components/Plugins/PluginManager';
+import { AllowedSlot, Plugin, PluginsContext, pluginPath } from '@components/Plugins/PluginManager';
 import PluginSlot from '@components/Plugins/PluginSlot';
 
 //

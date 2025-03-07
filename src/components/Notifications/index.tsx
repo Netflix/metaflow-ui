@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useContext, useEffect } from 'react';
-import { v4 as generateIdentifier } from 'uuid';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { v4 as generateIdentifier } from 'uuid';
 import Icon, { SupportedIcons } from '@components/Icon';
 import { PluginsContext } from '@components/Plugins/PluginManager';
 

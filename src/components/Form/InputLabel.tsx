@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
-import { ForceNoWrapText } from '@components/Text';
 import { AsyncStatus } from '@/types';
+import { ForceNoWrapText } from '@components/Text';
 
 //
 // Label for InputWrapper that has Material UI kind of animation when focused on.

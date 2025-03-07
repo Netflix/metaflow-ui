@@ -1,16 +1,15 @@
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { AutoSizer, List } from 'react-virtualized';
-import styled from 'styled-components';
-
-import TimelineRow from '@components/Timeline/TimelineRow';
-import { useTranslation } from 'react-i18next';
-import TimelineFooter from '@components/Timeline/Footer';
 import { TFunction } from 'i18next';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { AutoSizer, List } from 'react-virtualized';
 import { RenderedRows } from 'react-virtualized/dist/es/List';
-import { toRelativeSize } from '@utils/style';
+import styled from 'styled-components';
+import { AsyncStatus } from '@/types';
+import TimelineFooter from '@components/Timeline/Footer';
+import TimelineRow from '@components/Timeline/TimelineRow';
 import { Row } from '@components/Timeline/VirtualizedTimeline';
 import { TasksSortBy } from '@components/Timeline/useTaskListSettings';
-import { AsyncStatus } from '@/types';
+import { toRelativeSize } from '@utils/style';
 
 const listStyle = { transition: 'height 0.25s' };
 

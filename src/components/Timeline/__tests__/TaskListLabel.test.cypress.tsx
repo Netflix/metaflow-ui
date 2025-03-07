@@ -1,8 +1,8 @@
-import React from 'react';
-import { createTask, createStep } from '@utils/testhelper';
-import TaskListLabel from '../TaskListLabel';
 import { mount } from '@cypress/react';
+import React from 'react';
+import { createStep, createTask } from '@utils/testhelper';
 import TestWrapper from '@utils/testing';
+import TaskListLabel from '../TaskListLabel';
 
 const MockT = (str: any) => str;
 

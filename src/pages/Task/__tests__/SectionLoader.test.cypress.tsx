@@ -1,7 +1,7 @@
-import React from 'react';
 import { mount } from '@cypress/react';
-import TestWrapper, { gid } from '@utils/testing';
+import React from 'react';
 import SectionLoader from '@pages/Task/components/SectionLoader';
+import TestWrapper, { gid } from '@utils/testing';
 
 describe('SectionLoader component', () => {
   it('<SectionLoader /> - States', () => {

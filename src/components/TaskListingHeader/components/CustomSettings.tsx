@@ -1,14 +1,14 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { ItemRow } from '../../Structure';
-import { ForceNoWrapText } from '../../Text';
-import { RowCounts } from '../../Timeline/taskdataUtils';
-import StatusLights from './StatusLights';
+import styled from 'styled-components';
 import { CheckboxField } from '../../Form/Checkbox';
 import DropdownField from '../../Form/Dropdown';
 import Icon from '../../Icon';
+import { ItemRow } from '../../Structure';
+import { ForceNoWrapText } from '../../Text';
+import { RowCounts } from '../../Timeline/taskdataUtils';
 import { TaskListMode, TaskListSort, TasksSortBy } from '../../Timeline/useTaskListSettings';
+import StatusLights from './StatusLights';
 
 //
 // Typedef

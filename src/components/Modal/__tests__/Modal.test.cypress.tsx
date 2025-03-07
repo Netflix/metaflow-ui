@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
 import { mount } from '@cypress/react';
-import Modal from '..';
+import React, { useState } from 'react';
 import TestWrapper, { gid } from '@utils/testing';
+import Modal from '..';
 
 const MockComponent = () => {
   const [show, setShow] = useState(false);

@@ -1,17 +1,16 @@
-import React, { useState, useRef, useEffect, useCallback, CSSProperties } from 'react';
-import styled from 'styled-components';
+import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { List } from 'react-virtualized';
-
+import styled from 'styled-components';
+import { AsyncStatus } from '@/types';
 import TaskListRow from '@pages/Task/components/TaskListRow';
 import Spinner from '@components/Spinner';
-import { SearchResultModel } from '@hooks/useSearchField';
-import { RowDataAction } from '@components/Timeline/useTaskData';
-import { Row } from '@components/Timeline/VirtualizedTimeline';
 import { getStepDuration } from '@components/Timeline/TimelineRow/utils';
+import { Row } from '@components/Timeline/VirtualizedTimeline';
+import { RowDataAction } from '@components/Timeline/useTaskData';
+import { SearchResultModel } from '@hooks/useSearchField';
 import { getHeaderSizePx, toRelativeSize } from '@utils/style';
 import { getTaskId } from '@utils/task';
-import { AsyncStatus } from '@/types';
 
 //
 // Tasklist

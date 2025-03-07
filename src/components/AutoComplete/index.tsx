@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { AutoCompleteItem } from '@hooks/useAutoComplete';
 import { PopoverStyles } from '@components/Popover';
+import { AutoCompleteItem } from '@hooks/useAutoComplete';
 
 //
 // Typedef

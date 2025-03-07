@@ -1,19 +1,19 @@
 import React from 'react';
-import { ItemRow } from '@components/Structure';
-import ButtonGroup from '@components/ButtonGroup';
-import Button from '@components/Button';
-import styled from 'styled-components';
-import Icon from '@components/Icon';
 import { useTranslation } from 'react-i18next';
-import { SearchFieldReturnType } from '@hooks/useSearchField';
-import SearchField from '@components/SearchField';
-import CollapseButton from '@components/TaskListingHeader/components/CollapseButton';
-import { RowCounts } from '@components/Timeline/taskdataUtils';
-import CustomSettings from '@components/TaskListingHeader/components/CustomSettings';
-import FEATURE_FLAGS from '@utils/FEATURE';
+import styled from 'styled-components';
 import { SetQuery } from 'use-query-params';
-import { TaskListMode, TaskSettingsQueryParameters, TaskSettingsState } from '@components/Timeline/useTaskListSettings';
 import { Run } from '@/types';
+import Button from '@components/Button';
+import ButtonGroup from '@components/ButtonGroup';
+import Icon from '@components/Icon';
+import SearchField from '@components/SearchField';
+import { ItemRow } from '@components/Structure';
+import CollapseButton from '@components/TaskListingHeader/components/CollapseButton';
+import CustomSettings from '@components/TaskListingHeader/components/CustomSettings';
+import { RowCounts } from '@components/Timeline/taskdataUtils';
+import { TaskListMode, TaskSettingsQueryParameters, TaskSettingsState } from '@components/Timeline/useTaskListSettings';
+import { SearchFieldReturnType } from '@hooks/useSearchField';
+import FEATURE_FLAGS from '@utils/FEATURE';
 import { getRunId } from '@utils/run';
 
 //

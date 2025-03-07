@@ -8,14 +8,14 @@ import {
   createTaskRow,
 } from '@utils/testhelper';
 import {
+  getRowFinishedTime,
+  getRowStartTime,
   getTaskFromList,
   getTaskPageLink,
   makeVisibleRows,
   shouldApplySearchFilter,
-  getRowStartTime,
-  getRowFinishedTime,
-  taskDuration,
   sortRows,
+  taskDuration,
 } from '../Run.utils';
 
 describe('Run utils test set', () => {

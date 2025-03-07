@@ -1,7 +1,7 @@
-import React from 'react';
 import { mount } from '@cypress/react';
-import Breadcrumb, { findAdditionalButtons, notEmptyAndEqual, pathFromString } from '..';
+import React from 'react';
 import TestWrapper from '@utils/testing';
+import Breadcrumb, { findAdditionalButtons, notEmptyAndEqual, pathFromString } from '..';
 
 const matchWithParams = (params: Record<string, string>) => ({
   isExact: true,

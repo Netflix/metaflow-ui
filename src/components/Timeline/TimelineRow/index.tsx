@@ -1,16 +1,15 @@
-import React, { ReactNode } from 'react';
-import styled, { css } from 'styled-components';
-import { Row } from '../VirtualizedTimeline';
-import { Link } from 'react-router-dom';
-import { getPathFor } from '@utils/routing';
 import { TFunction } from 'i18next';
-import TaskListLabel from '../TaskListLabel';
-import LineElement, { BoxGraphicValue } from './LineElement';
-
-import { getTaskDuration } from '@utils/task';
-import { getRowStatus, getStepDuration } from '@components/Timeline/TimelineRow/utils';
-import { TimelineMetrics } from '../Timeline';
+import React, { ReactNode } from 'react';
+import { Link } from 'react-router-dom';
+import styled, { css } from 'styled-components';
 import { AsyncStatus } from '@/types';
+import { getRowStatus, getStepDuration } from '@components/Timeline/TimelineRow/utils';
+import { getPathFor } from '@utils/routing';
+import { getTaskDuration } from '@utils/task';
+import TaskListLabel from '../TaskListLabel';
+import { TimelineMetrics } from '../Timeline';
+import { Row } from '../VirtualizedTimeline';
+import LineElement, { BoxGraphicValue } from './LineElement';
 
 type TimelineRowProps = {
   // Row type and data

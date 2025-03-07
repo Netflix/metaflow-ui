@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { RunParam } from '@/types';
 import { APIErrorRenderer } from '@components/GenericError';
 import SmoothSpinner from '@components/Spinner';
 import { ItemRow } from '@components/Structure';
 import TitledRow from '@components/TitledRow';
 import { Resource } from '@hooks/useResource';
-import { RunParam } from '@/types';
 
 //
 // Typedef

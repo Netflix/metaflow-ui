@@ -1,6 +1,6 @@
-import { createGlobalStyle, css } from 'styled-components';
-import { normalize } from 'polished';
 import '@theme/theme.css';
+import { normalize } from 'polished';
+import { createGlobalStyle, css } from 'styled-components';
 
 // Introduce global css as `css` ttl for prettier formatting
 const globalCSS = css`

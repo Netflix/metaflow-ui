@@ -1,26 +1,25 @@
-import React, { useEffect, useCallback, useReducer, useContext, useRef } from 'react';
-
-import { Run as IRun } from '@/types';
-import useResource, { DataModel } from '@hooks/useResource';
-import { parseOrderParam, directionFromText, swapDirection } from '@utils/url';
-import { getTimeFromPastByDays } from '@utils/date';
-import HomeSidebar from '@pages/Home/Sidebar';
-import HomeContentArea from '@pages/Home/Content';
-import ErrorBoundary from '@components/GeneralErrorBoundary';
+import React, { useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import useHomeParameters, { defaultHomeParameters } from '@pages/Home/useHomeParameters';
+import { useHistory } from 'react-router';
+import { DEFAULT_TIME_FILTER_DAYS } from '@/constants';
+import { Run as IRun } from '@/types';
+import HomeContentArea from '@pages/Home/Content';
 import HomeReducer from '@pages/Home/Home.state';
 import {
+  isDefaultParams,
   isGrouping,
   makeActiveRequestParameters,
   makeWebsocketParameters,
   paramList,
-  isDefaultParams,
 } from '@pages/Home/Home.utils';
-import ScrollToTop from './ScrollToTop';
-import { useHistory } from 'react-router';
+import HomeSidebar from '@pages/Home/Sidebar';
+import useHomeParameters, { defaultHomeParameters } from '@pages/Home/useHomeParameters';
+import ErrorBoundary from '@components/GeneralErrorBoundary';
 import { TimezoneContext } from '@components/TimezoneProvider';
-import { DEFAULT_TIME_FILTER_DAYS } from '@/constants';
+import useResource, { DataModel } from '@hooks/useResource';
+import { getTimeFromPastByDays } from '@utils/date';
+import { directionFromText, parseOrderParam, swapDirection } from '@utils/url';
+import ScrollToTop from './ScrollToTop';
 
 type HomeCache = {
   active: boolean;

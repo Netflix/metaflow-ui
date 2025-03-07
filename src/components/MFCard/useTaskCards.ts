@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiHttp } from '@/constants';
-import { DataModel } from '@hooks/useResource';
 import { Task } from '@/types';
 import { Decorator } from '@components/DAG/DAGUtils';
+import { DataModel } from '@hooks/useResource';
 
 const POSTLOAD_POLL_INTERVAL = 500;
 
