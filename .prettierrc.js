@@ -6,7 +6,6 @@ module.exports = {
   tabWidth: 2,
   endOfLine: 'auto',
   importOrder: [
-    '<THIRD_PARTY_MODULES>',
     '^@/(.*)$',
     '^@pages/(.*)$',
     '^@components/(.*)$',
