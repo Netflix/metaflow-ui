@@ -1,8 +1,8 @@
 import { TFunction } from 'i18next';
 import React from 'react';
-import { APIError, Run } from '../../../types';
-import { APIErrorRenderer } from '../../GenericError';
-import Icon from '../../Icon';
+import { APIError, Run } from '@/types';
+import { APIErrorRenderer } from '@components/GenericError';
+import Icon from '@components/Icon';
 
 //
 // DAG Error for when something went wrong

@@ -1,14 +1,13 @@
 import Markdown from 'markdown-to-jsx';
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { apiHttp } from '../../constants';
-import { logWarning } from '../../utils/errorlogger';
-import HeightAnimatedContainer from '../HeightAnimatedContainer';
-import Icon from '../Icon';
-import LaunchIconWhite from '../../assets/launch_white.svg';
-
-import { NotificationType } from '../Notifications';
-import { Announcement as IAnnouncement } from '../../types';
+import { apiHttp } from '@/constants';
+import { Announcement as IAnnouncement } from '@/types';
+import HeightAnimatedContainer from '@components/HeightAnimatedContainer';
+import Icon from '@components/Icon';
+import { NotificationType } from '@components/Notifications';
+import { logWarning } from '@utils/errorlogger';
+import LaunchIconWhite from '@assets/launch_white.svg';
 
 //
 // Render list of announcements which are not shown before

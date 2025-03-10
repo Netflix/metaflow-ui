@@ -1,13 +1,13 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/logo_dark_horizontal.svg';
-import Breadcrumb from '../Breadcrumb';
-import { ItemRow } from '../Structure';
-import HelpMenu from '../HelpMenu';
-import ConnectionStatus from '../ConnectionStatus';
-import FEATURE_FLAGS from '../../utils/FEATURE';
-import PluginGroup from '../Plugins/PluginGroup';
+import styled from 'styled-components';
+import Breadcrumb from '@components/Breadcrumb';
+import ConnectionStatus from '@components/ConnectionStatus';
+import HelpMenu from '@components/HelpMenu';
+import PluginGroup from '@components/Plugins/PluginGroup';
+import { ItemRow } from '@components/Structure';
+import FEATURE_FLAGS from '@utils/FEATURE';
+import logo from '@assets/logo_dark_horizontal.svg';
 
 //
 // Main application bar which is always shown on top of the page

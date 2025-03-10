@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { getLogs } from '../../utils/debugdb';
-import Button from '../Button';
 import styled from 'styled-components';
-import { ItemRow } from '../Structure';
-import useLogger from '../../hooks/useLogger';
+import Button from '@components/Button';
+import { ItemRow } from '@components/Structure';
+import useLogger from '@hooks/useLogger';
+import { getLogs } from '@utils/debugdb';
 
 //
 // Debug information logger. Logging records all HTTP and WS info to text file.

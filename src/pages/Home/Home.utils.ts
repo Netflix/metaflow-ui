@@ -1,8 +1,8 @@
-import { DEFAULT_TIME_FILTER_DAYS } from '../../constants';
-import { QueryParam, Run } from '../../types';
-import { getTimeFromPastByDays } from '../../utils/date';
-import { omit } from '../../utils/object';
-import { DirectionText, parseOrderParam } from '../../utils/url';
+import { DEFAULT_TIME_FILTER_DAYS } from '@/constants';
+import { QueryParam, Run } from '@/types';
+import { getTimeFromPastByDays } from '@utils/date';
+import { omit } from '@utils/object';
+import { DirectionText, parseOrderParam } from '@utils/url';
 import { defaultHomeParameters } from './useHomeParameters';
 
 export function makeActiveRequestParameters(params: Record<string, string>): Record<string, string> {

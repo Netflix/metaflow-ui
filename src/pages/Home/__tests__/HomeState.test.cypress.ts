@@ -1,4 +1,4 @@
-import { createRun } from '../../../utils/testhelper';
+import { createRun } from '@utils/testhelper';
 import HomeReducer, { HomeState, mergeTo, mergeWithSeparatePool } from '../Home.state';
 
 const defaultHomeParameters = {

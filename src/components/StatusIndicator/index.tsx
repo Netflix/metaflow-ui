@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { colorByStatus, iconByStatus } from '../../utils/style';
-import Icon from '../Icon';
-import { RunStatus, TaskStatus } from '../../types';
+import { RunStatus, TaskStatus } from '@/types';
+import Icon from '@components/Icon';
+import { colorByStatus, iconByStatus } from '@utils/style';
 
 const StatusIndicator: React.FC<{ status: keyof RunStatus | TaskStatus }> = ({ status }) => {
   const iconName = iconByStatus(status);

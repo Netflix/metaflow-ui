@@ -1,4 +1,4 @@
-import { Step, Task, TaskStatus } from '../../../types';
+import { Step, Task, TaskStatus } from '@/types';
 import { countTaskRowsByStatus, getStepStatus, makeTasksForStep, timepointsOfTasks } from '../taskdataUtils';
 import { RowDataModel } from '../useTaskData';
 import { createStep, createTask } from './useTaskData.test.cypress';

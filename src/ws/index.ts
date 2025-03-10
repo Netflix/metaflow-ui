@@ -1,7 +1,7 @@
-import ReconnectingWebSocket, { Event as WSEvent, CloseEvent, ErrorEvent } from 'reconnecting-websocket';
+import ReconnectingWebSocket, { CloseEvent, ErrorEvent, Event as WSEvent } from 'reconnecting-websocket';
 import { WebSocketEventListenerMap } from 'reconnecting-websocket/events';
-import { apiWs } from '../constants';
-import { setLogItem } from '../utils/debugdb';
+import { apiWs } from '@/constants';
+import { setLogItem } from '@utils/debugdb';
 
 enum SubscribeType {
   SUBSCRIBE = 'SUBSCRIBE',

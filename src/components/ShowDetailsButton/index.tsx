@@ -1,8 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import Button from '../Button';
-import Icon from '../Icon';
+import Button from '@components/Button';
+import Icon from '@components/Icon';
 
 type Props = {
   toggle: () => void;

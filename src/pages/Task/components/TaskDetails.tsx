@@ -1,24 +1,23 @@
 import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import StatusField from '../../../components/Status';
-import { ForceBreakText } from '../../../components/Text';
-import { Metadata, Run, Task as ITask } from '../../../types';
-import { getISOString } from '../../../utils/date';
-import { formatDuration } from '../../../utils/format';
-import { APIErrorRenderer } from '../../../components/GenericError';
-
-import { TimezoneContext } from '../../../components/TimezoneProvider';
-import { getTaskId } from '../../../utils/task';
-import FEATURE_FLAGS from '../../../utils/FEATURE';
-import TitledRow from '../../../components/TitledRow';
-import Collapsable from '../../../components/Collapsable';
-import PluginGroup, { PluginHeader } from '../../../components/Plugins/PluginGroup';
-import Icon from '../../../components/Icon';
 import styled from 'styled-components';
-import RenderMetadata from '../../../components/RenderMetadata';
-import DataHeader from '../../../components/DataHeader';
-import { Resource } from '../../../hooks/useResource';
-import AutoUpdating from '../../../components/AutoUpdating';
+import { Task as ITask, Metadata, Run } from '@/types';
+import AutoUpdating from '@components/AutoUpdating';
+import Collapsable from '@components/Collapsable';
+import DataHeader from '@components/DataHeader';
+import { APIErrorRenderer } from '@components/GenericError';
+import Icon from '@components/Icon';
+import PluginGroup, { PluginHeader } from '@components/Plugins/PluginGroup';
+import RenderMetadata from '@components/RenderMetadata';
+import StatusField from '@components/Status';
+import { ForceBreakText } from '@components/Text';
+import { TimezoneContext } from '@components/TimezoneProvider';
+import TitledRow from '@components/TitledRow';
+import { Resource } from '@hooks/useResource';
+import FEATURE_FLAGS from '@utils/FEATURE';
+import { getISOString } from '@utils/date';
+import { formatDuration } from '@utils/format';
+import { getTaskId } from '@utils/task';
 
 type Props = {
   run: Run;

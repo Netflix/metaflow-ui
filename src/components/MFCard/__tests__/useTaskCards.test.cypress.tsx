@@ -1,10 +1,10 @@
-import React from 'react';
 import { mount } from '@cypress/react';
-import useTaskCards from '../useTaskCards';
-import { createDataModel, createTask } from '../../../utils/testhelper';
-import { gid } from '../../../utils/testing';
-import { Task } from '../../../types';
+import React from 'react';
+import { Task } from '@/types';
+import { createDataModel, createTask } from '@utils/testhelper';
+import { gid } from '@utils/testing';
 import { Decorator } from '../../DAG/DAGUtils';
+import useTaskCards from '../useTaskCards';
 
 const MockComponent: React.FC<{ task?: Task | null; decos?: Decorator[] }> = ({ task = null, decos = [] }) => {
   const cardsResult = useTaskCards(task, decos);

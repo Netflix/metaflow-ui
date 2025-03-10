@@ -1,7 +1,7 @@
-import React from 'react';
 import { mount } from '@cypress/react';
-import DAGControlBar from '../components/DAGControlBar';
-import TestWrapper from '../../../utils/testing';
+import React from 'react';
+import DAGControlBar from '@components/DAG/components/DAGControlBar';
+import TestWrapper from '@utils/testing';
 
 describe('DAGControlBar component', () => {
   it('<DAGControlBar /> - Works', () => {

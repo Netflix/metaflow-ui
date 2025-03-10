@@ -1,3 +1,3 @@
-import TaskListingHeader from './TaskListingHeader';
+import TaskListingHeader from '@components/TaskListingHeader/TaskListingHeader';
 
 export default TaskListingHeader;

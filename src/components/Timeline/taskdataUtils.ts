@@ -1,5 +1,5 @@
-import { Step, Task, TaskStatus } from '../../types';
-import { RowDataModel } from './useTaskData';
+import { Step, Task, TaskStatus } from '@/types';
+import { RowDataModel } from '@components/Timeline/useTaskData';
 
 //
 // Counts rows

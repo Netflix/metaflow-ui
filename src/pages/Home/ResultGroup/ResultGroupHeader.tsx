@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
+import Label, { LabelType } from '@components/Label';
+import { HeaderColumn, TR } from '@components/Table';
+import FEATURE_FLAGS from '@utils/FEATURE';
 import { TableColDefinition } from '.';
-import Label, { LabelType } from '../../../components/Label';
-import { HeaderColumn, TR } from '../../../components/Table';
-import FEATURE_FLAGS from '../../../utils/FEATURE';
 
 type ResultGroupHeaderProps = {
   handleClick: (str: string) => void;

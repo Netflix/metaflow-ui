@@ -1,19 +1,19 @@
-import React, { ChangeEventHandler, useState, useMemo } from 'react';
-import styled, { css } from 'styled-components';
-import { useLocation, match, Link, useHistory } from 'react-router-dom';
+import React, { ChangeEventHandler, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getPath, getRouteMatch, KnownURLParams } from '../../utils/routing';
-import { ButtonLink, ButtonCSS, BigButton } from '../Button';
-import Icon from '../Icon';
-import { PopoverStyles } from '../Popover';
-import { ItemRow } from '../Structure';
-import useAutoComplete, { AutoCompleteItem } from '../../hooks/useAutoComplete';
-import { takeLastSplitFromURL } from '../../utils/url';
-import { AutoCompleteLine } from '../AutoComplete';
-import HeightAnimatedContainer from '../HeightAnimatedContainer';
-import InputWrapper from '../Form/InputWrapper';
-import useOnKeyPress from '../../hooks/useOnKeyPress';
-import FEATURE_FLAGS from '../../utils/FEATURE';
+import { Link, match, useHistory, useLocation } from 'react-router-dom';
+import styled, { css } from 'styled-components';
+import { AutoCompleteLine } from '@components/AutoComplete';
+import { BigButton, ButtonCSS, ButtonLink } from '@components/Button';
+import InputWrapper from '@components/Form/InputWrapper';
+import HeightAnimatedContainer from '@components/HeightAnimatedContainer';
+import Icon from '@components/Icon';
+import { PopoverStyles } from '@components/Popover';
+import { ItemRow } from '@components/Structure';
+import useAutoComplete, { AutoCompleteItem } from '@hooks/useAutoComplete';
+import useOnKeyPress from '@hooks/useOnKeyPress';
+import FEATURE_FLAGS from '@utils/FEATURE';
+import { KnownURLParams, getPath, getRouteMatch } from '@utils/routing';
+import { takeLastSplitFromURL } from '@utils/url';
 
 //
 // Component

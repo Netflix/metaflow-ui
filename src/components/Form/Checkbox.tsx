@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { v4 as uuid } from 'uuid';
-import Icon from '../Icon';
+import Icon from '@components/Icon';
 
 //
 // Types

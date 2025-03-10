@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import { APIErrorRenderer } from '../../../components/GenericError';
-import Spinner from '../../../components/Spinner';
-import { APIError, AsyncStatus } from '../../../types';
+import { APIError, AsyncStatus } from '@/types';
+import { APIErrorRenderer } from '@components/GenericError';
+import Spinner from '@components/Spinner';
 
 //
 // Conditional renderer for async components.

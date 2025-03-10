@@ -1,11 +1,11 @@
 import { DecodedValueMap } from 'serialize-query-params';
-import { RowDataModel } from '../../components/Timeline/useTaskData';
-import { TaskListSort, TaskSettingsQueryParameters, TasksSortBy } from '../../components/Timeline/useTaskListSettings';
-import { Row } from '../../components/Timeline/VirtualizedTimeline';
-import { SearchResultModel } from '../../hooks/useSearchField';
-import { Task } from '../../types';
-import { getPath } from '../../utils/routing';
-import { getTaskId } from '../../utils/task';
+import { Task } from '@/types';
+import { Row } from '@components/Timeline/VirtualizedTimeline';
+import { RowDataModel } from '@components/Timeline/useTaskData';
+import { TaskListSort, TaskSettingsQueryParameters, TasksSortBy } from '@components/Timeline/useTaskListSettings';
+import { SearchResultModel } from '@hooks/useSearchField';
+import { getPath } from '@utils/routing';
+import { getTaskId } from '@utils/task';
 
 export function cleanParametersMap(params: DecodedValueMap<TaskSettingsQueryParameters>): Record<string, string> {
   const keys = Object.keys(params) as (keyof TaskSettingsQueryParameters)[];

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { TaskStatus } from '../../../types';
+import { TaskStatus } from '@/types';
 import { TimelineMetrics } from '../Timeline';
 import { lineColor } from '../TimelineRow/utils';
 

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { apiHttp } from '../../constants';
-import styled, { css } from 'styled-components';
-import Icon from '../Icon';
-import { PopoverWrapper } from '../Popover';
-import { BigButton } from '../Button';
-import TimezoneSelector from './TimezoneSelector';
-import VERSION_INFO from '../../utils/VERSION';
-import FEATURE_FLAGS from '../../utils/FEATURE';
-import LaunchIconBlack from '../../assets/launch_black.svg';
 import { Link } from 'react-router-dom';
-import useOnKeyPress from '../../hooks/useOnKeyPress';
+import styled, { css } from 'styled-components';
+import { apiHttp } from '@/constants';
+import { BigButton } from '@components/Button';
+import TimezoneSelector from '@components/HelpMenu/TimezoneSelector';
+import Icon from '@components/Icon';
+import { PopoverWrapper } from '@components/Popover';
+import useOnKeyPress from '@hooks/useOnKeyPress';
+import FEATURE_FLAGS from '@utils/FEATURE';
+import VERSION_INFO from '@utils/VERSION';
+import LaunchIconBlack from '@assets/launch_black.svg';
 
 type HelpMenuLink = {
   href: string;

@@ -1,8 +1,8 @@
 import React, { ReactNode, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import AnchorMenu from './AnchorMenu';
-import TaskSection from './TaskSection';
-import { getHeaderSizePx } from '../../../utils/style';
+import AnchorMenu from '@pages/Task/components/AnchorMenu';
+import TaskSection from '@pages/Task/components/TaskSection';
+import { getHeaderSizePx } from '@utils/style';
 
 //
 // Anchored View

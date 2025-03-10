@@ -1,4 +1,4 @@
-import { Metadata } from '../types';
+import { Metadata } from '@/types';
 
 export function metadataToRecord(data: Metadata[]): Record<string, string> {
   return data.reduce((obj, metadata) => {

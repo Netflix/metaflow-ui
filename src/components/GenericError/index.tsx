@@ -1,16 +1,16 @@
+import copy from 'copy-to-clipboard';
 import { TFunction } from 'i18next';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { APIError } from '../../types';
-import { downloadString } from '../../utils/file';
-import { getVersionInfo } from '../../utils/VERSION';
-import Button from '../Button';
-import Collapsable from '../Collapsable';
-import Icon, { IconKeys } from '../Icon';
-import TitledRow from '../TitledRow';
-import copy from 'copy-to-clipboard';
-import { NotificationType, useNotifications } from '../Notifications';
+import { APIError } from '@/types';
+import Button from '@components/Button';
+import Collapsable from '@components/Collapsable';
+import Icon, { IconKeys } from '@components/Icon';
+import { NotificationType, useNotifications } from '@components/Notifications';
+import TitledRow from '@components/TitledRow';
+import { getVersionInfo } from '@utils/VERSION';
+import { downloadString } from '@utils/file';
 
 type Props = {
   message: string;

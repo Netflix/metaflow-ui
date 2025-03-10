@@ -1,6 +1,6 @@
-import React from 'react';
 import { mount } from '@cypress/react';
-import TestWrapper from '../../../utils/testing';
+import React from 'react';
+import TestWrapper from '@utils/testing';
 import FilterInput from '..';
 
 describe('FilterInput test', () => {

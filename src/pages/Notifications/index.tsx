@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import spacetime from 'spacetime';
-import { apiHttp } from '../../constants';
-import { logWarning } from '../../utils/errorlogger';
-
-import { AsyncStatus, Announcement as IAnnouncement } from '../../types';
-import { AnnouncementHeader as IAnnouncementHeader } from '../../types';
-
-import ErrorBoundary from '../../components/GeneralErrorBoundary';
-import Icon from '../../components/Icon';
-
-import { MessageRender } from '../../components/Announcement';
-import Spinner from '../../components/Spinner';
-import LaunchIconBlack from '../../assets/launch_black.svg';
-import { ItemRow } from '../../components/Structure';
-import GenericError from '../../components/GenericError';
-import ContentHeader from '../../components/Content/ContentHeader';
-import ContentWrapper from '../../components/Content/ContentWrapper';
+import styled from 'styled-components';
+import { apiHttp } from '@/constants';
+import { AsyncStatus, Announcement as IAnnouncement, AnnouncementHeader as IAnnouncementHeader } from '@/types';
+import { MessageRender } from '@components/Announcement';
+import ContentHeader from '@components/Content/ContentHeader';
+import ContentWrapper from '@components/Content/ContentWrapper';
+import ErrorBoundary from '@components/GeneralErrorBoundary';
+import GenericError from '@components/GenericError';
+import Icon from '@components/Icon';
+import Spinner from '@components/Spinner';
+import { ItemRow } from '@components/Structure';
+import { logWarning } from '@utils/errorlogger';
+import LaunchIconBlack from '@assets/launch_black.svg';
 
 const Notifications: React.FC = () => {
   const { t } = useTranslation();

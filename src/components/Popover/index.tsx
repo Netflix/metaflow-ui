@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled, { css } from 'styled-components';
-import InputWrapper from '../Form/InputWrapper';
+import InputWrapper from '@components/Form/InputWrapper';
 
 //
 // Fixed container for popups

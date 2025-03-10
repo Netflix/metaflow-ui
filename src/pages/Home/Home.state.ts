@@ -1,5 +1,5 @@
-import { Run } from '../../types';
-import { sortRuns } from './Home.utils';
+import { Run } from '@/types';
+import { sortRuns } from '@pages/Home/Home.utils';
 
 export type HomeState = {
   initialised: boolean;

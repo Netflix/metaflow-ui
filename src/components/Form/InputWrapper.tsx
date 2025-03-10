@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { AsyncStatus } from '../../types';
+import { AsyncStatus } from '@/types';
 
 type InputWrapperProps = { active: boolean; status?: AsyncStatus; size?: 'sm' | 'md' };
 

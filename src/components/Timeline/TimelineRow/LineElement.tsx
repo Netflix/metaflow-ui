@@ -1,16 +1,16 @@
 import React, { useContext } from 'react';
-import styled, { keyframes, css } from 'styled-components';
-import { Step, Task } from '../../../types';
-import { StepRowData } from '../useTaskData';
-import { lineColor, getRowStatus, getLengthLabelPosition } from './utils';
-import { formatDuration } from '../../../utils/format';
-import { useHistory } from 'react-router';
-import { getPathFor } from '../../../utils/routing';
-import { TasksSortBy } from '../useTaskListSettings';
 import { useTranslation } from 'react-i18next';
-import { getTimestampString } from '../../../utils/date';
+import { useHistory } from 'react-router';
+import styled, { css, keyframes } from 'styled-components';
+import { Step, Task } from '@/types';
+import { getTimestampString } from '@utils/date';
+import { formatDuration } from '@utils/format';
+import { getPathFor } from '@utils/routing';
+import { brightenCssVar } from '@utils/style';
 import { TimezoneContext } from '../../TimezoneProvider';
-import { brightenCssVar } from '../../../utils/style';
+import { StepRowData } from '../useTaskData';
+import { TasksSortBy } from '../useTaskListSettings';
+import { getLengthLabelPosition, getRowStatus, lineColor } from './utils';
 
 //
 // Typedef

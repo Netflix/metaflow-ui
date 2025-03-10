@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { valueToRenderableType } from '../../../components/TitledRow';
-import { getHeaderSizeRem } from '../../../utils/style';
+import { valueToRenderableType } from '@components/TitledRow';
+import { getHeaderSizeRem } from '@utils/style';
 
 type Props = {
   data: string;

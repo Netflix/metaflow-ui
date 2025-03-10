@@ -1,8 +1,8 @@
-import React from 'react';
 import { mount } from '@cypress/react';
-import DAGContent from '../components/DAGContent';
-import { createRun } from '../../../utils/testhelper';
-import TestWrapper, { gid } from '../../../utils/testing';
+import React from 'react';
+import DAGContent from '@components/DAG/components/DAGContent';
+import { createRun } from '@utils/testhelper';
+import TestWrapper, { gid } from '@utils/testing';
 
 const data = {
   file: 'foreach.py',

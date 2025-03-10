@@ -1,4 +1,4 @@
-import { http, HttpResponse, ws } from 'msw';
+import { HttpResponse, http, ws } from 'msw';
 import { setupWorker } from 'msw/browser';
 
 const stantardGetEndpoint = (endpoint, data) => {

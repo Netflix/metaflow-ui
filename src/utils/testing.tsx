@@ -1,9 +1,9 @@
 import React, { ReactNode } from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
-import './i18n';
-import '../theme/font/roboto.css';
-import GlobalStyle from '../GlobalStyle';
 import { QueryParamProvider } from 'use-query-params';
+import GlobalStyle from '../GlobalStyle';
+import '../theme/font/roboto.css';
+import './i18n';
 
 /**
  * Wrapper for testing component that depends on theming and routing. Also accepts route as param if

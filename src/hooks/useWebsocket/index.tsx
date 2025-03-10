@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import ResourceEvents, { OnUpdate, OnReconnect } from '../../ws';
 import { v4 as generateIdentifier } from 'uuid';
+import ResourceEvents, { OnReconnect, OnUpdate } from '../../ws';
 
 export interface HookConfig<T> {
   url: string;

@@ -1,13 +1,22 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress';
+import importPaths from './import-alias.config';
 
 export default defineConfig({
   component: {
     devServer: {
-      framework: "create-react-app",
-      bundler: "webpack",
+      framework: 'create-react-app',
+      bundler: 'webpack',
+      webpackConfig: (config) => ({
+        ...config,
+        resolve: {
+          alias: {
+            ...importPaths,
+          },
+        },
+      }),
     },
-    specPattern: "**/*.test.cypress.{js,ts,jsx,tsx}",
-    excludeSpecPattern: "**/*.plugin-dev.*",
+    specPattern: '**/*.test.cypress.{js,ts,jsx,tsx}',
+    excludeSpecPattern: '**/*.plugin-dev.*',
   },
 
   e2e: {

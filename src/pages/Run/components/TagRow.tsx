@@ -1,8 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { ItemRow } from '../../../components/Structure';
-import TitledRow from '../../../components/TitledRow';
+import { ItemRow } from '@components/Structure';
+import TitledRow from '@components/TitledRow';
 
 //
 // Typedef

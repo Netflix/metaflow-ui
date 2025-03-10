@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { Scrollbars } from 'react-custom-scrollbars-2';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
 export interface TabDefinition {
   // Unique key

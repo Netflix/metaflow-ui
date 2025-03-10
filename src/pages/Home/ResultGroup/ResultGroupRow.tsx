@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Section } from '../../../components/Structure';
-import { TR } from '../../../components/Table';
-import VerticalToggle from '../../../components/VerticalToggle';
-import { Run } from '../../../types';
-import { getPath } from '../../../utils/routing';
-import { getRunId } from '../../../utils/run';
-import TimelinePreview from './TimelinePreview';
-import ResultGroupCells from './ResultGroupCells';
-import { TableColDefinition } from './';
-import HeightAnimatedContainer from '../../../components/HeightAnimatedContainer';
-import ParametersPreview from './ParametersPreview';
+import { Run } from '@/types';
+import { TableColDefinition } from '@pages/Home/ResultGroup';
+import ParametersPreview from '@pages/Home/ResultGroup/ParametersPreview';
+import ResultGroupCells from '@pages/Home/ResultGroup/ResultGroupCells';
+import TimelinePreview from '@pages/Home/ResultGroup/TimelinePreview';
+import HeightAnimatedContainer from '@components/HeightAnimatedContainer';
+import { Section } from '@components/Structure';
+import { TR } from '@components/Table';
+import VerticalToggle from '@components/VerticalToggle';
+import { getPath } from '@utils/routing';
+import { getRunId } from '@utils/run';
 
 //
 // Typedef

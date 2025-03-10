@@ -1,4 +1,4 @@
-import { FeatureFlags } from './utils/FEATURE';
+import { FeatureFlags } from '@utils/FEATURE';
 
 declare global {
   interface Window {

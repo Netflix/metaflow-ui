@@ -1,8 +1,8 @@
-import React from 'react';
 import { mount } from '@cypress/react';
-import { AutoCompleteItem } from '../../../hooks/useAutoComplete';
+import React from 'react';
+import { AutoCompleteItem } from '@hooks/useAutoComplete';
+import TestWrapper from '@utils/testing';
 import AutoComplete from '..';
-import TestWrapper from '../../../utils/testing';
 
 const resultsTestList = [
   { value: 'test_1', label: 'Test 1' },
