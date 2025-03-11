@@ -1,4 +1,4 @@
-import { NotificationType } from './components/Notifications';
+import { NotificationType } from '@components/Notifications';
 
 export interface MetaDataBaseObject {
   flow_id: string;

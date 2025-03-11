@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import Collapsable from '../../../components/Collapsable';
-import useResource from '../../../hooks/useResource';
-import { Run, RunParam } from '../../../types';
-import RunParameterTable from '../../Run/RunParameterTable';
+import { Run, RunParam } from '@/types';
+import RunParameterTable from '@pages/Run/RunParameterTable';
+import Collapsable from '@components/Collapsable';
+import useResource from '@hooks/useResource';
 
 const emptyObj = {};
 

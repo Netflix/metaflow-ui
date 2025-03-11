@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { APIErrorRenderer } from '../../components/GenericError';
-import SmoothSpinner from '../../components/Spinner';
-import { ItemRow } from '../../components/Structure';
-import TitledRow from '../../components/TitledRow';
-import { Resource } from '../../hooks/useResource';
-import { RunParam } from '../../types';
+import { RunParam } from '@/types';
+import { APIErrorRenderer } from '@components/GenericError';
+import SmoothSpinner from '@components/Spinner';
+import { ItemRow } from '@components/Structure';
+import TitledRow from '@components/TitledRow';
+import { Resource } from '@hooks/useResource';
 
 //
 // Typedef
@@ -34,7 +34,7 @@ const RunParameterTable: React.FC<Props> = ({ params, noTitle = false }) => {
     </ItemRow>
   ) : (
     <TitledRow
-      title={!noTitle ? t('run.parameters') ?? undefined : undefined}
+      title={(noTitle ? undefined : t('run.parameters')) ?? undefined}
       {...(params.status !== 'Ok' || Object.keys(parameterTableItems).length === 0
         ? {
             type: 'default',

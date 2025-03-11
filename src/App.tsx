@@ -1,29 +1,24 @@
+import '@theme/font/roboto.css';
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { QueryParamProvider } from 'use-query-params';
 import { useTranslation } from 'react-i18next';
-
-import Root from './pages/Root';
-
-import GlobalStyle from './GlobalStyle';
-import './theme/font/roboto.css';
-
-import { Page } from './components/Structure';
-import AppBar from './components/AppBar';
-import { NotificationsProvider, Notifications } from './components/Notifications';
-import ErrorBoundary from './components/GeneralErrorBoundary';
-import { TimezoneProvider } from './components/TimezoneProvider';
-import { LoggingProvider } from './hooks/useLogger';
-import FeatureFlagLoader from './components/FeatureLoader';
-import Logger from './components/Logger';
-
-import { fetchServiceVersion } from './utils/VERSION';
-import { fetchFeaturesConfig } from './utils/FEATURE';
-import Announcements from './components/Announcement';
-import { PluginsProvider } from './components/Plugins/PluginManager';
-import PluginRegisterSystem from './components/Plugins/PluginRegisterSystem';
-import TopNavPlugin from './components/Plugins/TopNavPlugin';
-
+import { Route, BrowserRouter as Router } from 'react-router-dom';
+import { QueryParamProvider } from 'use-query-params';
+import GlobalStyle from '@/GlobalStyle';
+import Root from '@pages/Root';
+import Announcements from '@components/Announcement';
+import AppBar from '@components/AppBar';
+import FeatureFlagLoader from '@components/FeatureLoader';
+import ErrorBoundary from '@components/GeneralErrorBoundary';
+import Logger from '@components/Logger';
+import { Notifications, NotificationsProvider } from '@components/Notifications';
+import { PluginsProvider } from '@components/Plugins/PluginManager';
+import PluginRegisterSystem from '@components/Plugins/PluginRegisterSystem';
+import TopNavPlugin from '@components/Plugins/TopNavPlugin';
+import { Page } from '@components/Structure';
+import { TimezoneProvider } from '@components/TimezoneProvider';
+import { LoggingProvider } from '@hooks/useLogger';
+import { fetchFeaturesConfig } from '@utils/FEATURE';
+import { fetchServiceVersion } from '@utils/VERSION';
 import { appBasePath } from './constants';
 
 const App: React.FC = () => {

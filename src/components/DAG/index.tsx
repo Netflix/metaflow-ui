@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-
-import { GraphModel } from './DAGUtils';
-import { AsyncStatus, Run } from '../../types';
-import { ItemRow } from '../Structure';
-import { Resource } from '../../hooks/useResource';
-import FullPageContainer from '../FullPageContainer';
-import Spinner from '../Spinner';
-import DAGContent from './components/DAGContent';
-import DAGError from './components/DAGError';
-import DAGControlBar from './components/DAGControlBar';
-import { StepLineData } from '../Timeline/taskdataUtils';
+import { AsyncStatus, Run } from '@/types';
+import { GraphModel } from '@components/DAG/DAGUtils';
+import DAGContent from '@components/DAG/components/DAGContent';
+import DAGControlBar from '@components/DAG/components/DAGControlBar';
+import DAGError from '@components/DAG/components/DAGError';
+import FullPageContainer from '@components/FullPageContainer';
+import Spinner from '@components/Spinner';
+import { ItemRow } from '@components/Structure';
+import { StepLineData } from '@components/Timeline/taskdataUtils';
+import { Resource } from '@hooks/useResource';
 
 //
 // DAG

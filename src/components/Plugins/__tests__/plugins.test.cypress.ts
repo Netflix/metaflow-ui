@@ -1,9 +1,9 @@
 import {
-  cleanupVersionNumber,
-  isVersionEqualOrHigher,
   MESSAGE_NAME,
   Plugin,
   PluginCommunicationsAPI,
+  cleanupVersionNumber,
+  isVersionEqualOrHigher,
   pluginPath,
 } from '../PluginManager';
 

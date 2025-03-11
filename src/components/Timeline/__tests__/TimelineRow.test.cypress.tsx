@@ -1,10 +1,10 @@
+import { mount } from '@cypress/react';
 import React from 'react';
+import { TaskStatus } from '@/types';
+import { createStep, createTask, createTimelineMetrics } from '@utils/testhelper';
+import TestWrapper from '@utils/testing';
 import TimelineRow from '../TimelineRow';
 import LineElement from '../TimelineRow/LineElement';
-import { mount } from '@cypress/react';
-import { createTask, createStep, createTimelineMetrics } from '../../../utils/testhelper';
-import TestWrapper from '../../../utils/testing';
-import { TaskStatus } from '../../../types';
 
 const MockT = (str: any) => str;
 

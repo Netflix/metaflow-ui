@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { SmallText } from '../Text';
-
-import ResourceEvents from '../../ws';
+import styled from 'styled-components';
+import ResourceEvents from '@/ws';
+import { SmallText } from '@components/Text';
 
 const WS_QUEUE_TTL_SECONDS = 60 * 5; // 5 minute TTL (backend default value)
 

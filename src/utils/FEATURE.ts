@@ -1,4 +1,4 @@
-import { apiHttp } from '../constants';
+import { apiHttp } from '@/constants';
 
 const FEATURE_FLAGS = {
   DAG: (process.env.REACT_APP_FEATURE_DAG || '1') === '1',

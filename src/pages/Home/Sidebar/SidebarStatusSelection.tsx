@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { CheckboxField } from '../../../components/Form/Checkbox';
-import { Section, SectionHeader } from '../../../components/Structure';
-import FEATURE_FLAGS from '../../../utils/FEATURE';
+import { CheckboxField } from '@components/Form/Checkbox';
+import { Section, SectionHeader } from '@components/Structure';
+import FEATURE_FLAGS from '@utils/FEATURE';
 
 //
 // Typedef

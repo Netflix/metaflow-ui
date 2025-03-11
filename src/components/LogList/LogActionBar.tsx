@@ -1,13 +1,13 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
-import Button from '../Button';
-import { NotificationType, useNotifications, Notification } from '../Notifications';
 import copy from 'copy-to-clipboard';
-import Icon from '../Icon';
-import { LocalSearchType, LogItem } from '../../hooks/useLogData';
-import FilterInput from '../FilterInput';
 import { TFunction } from 'i18next';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+import Button from '@components/Button';
+import FilterInput from '@components/FilterInput';
+import Icon from '@components/Icon';
+import { Notification, NotificationType, useNotifications } from '@components/Notifications';
+import { LocalSearchType, LogItem } from '@hooks/useLogData';
 
 //
 // Typedef

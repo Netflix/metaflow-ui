@@ -1,6 +1,6 @@
+import useComponentSize from '@rehooks/component-size';
 import React, { ReactNode, useRef } from 'react';
 import styled from 'styled-components';
-import useComponentSize from '@rehooks/component-size';
 
 //
 // Container that is automatically updating its height with animations.

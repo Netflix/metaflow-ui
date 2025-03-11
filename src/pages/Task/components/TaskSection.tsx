@@ -1,6 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { TitledSectionHeader } from '../../../components/TitledSection';
+import { TitledSectionHeader } from '@components/TitledSection';
 
 //
 // Task section presents one title section of task view

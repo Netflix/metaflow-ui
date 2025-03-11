@@ -1,12 +1,12 @@
 import React, { createRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { Row, StepRow } from '../VirtualizedTimeline';
-import { getLongestRowDuration, getTaskLineStatus, startAndEndpointsOfRows } from '../../../utils/row';
-import { TaskStatus } from '../../../types';
-import FEATURE_FLAGS from '../../../utils/FEATURE';
-import MinimapRow from './MinimapRow';
-import MinimapActiveSection from './MinimapActiveSection';
+import { TaskStatus } from '@/types';
+import FEATURE_FLAGS from '@utils/FEATURE';
+import { getLongestRowDuration, getTaskLineStatus, startAndEndpointsOfRows } from '@utils/row';
 import { TimelineMetrics } from '../Timeline';
+import { Row, StepRow } from '../VirtualizedTimeline';
+import MinimapActiveSection from './MinimapActiveSection';
+import MinimapRow from './MinimapRow';
 
 //
 // Typedef

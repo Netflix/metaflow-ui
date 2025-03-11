@@ -1,6 +1,6 @@
 import { mount } from '@cypress/react';
 import React from 'react';
-import TestWrapper, { gid } from '../../../utils/testing';
+import TestWrapper, { gid } from '@utils/testing';
 import LogActionBar from '../LogActionBar';
 
 const Search = {

@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { AsyncStatus } from '../../types';
-import GenericError from '../GenericError';
-import SmoothSpinner from '../Spinner';
-import { ItemRow } from '../Structure';
-import { RowCounts } from './taskdataUtils';
+import { AsyncStatus } from '@/types';
+import GenericError from '@components/GenericError';
+import SmoothSpinner from '@components/Spinner';
+import { ItemRow } from '@components/Structure';
+import { RowCounts } from '@components/Timeline/taskdataUtils';
 
 type TimelineNoRowsProps = { counts: RowCounts; searchStatus: AsyncStatus; tasksStatus: AsyncStatus };
 

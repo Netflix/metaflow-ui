@@ -1,11 +1,11 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import NotFound from '../NotFound';
-import HomePage from '../Home';
-import RunPage from '../Run';
-import NotificationsPage from '../Notifications';
-import DebugPage from '../Debug';
-import { SHORT_PATHS } from '../../utils/routing';
+import DebugPage from '@pages/Debug';
+import HomePage from '@pages/Home';
+import NotFound from '@pages/NotFound';
+import NotificationsPage from '@pages/Notifications';
+import RunPage from '@pages/Run';
+import { SHORT_PATHS } from '@utils/routing';
 
 const RootPage: React.FC = () => {
   return (

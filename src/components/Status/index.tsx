@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import { RunStatus, TaskStatus } from '../../types';
-import StatusIndicator from '../StatusIndicator';
+import { RunStatus, TaskStatus } from '@/types';
+import StatusIndicator from '@components/StatusIndicator';
 
 const StatusField: React.FC<{ status: keyof RunStatus | TaskStatus }> = ({ status }) => {
   return (

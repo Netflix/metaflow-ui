@@ -1,4 +1,4 @@
-import { StepRow } from '../../../components/Timeline/VirtualizedTimeline';
+import { StepRow } from '@components/Timeline/VirtualizedTimeline';
 import {
   createRowDataModel,
   createStepRow,
@@ -6,16 +6,16 @@ import {
   createTask,
   createTaskListSettings,
   createTaskRow,
-} from '../../../utils/testhelper';
+} from '@utils/testhelper';
 import {
+  getRowFinishedTime,
+  getRowStartTime,
   getTaskFromList,
   getTaskPageLink,
   makeVisibleRows,
   shouldApplySearchFilter,
-  getRowStartTime,
-  getRowFinishedTime,
-  taskDuration,
   sortRows,
+  taskDuration,
 } from '../Run.utils';
 
 describe('Run utils test set', () => {

@@ -1,8 +1,8 @@
 import React, { useCallback, useRef } from 'react';
-import { DYNAMIC_CARDS_REFRESH_INTERVAL, apiHttp } from '../../constants';
-import { taskCardPath } from '../../components/MFCard/useTaskCards';
-import { Task } from '../../types';
-import CardIframe from './CardIframe';
+import { DYNAMIC_CARDS_REFRESH_INTERVAL, apiHttp } from '@/constants';
+import { Task } from '@/types';
+import CardIframe from '@components/MFCard/CardIframe';
+import { taskCardPath } from '@components/MFCard/useTaskCards';
 
 type Props = {
   task: Task;

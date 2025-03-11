@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { getHeaderSizePx } from '../../../utils/style';
+import { getHeaderSizePx } from '@utils/style';
 
 //
 // Anchor menu

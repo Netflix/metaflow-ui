@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import Spinner from '../Spinner';
+import Spinner from '@components/Spinner';
 
 //
 // Full page loader that hides everything until finished. We want to be

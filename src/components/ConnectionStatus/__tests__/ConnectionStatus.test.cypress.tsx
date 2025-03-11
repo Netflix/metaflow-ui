@@ -1,11 +1,10 @@
-import 'cypress-wait-until';
-import 'setimmediate';
-
-import React from 'react';
 import { mount } from '@cypress/react';
-import TestWrapper from '../../../utils/testing';
-import ConnectionStatus from '..';
+import 'cypress-wait-until';
 import { Server } from 'mock-websocket';
+import React from 'react';
+import 'setimmediate';
+import TestWrapper from '@utils/testing';
+import ConnectionStatus from '..';
 
 describe('ConnectionStatus test', () => {
   let server: Server;

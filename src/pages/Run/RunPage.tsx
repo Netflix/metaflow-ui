@@ -1,30 +1,28 @@
-import React, { useState, useEffect, useContext, useCallback } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import useRowData from '../../components/Timeline/useTaskData';
-import { getPath } from '../../utils/routing';
-import { Metadata, Run as IRun } from '../../types';
-
-import TaskViewContainer from '../Task';
-import { APIErrorRenderer } from '../../components/GenericError';
-import Tabs from '../../components/Tabs';
-import RunHeader from './RunHeader';
-import DAG from '../../components/DAG';
-import Timeline, { Row } from '../../components/Timeline/VirtualizedTimeline';
-import useSearchField from '../../hooks/useSearchField';
-import ErrorBoundary from '../../components/GeneralErrorBoundary';
-import { logWarning } from '../../utils/errorlogger';
-
-import FEATURE from '../../utils/FEATURE';
-import { RunPageParams } from '.';
-import { cleanParametersMap, getTaskFromList, getTaskPageLink, makeVisibleRows, sortRows } from './Run.utils';
 import styled from 'styled-components';
-import { FixedContent } from '../../components/Structure';
-import useTaskListSettings from '../../components/Timeline/useTaskListSettings';
-import useResource from '../../hooks/useResource';
-import { PluginsContext } from '../../components/Plugins/PluginManager';
-import { metadataToRecord } from '../../utils/metadata';
-import { GraphModel } from '../../components/DAG/DAGUtils';
-import { getRunId } from '../../utils/run';
+import { Run as IRun, Metadata } from '@/types';
+import { cleanParametersMap, getTaskFromList, getTaskPageLink, makeVisibleRows, sortRows } from '@pages/Run/Run.utils';
+import RunHeader from '@pages/Run/RunHeader';
+import TaskViewContainer from '@pages/Task';
+import DAG from '@components/DAG';
+import { GraphModel } from '@components/DAG/DAGUtils';
+import ErrorBoundary from '@components/GeneralErrorBoundary';
+import { APIErrorRenderer } from '@components/GenericError';
+import { PluginsContext } from '@components/Plugins/PluginManager';
+import { FixedContent } from '@components/Structure';
+import Tabs from '@components/Tabs';
+import Timeline, { Row } from '@components/Timeline/VirtualizedTimeline';
+import useRowData from '@components/Timeline/useTaskData';
+import useTaskListSettings from '@components/Timeline/useTaskListSettings';
+import useResource from '@hooks/useResource';
+import useSearchField from '@hooks/useSearchField';
+import FEATURE from '@utils/FEATURE';
+import { logWarning } from '@utils/errorlogger';
+import { metadataToRecord } from '@utils/metadata';
+import { getPath } from '@utils/routing';
+import { getRunId } from '@utils/run';
+import { RunPageParams } from '.';
 
 //
 // Typedef

@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
-import useOnKeyPress from '../../hooks/useOnKeyPress';
-import Icon from '../Icon';
-import { PopoverStyles } from '../Popover';
-import { TitledSectionHeader } from '../TitledSection';
+import Icon from '@components/Icon';
+import { PopoverStyles } from '@components/Popover';
+import { TitledSectionHeader } from '@components/TitledSection';
+import useOnKeyPress from '@hooks/useOnKeyPress';
 
 //
 // Typedef

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { TD } from '../../../components/Table';
+import { TD } from '@components/Table';
 
 //
 // Typedef

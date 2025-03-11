@@ -1,9 +1,9 @@
 import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import DropdownField, { DropdownOption } from '../Form/Dropdown';
-import { findTimezone, localTimeZone, TimezoneContext, TIMEZONES } from '../TimezoneProvider';
-import FilterInput from '../FilterInput';
+import FilterInput from '@components/FilterInput';
+import DropdownField, { DropdownOption } from '@components/Form/Dropdown';
+import { TIMEZONES, TimezoneContext, findTimezone, localTimeZone } from '@components/TimezoneProvider';
 
 //
 // Show and select used timezone. Works hand in hand with timezone context

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import useWebsocketRequest, { OnOpen, OnUpdate, OnClose, OnError } from '../useWebsocketRequest';
-import FEATURE_FLAGS from '../../utils/FEATURE';
+import FEATURE_FLAGS from '@utils/FEATURE';
+import useWebsocketRequest, { OnClose, OnError, OnOpen, OnUpdate } from '../useWebsocketRequest';
 
 export type SearchResult =
   | {

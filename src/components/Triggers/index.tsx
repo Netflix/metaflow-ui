@@ -1,8 +1,8 @@
 import React, { MouseEventHandler, useState } from 'react';
 import styled from 'styled-components';
-import Icon from '../Icon';
-import Popover from '../Popover';
-import Trigger, { TriggerEventsValue } from '../Trigger';
+import Icon from '@components/Icon';
+import Popover from '@components/Popover';
+import Trigger, { TriggerEventsValue } from '@components/Trigger';
 
 type Props = {
   triggerEventsValue?: TriggerEventsValue[];

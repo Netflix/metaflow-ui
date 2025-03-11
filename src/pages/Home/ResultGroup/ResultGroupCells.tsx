@@ -1,14 +1,14 @@
 import React, { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import AutoUpdating from '../../../components/AutoUpdating';
-import { TD } from '../../../components/Table';
-import { Run } from '../../../types';
-import { getRunDuration, getRunId, getTagOfType, getUsername } from '../../../utils/run';
-import StatusColorCell from './ResultGroupStatus';
-import ResultGroupTags from './ResultGroupTags';
-import StartedAtCell from './StartedAtCell';
-import FinishedAtCell from './FinishedAtCell';
+import { Run } from '@/types';
+import FinishedAtCell from '@pages/Home/ResultGroup/FinishedAtCell';
+import StatusColorCell from '@pages/Home/ResultGroup/ResultGroupStatus';
+import ResultGroupTags from '@pages/Home/ResultGroup/ResultGroupTags';
+import StartedAtCell from '@pages/Home/ResultGroup/StartedAtCell';
+import AutoUpdating from '@components/AutoUpdating';
+import { TD } from '@components/Table';
+import { getRunDuration, getRunId, getTagOfType, getUsername } from '@utils/run';
 
 //
 // Typedef

@@ -1,8 +1,8 @@
-import React from 'react';
-import AttemptSelector from '../components/AttemptSelector';
-import TestWrapper, { gid } from '../../../utils/testing';
-import { createTask } from '../../../utils/testhelper';
 import { mount } from '@cypress/react';
+import React from 'react';
+import AttemptSelector from '@pages/Task/components/AttemptSelector';
+import { createTask } from '@utils/testhelper';
+import TestWrapper, { gid } from '@utils/testing';
 
 describe('AttemptSelector component', () => {
   it('<AttemptSelector /> - with tasks', () => {

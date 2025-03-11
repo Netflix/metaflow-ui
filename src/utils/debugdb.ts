@@ -1,6 +1,6 @@
 // This file contains seting up and using indexedDB for debug mode. In debug mode we are logging all HTTP requests and errors
 // so we can download logs later. Using indexed db to user this has access to logs even if application crashes.
-import { openDB, DBSchema, IDBPDatabase, deleteDB } from 'idb';
+import { DBSchema, IDBPDatabase, deleteDB, openDB } from 'idb';
 import { downloadString } from './file';
 
 let db: IDBPDatabase<MyDB> | null;

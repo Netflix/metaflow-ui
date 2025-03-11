@@ -1,5 +1,5 @@
 import { match, matchPath } from 'react-router-dom';
-import { Task } from '../types';
+import { Task } from '@/types';
 
 export const SHORT_PATHS = {
   runSubview: `/:flowId/:runNumber/view/:viewType`,

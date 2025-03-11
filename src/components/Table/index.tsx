@@ -1,8 +1,8 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
-import { SortIcon } from '../Icon';
-import { parseOrderParam } from '../../utils/url';
-import { darkenCssVar } from '../../utils/style';
+import { SortIcon } from '@components/Icon';
+import { darkenCssVar } from '@utils/style';
+import { parseOrderParam } from '@utils/url';
 
 export const CellStyle = css`
   padding: var(--table-cell-padding);

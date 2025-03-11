@@ -2,7 +2,6 @@
 // This file handles versions of UI and BACKEND it's connected to. We show version info with error messages that happen.
 // Version is also available from browser console in window.APPLICATION_VERSION.
 //
-
 import { apiHttp } from '../constants';
 
 declare global {

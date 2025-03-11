@@ -1,8 +1,8 @@
 import React, { ReactEventHandler, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import { MESSAGE_NAME } from '../Plugins/PluginManager';
-import { apiHttp } from '../../constants';
-import Spinner from '../Spinner';
+import { apiHttp } from '@/constants';
+import { MESSAGE_NAME } from '@components/Plugins/PluginManager';
+import Spinner from '@components/Spinner';
 
 const CHECK_HEIGHT_INTERVAL = 1000;
 

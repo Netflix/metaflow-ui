@@ -1,8 +1,7 @@
+import { mount } from '@cypress/react';
+import { Server } from 'mock-websocket';
 import React, { useState } from 'react';
 import useWebsocket from '..';
-
-import { Server } from 'mock-websocket';
-import { mount } from '@cypress/react';
 
 describe('useWebsocket hook', () => {
   let server: Server;
