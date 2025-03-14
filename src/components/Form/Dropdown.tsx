@@ -93,6 +93,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
               style={{
                 width: '100%',
                 textAlign: 'left',
+                whiteSpace: 'nowrap',
               }}
             >
               {labelRenderer ? labelRenderer(activeOption[0], activeOption[1]) : activeOption[1]}
