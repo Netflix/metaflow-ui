@@ -13,6 +13,7 @@ if (container) {
     worker
       .start({
         onUnhandledRequest: 'bypass',
+        quiet: true,
       })
       .then(() => {
         root.render(<App />);

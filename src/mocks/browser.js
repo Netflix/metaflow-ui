@@ -30,67 +30,31 @@ const rawGetEndpoint = (url, data) => {
 
 const wsApi = ws.link('ws://localhost:3000/api/ws');
 
+const generateRun = (overrides) => ({
+  flow_id: 'BasicFlow',
+  run_number: 1,
+  user_name: 'SanteriCM',
+  user: Math.random() > 0.5 ? 'SanteriCM' : 'BrendanOB',
+  ts_epoch: 1595574762958,
+  tags: ['testingtag'],
+  status: 'completed',
+  system_tags: ['user:SanteriCM'],
+  ...overrides,
+});
+
 export const worker = setupWorker(
-  stantardGetEndpoint('api/runs', [
-    {
-      flow_id: 'BasicFlow',
-      run_number: 1,
-      user_name: 'SanteriCM',
-      user: 'SanteriCM',
-      ts_epoch: 1595574762958,
-      tags: ['testingtag'],
-      status: 'completed',
-      system_tags: ['user:SanteriCM'],
-    },
-    {
-      flow_id: 'BasicFlow',
-      run_number: 2,
-      user_name: 'SanteriCM',
-      user: 'SanteriCM',
-      ts_epoch: 1595574763000,
-      tags: ['testingtag'],
-      status: 'running',
-      system_tags: ['user:SanteriCM'],
-    },
-    {
-      flow_id: 'BasicFlow',
-      run_number: 3,
-      user_name: 'SanteriCM',
-      user: 'SanteriCM',
-      ts_epoch: 1595574764000,
-      tags: ['testingtag'],
-      status: 'failed',
-      system_tags: ['user:SanteriCM'],
-    },
-    {
-      flow_id: 'NewFlow',
-      run_number: 4,
-      user_name: 'SanteriCM',
-      user: 'SanteriCM',
-      ts_epoch: 1595574764000,
-      tags: ['testingtag'],
-      status: 'completed',
-      system_tags: ['user:SanteriCM'],
-    },
-    {
-      flow_id: 'NewFlow',
-      run_number: 5,
-      user_name: 'SanteriCM',
-      user: 'SanteriCM',
-      ts_epoch: 1595574464000,
-      tags: ['testingtag'],
-      status: 'completed',
-      system_tags: ['user:SanteriCM'],
-    },
-  ]),
+  stantardGetEndpoint(
+    'api/runs',
+    Array.from({ length: 31 }, (_, i) => generateRun({ run_number: i + 1 })),
+  ),
   stantardGetEndpoint('api/flows/:flowid/runs/:runid', {
     flow_id: 'BasicFlow',
     run_number: 1,
     user_name: 'SanteriCM',
     user: 'SanteriCM',
-    ts_epoch: 1739390473221,
+    ts_epoch: Date.now() - 3600,
     tags: ['testingtag'],
-    status: 'completed',
+    status: 'running',
     system_tags: ['user:SanteriCM', 'Another_tag', 'Hello world'],
   }),
   stantardGetEndpoint('api/flows/:flowid/runs/:id/metadata', [
@@ -107,7 +71,7 @@ export const worker = setupWorker(
       value: 'default',
       type: 'kubernetes-pod-service-account-name',
       user_name: 'santeri@outerbounds.co',
-      ts_epoch: 1738118048513,
+      ts_epoch: Date.now() - 3600,
       tags: ['attempt_id:0'],
       system_tags: null,
     },
@@ -125,7 +89,7 @@ export const worker = setupWorker(
       run_id: '1',
       step_name: '_parameters',
       user_name: 'santeri@outerbounds.co',
-      ts_epoch: 1739390473221,
+      ts_epoch: Date.now() - 3600,
       duration: 2371,
       tags: [],
       system_tags: [
@@ -141,7 +105,7 @@ export const worker = setupWorker(
       run_id: '1',
       step_name: 'start',
       user_name: 'santeri@outerbounds.co',
-      ts_epoch: 1739390475901,
+      ts_epoch: Date.now() - 3400,
       duration: 99763,
       tags: [],
       system_tags: [
@@ -157,8 +121,8 @@ export const worker = setupWorker(
       run_id: '60690',
       step_name: 'a',
       user_name: 'santeri@outerbounds.co',
-      ts_epoch: 1739390587525,
-      duration: 150987,
+      ts_epoch: Date.now() - 3200,
+      duration: null,
       tags: [],
       system_tags: [
         'user:santeri@outerbounds.co',
@@ -173,8 +137,8 @@ export const worker = setupWorker(
       run_id: '60690',
       step_name: 'end',
       user_name: 'santeri@outerbounds.co',
-      ts_epoch: 1739390827924,
-      duration: 14691,
+      ts_epoch: Date.now(),
+      duration: null,
       tags: [],
       system_tags: [
         'user:santeri@outerbounds.co',
@@ -195,10 +159,10 @@ export const worker = setupWorker(
       user_name: 'santeri@outerbounds.co',
       status: 'unknown',
       task_ok: ':root:s3',
-      ts_epoch: 1739390473374,
+      ts_epoch: Date.now() - 3600,
       started_at: null,
-      finished_at: 1739390475592,
-      duration: 2218,
+      finished_at: Date.now() - 3400,
+      duration: 200,
       attempt_id: 0,
       tags: [],
       system_tags: [
@@ -220,9 +184,9 @@ export const worker = setupWorker(
       status: 'completed',
       task_ok: null,
       ts_epoch: 1739390476078,
-      started_at: 1739390574312,
-      finished_at: 1739390575664,
-      duration: 1352,
+      started_at: Date.now() - 3400,
+      finished_at: Date.now() - 2000,
+      duration: 1400,
       attempt_id: 0,
       tags: [],
       system_tags: [
@@ -244,9 +208,9 @@ export const worker = setupWorker(
       status: 'completed',
       task_ok: null,
       ts_epoch: 1739390587807,
-      started_at: 1739390609628,
-      finished_at: 1739390730399,
-      duration: 120771,
+      started_at: Date.now() - 2000,
+      finished_at: Date.now() - 1700,
+      duration: 300,
       attempt_id: 0,
       tags: [],
       system_tags: [
@@ -268,9 +232,9 @@ export const worker = setupWorker(
       status: 'completed',
       task_ok: null,
       ts_epoch: 1739390588764,
-      started_at: 1739390607654,
-      finished_at: 1739390728578,
-      duration: 120924,
+      started_at: Date.now() - 2500,
+      finished_at: Date.now() - 1500,
+      duration: 1000,
       attempt_id: 0,
       tags: [],
       system_tags: [
@@ -292,9 +256,9 @@ export const worker = setupWorker(
       status: 'completed',
       task_ok: null,
       ts_epoch: 1739390589738,
-      started_at: 1739390600558,
-      finished_at: 1739390721596,
-      duration: 121038,
+      started_at: Date.now() - 2000,
+      finished_at: Date.now() - 2000,
+      duration: 0,
       attempt_id: 0,
       tags: [],
       system_tags: [
@@ -316,9 +280,9 @@ export const worker = setupWorker(
       status: 'failed',
       task_ok: null,
       ts_epoch: 1739390590523,
-      started_at: 1739390617634,
-      finished_at: 1739390738512,
-      duration: 120878,
+      started_at: Date.now() - 2500,
+      finished_at: Date.now() - 2000,
+      duration: 500,
       attempt_id: 0,
       tags: [],
       system_tags: [
@@ -340,8 +304,8 @@ export const worker = setupWorker(
       status: 'running',
       task_ok: null,
       ts_epoch: 1739390828154,
-      started_at: 1739390841744,
-      finished_at: 1739390842615,
+      started_at: Date.now(),
+      finished_at: null,
       duration: 871,
       attempt_id: 0,
       tags: [],
@@ -480,15 +444,98 @@ export const worker = setupWorker(
     },
   ]),
   rawGetEndpoint('api/plugin', []),
-  rawGetEndpoint('api/features', {}),
+  rawGetEndpoint('api/features', {
+    FEATURE_RUN_GROUPS: true,
+    // FEATURE_DEBUG_VIEW: true,
+    // FEATURE_HIDE_LOGO: true,
+    // FEATURE_HIDE_HOME_BUTTON: true,
+    // FEATURE_HIDE_STATUS_FILTERS: false,
+    // FEATURE_HIDE_TABLE_HEADER: true,
+    // FEATURE_HIDE_QUICK_LINKS: true,
+    FEATURE_ARTIFACT_SEARCH: true,
+  }),
   stantardGetEndpoint('api/links', []),
-  stantardGetEndpoint('api/notifications', []),
+  rawGetEndpoint('api/notifications', [
+    {
+      contentType: 'text',
+      created: 1741682750746,
+      end: 1741682850746,
+      id: 'text_notification',
+      message: 'This is a text notification',
+      start: 1741682750746,
+      type: 'info',
+    },
+  ]),
   stantardGetEndpoint('api/flows/autocomplete', ['BasicFlow', 'NewFlow']),
+  http.get('api/tags/autocomplete*', ({ request }) => {
+    let response = [];
+    console.log(request.url);
+    if (request.url.includes('tag%3Are=project_branch')) {
+      response = ['project_branch:user.whoever', 'project_branch:someone.else'];
+    } else if (request.url.includes('tag%3Are=project')) {
+      response = ['project:project1', 'project:project2'];
+    } else if (request.url.includes('tag%3Are=user')) {
+      response = ['user:santeri@outerbounds.co', 'user:brendan@outerbounds.co'];
+    } else if (request.url.includes('tag%3Aco=')) {
+      response = ['highlight', 'metaflow_version:2.10.0'];
+    }
+
+    return HttpResponse.json({
+      data: response,
+      status: 200,
+      links: {
+        self: request.url,
+        next: null,
+      },
+      pages: {
+        self: 1,
+        first: 1,
+        next: null,
+        last: null,
+      },
+    });
+  }),
+  stantardGetEndpoint('api/flows/:flowid/runs/:runid/steps/:stepid/tasks/:taskid/artifacts', [
+    {
+      run_number: 1,
+      step_name: 'string',
+      task_id: 1,
+      name: 'string',
+      location: 'string',
+      ds_type: 'string',
+      sha: 'string',
+      type: 'string',
+      content_type: 'string',
+      content: 'string',
+      attempt_id: 1,
+    },
+  ]),
   wsApi.addEventListener('connection', ({ client }) => {
     client.addEventListener('message', (event) => {
       if (event.data === '__ping__') {
         client.send('__pong__');
       }
+
+      try {
+        const json = JSON.parse(event.data);
+        return;
+        if (json.resource?.startsWith('/runs')) {
+          setTimeout(() => {
+            client.send(
+              JSON.stringify({
+                type: 'INSERT',
+                uuid: json.uuid,
+                resource: json.resource,
+                data: generateRun({
+                  run_number: parseInt(Math.random() * 100),
+                  status: 'running',
+                  ts_epoch: Date.now(),
+                }),
+              }),
+            );
+          }, 2000);
+        }
+      } catch (e) {}
     });
   }),
 );

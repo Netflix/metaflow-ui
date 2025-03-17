@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import { BigButton } from '@components/Button';
 import DateInput from '@components/Form/DateInput';
 import Dropdown from '@components/Form/Dropdown';
-import { InputLabel } from '@components/Form/InputLabel';
 import InputWrapper from '@components/Form/InputWrapper';
 import Icon from '@components/Icon';
 import Popover from '@components/Popover';
@@ -52,11 +51,7 @@ const TimeRange: React.FC<TimeRangeProps> = ({ sectionLabel, onSubmit, initialVa
   return (
     <TimeRangeContainer>
       <InputWrapper status={'Ok'} active={show} onClick={() => setShow(!show)}>
-        {sectionLabel && (
-          <InputLabel active={false} status={'Ok'}>
-            {sectionLabel}
-          </InputLabel>
-        )}
+        {sectionLabel}
         <TimeRangeInputContainer>
           <SubmitIconHolder data-testid="filter-input-submit-button" focus={show}>
             <Icon name="calendar" size="sm" />

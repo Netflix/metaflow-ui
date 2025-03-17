@@ -66,7 +66,7 @@ const StickyHeaderTHead = styled.thead`
 
   .result-group-title + .result-group-columns {
     th {
-      top: 10.3125rem;
+      top: calc(var(--layout-application-bar-height) + 2.5rem);
     }
   }
 

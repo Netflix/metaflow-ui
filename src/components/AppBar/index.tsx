@@ -49,8 +49,8 @@ const Wrapper = styled.header`
   left: 0;
   right: 0;
   min-height: var(--layout-application-bar-height);
+  padding: var(--layout-application-bar-padding);
   margin: 0 auto;
-  padding: var(--layout-page-padding-y) var(--layout-page-padding-x);
   background: var(--color-bg-primary);
   z-index: 999;
   flex-direction: column;

@@ -40,4 +40,13 @@ export const PopoverWrapper = styled.div<{ show: boolean; alignment?: 'left' | '
   display: ${(p) => (p.show ? 'block' : 'none')};
 `;
 
+export const PopupClickOverlay = styled.div`
+  position: fixed;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  z-index: 999;
+`;
+
 export default Popover;

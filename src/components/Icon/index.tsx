@@ -43,6 +43,7 @@ import { ReactComponent as Success } from '@assets/success.svg';
 import { ReactComponent as Timeline } from '@assets/timeline.svg';
 import { ReactComponent as Times } from '@assets/times.svg';
 import { ReactComponent as ToTopArrow } from '@assets/to_top_arrow.svg';
+import { ReactComponent as Trash } from '@assets/trash.svg';
 import { ReactComponent as Warning } from '@assets/warning.svg';
 import { ReactComponent as WarningThick } from '@assets/warning_thick.svg';
 
@@ -89,6 +90,7 @@ const icons = {
   success: Success,
   timeline: Timeline,
   times: Times,
+  trash: Trash,
   toTopArrow: ToTopArrow,
   warning: Warning,
   warningThick: WarningThick,
@@ -170,9 +172,6 @@ const Wrapper = styled.i<{
     transform: ${(p) => (p.rotate ? `rotate(${p.rotate}deg)` : 'none')};
     transition: transform 0.25s;
     width: auto;
-  }
-  svg path {
-    fill: currentColor;
   }
 `;
 

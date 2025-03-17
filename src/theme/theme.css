@@ -54,7 +54,7 @@
   /* Reset button is one-off custom button to be refactored */
   --reset-button-color: var(--color-text-primary);
   --reset-button-border-color: var(--color-border-primary);
-  --reset-button-height: 2.25rem;
+  --reset-button-height: 1.875rem;
   --reset-button-font-weight: none;
 
   /* Spacing */
@@ -95,8 +95,9 @@
   --font-weight-semibold: 600;
   --font-weight-bold: 700; /* Bold */
 
-  --font-family-primary: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --font-family-primary:
+    'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   --font-family-code: 'RobotoMono', monospace;
 
   /* Borders */
@@ -119,22 +120,21 @@
 
   /* Layout */
   --html-document-font-size: 16px;
+  --layout-breakpoint: 1280px;
 
   --layout-color-bg: var(--color-bg-primary);
   --layout-max-width: 160rem; /* 2560px */
-  --layout-application-bar-height: 7rem; /* 112px */
+  --layout-application-bar-height: 5.5rem; /* 112px */
   --layout-application-bar-logo-height: 1.5rem; /* 24px */
+  --layout-application-bar-padding: 1.5rem var(--layout-page-padding-x) 1rem;
   --layout-page-padding-x: var(--spacing-9);
   --layout-page-padding-y: var(--spacing-10);
 
-  --layout-breakpoint-sm: 1280px;
 
   /* Components */
 
-  /* Sidebar */
-  --sidebar-width-md: 14rem;
-  --sidebar-width-sm: 12rem;
-  --sidebar-section-margin: 0 0 1rem;
+  /* Home filters */
+  --filters-section-margin: 0 0.25rem;
 
   /* Notifications */
   --notification-success-bg: var(--color-bg-success);
@@ -333,6 +333,18 @@
   --input-label-font-weight: bold;
   --input-label-transform: scale(1) translate(-0.25rem, 0.6875rem);
   --input-label-transform-active: scale(0.75) translate(-0.625rem, -0.75rem);
+
+  --checkbox-size: 1rem;
+  --checkbox-border-radius: 4px;
+  --checkbox-background: transparent;
+  --checkbox-border: var(--border-primary-thin);
+
+  --checkbox-background-checked: var(--color-bg-primary);
+  --checkbox-color-checked: var(--color-bg-brand-primary);
+  --checkbox-color-checked-danger: var(--color-bg-danger);
+  --checkbox-color-checked-warning: var(--color-bg-warning);
+  --checkbox-color-checked-success: var(--color-bg-success);
+  --checkbox-color-checked-success-light: var(--color-bg-success-light);
 
   /* Dropdown */
   --dropdown-options-min-width: 9.375rem;

@@ -90,10 +90,6 @@ export default HomeContentArea;
 
 const Content = styled.div`
   position: relative;
-  margin-left: calc(var(--sidebar-width-md) + 1rem);
-  @media (max-width: var(--layout-breakpoint-sm)) {
-    margin-left: calc(var(--sidebar-width-sm) + 1rem);
-  }
   max-width: 100%;
   display: flex;
   flex-direction: column;

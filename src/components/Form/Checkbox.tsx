@@ -8,7 +8,7 @@ import Icon from '@components/Icon';
 //
 
 type CheckboxFieldProps = {
-  label: string;
+  label?: string | null;
   checked: boolean;
   className?: string;
   onChange?: () => void;
@@ -32,6 +32,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
 }) => {
   const [id] = useState(uuid());
   const testid = rest['data-testid'];
+
   return (
     <CheckboxWrapper
       checked={checked}
@@ -41,7 +42,7 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
       disabled={disabled}
     >
       <span className={`checkbox ${id}`}>{checked && <Icon name="check" />}</span>
-      <label htmlFor={id}>{label}</label>
+      {label && <label htmlFor={id}>{label}</label>}
     </CheckboxWrapper>
   );
 };
@@ -66,42 +67,46 @@ const CheckboxWrapper = styled.div<{ checked: boolean; disabled: boolean }>`
   }
 
   span.checkbox {
-    color: #fff;
-    width: 1.25rem;
-    height: 1.25rem;
-    line-height: 1.25rem;
-    display: inline-block;
-    border-radius: 0.125rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--checkbox-size);
+    height: var(--checkbox-size);
+    line-height: var(--checkbox-size);
+    border-radius: var(--checkbox-border-radius);
     text-align: center;
-    background: var(--color-bg-secondary);
-    border: var(--border-primary-thin);
+    background: var(--checkbox-background);
+    border: var(--checkbox-border);
   }
 
   span.checkbox svg path {
     fill: transparent;
   }
 
+  svg {
+    max-width: 100%;
+  }
+
   ${(p) =>
     p.checked &&
     css`
       span.checkbox {
-        color: var(--color-text-alternative);
-        border-color: var(--color-bg-brand-primary);
-        color: var(--color-bg-brand-primary);
-        background: var(--color-bg-primary);
+        border-color: var(--checkbox-color-checked);
+        color: var(--checkbox-color-checked);
+        background: var(--checkbox-background-checked);
       }
 
       &.status-running span.checkbox {
-        border-color: var(--color-bg-success-light);
-        color: var(--color-bg-success-light);
+        border-color: var(--checkbox-color-checked-success-light);
+        color: var(--checkbox-color-checked-success-light);
       }
       &.status-failed span.checkbox {
-        border-color: var(--color-bg-danger);
-        color: var(--color-bg-danger);
+        border-color: var(--checkbox-color-checked-danger);
+        color: var(--checkbox-color-checked-danger);
       }
       &.status-completed span.checkbox {
-        border-color: var(--color-bg-success);
-        color: var(--color-bg-success);
+        border-color: var(--checkbox-color-checked-success);
+        color: var(--checkbox-color-checked-success);
       }
     `}
 `;

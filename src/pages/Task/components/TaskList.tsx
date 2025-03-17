@@ -9,7 +9,7 @@ import { getStepDuration } from '@components/Timeline/TimelineRow/utils';
 import { Row } from '@components/Timeline/VirtualizedTimeline';
 import { RowDataAction } from '@components/Timeline/useTaskData';
 import { SearchResultModel } from '@hooks/useSearchField';
-import { getHeaderSizePx, toRelativeSize } from '@utils/style';
+import { getCSSVariablePixelSize, getHeaderSizePx, toRelativeSize } from '@utils/style';
 import { getTaskId } from '@utils/task';
 
 //
@@ -88,6 +88,8 @@ const TaskList: React.FC<Props> = ({
     [activeTask, grouped, paramsString, rowDataDispatch, rows],
   );
 
+  const width = getCSSVariablePixelSize('--task-list-width');
+
   return (
     <TaskListContainer ref={ref}>
       <FixedList style={{ position: 'sticky', top: 'var(--layout-application-bar-height)' }}>
@@ -98,7 +100,7 @@ const TaskList: React.FC<Props> = ({
             rowHeight={toRelativeSize(28)}
             rowRenderer={rowRenderer}
             height={listSize}
-            width={toRelativeSize(245)}
+            width={width || toRelativeSize(245)}
             scrollToIndex={activeIndex}
             scrollToAlignment="center"
           />

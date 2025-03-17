@@ -1,9 +1,11 @@
 import React, { useCallback, useContext, useEffect, useReducer, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router';
+import styled from 'styled-components';
 import { DEFAULT_TIME_FILTER_DAYS } from '@/constants';
 import { Run as IRun } from '@/types';
 import HomeContentArea from '@pages/Home/Content';
+import HomeFilters from '@pages/Home/Filters';
 import HomeReducer from '@pages/Home/Home.state';
 import {
   isDefaultParams,
@@ -12,7 +14,6 @@ import {
   makeWebsocketParameters,
   paramList,
 } from '@pages/Home/Home.utils';
-import HomeSidebar from '@pages/Home/Sidebar';
 import useHomeParameters, { defaultHomeParameters } from '@pages/Home/useHomeParameters';
 import ErrorBoundary from '@components/GeneralErrorBoundary';
 import { TimezoneContext } from '@components/TimezoneProvider';
@@ -277,9 +278,9 @@ const Home: React.FC = () => {
   }, [isScrolledFromTop]);
 
   return (
-    <div style={{ display: 'flex', flex: 1 }}>
+    <HomeView>
       <ErrorBoundary message={t('error.sidebar-error')}>
-        <HomeSidebar
+        <HomeFilters
           handleParamChange={changeParameter}
           updateListValue={updateListValue}
           params={params}
@@ -303,7 +304,7 @@ const Home: React.FC = () => {
         />
         <ScrollToTop show={isScrolledFromTop} newRunsAvailable={newRuns.length > 0} />
       </ErrorBoundary>
-    </div>
+    </HomeView>
   );
 };
 
@@ -312,5 +313,7 @@ function shouldUseCachedResult(historyAction: string) {
   // creater than 0. If scroll state of cache is 0, we might as well load new results.
   return historyAction === 'POP' && !HomeStateCache.active && HomeStateCache.scroll > 0;
 }
+
+const HomeView = styled.div``;
 
 export default Home;

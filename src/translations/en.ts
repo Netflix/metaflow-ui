@@ -36,9 +36,8 @@ const en = {
 
     fields: {
       group: {
-        none: 'No grouping',
-        flow: 'Group by flow',
-        user: 'Group by user',
+        flow: 'Flow',
+        user: 'User',
       },
 
       flow: 'Flow',
@@ -53,6 +52,7 @@ const en = {
 
       id: 'ID',
       status: '',
+      'status-filter': 'Status',
       'triggered-by': 'Triggered by',
       'started-at': 'Started at',
       'finished-at': 'Finished at',
@@ -76,6 +76,7 @@ const en = {
       running: 'Running',
       failed: 'Failed',
       completed: 'Completed',
+      custom: 'Custom',
     },
 
     run: {

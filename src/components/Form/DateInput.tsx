@@ -10,8 +10,8 @@ import { isFirefox } from '@utils/browser';
 //
 
 type DateInputProps = {
-  onSubmit: (k: string) => void;
-  label: string;
+  onSubmit?: (k: string) => void;
+  label?: string | null;
   onChange?: (k: string) => void;
   initialValue?: string;
   tip?: string;
@@ -54,7 +54,7 @@ const DateInput: React.FC<DateInputProps> = ({
           value={val}
           onKeyPress={(e) => {
             if (e.charCode === 13 && e.currentTarget.value) {
-              onSubmit(e.currentTarget.value);
+              onSubmit && onSubmit(e.currentTarget.value);
               setVal(e.currentTarget.value);
             }
           }}
