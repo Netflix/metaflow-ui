@@ -34,10 +34,11 @@
   --color-border-1: rgba(0, 0, 0, 0.125);
   --color-border-2: rgba(0, 0, 0, 0.25);
   --color-border-3: rgba(0, 0, 0, 0.35);
+  --color-border-4: #4e7ca766;
 
   --color-text-primary: #333;
   --color-text-secondary: #666;
-  --color-text-light: #767676;
+  --color-text-light: #6a6867;
   --color-text-alternative: #fff;
   /* this is a slightly darker tone of brand blue to meet a11y standards */
   --color-text-highlight: #0c66de;
@@ -231,7 +232,7 @@
   --table-shadow: none;
   --table-border-radius: none;
 
-  --table-head-padding: var(--spacing-3) var(--spacing-7);
+  --table-head-padding: var(--spacing-3) var(--spacing-3);
   --table-head-bg: var(--color-bg-primary);
   --table-head-border: none;
   --table-head-text-color: var(--color-text-light);
@@ -241,7 +242,7 @@
   --table-head-active-text-color: var(--color-text-primary);
   --table-head-active-font-weight: var(--font-weight-medium);
 
-  --table-cell-padding: var(--spacing-3) var(--spacing-7);
+  --table-cell-padding: var(--spacing-4) var(--spacing-3);
   --table-cell-border: 1px solid #fff;
   --table-cell-border-top: var(--table-cell-border);
   --table-cell-border-right: var(--table-cell-border);
@@ -250,8 +251,8 @@
   --table-cell-font-size: var(--font-size-primary);
   --table-cell-text-color: var(--color-text-primary);
   --table-cell-font-weight: inherit;
-  --table-cell-bg: var(--color-bg-secondary);
-  --table-cell-hover-bg: var(--color-bg-secondary-highlight);
+  --table-cell-bg: #6A68670D;
+  --table-cell-hover-bg: #6A68671A;
   --table-cell-hover-text-color: var(--color-text-highlight);
 
   /* Tabs */

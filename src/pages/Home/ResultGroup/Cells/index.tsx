@@ -2,13 +2,14 @@ import React, { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Run } from '@/types';
-import FinishedAtCell from '@pages/Home/ResultGroup/FinishedAtCell';
-import StatusColorCell from '@pages/Home/ResultGroup/ResultGroupStatus';
-import ResultGroupTags from '@pages/Home/ResultGroup/ResultGroupTags';
-import StartedAtCell from '@pages/Home/ResultGroup/StartedAtCell';
+import DateTimeCell from '@pages/Home/ResultGroup/Cells/DateTimeCell';
+import ExpandToggle, { ExpandToggleProps } from '@pages/Home/ResultGroup/Cells/ExpandToggle';
+import ResultGroupTags from '@pages/Home/ResultGroup/Cells/TagCell';
+import TriggeredByCell from '@pages/Home/ResultGroup/Cells/TriggeredByCell';
 import AutoUpdating from '@components/AutoUpdating';
+import StatusIndicator from '@components/StatusIndicator';
 import { TD } from '@components/Table';
-import { getRunDuration, getRunId, getTagOfType, getUsername } from '@utils/run';
+import { getRunDuration, getRunId, getTagOfType } from '@utils/run';
 
 //
 // Typedef
@@ -19,8 +20,7 @@ type ResultGroupCellsProps = {
   params: Record<string, string>;
   link: string;
   updateListValue: (key: string, value: string) => void;
-  timezone: string;
-  infoOpen?: boolean;
+  expand: ExpandToggleProps;
 };
 
 //
@@ -28,38 +28,40 @@ type ResultGroupCellsProps = {
 //
 
 const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
-  ({ r, params, updateListValue, link, timezone }) => {
+  ({ r, params, updateListValue, link, expand }) => {
     return (
       <>
-        {/* STATUS INDICATOR */}
-        <StatusColorCell status={r.status} title={r.status} />
+        {/* ID */}
+        <TDWithLink link={link}>
+          <ExpandToggle {...expand} />
+          <FlexCell>
+            <StatusIndicator status={r.status} />
+            {getRunId(r)}
+          </FlexCell>
+        </TDWithLink>
         {/* FLOW ID */}
         {params._group !== 'flow_id' && (
           <TDWithLink link={link}>
-            <ProjectText>{projectString(r)}</ProjectText>
             <div>{r.flow_id}</div>
           </TDWithLink>
         )}
-        {params._group === 'flow_id' && <TDWithLink link={link}>{projectString(r)}</TDWithLink>}
-        {/* ID */}
-        <TDWithLink link={link}>
-          <IDFieldContainer>{getRunId(r)}</IDFieldContainer>
-        </TDWithLink>
-        {/* USER NAME */}
-        {params._group !== 'user' && <TDWithLink link={link}>{getUsername(r)}</TDWithLink>}
+        {/* PROJECT */}
+        <TDWithLink link={link}>{projectString(r)}</TDWithLink>
         {/* STARTED AT */}
-        <StartedAtCell timezone={timezone} run={r} link={link} />
-        {/* FINISHED AT */}
-        <FinishedAtCell timezone={timezone} run={r} link={link} />
+        <DateTimeCell date={new Date(r.ts_epoch)} link={link} />
         {/* DURATION */}
         <TDWithLink link={link}>
           <WordBreak>
-            <AutoUpdating enabled={r.status === 'running'} content={() => getRunDuration(r)} />
+            <AutoUpdating enabled={r.status === 'running'} content={() => getRunDuration(r, 'short')} />
           </WordBreak>
         </TDWithLink>
+        {/* FINISHED AT */}
+        <DateTimeCell date={r.finished_at ? new Date(r.finished_at) : null} link={link} />
+        {/* TRIGGERED BY */}
+        <TriggeredByCell link={link} run={r} />
         {/* USER TAGS */}
         {(r.tags || []).length > 0 ? (
-          <ResultGroupTags tags={r.tags || []} updateListValue={updateListValue} />
+          <ResultGroupTags id={r.run_number.toString()} tags={r.tags || []} updateListValue={updateListValue} />
         ) : (
           <TDWithLink link={link}></TDWithLink>
         )}
@@ -69,10 +71,10 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
   (previous, next) => {
     return (
       previous.link === next.link &&
-      previous.timezone === next.timezone &&
       previous.r.status === next.r.status &&
       previous.r.finished_at === next.r.finished_at &&
-      previous.infoOpen === next.infoOpen &&
+      previous.expand.active === next.expand.active &&
+      previous.expand.visible === next.expand.visible &&
       previous.r.tags === next.r.tags
     );
   },
@@ -110,18 +112,15 @@ const GhostLink = styled(Link)`
   top: 0;
 `;
 
-const WordBreak = styled.span`
+const WordBreak = styled.div`
   word-break: break-word;
+  text-align: right;
 `;
 
-const IDFieldContainer = styled.div`
-  min-height: 24px;
+const FlexCell = styled.div`
   display: flex;
   align-items: center;
-`;
-
-const ProjectText = styled.div`
-  font-size: 0.625rem;
+  gap: 0.5rem;
 `;
 
 export default ResultGroupCells;

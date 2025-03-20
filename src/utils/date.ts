@@ -28,6 +28,13 @@ export const getDateTimeLocalString = (date: Date, timezone?: string): string =>
   return spacetime(date, 'GMT+0').unixFmt('yyyy-MM-ddTHH:mm');
 };
 
+export const getCalendarDateTimeString = (date: Date, timezone?: string): string => {
+  if (timezone) {
+    return spacetime(date, 'GMT+0').goto(`${timezone}`).unixFmt('MMM dd, yyyy hh:mm:ss');
+  }
+  return spacetime(date, 'GMT+0').unixFmt('MMM dd, yyyy hh:mm:ss');
+};
+
 // Return timepoint X days from now.
 export const getTimeFromPastByDays = (days: number, timezone?: string): number => {
   if (timezone) {

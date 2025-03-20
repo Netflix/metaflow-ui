@@ -40,10 +40,11 @@ const en = {
         user: 'User',
       },
 
+      run: 'Run',
       flow: 'Flow',
       user: 'User',
       tag: 'Tag',
-      project: 'Project',
+      project: 'Project/Branch',
       branch: 'Branch',
       'user-tags': 'Tags',
       tasks: 'Tasks',
@@ -77,6 +78,7 @@ const en = {
       failed: 'Failed',
       completed: 'Completed',
       custom: 'Custom',
+      project: 'Project',
     },
 
     run: {

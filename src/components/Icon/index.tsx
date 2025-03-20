@@ -40,6 +40,7 @@ import { ReactComponent as SearchNotFound } from '@assets/search-not-found.svg';
 import { ReactComponent as Search } from '@assets/search.svg';
 import { ReactComponent as Sort } from '@assets/sort.svg';
 import { ReactComponent as Success } from '@assets/success.svg';
+import { ReactComponent as Tag } from '@assets/tag.svg';
 import { ReactComponent as Timeline } from '@assets/timeline.svg';
 import { ReactComponent as Times } from '@assets/times.svg';
 import { ReactComponent as ToTopArrow } from '@assets/to_top_arrow.svg';
@@ -88,6 +89,7 @@ const icons = {
   searchNotFound: SearchNotFound,
   sort: Sort,
   success: Success,
+  tag: Tag,
   timeline: Timeline,
   times: Times,
   trash: Trash,

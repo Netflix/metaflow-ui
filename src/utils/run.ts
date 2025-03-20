@@ -42,16 +42,18 @@ export function getRunEndTime(run: Run, timezone?: string): string | null {
  * Safely get duration of run
  * @param run - Run object
  */
-export function getRunDuration(run: Run): string | null {
+export function getRunDuration(run: Run, format: 'default' | 'short' = 'default'): string | null {
+  let duration: number | undefined = undefined;
+
   if (run.status === 'running') {
-    return formatDuration(new Date().getTime() - run.ts_epoch, 0);
+    duration = new Date().getTime() - run.ts_epoch;
+  } else if (run.duration) {
+    duration = run.duration;
+  } else if (run.finished_at) {
+    duration = run.finished_at - run.ts_epoch;
   }
 
-  return run.duration
-    ? formatDuration(run.duration, 0)
-    : run.finished_at
-      ? formatDuration(run.finished_at - run.ts_epoch, 0)
-      : null;
+  return duration ? formatDuration(duration, 0, format) : null;
 }
 
 /**

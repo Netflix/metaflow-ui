@@ -78,7 +78,7 @@ const AutoCompleteFilter: React.FC<Props> = ({ autoCompleteSettings, onClear, op
 };
 
 const Content = styled.div`
-  width: max-content;
+  width: auto;
 `;
 
 const FilterPopupHeading = styled.div`

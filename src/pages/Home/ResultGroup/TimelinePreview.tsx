@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Run } from '@/types';
 import { makeVisibleRows } from '@pages/Run/Run.utils';
-import Collapsable from '@components/Collapsable';
 import Timeline, { ListContainer, ROW_HEIGHT, SPACE_UNDER_TIMELINE } from '@components/Timeline/Timeline';
 import TimelineNoRows from '@components/Timeline/TimelineNoRows';
 import { Row } from '@components/Timeline/VirtualizedTimeline';
@@ -37,33 +36,32 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
   const handleStepRowClick = useCallback((stepid: string) => dispatch({ type: 'toggle', id: stepid }), [dispatch]);
 
   return (
-    <Collapsable title="Timeline" initialState={true}>
-      <TimelinePreviewContainer>
-        {preview && preview.visiblerows.length > 0 && (
-          <Timeline
-            rows={preview.visiblerows}
-            timeline={{
-              startTime: run.ts_epoch,
-              endTime: run.finished_at || preview.end,
-              visibleEndTime: run.finished_at || preview.end,
-              visibleStartTime: run.ts_epoch,
-              sortBy: 'startTime',
-              groupingEnabled: false,
-            }}
-            footerType="minimal"
-            customMinimumHeight={
-              preview.visiblerows.length > 10
-                ? 20
-                : (ROW_HEIGHT * preview.visiblerows.length + SPACE_UNDER_TIMELINE('minimal')) / 16
-            }
-            onStepRowClick={handleStepRowClick}
-          />
-        )}
-        {(!preview || (preview && preview.visiblerows.length === 0)) && (
-          <TimelineNoRows counts={zeroCounts} searchStatus="NotAsked" tasksStatus={taskStatus} />
-        )}
-      </TimelinePreviewContainer>
-    </Collapsable>
+    <TimelinePreviewContainer>
+      {preview && preview.visiblerows.length > 0 && (
+        <Timeline
+          rows={preview.visiblerows}
+          timeline={{
+            startTime: run.ts_epoch,
+            endTime: run.finished_at || preview.end,
+            visibleEndTime: run.finished_at || preview.end,
+            visibleStartTime: run.ts_epoch,
+            sortBy: 'startTime',
+            groupingEnabled: false,
+          }}
+          footerType="minimal"
+          customMinimumHeight={
+            preview.visiblerows.length > 10
+              ? 20
+              : (ROW_HEIGHT * preview.visiblerows.length + SPACE_UNDER_TIMELINE('minimal')) / 16
+          }
+          onStepRowClick={handleStepRowClick}
+        />
+      )}
+
+      {preview?.visiblerows.length === 0 && (
+        <TimelineNoRows counts={zeroCounts} searchStatus="NotAsked" tasksStatus={taskStatus} />
+      )}
+    </TimelinePreviewContainer>
   );
 };
 
@@ -74,7 +72,6 @@ const TimelinePreview: React.FC<TimelinePreviewProps> = ({ run }) => {
 const TimelinePreviewContainer = styled.div`
   max-height: 30rem;
   margin: var(--result-group-timeline-preview-margin);
-  border-top: var(--border-medium-1);
 
   ${ListContainer} {
     border-radius: none;

@@ -26,6 +26,8 @@ export const FilterClickableRow = styled.div<{ disabled?: boolean; danger?: bool
   opacity: ${(p) => (p.disabled ? 0.2 : 1)};
   color: ${(p) => (p.danger ? 'var(--color-text-danger)' : 'var(--color-text-primary)')};
 
+  white-space: normal;
+
   &:hover {
     background: var(--color-bg-secondary);
   }

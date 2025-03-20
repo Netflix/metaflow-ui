@@ -2,7 +2,11 @@
  * Converts milliseconds to duration string. We are never rounding anything up
  * @param time Time in milliseconds
  */
-export function formatDuration(time: number | null, precision?: number): string {
+export function formatDuration(
+  time: number | null,
+  precision?: number,
+  format: 'short' | 'default' = 'default',
+): string {
   if (time === null) {
     return '';
   }
@@ -18,7 +22,8 @@ export function formatDuration(time: number | null, precision?: number): string 
 
   if (hours > 0) str += hours + 'h ';
   if (minutes > 0) str += minutes + 'm ';
-  if (seconds > 0 || str === '')
+  const shouldIncludeSeconds = format === 'default' || (format === 'short' && hours === 0);
+  if (shouldIncludeSeconds && (seconds > 0 || str === ''))
     str += (precision === 0 || secs > 60 ? Math.floor(seconds) : secondsToPrecision(seconds, precision || 1)) + 's';
 
   return str;

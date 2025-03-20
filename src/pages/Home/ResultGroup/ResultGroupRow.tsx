@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Run } from '@/types';
 import { TableColDefinition } from '@pages/Home/ResultGroup';
+import ResultGroupCells from '@pages/Home/ResultGroup/Cells';
 import ParametersPreview from '@pages/Home/ResultGroup/ParametersPreview';
-import ResultGroupCells from '@pages/Home/ResultGroup/ResultGroupCells';
 import TimelinePreview from '@pages/Home/ResultGroup/TimelinePreview';
 import HeightAnimatedContainer from '@components/HeightAnimatedContainer';
 import { Section } from '@components/Structure';
 import { TR } from '@components/Table';
-import VerticalToggle from '@components/VerticalToggle';
+import { TabsHeading, TabsHeadingItem } from '@components/Tabs';
 import { getPath } from '@utils/routing';
 import { getRunId } from '@utils/run';
 
@@ -21,7 +21,6 @@ type Props = {
   queryParams: Record<string, string>;
   updateListValue: (key: string, value: string) => void;
   run: Run;
-  timezone: string;
   cols: TableColDefinition[];
 };
 
@@ -35,9 +34,10 @@ enum RowState {
 //
 // Row component that will lock it's state when hovered or set active
 //
-const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue, run, timezone, cols }) => {
+const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue, run, cols }) => {
   const [isHovering, setIsHovering] = useState(false);
   const [rowState, setRowState] = useState<RowState>(RowState.Closed);
+  const [tab, setTab] = useState(0);
   const visible = isVisible(rowState);
 
   // Update state after 250 of closing or opening
@@ -89,28 +89,31 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
           params={queryParams}
           updateListValue={updateListValue}
           link={getPath.run(run.flow_id, getRunId(run))}
-          timezone={timezone}
-          infoOpen={visible}
+          expand={{
+            active: rowState === RowState.Opening || rowState === RowState.Open,
+            visible: isHovering || visible,
+            onClick: handleToggleClick,
+          }}
         />
-        <ExpandCell>
-          <VerticalToggle
-            visible={visible || isHovering}
-            active={rowState === RowState.Opening || rowState === RowState.Open}
-            onClick={handleToggleClick}
-          />
-        </ExpandCell>
       </StyledTR>
       {visible && (
         <tr>
           <StyledTD colSpan={cols.length}>
-            <HeightAnimatedContainer active={isTransitioning(rowState)}>
+            <HeightAnimatedContainer active={true}>
               <StyledSection closing={rowState === RowState.Closing}>
-                <TimelinePreview run={run} />
-                <ParametersPreview run={run} />
+                <TabsHeading>
+                  <TabsHeadingItem active={tab === 0} onClick={() => setTab(0)}>
+                    timeline
+                  </TabsHeadingItem>
+                  <TabsHeadingItem active={tab === 1} onClick={() => setTab(1)}>
+                    parameters
+                  </TabsHeadingItem>
+                </TabsHeading>
+                {tab === 0 && <TimelinePreview run={run} />}
+                {tab === 1 && <ParametersPreview run={run} />}
               </StyledSection>
             </HeightAnimatedContainer>
           </StyledTD>
-          <td></td>
         </tr>
       )}
     </>
@@ -148,17 +151,8 @@ const StyledTD = styled.td`
 const StyledSection = styled(Section)<{ closing: boolean }>`
   padding: var(--result-group-expand-padding);
   margin-bottom 0;
-  border-right: var(--border-thin-1);
-  border-bottom: var(--border-thin-1);
   ${(p) => p.closing && 'position: absolute;'}
   width: 100%;
-`;
-
-const ExpandCell = styled.td`
-  border-top: var(--result-group-expand-cell-border-top);
-  border-right: var(--result-group-expand-cell-border-right);
-  border-bottom: var(--result-group-expand-cell-border-bottom);
-  border-left: var(--result-group-expand-cell-border-left);
 `;
 
 export default ResultGroupRow;

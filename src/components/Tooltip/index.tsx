@@ -14,7 +14,14 @@ import styled from 'styled-components';
 const Tooltip: React.FC<TooltipProps> = ({ children, ...props }) => {
   return (
     <CustomTooltip>
-      <ReactTooltip className="custom-tooltip" delayHide={250} place="bottom" effect="solid" {...props}>
+      <ReactTooltip
+        className="custom-tooltip"
+        delayHide={250}
+        place="bottom"
+        effect="solid"
+        arrowColor="transparent"
+        {...props}
+      >
         {children}
       </ReactTooltip>
     </CustomTooltip>
@@ -29,25 +36,22 @@ const CustomTooltip = styled.div`
   .custom-tooltip {
     cursor: auto;
     max-width: 37.5rem;
-    background: #fff;
-    color: #333;
-    padding: 1rem;
+    padding: 0.25rem 0.5rem;
+    background: #31302fe5;
+    color: #fff;
     font-size: 0.75rem;
     border-radius: var(--radius-primary);
-    border: 1px solid #d0d0d0;
-    box-shadow: 2px 2px 4px rgb(0 0 0 / 25%);
     white-space: pre;
     pointer-events: auto;
+
+    &::before {
+      display: none;
+    }
 
     &.show {
       opacity: 1;
     }
 
-    &.place-bottom::after,
-    &.place-top::after {
-      border-bottom-color: #fff;
-      background: #fff;
-    }
     &:hover {
       visibility: visible;
       opacity: 1;

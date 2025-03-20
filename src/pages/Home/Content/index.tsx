@@ -45,7 +45,7 @@ const HomeContentArea: React.FC<Props> = ({
           return (
             <ResultGroup
               key={k}
-              label={k && k !== 'undefined' ? k : 'Runs'}
+              label={k && k !== 'undefined' ? k : ''}
               initialData={runGroups[k]}
               queryParams={params}
               onOrderChange={handleOrderChange}

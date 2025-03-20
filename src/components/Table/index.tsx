@@ -110,10 +110,12 @@ export const TR = styled.tr<{ clickable?: boolean; stale?: boolean; active?: boo
       : ''}
 `;
 
-const HeaderColumnWrapper = styled.div`
+const HeaderColumnWrapper = styled.div<{ alignment: 'left' | 'right' | 'center' }>`
   display: flex;
   align-items: center;
   min-height: 1.25rem;
+  justify-content: ${(p) =>
+    p.alignment === 'right' ? 'flex-end' : p.alignment === 'center' ? 'center' : 'flex-start'};
 `;
 
 interface HeaderColumnProps {
@@ -123,6 +125,7 @@ interface HeaderColumnProps {
   onSort: (ord: string) => void;
   sortable: boolean;
   maxWidth?: string;
+  alignment?: 'left' | 'right' | 'center';
 }
 
 export const HeaderColumn: React.FC<HeaderColumnProps> = ({
@@ -132,6 +135,7 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({
   sortable = true,
   onSort,
   maxWidth,
+  alignment = 'left',
   ...rest
 }) => {
   const [direction, orderParam] = currentOrder ? parseOrderParam(currentOrder) : ['down' as const, ''];
@@ -147,12 +151,12 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({
         maxWidth
           ? {
               maxWidth: maxWidth + (maxWidth.indexOf('%') > -1 ? '' : 'px'),
-              width: maxWidth + (maxWidth.indexOf('%') > -1 ? '' : 'px'),
+              // width: maxWidth + (maxWidth.indexOf('%') > -1 ? '' : 'px'),
             }
           : {}
       }
     >
-      <HeaderColumnWrapper>
+      <HeaderColumnWrapper alignment={alignment}>
         {label}
         {sortable && (
           <SortIconContainer>
