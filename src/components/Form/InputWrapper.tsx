@@ -26,7 +26,7 @@ const InputWrapper = styled.section<InputWrapperProps>`
     cursor: ${(p) => (p.active ? 'auto' : 'pointer')};
     background-color: transparent;
     padding-right: 1.5rem;
-    font-size: var(--input-font-size);
+    font-size: ${(p) => (p.size === 'sm' ? 'var(--input-font-size-sm)' : 'var(--input-font-size)')};
 
     &:focus {
       outline: none;
@@ -34,8 +34,9 @@ const InputWrapper = styled.section<InputWrapperProps>`
     }
 
     &::placeholder {
-      color: var(--color-text-primary);
-      font-weight: 500;
+      color: var(--input-placeholder-color);
+      font-size: var(--input-placeholder-font-size);
+      font-weight: var(--input-placeholder-font-weight);
       opacity: 1;
     }
   }

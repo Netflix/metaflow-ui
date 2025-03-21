@@ -79,6 +79,12 @@ const en = {
       completed: 'Completed',
       custom: 'Custom',
       project: 'Project',
+
+      'flow-placeholder': 'Filter by flow',
+      'project-placeholder': 'Filter by project',
+      'branch-placeholder': 'Filter by branch',
+      'user-placeholder': 'Filter by user',
+      'tag-placeholder': 'Filter by tag',
     },
 
     run: {

@@ -31,11 +31,11 @@ const StatusSelection: React.FC<Props> = ({ updateField, onClear, status }) => {
         return (
           <>
             {label}
-            <StatusLights>
+            <LabelStatusRow>
               {value
                 ?.split(',')
                 .map((status) => isValidStatus(status) && <StatusIndicator status={status} key={status} />)}
-            </StatusLights>
+            </LabelStatusRow>
           </>
         );
       }}
@@ -45,8 +45,10 @@ const StatusSelection: React.FC<Props> = ({ updateField, onClear, status }) => {
         <div>
           {options.map(([key, label]) => (
             <FilterOptionRow key={key} onClick={() => updateField('status', key)} selected={!!status?.includes(key)}>
-              {isValidStatus(key) && <StatusIndicator status={key} />}
-              {label}
+              <StatusRow>
+                {isValidStatus(key) && <StatusIndicator status={key} />}
+                {label}
+              </StatusRow>
             </FilterOptionRow>
           ))}
           <FilterPopupTrailing
@@ -69,14 +71,13 @@ function isAllSelected(status?: string | null) {
   return !status || ['completed', 'running', 'failed'].every((s) => status.includes(s));
 }
 
-const StatusLights = styled.div`
+const StatusRow = styled.div`
   display: flex;
   align-items: center;
-  margin-left: 0.5rem;
-
-  & > * {
-    margin-right: 0.25rem;
-  }
+  gap: 0.25rem;
 `;
 
+const LabelStatusRow = styled(StatusRow)`
+  margin-left: 0.5rem;
+`;
 export default StatusSelection;

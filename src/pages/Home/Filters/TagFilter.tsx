@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
 import AutoCompleteFilter from '@components/FilterInput/AutoCompleteFilter';
 import { DefaultLabelRenderer } from '@components/FilterInput/Filter';
 
@@ -8,6 +7,7 @@ type Props = {
   onClear?: () => void;
   tags: string;
   prefix?: string;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
   label: string;
   autoCompleteInputTransform: (v: string) => Record<string, string>;
 };
@@ -44,20 +44,9 @@ function labelRenderer(label: string, value?: string | null, prefix?: string) {
 
 function optionLabelRenderer(value: string, prefix?: string) {
   if (!prefix || !value.startsWith(prefix)) return value;
-  const [tagType, label] = value.split(':');
-  return (
-    <div>
-      <OptionLabelTagType>{tagType}:</OptionLabelTagType>
-      <span>{label}</span>
-    </div>
-  );
+  const [_, label] = value.split(':');
+  return label;
 }
-
-const OptionLabelTagType = styled.span`
-  color: var(--color-text-light);
-  margin-right: 0.25rem;
-  text-transform: capitalize;
-`;
 
 function extractTypesOfTag(tags: string, tagType?: string): string[] {
   if (!tags) return [];

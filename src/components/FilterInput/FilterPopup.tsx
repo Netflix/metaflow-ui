@@ -7,13 +7,15 @@ const FilterPopup: React.FC<{ children: React.ReactNode; onClose: () => void }> 
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (ref.current && event.target instanceof Node && !ref.current.contains(event.target)) {
+      const clickedParentOrPopup =
+        ref.current && event.target instanceof Node && ref.current.parentNode?.contains(event.target);
+      if (!clickedParentOrPopup) {
         onClose();
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('mouseup', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('mouseup', handleClickOutside);
     };
   }, [ref, onClose]);
 

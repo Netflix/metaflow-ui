@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
+import { TD } from '@/components/Table';
 import { Metadata, Run } from '@/types';
-import { TDWithLink } from '@pages/Home/ResultGroup/Cells';
 import TriggeredByBadge from '@components/Trigger/TriggeredByBadge';
 import useResource from '@hooks/useResource';
 import { metadataToRecord } from '@utils/metadata';
@@ -13,15 +13,13 @@ const initialQueryParams = {
 
 type Props = {
   run: Run;
-  link: string;
 };
 
-const TriggeredByCell: React.FC<Props> = ({ run, link }) => {
+const TriggeredByCell: React.FC<Props> = ({ run }) => {
   const [metadataRecord, setMetadataRecord] = useState<Record<string, string>>();
 
   const onUpdate = useCallback((items: Metadata[]) => {
     const metadataRecord = metadataToRecord(items);
-    console.log(metadataRecord);
     setMetadataRecord((old) => ({ ...old, ...metadataRecord }));
   }, []);
 
@@ -38,7 +36,7 @@ const TriggeredByCell: React.FC<Props> = ({ run, link }) => {
   const hasTrigger = triggerEventsValue?.length > 0;
 
   return (
-    <TDWithLink link={hasTrigger ? undefined : link}>
+    <TD>
       {status !== 'Loading' && (
         <TriggeredByBadge
           id={run.run_number}
@@ -47,7 +45,7 @@ const TriggeredByCell: React.FC<Props> = ({ run, link }) => {
           }
         />
       )}
-    </TDWithLink>
+    </TD>
   );
 };
 

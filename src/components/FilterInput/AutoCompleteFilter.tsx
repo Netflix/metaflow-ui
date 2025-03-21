@@ -17,9 +17,16 @@ type Props = {
   onClear?: () => void;
   autoCompleteSettings?: InputAutocompleteSettings;
   optionLabelRenderer?: (value: string) => React.ReactNode;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 } & Omit<FilterProps, 'content'>;
 
-const AutoCompleteFilter: React.FC<Props> = ({ autoCompleteSettings, onClear, optionLabelRenderer, ...props }) => {
+const AutoCompleteFilter: React.FC<Props> = ({
+  autoCompleteSettings,
+  onClear,
+  optionLabelRenderer,
+  inputProps = {},
+  ...props
+}) => {
   const [inputValue, setInputValue] = useState('');
   const { result: autoCompleteResult } = useAutoComplete<string>(
     autoCompleteSettings
@@ -38,8 +45,8 @@ const AutoCompleteFilter: React.FC<Props> = ({ autoCompleteSettings, onClear, op
       content={({ selected, onClose }) => (
         <Content>
           <FilterPopupHeading>
-            <InputWrapper active={true}>
-              <input type="text" onChange={(event) => setInputValue(event.target.value)} />
+            <InputWrapper active={true} size="sm">
+              <input type="text" onChange={(event) => setInputValue(event.target.value)} {...inputProps} />
             </InputWrapper>
           </FilterPopupHeading>
 
@@ -69,7 +76,7 @@ const AutoCompleteFilter: React.FC<Props> = ({ autoCompleteSettings, onClear, op
                 },
                 disabled: selected.length === 0,
               }}
-            ></FilterPopupTrailing>
+            />
           )}
         </Content>
       )}

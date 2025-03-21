@@ -16,16 +16,25 @@ type Props = {
 };
 
 const TriggeredByBadge: React.FC<Props> = ({ id, content }) => {
-  if (content.type === 'user') {
-    return <Badge badgeType="user">{content.data}</Badge>;
-  }
-
   const tooltipId = `trigger-tooltip-${id}`;
+
+  if (content.type === 'user') {
+    return (
+      <>
+        <Badge badgeType="user" data-tip data-for={tooltipId}>
+          {content.data}
+        </Badge>
+        <Tooltip id={tooltipId} place="bottom">
+          <div>{content.data}</div>
+        </Tooltip>
+      </>
+    );
+  }
 
   return (
     <Badges>
       {content.data.slice(0, 1).map((item) => (
-        <Badge key={item.name} badgeType={item.type}>
+        <Badge key={item.name} badgeType={item.type} data-tip data-for={tooltipId}>
           {item.name}
         </Badge>
       ))}
@@ -57,7 +66,7 @@ const Badge = styled.div<{ badgeType: 'user' | 'event' | 'run' }>`
   color: var(--color-text-light);
   text-overflow: ellipsis;
   width: max-content;
-  max-width: 150px;
+  max-width: 13rem;
   white-space: nowrap;
   overflow: hidden;
 `;

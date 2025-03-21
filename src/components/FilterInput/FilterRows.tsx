@@ -10,7 +10,7 @@ export const FilterOptionRow: React.FC<{ onClick: () => void; selected: boolean;
 }) => (
   <FilterClickableRow onClick={onClick}>
     <CheckboxField checked={selected} />
-    {children}
+    <OptionValue>{children}</OptionValue>
   </FilterClickableRow>
 );
 
@@ -31,6 +31,11 @@ export const FilterClickableRow = styled.div<{ disabled?: boolean; danger?: bool
   &:hover {
     background: var(--color-bg-secondary);
   }
+`;
+
+const OptionValue = styled.div`
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 type ClearFilterRowProps = {
@@ -58,3 +63,9 @@ export const FilterPopupTrailing: React.FC<{ clear?: ClearFilterRowProps; childr
     {children}
   </div>
 );
+
+export const FilterTextRow = styled.div`
+  padding: 0 0.5rem;
+  margin: 0.5rem 0;
+  color: var(--color-text-secondary);
+`;

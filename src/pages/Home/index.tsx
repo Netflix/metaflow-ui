@@ -314,6 +314,11 @@ function shouldUseCachedResult(historyAction: string) {
   return historyAction === 'POP' && !HomeStateCache.active && HomeStateCache.scroll > 0;
 }
 
-const HomeView = styled.div``;
+const HomeView = styled.div`
+  padding: var(--home-view-padding);
+  margin: var(--home-view-margin);
+  background-color: var(--home-view-background);
+  border-radius: var(--home-view-border-radius);
+`;
 
 export default Home;

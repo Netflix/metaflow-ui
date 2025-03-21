@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useRouteMatch } from 'react-router-dom';
+import styled from 'styled-components';
 import { Run as IRun } from '@/types';
 import RunPage from '@pages/Run/RunPage';
 import { APIErrorRenderer } from '@components/GenericError';
@@ -42,7 +43,7 @@ const RunContainer: React.FC = () => {
   });
 
   return (
-    <div>
+    <View>
       {status === 'Loading' && !run?.run_number && (
         <div style={{ textAlign: 'center', margin: '2rem 0' }}>
           <Spinner md />
@@ -56,8 +57,13 @@ const RunContainer: React.FC = () => {
       {(status === 'Ok' || (status === 'Error' && error?.status === 404)) && run?.run_number && (
         <RunPage run={run} params={params} />
       )}
-    </div>
+    </View>
   );
 };
+
+const View = styled.div`
+  padding: var(--run-view-padding);
+  margin: var(--run-view-margin);
+`;
 
 export default RunContainer;

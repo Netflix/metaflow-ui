@@ -61,6 +61,7 @@ const HomeFilters: React.FC<Props> = ({ handleParamChange, updateListValue, para
         data-testid="filter-input-flow"
         onSelect={(v) => updateListValue('flow_id', v)}
         label={t('fields.flow')}
+        inputProps={{ placeholder: t('filters.flow-placeholder') as string }}
         value={params.flow_id}
         autoCompleteSettings={{
           url: '/flows/autocomplete',
@@ -74,6 +75,7 @@ const HomeFilters: React.FC<Props> = ({ handleParamChange, updateListValue, para
         onSelect={(v) => updateListValue('_tags', v.startsWith('project:') ? v : `project:${v}`)}
         onClear={() => handleParamChange('_tags', removeTypeFromTagsList('project', params._tags))}
         label={t('filters.project')}
+        inputProps={{ placeholder: t('filters.project-placeholder') as string }}
         tags={params._tags}
         prefix="project"
         autoCompleteInputTransform={(input: string) => ({ 'tag:re': `project:.*${input}.*` })}
@@ -84,6 +86,7 @@ const HomeFilters: React.FC<Props> = ({ handleParamChange, updateListValue, para
         onSelect={(v) => updateListValue('_tags', v.startsWith('project_branch:') ? v : `project_branch:${v}`)}
         onClear={() => handleParamChange('_tags', removeTypeFromTagsList('project_branch', params._tags))}
         label={t('fields.branch')}
+        inputProps={{ placeholder: t('filters.branch-placeholder') as string }}
         tags={params._tags}
         prefix="project_branch"
         autoCompleteInputTransform={(input: string) => ({ 'tag:re': `project_branch:.*${input}.*` })}
@@ -94,6 +97,7 @@ const HomeFilters: React.FC<Props> = ({ handleParamChange, updateListValue, para
         onSelect={(v) => updateListValue('user', omitFromString('user', v))}
         onClear={() => clear('user')}
         label={t('fields.user')}
+        inputProps={{ placeholder: t('filters.user-placeholder') as string }}
         tags={params.user
           ?.split(',')
           .map((u) => `user:${u}`)
@@ -115,6 +119,7 @@ const HomeFilters: React.FC<Props> = ({ handleParamChange, updateListValue, para
           )
         }
         label={t('fields.tag')}
+        inputProps={{ placeholder: t('filters.tag-placeholder') as string }}
         tags={params._tags
           ?.split(',')
           .filter((x) => !/^project:|project_branch:/.test(x))

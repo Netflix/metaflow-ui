@@ -58,7 +58,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* FINISHED AT */}
         <DateTimeCell date={r.finished_at ? new Date(r.finished_at) : null} link={link} />
         {/* TRIGGERED BY */}
-        <TriggeredByCell link={link} run={r} />
+        <TriggeredByCell run={r} />
         {/* USER TAGS */}
         {(r.tags || []).length > 0 ? (
           <ResultGroupTags id={r.run_number.toString()} tags={r.tags || []} updateListValue={updateListValue} />

@@ -16,11 +16,17 @@ const Filter: React.FC<FilterProps> = ({ label, labelRenderer, value = '', onSel
   const [filterWindowOpen, setFilterWindowOpen] = useState(false);
   const selected = value?.split(',').filter((item) => item) || [];
 
-  const close = () => setFilterWindowOpen(false);
+  const close = () => {
+    setFilterWindowOpen(false);
+  };
 
   return (
     <FilterBase {...rest}>
-      <FilterButton onClick={() => setFilterWindowOpen(!filterWindowOpen)}>
+      <FilterButton
+        onClick={() => {
+          setFilterWindowOpen(!filterWindowOpen);
+        }}
+      >
         {labelRenderer ? labelRenderer(label, value) : DefaultLabelRenderer(label, value)}
         <FilterIcon>
           <Icon name="chevron" size="xs" rotate={filterWindowOpen ? -180 : 0} />

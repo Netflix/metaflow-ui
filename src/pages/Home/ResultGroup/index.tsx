@@ -126,6 +126,7 @@ const ResultGroup: React.FC<Props> = React.memo(
 //
 
 export const StyledResultGroup = styled(Section)`
+  padding: 0 0 0 var(--spacing-3);
   margin-bottom: var(--spacing-7);
 
   table {

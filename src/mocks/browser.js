@@ -121,11 +121,13 @@ export const worker = setupWorker(
     args.params.id > 10 &&
       generateRunMetadata({
         field_name: 'execution-triggers',
-        value: JSON.stringify([
-          { timestamp: 1709280139, id: '7d222e92-83dc-489c-a80e-4711f312dbd0', name: 'test_event', type: 'run' },
-          { timestamp: 1709280138, id: '7d222e91-83dc-489c-a80e-4711f312dbd0', name: 'other_event', type: 'event' },
-          { timestamp: 1709280137, id: '7d222e90-83dc-489c-a80e-4711f312dbd0', name: 'yahoo', type: 'event' },
-        ]),
+        value: JSON.stringify(
+          [
+            { timestamp: 1709280139, id: '7d222e92-83dc-489c-a80e-4711f312dbd0', name: 'test_event', type: 'run' },
+            { timestamp: 1709280138, id: '7d222e91-83dc-489c-a80e-4711f312dbd0', name: 'other_event', type: 'event' },
+            { timestamp: 1709280137, id: '7d222e90-83dc-489c-a80e-4711f312dbd0', name: 'yahoo', type: 'event' },
+          ].slice(0, Math.floor(Math.random() * 3)),
+        ),
       }),
   ]),
   stantardGetEndpoint('api/flows/:flowid/runs/:runid/parameters', {
@@ -348,14 +350,14 @@ export const worker = setupWorker(
   ]),
   rawGetEndpoint('api/plugin', []),
   rawGetEndpoint('api/features', {
-    FEATURE_RUN_GROUPS: true,
+    FEATURE_RUN_GROUPS: false,
     // FEATURE_DEBUG_VIEW: true,
     // FEATURE_HIDE_LOGO: true,
     // FEATURE_HIDE_HOME_BUTTON: true,
     // FEATURE_HIDE_STATUS_FILTERS: false,
     // FEATURE_HIDE_TABLE_HEADER: true,
     // FEATURE_HIDE_QUICK_LINKS: true,
-    FEATURE_ARTIFACT_SEARCH: true,
+    // FEATURE_HIDE_CONNECTION_STATUS: true,
   }),
   stantardGetEndpoint('api/links', []),
   rawGetEndpoint('api/notifications', [
@@ -369,14 +371,13 @@ export const worker = setupWorker(
       type: 'info',
     },
   ]),
-  stantardGetEndpoint('api/flows/autocomplete', ['BasicFlow', 'NewFlow']),
+  stantardGetEndpoint('api/flows/autocomplete', ['BasicFlow', 'NewFlow', 'VerylooooooooooooooongFlowNaaaaaaaaaaame']),
   http.get('api/tags/autocomplete*', ({ request }) => {
     let response = [];
-    console.log(request.url);
     if (request.url.includes('tag%3Are=project_branch')) {
       response = ['project_branch:user.whoever', 'project_branch:someone.else'];
     } else if (request.url.includes('tag%3Are=project')) {
-      response = ['project:project1', 'project:project2'];
+      response = ['project:project1', 'project:veryloooooooooooooooooooooooooongprojectnaaaaaaame'];
     } else if (request.url.includes('tag%3Are=user')) {
       response = ['user:santeri@outerbounds.co', 'user:brendan@outerbounds.co'];
     } else if (request.url.includes('tag%3Aco=')) {

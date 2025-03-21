@@ -128,8 +128,17 @@
   --layout-application-bar-height: 5.5rem; /* 112px */
   --layout-application-bar-logo-height: 1.5rem; /* 24px */
   --layout-application-bar-padding: 1.5rem var(--layout-page-padding-x) 1rem;
-  --layout-page-padding-x: var(--spacing-9);
+  --layout-application-bar-radius: 0;
+  --layout-page-padding-x: var(--spacing-7);
   --layout-page-padding-y: var(--spacing-10);
+
+  /* Views */
+  --home-view-padding: 0;
+  --home-view-margin: 0;
+  --home-view-background: transparent;
+  --home-view-border-radius: 0;
+  --run-view-padding: 0;
+  --run-view-margin: 0;
 
 
   /* Components */
@@ -327,6 +336,7 @@
   --input-height: 2.5rem;
   --input-height-sm: 2rem;
   --input-font-size: 1rem;
+  --input-font-size-sm: 0.875rem;
   --input-padding: 0.5rem 1rem;
   --input-padding-sm: 0.5rem;
 
@@ -334,6 +344,10 @@
   --input-label-font-weight: bold;
   --input-label-transform: scale(1) translate(-0.25rem, 0.6875rem);
   --input-label-transform-active: scale(0.75) translate(-0.625rem, -0.75rem);
+
+  --input-placeholder-color: var(--color-text-light);
+  --input-placeholder-font-size: inherit;
+  --input-placeholder-font-weight: 400;
 
   --checkbox-size: 1rem;
   --checkbox-border-radius: 4px;

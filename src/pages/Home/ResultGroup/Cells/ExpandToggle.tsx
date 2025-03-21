@@ -18,7 +18,7 @@ const ExpandToggle: React.FC<ExpandToggleProps> = (props) => {
 
 const ToggleContainer = styled.div`
   position: absolute;
-  left: -1.75rem;
+  left: -1.5rem;
   top: 0;
   height: 100%;
   display: flex;

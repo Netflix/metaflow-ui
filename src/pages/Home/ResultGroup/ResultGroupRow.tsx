@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Run } from '@/types';
 import { TableColDefinition } from '@pages/Home/ResultGroup';
@@ -35,6 +36,7 @@ enum RowState {
 // Row component that will lock it's state when hovered or set active
 //
 const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue, run, cols }) => {
+  const { t } = useTranslation();
   const [isHovering, setIsHovering] = useState(false);
   const [rowState, setRowState] = useState<RowState>(RowState.Closed);
   const [tab, setTab] = useState(0);
@@ -103,10 +105,10 @@ const ResultGroupRow: React.FC<Props> = ({ isStale, queryParams, updateListValue
               <StyledSection closing={rowState === RowState.Closing}>
                 <TabsHeading>
                   <TabsHeadingItem active={tab === 0} onClick={() => setTab(0)}>
-                    timeline
+                    {t('run.timeline')}
                   </TabsHeadingItem>
                   <TabsHeadingItem active={tab === 1} onClick={() => setTab(1)}>
-                    parameters
+                    {t('run.parameters')}
                   </TabsHeadingItem>
                 </TabsHeading>
                 {tab === 0 && <TimelinePreview run={run} />}

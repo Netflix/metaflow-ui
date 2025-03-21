@@ -47,12 +47,10 @@ const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ id, tags, updateListV
       </TagContainerSmallScreen>
       <Tooltip id={tooltipId} place="bottom">
         {sortedTags.map((tag, index) => (
-          <>
-            <TagInTooltip key={tag} onClick={() => updateListValue('_tags', tag)}>
-              {tag}
-            </TagInTooltip>
+          <span key={tag}>
+            <TagInTooltip onClick={() => updateListValue('_tags', tag)}>{tag}</TagInTooltip>
             {index !== sortedTags.length - 1 && ', '}
-          </>
+          </span>
         ))}
       </Tooltip>
     </TagsCell>

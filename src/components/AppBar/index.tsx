@@ -52,6 +52,7 @@ const Wrapper = styled.header`
   padding: var(--layout-application-bar-padding);
   margin: 0 auto;
   background: var(--color-bg-primary);
+  border-radius: var(--layout-application-bar-radius);
   z-index: 999;
   flex-direction: column;
 `;

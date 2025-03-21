@@ -5,7 +5,12 @@ import spacetime from 'spacetime';
 import styled from 'styled-components';
 import DateInput from '@/components/Form/DateInput';
 import Filter from '@components/FilterInput/Filter';
-import { FilterClickableRow, FilterSeparator } from '@components/FilterInput/FilterRows';
+import {
+  FilterClickableRow,
+  FilterPopupTrailing,
+  FilterSeparator,
+  FilterTextRow,
+} from '@components/FilterInput/FilterRows';
 import { TimezoneContext } from '@components/TimezoneProvider';
 import { getDateTimeLocalString, getTimeFromPastByDays, getTimeRangeString } from '@utils/date';
 
@@ -24,7 +29,9 @@ const TimerangeSelection: React.FC<Props> = ({ value, onChange }) => {
     <Filter
       label="Time frame"
       value={labelValue}
-      content={() => <TimeRangePopup label={labelValue} value={value} onChange={onChange} />}
+      content={({ onClose }) => (
+        <TimeRangePopup label={labelValue} value={value} onChange={onChange} onClose={onClose} />
+      )}
     />
   );
 };
@@ -33,7 +40,8 @@ const TimeRangePopup: React.FC<{
   value: TimerangeValues;
   label: string | null;
   onChange: (args: TimerangeValues) => void;
-}> = ({ value, onChange }) => {
+  onClose: () => void;
+}> = ({ value, onChange, onClose }) => {
   const { t } = useTranslation();
   const { timezone } = useContext(TimezoneContext);
   const presets = [
@@ -51,9 +59,9 @@ const TimeRangePopup: React.FC<{
         </FilterClickableRow>
       ))}
       <FilterSeparator />
-      <p>{t('filters.custom')}</p>
+      <FilterTextRow>{t('filters.custom')}</FilterTextRow>
 
-      <TimerangeFooter>
+      <TimerangeFields>
         <DateInput
           inputType="datetime-local"
           onChange={(newValue) => onChange({ ...value, start: newValue ? spacetime(newValue, timezone).epoch : null })}
@@ -65,7 +73,17 @@ const TimeRangePopup: React.FC<{
           onChange={(newValue) => onChange({ ...value, end: newValue ? spacetime(newValue, timezone).epoch : null })}
           initialValue={value.end ? getDateTimeLocalString(new Date(value.end), timezone) : undefined}
         />
-      </TimerangeFooter>
+      </TimerangeFields>
+
+      <FilterPopupTrailing
+        clear={{
+          onClick: () => {
+            onChange({ start: null, end: null });
+            onClose();
+          },
+          disabled: value.start === null && value.end === null,
+        }}
+      />
     </div>
   );
 };
@@ -100,7 +118,7 @@ function getRawDateString(value: TimerangeValues, timezone: string): string {
   }`;
 }
 
-const TimerangeFooter = styled.div`
+const TimerangeFields = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
