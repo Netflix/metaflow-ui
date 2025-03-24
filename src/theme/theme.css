@@ -301,6 +301,7 @@
   --titled-row-table-value-padding: var(--titled-row-padding);
 
   /* Result group (Runs table) */
+  --result-group-row-height: 3.5rem;
   --result-group-status-cell-padding: var(--table-cell-padding);
   --result-group-expand-cell-border: none;
   --result-group-expand-cell-border-top: var(--result-group-expand-cell-border);

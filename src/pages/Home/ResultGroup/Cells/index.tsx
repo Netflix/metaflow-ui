@@ -3,13 +3,13 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { Run } from '@/types';
 import DateTimeCell from '@pages/Home/ResultGroup/Cells/DateTimeCell';
-import ExpandToggle, { ExpandToggleProps } from '@pages/Home/ResultGroup/Cells/ExpandToggle';
+import { ExpandToggleProps } from '@pages/Home/ResultGroup/Cells/ExpandToggle';
+import RunCell from '@pages/Home/ResultGroup/Cells/RunCell';
 import ResultGroupTags from '@pages/Home/ResultGroup/Cells/TagCell';
 import TriggeredByCell from '@pages/Home/ResultGroup/Cells/TriggeredByCell';
 import AutoUpdating from '@components/AutoUpdating';
-import StatusIndicator from '@components/StatusIndicator';
 import { TD } from '@components/Table';
-import { getRunDuration, getRunId, getTagOfType } from '@utils/run';
+import { getRunDuration, getTagOfType } from '@utils/run';
 
 //
 // Typedef
@@ -32,13 +32,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
     return (
       <>
         {/* ID */}
-        <TDWithLink link={link}>
-          <ExpandToggle {...expand} />
-          <FlexCell>
-            <StatusIndicator status={r.status} />
-            {getRunId(r)}
-          </FlexCell>
-        </TDWithLink>
+        <RunCell link={link} run={r} expand={expand} />
         {/* FLOW ID */}
         {params._group !== 'flow_id' && (
           <TDWithLink link={link}>
@@ -115,12 +109,6 @@ const GhostLink = styled(Link)`
 const WordBreak = styled.div`
   word-break: break-word;
   text-align: right;
-`;
-
-const FlexCell = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
 `;
 
 export default ResultGroupCells;

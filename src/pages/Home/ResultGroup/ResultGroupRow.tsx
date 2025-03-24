@@ -139,7 +139,7 @@ function isTransitioning(rs: RowState) {
 //
 
 const StyledTR = styled(TR)`
-  height: 3.5rem;
+  height: var(--result-group-row-height);
 `;
 
 // Need to align expand area by one pixel so that border is on correct position
