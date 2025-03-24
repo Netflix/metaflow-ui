@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
-import { FilterOptionRow, FilterPopupTrailing } from '@/components/FilterInput/FilterRows';
 import { RunStatus } from '@/types';
 import Filter from '@components/FilterInput/Filter';
+import { FilterOptionRow, FilterPopupTrailing } from '@components/FilterInput/FilterRows';
 import StatusIndicator from '@components/StatusIndicator';
 import FEATURE_FLAGS from '@utils/FEATURE';
 

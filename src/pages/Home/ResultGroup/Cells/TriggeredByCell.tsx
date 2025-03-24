@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
-import { TD } from '@/components/Table';
 import { Metadata, Run } from '@/types';
+import { TD } from '@components/Table';
 import TriggeredByBadge from '@components/Trigger/TriggeredByBadge';
 import useResource from '@hooks/useResource';
 import { metadataToRecord } from '@utils/metadata';

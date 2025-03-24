@@ -3,7 +3,6 @@ import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import spacetime from 'spacetime';
 import styled from 'styled-components';
-import DateInput from '@/components/Form/DateInput';
 import Filter from '@components/FilterInput/Filter';
 import {
   FilterClickableRow,
@@ -11,6 +10,7 @@ import {
   FilterSeparator,
   FilterTextRow,
 } from '@components/FilterInput/FilterRows';
+import DateInput from '@components/Form/DateInput';
 import { TimezoneContext } from '@components/TimezoneProvider';
 import { getDateTimeLocalString, getTimeFromPastByDays, getTimeRangeString } from '@utils/date';
 

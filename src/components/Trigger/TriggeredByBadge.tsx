@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
-import Tooltip from '@/components/Tooltip';
-import { TriggerEventsValue } from '@/components/Trigger';
+import Tooltip from '@components/Tooltip';
+import { TriggerEventsValue } from '@components/Trigger';
 
 type TriggerBadgeInfo =
   | {

@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import VerticalToggle from '@/components/VerticalToggle';
+import VerticalToggle from '@components/VerticalToggle';
 
 export type ExpandToggleProps = {
   onClick: () => void;

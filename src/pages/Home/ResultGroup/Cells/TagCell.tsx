@@ -1,8 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import Tooltip from '@/components/Tooltip';
 import Icon from '@components/Icon';
 import { TD } from '@components/Table';
+import Tooltip from '@components/Tooltip';
 
 //
 // Typedef
