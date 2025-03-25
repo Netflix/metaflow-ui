@@ -26,13 +26,15 @@ const TimerangeSelection: React.FC<Props> = ({ value, onChange }) => {
   const labelValue = value.start || value.end ? formatString(value, timezone, t) : null;
 
   return (
-    <Filter
-      label="Time frame"
-      value={labelValue}
-      content={({ onClose }) => (
-        <TimeRangePopup label={labelValue} value={value} onChange={onChange} onClose={onClose} />
-      )}
-    />
+    <div>
+      <Filter
+        label="Time frame"
+        value={labelValue}
+        content={({ onClose }) => (
+          <TimeRangePopup label={labelValue} value={value} onChange={onChange} onClose={onClose} />
+        )}
+      />
+    </div>
   );
 };
 

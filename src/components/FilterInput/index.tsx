@@ -13,7 +13,8 @@ import AutoComplete from '@components/AutoComplete';
 import { InputLabel } from '@components/Form/InputLabel';
 import InputTip from '@components/Form/InputTip';
 import InputWrapper from '@components/Form/InputWrapper';
-import Icon, { IconKeys, IconSizes } from '@components/Icon';
+import Icon, { IconKeys } from '@components/Icon';
+import { IconSizes } from '@components/Icon/icon-size';
 import useAutoComplete, { AutoCompleteItem } from '@hooks/useAutoComplete';
 
 //

@@ -66,13 +66,12 @@ const ResultGroup: React.FC<Props> = React.memo(
         label: t('fields.project'),
         key: 'project',
         sortable: true,
-        maxWidth: '12.5%',
       },
       { label: t('fields.started-at'), sortable: true, key: 'ts_epoch', alignment: 'right' as const },
       { label: t('fields.duration'), sortable: true, key: 'duration', alignment: 'right' as const },
       { label: t('fields.finished-at'), sortable: true, key: 'finished_at', alignment: 'right' as const },
       { label: t('fields.triggered-by'), key: 'trigger' },
-      { label: t('fields.user-tags'), key: 'tags', maxWidth: '12.5%' },
+      { label: t('fields.user-tags'), key: 'tags' },
     ].filter((item) => !item.hidden);
 
     const tableRef = useRef<HTMLTableElement>(null);

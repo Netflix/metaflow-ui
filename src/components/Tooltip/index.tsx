@@ -17,6 +17,7 @@ const Tooltip: React.FC<TooltipProps> = ({ children, ...props }) => {
       <ReactTooltip
         className="custom-tooltip"
         delayHide={250}
+        delayShow={25}
         place="bottom"
         effect="solid"
         arrowColor="transparent"

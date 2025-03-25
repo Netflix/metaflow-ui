@@ -25,41 +25,43 @@ const StatusSelection: React.FC<Props> = ({ updateField, onClear, status }) => {
   ];
 
   return (
-    <Filter
-      label={t('fields.status-filter') ?? ''}
-      labelRenderer={(label, value) => {
-        return (
-          <>
-            {label}
-            <LabelStatusRow>
-              {value
-                ?.split(',')
-                .map((status) => isValidStatus(status) && <StatusIndicator status={status} key={status} />)}
-            </LabelStatusRow>
-          </>
-        );
-      }}
-      value={status}
-      onSelect={(v) => updateField('status', v)}
-      content={() => (
-        <div>
-          {options.map(([key, label]) => (
-            <FilterOptionRow key={key} onClick={() => updateField('status', key)} selected={!!status?.includes(key)}>
-              <StatusRow>
-                {isValidStatus(key) && <StatusIndicator status={key} />}
-                {label}
-              </StatusRow>
-            </FilterOptionRow>
-          ))}
-          <FilterPopupTrailing
-            clear={{
-              onClick: onClear,
-              disabled: isAllSelected(status),
-            }}
-          />
-        </div>
-      )}
-    />
+    <div>
+      <Filter
+        label={t('fields.status-filter') ?? ''}
+        labelRenderer={(label, value) => {
+          return (
+            <>
+              {label}
+              <LabelStatusRow>
+                {value
+                  ?.split(',')
+                  .map((status) => isValidStatus(status) && <StatusIndicator status={status} key={status} />)}
+              </LabelStatusRow>
+            </>
+          );
+        }}
+        value={status}
+        onSelect={(v) => updateField('status', v)}
+        content={() => (
+          <div>
+            {options.map(([key, label]) => (
+              <FilterOptionRow key={key} onClick={() => updateField('status', key)} selected={!!status?.includes(key)}>
+                <StatusRow>
+                  {isValidStatus(key) && <StatusIndicator status={key} />}
+                  {label}
+                </StatusRow>
+              </FilterOptionRow>
+            ))}
+            <FilterPopupTrailing
+              clear={{
+                onClick: onClear,
+                disabled: isAllSelected(status),
+              }}
+            />
+          </div>
+        )}
+      />
+    </div>
   );
 };
 

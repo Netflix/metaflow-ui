@@ -7,12 +7,13 @@ export type FilterProps = {
   label: string;
   labelRenderer?: (label: string, value?: string | null) => React.ReactNode;
   onSelect?: (k: string) => void;
+  onClear?: () => void;
   value?: string | null;
   content: (props: { onSelect?: (k: string) => void; selected: string[]; onClose: () => void }) => React.ReactNode;
   'data-testid'?: string;
 };
 
-const Filter: React.FC<FilterProps> = ({ label, labelRenderer, value = '', onSelect, content, ...rest }) => {
+const Filter: React.FC<FilterProps> = ({ label, labelRenderer, value = '', onSelect, onClear, content, ...rest }) => {
   const [filterWindowOpen, setFilterWindowOpen] = useState(false);
   const selected = value?.split(',').filter((item) => item) || [];
 
@@ -29,7 +30,20 @@ const Filter: React.FC<FilterProps> = ({ label, labelRenderer, value = '', onSel
       >
         {labelRenderer ? labelRenderer(label, value) : DefaultLabelRenderer(label, value)}
         <FilterIcon>
-          <Icon name="chevron" size="xs" rotate={filterWindowOpen ? -180 : 0} />
+          {value && onClear ? (
+            <span
+              onClick={(event) => {
+                event.stopPropagation();
+                event.preventDefault();
+                onClear();
+                close();
+              }}
+            >
+              <Icon name="cross" size="sm" />
+            </span>
+          ) : (
+            <Icon name="chevron" size="sm" rotate={filterWindowOpen ? -180 : 0} />
+          )}
         </FilterIcon>
       </FilterButton>
       {filterWindowOpen && <FilterPopup onClose={close}>{content({ onSelect, selected, onClose: close })}</FilterPopup>}
@@ -51,14 +65,16 @@ const FilterBase = styled.div`
 `;
 
 const FilterButton = styled.div`
-  padding: 0.375rem 0.5rem;
+  padding: 0rem 0.5rem;
   border: var(--input-border);
   border-radius: var(--radius-primary);
   color: var(--input-text-color);
+  min-height: 1.75rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   font-size: var(--font-size-primary);
+  line-height: 1;
   overflow: hidden;
 `;
 
@@ -66,6 +82,7 @@ const FilterIcon = styled.div`
   margin-left: 0.375rem;
   display: flex;
   align-items: center;
+  color: #6a6867;
 `;
 
 const SelectedValue = styled.div`

@@ -21,7 +21,8 @@ const RunCell: React.FC<{ link: string; run: Run; expand: ExpandToggleProps }> =
 const FlexCell = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
+  font-size: var(--font-size-4);
 `;
 
 export default RunCell;

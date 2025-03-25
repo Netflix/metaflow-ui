@@ -42,6 +42,7 @@ const AutoCompleteFilter: React.FC<Props> = ({
   return (
     <Filter
       {...props}
+      onClear={onClear}
       content={({ selected, onClose }) => (
         <Content>
           <FilterPopupHeading>

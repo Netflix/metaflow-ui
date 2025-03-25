@@ -19,7 +19,7 @@ const ResultGroupHeader: React.FC<ResultGroupHeaderProps> = React.memo(
   ({ handleClick, error, cols, onOrderChange, order, label, clickable }) => (
     <>
       {!FEATURE_FLAGS.HIDE_TABLE_HEADER && label && (
-        <TR className="result-group-title">
+        <HeaderTR className="result-group-title">
           <th colSpan={cols.length + 1} style={{ textAlign: 'left' }}>
             <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
               {label}
@@ -27,9 +27,9 @@ const ResultGroupHeader: React.FC<ResultGroupHeaderProps> = React.memo(
 
             {error && <Label type={LabelType.Warning}>{error.message}</Label>}
           </th>
-        </TR>
+        </HeaderTR>
       )}
-      <TR className="result-group-columns">
+      <HeaderTR className="result-group-columns">
         {cols.map((col) => (
           <HeaderColumn
             key={col.key}
@@ -42,7 +42,7 @@ const ResultGroupHeader: React.FC<ResultGroupHeaderProps> = React.memo(
             currentOrder={order}
           />
         ))}
-      </TR>
+      </HeaderTR>
     </>
   ),
   (previous, next) => {
@@ -59,5 +59,7 @@ const ResultGroupTitle = styled.h3<{ clickable: boolean }>`
     ${(p) => (p.clickable ? `color: var(--color-text-highlight);` : '')}
   }
 `;
+
+const HeaderTR = styled(TR)``;
 
 export default ResultGroupHeader;

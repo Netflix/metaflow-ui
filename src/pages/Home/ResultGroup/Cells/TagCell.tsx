@@ -90,6 +90,7 @@ const TagContainer = styled.div`
 `;
 
 const TagContainerSmallScreen = styled.div`
+  padding: 0.25rem;
   display: none;
   @media only screen and (max-width: 1440px) {
     display: flex;

@@ -31,12 +31,12 @@
   --color-bg-disabled: #767676;
 
   --color-border-primary: #d0d0d0;
-  --color-border-1: rgba(0, 0, 0, 0.125);
-  --color-border-2: rgba(0, 0, 0, 0.25);
+  --color-border-1: #6A68671A;
+  --color-border-2: #6A68674D;
   --color-border-3: rgba(0, 0, 0, 0.35);
   --color-border-4: #4e7ca766;
 
-  --color-text-primary: #333;
+  --color-text-primary: #31302F;
   --color-text-secondary: #666;
   --color-text-light: #6a6867;
   --color-text-alternative: #fff;
@@ -80,7 +80,7 @@
   /* Typography */
   --font-size-1: 0.5rem; /* 8px */
   --font-size-2: 0.625rem; /* 10px */
-  --font-size-3: 0.675rem; /* IS this actually needed? */
+  --font-size-3: 0.6875rem; /* IS this actually needed? */
   --font-size-4: 0.75rem; /* 12px */
   --font-size-5: 0.875rem; /* 14px */
   --font-size-6: 1rem; /* 16px */
@@ -257,7 +257,7 @@
   --table-cell-border-right: var(--table-cell-border);
   --table-cell-border-bottom: var(--table-cell-border);
   --table-cell-border-left: var(--table-cell-border);
-  --table-cell-font-size: var(--font-size-primary);
+  --table-cell-font-size: var(--font-size-4);
   --table-cell-text-color: var(--color-text-primary);
   --table-cell-font-weight: inherit;
   --table-cell-bg: #6A68670D;
@@ -308,7 +308,7 @@
   --result-group-expand-cell-border-right: var(--result-group-expand-cell-border);
   --result-group-expand-cell-border-bottom: var(--result-group-expand-cell-border);
   --result-group-expand-cell-border-left: var(--result-group-expand-cell-border);
-  --result-group-expand-padding: 0.5rem 0.5rem 0;
+  --result-group-expand-padding: 0.75rem;
   --result-group-timeline-preview-margin: 1rem 0 0 0;
 
   /* Breadcrumb */
@@ -329,7 +329,7 @@
   --tooltip-bg: rgba(51, 51, 51, 0.7);
 
   /* Input */
-  --input-border: var(--border-thin-1);
+  --input-border: var(--border-thin-2);
   --input-border-danger: 1px solid var(--color-bg-danger);
   --input-text-color: var(--color-text-primary);
   --input-bg: var(--color-bg-primary);
