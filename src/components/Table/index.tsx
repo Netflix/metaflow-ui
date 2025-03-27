@@ -124,7 +124,7 @@ interface HeaderColumnProps {
   currentOrder: string;
   onSort: (ord: string) => void;
   sortable: boolean;
-  maxWidth?: string;
+  width?: string;
   alignment?: 'left' | 'right' | 'center';
 }
 
@@ -134,7 +134,7 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({
   currentOrder,
   sortable = true,
   onSort,
-  maxWidth,
+  width,
   alignment = 'left',
   ...rest
 }) => {
@@ -147,14 +147,7 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({
       onClick={() => (sortable ? onSort(queryKey) : null)}
       {...rest}
       clickable={sortable}
-      style={
-        maxWidth
-          ? {
-              maxWidth: maxWidth + (maxWidth.indexOf('%') > -1 ? '' : 'px'),
-              // width: maxWidth + (maxWidth.indexOf('%') > -1 ? '' : 'px'),
-            }
-          : {}
-      }
+      style={width ? { width } : {}}
     >
       <HeaderColumnWrapper alignment={alignment}>
         {label}

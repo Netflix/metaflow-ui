@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { APIError, AsyncStatus, Run as IRun } from '@/types';
 import AutoLoadTrigger from '@pages/Home/Content/AutoLoadTrigger';
+import HomeTooltips from '@pages/Home/Content/Tooltips';
 import ResultGroup from '@pages/Home/ResultGroup';
 import GenericError, { APIErrorRenderer } from '@components/GenericError';
 import Spinner from '@components/Spinner';
@@ -64,7 +65,7 @@ const HomeContentArea: React.FC<Props> = ({
           <GenericError icon="searchNotFound" message={t('error.no-results')} />
         </ItemRow>
       )}
-      {/* TODO */}
+
       <BigLoader visible={showLoader && resultAmount > 0}>
         <Spinner md />
       </BigLoader>
@@ -82,6 +83,8 @@ const HomeContentArea: React.FC<Props> = ({
         }}
         resultAmount={resultAmount}
       />
+
+      <HomeTooltips updateListValue={updateListValue} />
     </Content>
   );
 };

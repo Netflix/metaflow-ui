@@ -25,3 +25,9 @@ export const ForceNoBreakText = styled.span`
 export const ForceNoWrapText = styled.span`
   white-space: nowrap;
 `;
+
+export const NoWrapOverflowText = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;

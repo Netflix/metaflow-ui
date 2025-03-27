@@ -60,7 +60,7 @@ const AutoCompleteFilter: React.FC<Props> = ({
               ),
           )}
 
-          {autoCompleteResult.data
+          {(!inputValue ? [] : autoCompleteResult.data)
             .filter((item) => !selected.includes(item.value))
             .map((item) => (
               <FilterOptionRow key={item.value} onClick={() => props.onSelect(item.value)} selected={false}>

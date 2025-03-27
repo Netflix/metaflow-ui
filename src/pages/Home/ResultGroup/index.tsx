@@ -9,6 +9,7 @@ import ResultGroupRow from '@pages/Home/ResultGroup/ResultGroupRow';
 import StickyHeader from '@pages/Home/ResultGroup/StickyHeader';
 import { Section } from '@components/Structure';
 import Table from '@components/Table';
+import columns from './Columns';
 
 //
 // Typedef
@@ -31,7 +32,7 @@ export type TableColDefinition = {
   label: string;
   key: string;
   hidden?: boolean;
-  maxWidth?: string;
+  width?: string;
   sortable?: boolean;
   alignment?: 'left' | 'right' | 'center';
 };
@@ -53,26 +54,7 @@ const ResultGroup: React.FC<Props> = React.memo(
   }) => {
     const { t } = useTranslation();
     const [isInViewport, targetRef] = useIsInViewport();
-
-    const cols: TableColDefinition[] = [
-      { label: t('fields.run'), key: 'run' },
-      {
-        label: t('fields.flow_id'),
-        key: 'flow_id',
-        sortable: true,
-        hidden: queryParams._group === 'flow_id',
-      },
-      {
-        label: t('fields.project'),
-        key: 'project',
-        sortable: true,
-      },
-      { label: t('fields.started-at'), sortable: true, key: 'ts_epoch', alignment: 'right' as const },
-      { label: t('fields.duration'), sortable: true, key: 'duration', alignment: 'right' as const },
-      { label: t('fields.finished-at'), sortable: true, key: 'finished_at', alignment: 'right' as const },
-      { label: t('fields.triggered-by'), key: 'trigger' },
-      { label: t('fields.user-tags'), key: 'tags' },
-    ].filter((item) => !item.hidden);
+    const cols: TableColDefinition[] = columns(t, queryParams);
 
     const tableRef = useRef<HTMLTableElement>(null);
 
@@ -125,10 +107,11 @@ const ResultGroup: React.FC<Props> = React.memo(
 //
 
 export const StyledResultGroup = styled(Section)`
-  padding: 0 0 0 var(--spacing-3);
+  padding: var(--result-group-padding);
   margin-bottom: var(--spacing-7);
 
   table {
+    table-layout: fixed;
     margin-bottom: var(--spacing-3);
     word-break: break-all;
   }

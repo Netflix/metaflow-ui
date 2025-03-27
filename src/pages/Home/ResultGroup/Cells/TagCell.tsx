@@ -9,7 +9,6 @@ import Tooltip from '@components/Tooltip';
 //
 
 type ResultGroupTagsProps = {
-  id: string;
   tags: string[];
   updateListValue: (key: string, value: string) => void;
 };
@@ -18,9 +17,12 @@ type ResultGroupTagsProps = {
 // Component
 //
 
-const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ id, tags, updateListValue }) => {
+const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ tags, updateListValue }) => {
   const sortedTags = tags.sort((a, b) => a.localeCompare(b));
-  const tooltipId = `tag-tooltip-${id}`;
+  const tooltipProps = {
+    'data-tooltip-content': JSON.stringify(sortedTags),
+    'data-tooltip-id': 'tag-tooltip',
+  };
 
   return (
     <TagsCell
@@ -35,25 +37,43 @@ const ResultGroupTags: React.FC<ResultGroupTagsProps> = ({ id, tags, updateListV
           </Tag>
         ))}
 
-        {sortedTags.length > 1 && (
-          <Tag data-tip data-for={tooltipId}>
-            +{sortedTags.length - 1}
-          </Tag>
-        )}
+        {sortedTags.length > 1 && <Tag {...tooltipProps}>+{sortedTags.length - 1}</Tag>}
       </TagContainer>
 
-      <TagContainerSmallScreen data-tip data-for={tooltipId}>
+      <TagContainerSmallScreen {...tooltipProps}>
         <Icon name="tag" size="sm" />
       </TagContainerSmallScreen>
-      <Tooltip id={tooltipId} place="bottom">
-        {sortedTags.map((tag, index) => (
-          <span key={tag}>
-            <TagInTooltip onClick={() => updateListValue('_tags', tag)}>{tag}</TagInTooltip>
-            {index !== sortedTags.length - 1 && ', '}
-          </span>
-        ))}
-      </Tooltip>
     </TagsCell>
+  );
+};
+
+export const TagTooltip: React.FC<{ updateListValue: (key: string, value: string) => void }> = ({
+  updateListValue,
+}) => {
+  return (
+    <Tooltip
+      id="tag-tooltip"
+      place="left"
+      clickable={true}
+      render={(data) => {
+        if (!data.content) return;
+        const tags = JSON.parse(data.content || '');
+        if (!Array.isArray(tags) || tags.length === 0) {
+          return;
+        }
+
+        return (
+          <>
+            {tags.map((tag, index) => (
+              <span key={tag}>
+                <TagInTooltip onClick={() => updateListValue('_tags', tag)}>{tag}</TagInTooltip>
+                {index !== tags.length - 1 && ', '}
+              </span>
+            ))}
+          </>
+        );
+      }}
+    />
   );
 };
 

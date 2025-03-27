@@ -235,6 +235,10 @@
   --spinner-lg-border-width: 6px;
   --spinner-color: var(--color-primary);
 
+  /* Toast/ScrollToTop */
+  --toast-width: 2.5rem;
+  --toast-height: 2.5rem;
+
   /* Table */
   --table-bg: transparent;
   --table-border: none;
@@ -301,6 +305,7 @@
   --titled-row-table-value-padding: var(--titled-row-padding);
 
   /* Result group (Runs table) */
+  --result-group-padding: 0 0 0 var(--spacing-3);
   --result-group-row-height: 3.5rem;
   --result-group-status-cell-padding: var(--table-cell-padding);
   --result-group-expand-cell-border: none;
@@ -310,6 +315,8 @@
   --result-group-expand-cell-border-left: var(--result-group-expand-cell-border);
   --result-group-expand-padding: 0.75rem;
   --result-group-timeline-preview-margin: 1rem 0 0 0;
+
+  --expand-toggle-left: -1.5rem;
 
   /* Breadcrumb */
   --breadcrumb-height: 2.5rem;

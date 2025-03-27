@@ -191,8 +191,7 @@ const DocstringTooltip: React.FC<{ stepName: string; docs: string }> = ({ stepNa
   return (
     <>
       <StepInfoMarker
-        data-tip
-        data-for={stepName}
+        data-tooltip-id={stepName}
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();

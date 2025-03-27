@@ -9,6 +9,7 @@ import ResultGroupTags from '@pages/Home/ResultGroup/Cells/TagCell';
 import TriggeredByCell from '@pages/Home/ResultGroup/Cells/TriggeredByCell';
 import AutoUpdating from '@components/AutoUpdating';
 import { TD } from '@components/Table';
+import { NoWrapOverflowText } from '@components/Text';
 import { getRunDuration, getTagOfType } from '@utils/run';
 
 //
@@ -36,11 +37,13 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* FLOW ID */}
         {params._group !== 'flow_id' && (
           <TDWithLink link={link}>
-            <div>{r.flow_id}</div>
+            <NoWrapOverflowText>{r.flow_id}</NoWrapOverflowText>
           </TDWithLink>
         )}
         {/* PROJECT */}
-        <TDWithLink link={link}>{projectString(r)}</TDWithLink>
+        <TDWithLink link={link}>
+          <NoWrapOverflowText>{projectString(r)}</NoWrapOverflowText>
+        </TDWithLink>
         {/* STARTED AT */}
         <DateTimeCell date={new Date(r.ts_epoch)} link={link} />
         {/* DURATION */}
@@ -55,7 +58,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         <TriggeredByCell run={r} />
         {/* USER TAGS */}
         {(r.tags || []).length > 0 ? (
-          <ResultGroupTags id={r.run_number.toString()} tags={r.tags || []} updateListValue={updateListValue} />
+          <ResultGroupTags tags={r.tags || []} updateListValue={updateListValue} />
         ) : (
           <TDWithLink link={link}></TDWithLink>
         )}

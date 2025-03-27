@@ -39,7 +39,6 @@ const TriggeredByCell: React.FC<Props> = ({ run }) => {
     <TD>
       {status !== 'Loading' && (
         <TriggeredByBadge
-          id={run.run_number}
           content={
             hasTrigger ? { type: 'trigger', data: triggerEventsValue } : { type: 'user', data: getUsername(run) }
           }

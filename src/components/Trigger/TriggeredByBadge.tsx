@@ -11,45 +11,47 @@ type TriggerBadgeInfo =
   | { type: 'trigger'; data: TriggerEventsValue[] };
 
 type Props = {
-  id: number;
   content: TriggerBadgeInfo;
 };
 
-const TriggeredByBadge: React.FC<Props> = ({ id, content }) => {
-  const tooltipId = `trigger-tooltip-${id}`;
-
-  if (content.type === 'user') {
-    return (
-      <>
-        <Badge badgeType="user" data-tip data-for={tooltipId}>
-          {content.data}
-        </Badge>
-        <Tooltip id={tooltipId} place="bottom">
-          <div>{content.data}</div>
-        </Tooltip>
-      </>
-    );
+const TriggeredByBadge: React.FC<Props> = ({ content }) => {
+  if (!content.data) {
+    return;
   }
+
+  const badges =
+    content.type === 'user'
+      ? [
+          {
+            type: 'user' as const,
+            name: content.data,
+          },
+        ]
+      : content.data.map((item) => ({ type: item.type, name: item.name }));
+
+  const tooltipProps = {
+    'data-tooltip-content': badges.map((item) => item.name).join(', '),
+    'data-tooltip-id': 'triggered-by-tooltip',
+  };
 
   return (
     <Badges>
-      {content.data.slice(0, 1).map((item) => (
-        <Badge key={item.name} badgeType={item.type} data-tip data-for={tooltipId}>
+      {badges.slice(0, 1).map((item) => (
+        <Badge key={item.name} badgeType={item.type} {...tooltipProps}>
           {item.name}
         </Badge>
       ))}
-      {content.data.length > 1 && (
-        <Badge badgeType="event" data-tip data-for={tooltipId}>
-          +{content.data.length - 1}
+      {badges.length > 1 && (
+        <Badge badgeType="event" {...tooltipProps}>
+          +{badges.length - 1}
         </Badge>
       )}
-      <Tooltip id={tooltipId} place="bottom">
-        {content.data.map((item) => (
-          <div key={item.name}>{item.name}</div>
-        ))}
-      </Tooltip>
     </Badges>
   );
+};
+
+export const TriggeredByTooltip = () => {
+  return <Tooltip id="triggered-by-tooltip" place="left" />;
 };
 
 const Badges = styled.div`

@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactTooltip, { TooltipProps } from 'react-tooltip';
+import { Tooltip as ReactTooltip, ITooltip } from 'react-tooltip';
 import styled from 'styled-components';
 
 //
@@ -7,11 +7,11 @@ import styled from 'styled-components';
 // Basically custom styles wrapper for react-tooltip. Use by giving the trigger component data-tip and data-for=[name]
 // attributes and then giving id=[name] for Tooltip component. eg:
 //
-// <button data-tip data-for="my-tooltip">This has tooltip</button>
+// <button data-tooltip-content data-tooltip-id="my-tooltip">This has tooltip</button>
 // <Tooltip id="my-tooltip">Tooltip content</Tooltip>
 //
 
-const Tooltip: React.FC<TooltipProps> = ({ children, ...props }) => {
+const Tooltip: React.FC<ITooltip> = ({ children, ...props }) => {
   return (
     <CustomTooltip>
       <ReactTooltip
@@ -19,7 +19,6 @@ const Tooltip: React.FC<TooltipProps> = ({ children, ...props }) => {
         delayHide={250}
         delayShow={25}
         place="bottom"
-        effect="solid"
         arrowColor="transparent"
         {...props}
       >
@@ -44,6 +43,7 @@ const CustomTooltip = styled.div`
     border-radius: var(--radius-primary);
     white-space: pre;
     pointer-events: auto;
+    z-index: 9999;
 
     &::before {
       display: none;
