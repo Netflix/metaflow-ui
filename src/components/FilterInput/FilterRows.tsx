@@ -69,3 +69,9 @@ export const FilterTextRow = styled.div`
   margin: 0.5rem 0;
   color: var(--color-text-secondary);
 `;
+
+export const FilterText = styled.span`
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  font-size: var(--font-size-3);
+`;

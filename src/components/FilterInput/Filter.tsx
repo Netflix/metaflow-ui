@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import FilterPopup from '@components/FilterInput/FilterPopup';
-import Icon from '../Icon';
+import Icon from '@components/Icon';
 
 export type FilterProps = {
   label: string;
@@ -51,12 +52,20 @@ const Filter: React.FC<FilterProps> = ({ label, labelRenderer, value = '', onSel
   );
 };
 
-export const DefaultLabelRenderer = (label: string, value?: string | null) => (
-  <>
-    {`${label}${value ? ':' : ''}`}
-    {value ? <SelectedValue>{value}</SelectedValue> : ''}
-  </>
-);
+export const DefaultLabelRenderer = (label: string, value?: string | null) => {
+  const { t } = useTranslation();
+  const selectedValues = value?.split(',') || [];
+
+  const valueLabel =
+    selectedValues?.length > 1 ? `${selectedValues.length} ${t('filters.selected')}` : selectedValues?.[0];
+
+  return (
+    <>
+      {`${label}${value ? ':' : ''}`}
+      {value ? <SelectedValue>{valueLabel}</SelectedValue> : ''}
+    </>
+  );
+};
 
 const FilterBase = styled.div`
   position: relative;

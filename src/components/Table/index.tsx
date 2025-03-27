@@ -143,7 +143,7 @@ export const HeaderColumn: React.FC<HeaderColumnProps> = ({
 
   return (
     <TH
-      active={active}
+      active={sortable && active}
       onClick={() => (sortable ? onSort(queryKey) : null)}
       {...rest}
       clickable={sortable}

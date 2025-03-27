@@ -85,6 +85,8 @@ const en = {
       'branch-placeholder': 'Filter by branch',
       'user-placeholder': 'Filter by user',
       'tag-placeholder': 'Filter by tag',
+
+      selected: 'selected',
     },
 
     run: {
@@ -303,6 +305,7 @@ const en = {
       twoweeks: 'Last 14 days',
       yesterday: 'Yesterday',
       today: 'Today',
+      custom: 'Custom',
     },
 
     debug: {

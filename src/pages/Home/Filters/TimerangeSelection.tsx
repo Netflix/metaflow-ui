@@ -1,18 +1,15 @@
 import { TFunction } from 'i18next';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import spacetime from 'spacetime';
 import styled from 'styled-components';
 import Filter from '@components/FilterInput/Filter';
-import {
-  FilterClickableRow,
-  FilterPopupTrailing,
-  FilterSeparator,
-  FilterTextRow,
-} from '@components/FilterInput/FilterRows';
+import { FilterClickableRow, FilterSeparator, FilterText } from '@components/FilterInput/FilterRows';
 import DateInput from '@components/Form/DateInput';
+import HeightAnimatedContainer from '@components/HeightAnimatedContainer';
+import Icon from '@components/Icon';
 import { TimezoneContext } from '@components/TimezoneProvider';
-import { getDateTimeLocalString, getTimeFromPastByDays, getTimeRangeString } from '@utils/date';
+import { getDateTimeLocalString, getTimeFromPastByDays } from '@utils/date';
 
 export type TimerangeValues = { start: number | null; end: number | null };
 type Props = {
@@ -30,6 +27,7 @@ const TimerangeSelection: React.FC<Props> = ({ value, onChange }) => {
       <Filter
         label="Time frame"
         value={labelValue}
+        onClear={() => onChange({ start: null, end: null })}
         content={({ onClose }) => (
           <TimeRangePopup label={labelValue} value={value} onChange={onChange} onClose={onClose} />
         )}
@@ -43,9 +41,11 @@ const TimeRangePopup: React.FC<{
   label: string | null;
   onChange: (args: TimerangeValues) => void;
   onClose: () => void;
-}> = ({ value, onChange, onClose }) => {
+}> = ({ value, label, onChange }) => {
   const { t } = useTranslation();
   const { timezone } = useContext(TimezoneContext);
+  const [customOpen, setCustomOpen] = useState(label === t('date.custom'));
+
   const presets = [
     { label: t('date.today'), start: getTimeFromPastByDays(0, timezone), end: null },
     { label: t('date.yesterday'), start: getTimeFromPastByDays(1, timezone), end: getTimeFromPastByDays(0, timezone) },
@@ -61,31 +61,34 @@ const TimeRangePopup: React.FC<{
         </FilterClickableRow>
       ))}
       <FilterSeparator />
-      <FilterTextRow>{t('filters.custom')}</FilterTextRow>
+      <FilterClickableRow onClick={() => setCustomOpen(!customOpen)}>
+        <CollapseRow>
+          <FilterText>{t('filters.custom')}</FilterText>
+          <Icon name="chevron" size="xs" rotate={customOpen ? -180 : 0} />
+        </CollapseRow>
+      </FilterClickableRow>
 
-      <TimerangeFields>
-        <DateInput
-          inputType="datetime-local"
-          onChange={(newValue) => onChange({ ...value, start: newValue ? spacetime(newValue, timezone).epoch : null })}
-          initialValue={value.start ? getDateTimeLocalString(new Date(value.start), timezone) : undefined}
-        />
+      <HeightAnimatedContainer>
+        {customOpen && (
+          <TimerangeFields>
+            <DateInput
+              inputType="datetime-local"
+              onChange={(newValue) =>
+                onChange({ ...value, start: newValue ? spacetime(newValue, timezone).epoch : null })
+              }
+              initialValue={value.start ? getDateTimeLocalString(new Date(value.start), timezone) : undefined}
+            />
 
-        <DateInput
-          inputType="datetime-local"
-          onChange={(newValue) => onChange({ ...value, end: newValue ? spacetime(newValue, timezone).epoch : null })}
-          initialValue={value.end ? getDateTimeLocalString(new Date(value.end), timezone) : undefined}
-        />
-      </TimerangeFields>
-
-      <FilterPopupTrailing
-        clear={{
-          onClick: () => {
-            onChange({ start: null, end: null });
-            onClose();
-          },
-          disabled: value.start === null && value.end === null,
-        }}
-      />
+            <DateInput
+              inputType="datetime-local"
+              onChange={(newValue) =>
+                onChange({ ...value, end: newValue ? spacetime(newValue, timezone).epoch : null })
+              }
+              initialValue={value.end ? getDateTimeLocalString(new Date(value.end), timezone) : undefined}
+            />
+          </TimerangeFields>
+        )}
+      </HeightAnimatedContainer>
     </div>
   );
 };
@@ -111,19 +114,21 @@ function formatString(value: TimerangeValues, timezone: string, t: TFunction): s
     return t('date.yesterday');
   }
 
-  return getRawDateString(value, timezone);
-}
-
-function getRawDateString(value: TimerangeValues, timezone: string): string {
-  return `${value.start ? getTimeRangeString(new Date(value.start), timezone) : ''} - ${
-    value.end ? getTimeRangeString(new Date(value.end), timezone) : ''
-  }`;
+  return t('date.custom');
 }
 
 const TimerangeFields = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  margin-top: 0.5rem;
+`;
+
+const CollapseRow = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export default TimerangeSelection;
