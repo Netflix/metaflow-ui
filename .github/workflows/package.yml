@@ -42,7 +42,7 @@ jobs:
         working-directory: ./build
         run: zip -r ../metaflow-ui-${{ env.RELEASE_VERSION }}.zip ./*
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: metaflow-ui-${{ env.RELEASE_VERSION }}
           path: ./build
