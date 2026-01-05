@@ -104,6 +104,9 @@ describe('ArtifactTable', () => {
     // Verify execCommand('copy') was called (copy-to-clipboard library uses this)
     cy.get('@execCommand').should('have.been.calledWith', 'copy');
 
+    // Verify notification appears confirming copy was successful
+    cy.contains('Artifact content copied to clipboard').should('be.visible');
+
     // Modal should close after clicking copy
     gid('modal-container').should('not.exist');
   });
