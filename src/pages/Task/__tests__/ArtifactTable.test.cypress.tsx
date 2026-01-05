@@ -76,6 +76,11 @@ describe('ArtifactTable', () => {
   });
 
   it('Should copy artifact code when copy button is clicked', () => {
+    // Stub document.execCommand to verify copy was called (used by copy-to-clipboard library)
+    cy.document().then((doc) => {
+      cy.stub(doc, 'execCommand').as('execCommand').returns(true);
+    });
+
     mount(
       <TestWrapper>
         <ArtifactTable
@@ -90,8 +95,14 @@ describe('ArtifactTable', () => {
     cy.get('button').contains('Python').click();
     gid('modal-container');
 
-    // Click the copy button in the modal header - should not throw error
+    // Verify the code snippet is displayed in the modal
+    gid('modal-content').contains("Task('LogTestFlow/968832/loglines/33632798', attempt=0)['FirstArtifact'].data");
+
+    // Click the copy button in the modal header
     gid('modal-container').find('button').click();
+
+    // Verify execCommand('copy') was called (copy-to-clipboard library uses this)
+    cy.get('@execCommand').should('have.been.calledWith', 'copy');
 
     // Modal should close after clicking copy
     gid('modal-container').should('not.exist');
