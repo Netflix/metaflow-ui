@@ -74,4 +74,26 @@ describe('ArtifactTable', () => {
     gid('modal-container');
     gid('modal-content').contains("Task('LogTestFlow/968832/loglines/33632798', attempt=0)['FirstArtifact'].data");
   });
+
+  it('Should copy artifact code when copy button is clicked', () => {
+    mount(
+      <TestWrapper>
+        <ArtifactTable
+          artifacts={[createArtifact({ name: 'FirstArtifact', content: 'ImportantStuff' })]}
+          onOpenContentClick={cy.stub()}
+        />
+      </TestWrapper>,
+    );
+
+    // Open the modal
+    gid('select-field').eq(0).click();
+    cy.get('button').contains('Python').click();
+    gid('modal-container');
+
+    // Click the copy button in the modal header - should not throw error
+    gid('modal-container').find('button').click();
+
+    // Modal should close after clicking copy
+    gid('modal-container').should('not.exist');
+  });
 });

@@ -74,6 +74,8 @@ const ModalClickHandler = styled.div`
 
 const ModalContainer = styled.div`
   ${PopoverStyles}
+  position: relative;
+  z-index: 1;
   padding: 0.75rem 1rem 1rem 1rem;
   width: 80%;
   max-width: 80rem;

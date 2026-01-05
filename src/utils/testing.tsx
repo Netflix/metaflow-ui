@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
+import { NotificationsProvider } from '@components/Notifications';
 import GlobalStyle from '../GlobalStyle';
 import '../theme/font/roboto.css';
 import './i18n';
@@ -14,7 +15,9 @@ const TestWrapper: React.FC<{ children: ReactNode; route?: string }> = ({ childr
     <>
       <GlobalStyle />
       <MemoryRouter initialEntries={[route]}>
-        <QueryParamProvider ReactRouterRoute={Route}>{children}</QueryParamProvider>
+        <QueryParamProvider ReactRouterRoute={Route}>
+          <NotificationsProvider>{children}</NotificationsProvider>
+        </QueryParamProvider>
       </MemoryRouter>
     </>
   );
