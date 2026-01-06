@@ -74,4 +74,40 @@ describe('ArtifactTable', () => {
     gid('modal-container');
     gid('modal-content').contains("Task('LogTestFlow/968832/loglines/33632798', attempt=0)['FirstArtifact'].data");
   });
+
+  it('Should copy artifact code when copy button is clicked', () => {
+    // Stub document.execCommand to verify copy was called (used by copy-to-clipboard library)
+    cy.document().then((doc) => {
+      cy.stub(doc, 'execCommand').as('execCommand').returns(true);
+    });
+
+    mount(
+      <TestWrapper>
+        <ArtifactTable
+          artifacts={[createArtifact({ name: 'FirstArtifact', content: 'ImportantStuff' })]}
+          onOpenContentClick={cy.stub()}
+        />
+      </TestWrapper>,
+    );
+
+    // Open the modal
+    gid('select-field').eq(0).click();
+    cy.get('button').contains('Python').click();
+    gid('modal-container');
+
+    // Verify the code snippet is displayed in the modal
+    gid('modal-content').contains("Task('LogTestFlow/968832/loglines/33632798', attempt=0)['FirstArtifact'].data");
+
+    // Click the copy button in the modal header
+    gid('modal-container').find('button').click();
+
+    // Verify execCommand('copy') was called (copy-to-clipboard library uses this)
+    cy.get('@execCommand').should('have.been.calledWith', 'copy');
+
+    // Verify notification appears confirming copy was successful
+    cy.contains('Artifact content copied to clipboard').should('be.visible');
+
+    // Modal should close after clicking copy
+    gid('modal-container').should('not.exist');
+  });
 });

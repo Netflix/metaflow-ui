@@ -9,6 +9,7 @@ import GenericError from '@components/GenericError';
 import Icon from '@components/Icon';
 import InformationRow from '@components/InformationRow';
 import Modal from '@components/Modal';
+import { NotificationType, useNotifications } from '@components/Notifications';
 import PropertyTable, { PropertyTableColumns } from '@components/PropertyTable';
 import { ItemRow } from '@components/Structure';
 import { valueToRenderableType } from '@components/TitledRow';
@@ -156,28 +157,37 @@ const LocationRenderTitle = styled.div`
 // Highlight link renderer
 //
 
-const LinkPopup: React.FC<{ link: PopupLink | null; onClose: () => void }> = ({ link, onClose }) => (
-  <Modal
-    show={!!link}
-    onClose={onClose}
-    title={`${link?.artifact.name} - ${link?.variant}`}
-    actionbar={
-      <Button
-        iconOnly
-        onClick={() => {
-          if (link) {
-            copy(makeArtifactCode(link));
-          }
-          onClose();
-        }}
-      >
-        <Icon name="copy" />
-      </Button>
-    }
-  >
-    <CodeBlock>{link && makeArtifactCode(link)}</CodeBlock>
-  </Modal>
-);
+const LinkPopup: React.FC<{ link: PopupLink | null; onClose: () => void }> = ({ link, onClose }) => {
+  const { addNotification } = useNotifications();
+  const { t } = useTranslation();
+
+  return (
+    <Modal
+      show={!!link}
+      onClose={onClose}
+      title={`${link?.artifact.name} - ${link?.variant}`}
+      actionbar={
+        <Button
+          iconOnly
+          onClick={() => {
+            if (link) {
+              copy(makeArtifactCode(link));
+              addNotification({
+                type: NotificationType.Info,
+                message: t('task.artifact-copied'),
+              });
+            }
+            onClose();
+          }}
+        >
+          <Icon name="copy" />
+        </Button>
+      }
+    >
+      <CodeBlock>{link && makeArtifactCode(link)}</CodeBlock>
+    </Modal>
+  );
+};
 
 // Keeping code snippet in object for now since we might to add separate snippets for different situations.
 const codeByType = {

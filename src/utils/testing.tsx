@@ -1,9 +1,25 @@
 import React, { ReactNode } from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { QueryParamProvider } from 'use-query-params';
+import { Notifications, NotificationsProvider } from '@components/Notifications';
+import { PluginsContext } from '@components/Plugins/PluginManager';
 import GlobalStyle from '../GlobalStyle';
 import '../theme/font/roboto.css';
 import './i18n';
+
+// Mock PluginsContext for testing - provides stub functions for plugin communication
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+const noop = () => {};
+const mockPluginsContextValue = {
+  plugins: [],
+  getPluginsBySlot: () => [],
+  register: noop,
+  subscribeToDatastore: noop,
+  unsubscribeFromDatastore: noop,
+  subscribeToEvent: noop,
+  unsubscribeFromEvent: noop,
+  callEvent: noop,
+};
 
 /**
  * Wrapper for testing component that depends on theming and routing. Also accepts route as param if
@@ -14,7 +30,14 @@ const TestWrapper: React.FC<{ children: ReactNode; route?: string }> = ({ childr
     <>
       <GlobalStyle />
       <MemoryRouter initialEntries={[route]}>
-        <QueryParamProvider ReactRouterRoute={Route}>{children}</QueryParamProvider>
+        <QueryParamProvider ReactRouterRoute={Route}>
+          <PluginsContext.Provider value={mockPluginsContextValue as never}>
+            <NotificationsProvider>
+              {children}
+              <Notifications />
+            </NotificationsProvider>
+          </PluginsContext.Provider>
+        </QueryParamProvider>
       </MemoryRouter>
     </>
   );
