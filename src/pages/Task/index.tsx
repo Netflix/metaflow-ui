@@ -180,6 +180,11 @@ const Task: React.FC<TaskViewProps> = ({
     paused: !task,
   });
 
+  // Derive a cache-bust token from the number of 'log-scrubbed' metadata entries.
+  // When a new scrub event is registered by the backend, this count increases,
+  // which causes useLogData to reset its cache and re-fetch the redacted logs.
+  const logScrubToken = metadata.data.filter((m) => m.field_name === 'log-scrubbed').length;
+
   const logUrl = `/flows/${run.flow_id}/runs/${run.run_number}/steps/${stepName}/tasks/${task?.task_id}/logs/`;
 
   // Standard out logs
@@ -188,6 +193,7 @@ const Task: React.FC<TaskViewProps> = ({
     preload: task?.status === 'running',
     url: `${logUrl}out?attempt_id=${attemptId.toString()}`,
     pagesize: 1000,
+    resetToken: logScrubToken,
   });
 
   // Error logs
@@ -196,6 +202,7 @@ const Task: React.FC<TaskViewProps> = ({
     preload: task?.status === 'running',
     url: `${logUrl}err?attempt_id=${attemptId.toString()}`,
     pagesize: 1000,
+    resetToken: logScrubToken,
   });
 
   const onUpdate = useCallback((data: Artifact[]) => {
@@ -416,105 +423,105 @@ const Task: React.FC<TaskViewProps> = ({
                 // Render artifacts if enabled by feature flags.
                 ...(FEATURE_FLAGS.ARTIFACT_TABLE
                   ? [
-                      {
-                        key: 'artifacts',
-                        order: 4,
-                        label: t('task.artifacts'),
-                        component: (
-                          <>
-                            <SectionLoader
-                              minHeight={110}
-                              status={artifactStatus}
-                              error={artifactError}
-                              component={
-                                <ArtifactTable
-                                  artifacts={artifacts.filter((art) => !art.name.startsWith('_'))}
-                                  onOpenContentClick={openContactClickHandler}
-                                />
-                              }
-                            />
-                          </>
-                        ),
-                      },
-                    ]
+                    {
+                      key: 'artifacts',
+                      order: 4,
+                      label: t('task.artifacts'),
+                      component: (
+                        <>
+                          <SectionLoader
+                            minHeight={110}
+                            status={artifactStatus}
+                            error={artifactError}
+                            component={
+                              <ArtifactTable
+                                artifacts={artifacts.filter((art) => !art.name.startsWith('_'))}
+                                onOpenContentClick={openContactClickHandler}
+                              />
+                            }
+                          />
+                        </>
+                      ),
+                    },
+                  ]
                   : []),
                 // Render cards at the end of sections if enabled by feature flags.
                 ...(showCards && cardsResult?.cards?.length
                   ? cardsResult?.cards?.map((def) => ({
-                      key: def.hash,
-                      order: 99,
-                      label: def.id ? `${t('card.card_id_title')}: ${def.id}` : `${t('card.card_title')}: ${def.type}`,
-                      actionbar: (
-                        <>
-                          <a
-                            title={t('card.link_card') ?? ''}
-                            href={apiHttp(taskCardPath(task, def.hash))}
-                            data-testid="card-link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ marginRight: '8px' }}
-                          >
-                            <Button onClick={emptyFn} iconOnly>
-                              <Icon name="external" size="sm" />
-                            </Button>
-                          </a>
-                          <a
-                            title={t('card.download_card') ?? ''}
-                            href={apiHttp(taskCardPath(task, def.hash))}
-                            download
-                            data-testid="card-download"
-                          >
-                            <Button onClick={emptyFn} iconOnly>
-                              <Icon name="download" size="sm" />
-                            </Button>
-                          </a>
-                        </>
-                      ),
-                      component: <DynamicCardIframe task={task} hash={def.hash} />,
-                    }))
+                    key: def.hash,
+                    order: 99,
+                    label: def.id ? `${t('card.card_id_title')}: ${def.id}` : `${t('card.card_title')}: ${def.type}`,
+                    actionbar: (
+                      <>
+                        <a
+                          title={t('card.link_card') ?? ''}
+                          href={apiHttp(taskCardPath(task, def.hash))}
+                          data-testid="card-link"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{ marginRight: '8px' }}
+                        >
+                          <Button onClick={emptyFn} iconOnly>
+                            <Icon name="external" size="sm" />
+                          </Button>
+                        </a>
+                        <a
+                          title={t('card.download_card') ?? ''}
+                          href={apiHttp(taskCardPath(task, def.hash))}
+                          download
+                          data-testid="card-download"
+                        >
+                          <Button onClick={emptyFn} iconOnly>
+                            <Icon name="download" size="sm" />
+                          </Button>
+                        </a>
+                      </>
+                    ),
+                    component: <DynamicCardIframe task={task} hash={def.hash} />,
+                  }))
                   : []),
                 // Show spinner if any cards are still loading
                 ...(showCards
                   ? cardsResult?.status === 'loading'
                     ? [
-                        {
-                          key: 'card_loading',
-                          order: 99,
-                          label: (
-                            <>
-                              <span>{t('card.card_loading')} </span>
-                              <Spinner sm />
-                            </>
-                          ),
-                          component: <></>,
-                        },
-                      ]
+                      {
+                        key: 'card_loading',
+                        order: 99,
+                        label: (
+                          <>
+                            <span>{t('card.card_loading')} </span>
+                            <Spinner sm />
+                          </>
+                        ),
+                        component: <></>,
+                      },
+                    ]
                     : []
                   : []),
                 // Show error if cards were not fetched before timeout
                 ...(showCards
                   ? cardsResult?.status === 'timeout'
                     ? [
-                        {
-                          key: 'card_timeout',
-                          order: 99,
-                          label: t('card.card_timeout'),
-                          component: <></>,
-                        },
-                      ]
+                      {
+                        key: 'card_timeout',
+                        order: 99,
+                        label: t('card.card_timeout'),
+                        component: <></>,
+                      },
+                    ]
                     : []
                   : []),
                 // Show error if cards were not fetched before timeout
                 ...(showCards
                   ? cardsResult?.status === 'error'
                     ? [
-                        {
-                          key: 'card_error',
-                          order: 99,
-                          label: t('card.card_error'),
-                          component: <></>,
-                        },
-                      ]
+                      {
+                        key: 'card_error',
+                        order: 99,
+                        label: t('card.card_error'),
+                        component: <></>,
+                      },
+                    ]
                     : []
                   : []),
               ].sort((a, b) => a.order - b.order)}
