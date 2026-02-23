@@ -19,6 +19,7 @@ export type LogDataSettings = {
   paused: boolean;
   url: string;
   pagesize?: number;
+  resetToken?: string | number;
 };
 
 type LogSearchResult = {
@@ -53,7 +54,7 @@ function isOkResult(param: DataModel<Log[]> | APIError): param is DataModel<Log[
  * task completes we need to fetch again.
  */
 
-const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogData => {
+const useLogData = ({ preload, paused, url, pagesize, resetToken }: LogDataSettings): LogData => {
   const [status, setStatus] = useState<AsyncStatus>('NotAsked');
   const [preloadStatus, setPreloadStatus] = useState<AsyncStatus>('NotAsked');
   const [error, setError] = useState<APIError | null>(null);
@@ -70,9 +71,8 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
       isPostPoll = false,
     ): Promise<{ type: 'error'; error: APIError } | { type: 'ok'; data: Log[] }> => {
       const requestUrl = url;
-      const fullUrl = `${requestUrl}${requestUrl.indexOf('?') > -1 ? '&' : '?'}_limit=${PAGE_SIZE}${
-        page ? `&_page=${page}` : ''
-      }&_order=${order}row`;
+      const fullUrl = `${requestUrl}${requestUrl.indexOf('?') > -1 ? '&' : '?'}_limit=${PAGE_SIZE}${page ? `&_page=${page}` : ''
+        }&_order=${order}row`;
 
       return fetch(apiHttp(fullUrl))
         .then((response) => response.json())
@@ -253,6 +253,17 @@ const useLogData = ({ preload, paused, url, pagesize }: LogDataSettings): LogDat
       setSearchResult(emptySearchResult);
     };
   }, [url]);
+
+  useEffect(() => {
+    if (resetToken === undefined) return;
+    setStatus('NotAsked');
+    setPreloadStatus('NotAsked');
+    setLogs(emptyArray);
+    setError(null);
+    setPostPoll(false);
+    setSearchResult(emptySearchResult);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetToken]);
 
   const localSearch = useMemo(() => ({ search, nextResult, result: searchResult }), [nextResult, search, searchResult]);
 
