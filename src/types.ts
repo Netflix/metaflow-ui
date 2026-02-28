@@ -45,10 +45,11 @@ export interface Task extends MetaDataBaseObject {
   foreach_label?: string;
   finished_at?: number;
   duration?: number;
+  task_ok?: boolean | null;
   status: TaskStatus;
 }
 
-export type TaskStatus = 'running' | 'completed' | 'failed' | 'unknown' | 'pending' | 'refining';
+export type TaskStatus = 'running' | 'completed' | 'failed' | 'unknown' | 'pending' | 'refining' | 'caught';
 
 export interface Metadata extends MetaDataBaseObject {
   id: number;
