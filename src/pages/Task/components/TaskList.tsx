@@ -1,6 +1,6 @@
 import React, { CSSProperties, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { List } from 'react-virtualized';
+import { List as VirtualList } from 'react-virtualized';
 import styled from 'styled-components';
 import { AsyncStatus } from '@/types';
 import TaskListRow from '@pages/Task/components/TaskListRow';
@@ -37,16 +37,25 @@ const TaskList: React.FC<Props> = ({
 }) => {
   const [viewScrollTop, setScrollTop] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
+  const listRef = useRef<VirtualList>(null);
   const { t } = useTranslation();
 
+  // Track scroll position so we can recalculate how tall the list should be
+  // depending on whether the sticky app header is visible or not.
   useEffect(() => {
-    const listener = () => {
-      setScrollTop(window.scrollY);
-    };
-
-    window.addEventListener('scroll', listener);
-    return () => window.removeEventListener('scroll', listener);
+    const onScroll = () => setScrollTop(window.scrollY);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  // When task data changes (e.g. a running task finishes), react-virtualized
+  // won't automatically re-render already-visible rows because it caches them.
+  // Calling forceUpdateGrid() tells it to throw away that cache and re-render
+  // every visible row with the latest data, which is how the status indicator
+  // next to each task name stays up to date without needing a page reload.
+  useEffect(() => {
+    listRef.current?.forceUpdateGrid();
+  }, [rows]);
 
   const listSize = ref?.current
     ? window.innerHeight -
@@ -92,7 +101,8 @@ const TaskList: React.FC<Props> = ({
     <TaskListContainer ref={ref}>
       <FixedList style={{ position: 'sticky', top: 'var(--layout-application-bar-height)' }}>
         {rows.length > 0 && (
-          <List
+          <VirtualList
+            ref={listRef}
             overscanRowCount={5}
             rowCount={rows.length}
             rowHeight={toRelativeSize(28)}
