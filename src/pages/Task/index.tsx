@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
 import { apiHttp } from '@/constants';
-import { Artifact, AsyncStatus, Run as IRun, Task as ITask } from '@/types';
+import { Artifact, AsyncStatus, Run as IRun, Task as ITask, TaskStatus } from '@/types';
 import AnchoredView from '@pages/Task/components/AnchoredView';
 import ArtifactActionBar from '@pages/Task/components/ArtifactActionBar';
 import ArtifactTable from '@pages/Task/components/ArtifactTable';
@@ -230,7 +230,8 @@ const Task: React.FC<TaskViewProps> = ({
   }, [stepName, taskId, attemptId]);
 
   const developerNote = getDocString(dagResult, stepName);
-
+  const isCaught = artifacts.some((art) => art.name === '_catch_exception');
+  const displayTask = task ? (isCaught ? { ...task, status: 'caught' as TaskStatus } : task) : null;
   //
   // Cards
   //
@@ -337,7 +338,7 @@ const Task: React.FC<TaskViewProps> = ({
                     <>
                       <TaskDetails
                         run={run}
-                        task={task}
+                        task={displayTask as ITask}
                         metadata={metadata.data}
                         metadataResource={metadata.taskMetadataResource}
                         developerNote={developerNote}

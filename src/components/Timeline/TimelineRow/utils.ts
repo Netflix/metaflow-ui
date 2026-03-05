@@ -55,6 +55,8 @@ export function lineColor(grayed: boolean, state: string, isFirst: boolean): str
         return 'var(--timeline-line-color-warning)';
       case 'failed':
         return !isFirst ? brightenCssVar('--timeline-line-color-danger', 30) : 'var(--timeline-line-color-danger)';
+      case 'caught':
+        return !isFirst ? brightenCssVar('--timeline-line-color-warning', 30) : 'var(--timeline-line-color-warning)';
       case 'unknown':
         return !isFirst ? brightenCssVar('--timeline-line-color-unknown', 30) : 'var(--timeline-line-color-unknown)';
       default:

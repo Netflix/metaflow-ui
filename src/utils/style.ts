@@ -24,7 +24,6 @@ const DEFAULT_FONT_SIZE = getDocumentDefaultFontSize();
  */
 export function toRelativeSize(normalsize: number): number {
   const multiplier = DEFAULT_FONT_SIZE ? DEFAULT_FONT_SIZE / 16 : 1;
-
   return normalsize * multiplier;
 }
 
@@ -39,6 +38,8 @@ export function colorByStatus(status: string): string {
       return 'var(--color-bg-danger)';
     case 'running':
       return 'var(--color-bg-success-light)';
+    case 'caught':
+      return 'var(--color-bg-warning)';
     case 'pending':
       return 'var(--color-bg-warning)';
     default:
@@ -55,6 +56,8 @@ export function iconByStatus(status: keyof RunStatus | TaskStatus): keyof Suppor
       return 'completed';
     case 'failed':
       return 'error';
+    case 'caught':
+      return 'warning';
     case 'running':
       return 'running';
     default:
