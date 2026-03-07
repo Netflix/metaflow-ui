@@ -56,6 +56,41 @@ METAFLOW_HEAD='<meta name="keywords" content="metaflow" />'
 
 See [docs/plugin-system.md](docs/plugin-system.md) to get started with plugins development.
 
+## Local Development
+
+**Requirements:** Node.js 18.x, Yarn 1.x, Docker (for running the backend locally).
+
+On Windows, use WSL2 (Ubuntu) — the steps below apply to Linux/macOS and WSL2 environments.
+
+### Install dependencies
+
+```bash
+yarn install
+```
+
+### Start the development server
+
+```bash
+yarn start
+```
+
+The app will be available at [http://localhost:3000](http://localhost:3000). It expects a running [Metaflow Service](https://github.com/Netflix/metaflow-service) backend at `http://localhost:8083` by default. You can customize this:
+
+```bash
+# Use a custom backend URL via proxy
+METAFLOW_SERVICE_PROXY=http://localhost:8083 yarn start
+
+# Or talk directly to the backend (bypasses proxy)
+REACT_APP_METAFLOW_SERVICE=http://localhost:8083 yarn start
+```
+
+### Start the backend
+
+```bash
+git clone https://github.com/Netflix/metaflow-service.git && cd metaflow-service
+docker-compose -f docker-compose.development.yml up
+```
+
 ## Documentation
 
 See [docs/README.md](docs/README.md) to learn more.
