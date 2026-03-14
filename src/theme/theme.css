@@ -207,9 +207,9 @@
   /* Collapsable */
   --collapsable-margin: 0.5rem 0 1rem 0;
   --collapsable-header-padding: 0;
-  --collapsable-header-font-familty: var(--font-family-primary);
-  --collapsable-header-text-color: var(---color-text-primary);
-  --collapsable-header-open-text-color: var(---color-text-primary);
+  --collapsable-header-font-family: var(--font-family-primary);
+  --collapsable-header-text-color: var(--color-text-primary);
+  --collapsable-header-open-text-color: var(--color-text-primary);
   --collapsable-header-border-bottom: var(--border-thin-1);
   --collapsable-content-border-bottom: none;
 

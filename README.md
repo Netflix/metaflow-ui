@@ -56,6 +56,16 @@ METAFLOW_HEAD='<meta name="keywords" content="metaflow" />'
 
 See [docs/plugin-system.md](docs/plugin-system.md) to get started with plugins development.
 
+
+## Technical Infrastructure
+
+The UI operates as a standalone frontend that communicates with the Metaflow Service. 
+
+- **API Proxying**: During development, the UI uses `http-proxy-middleware` (configured in `src/setupProxy.js`) to route `/api` requests to a backend service.
+- **Custom Endpoints**: You can override the default service location using environment variables:
+  - `METAFLOW_SERVICE_PROXY`: Target URL for the development proxy (default: `http://localhost:8083`).
+  - `REACT_APP_METAFLOW_SERVICE`: Direct API endpoint URL.
+
 ## Documentation
 
 See [docs/README.md](docs/README.md) to learn more.
@@ -73,3 +83,4 @@ There are several ways to get in touch with us:
 - Open an issue at: https://github.com/Netflix/metaflow-ui
 - Email us at: help@metaflow.org
 - Chat with us on: http://chat.metaflow.org
+

@@ -8,8 +8,8 @@ export function getTaskId(task: Task): string {
 }
 
 /**
- * Return task duration with hadnling for running state. If task is in running state, we want to compare its start time to
- * current time. Note that we are not camparing current time to ts_epoch field, which is just time for task object, not actual task time itself.
+ * Return task duration with handling for running state. If task is in running state, we want to compare its start time to
+ * current time. Note that we are not comparing current time to ts_epoch field, which is just time for task object, not actual task time itself.
  */
 export function getTaskDuration(task: Task): number | null {
   return task.status === 'running' && task.started_at
