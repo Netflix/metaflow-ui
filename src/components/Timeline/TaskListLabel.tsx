@@ -138,7 +138,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
     display: flex;
     width: 100%;
     color: ${(p) =>
-      p.type === 'task' ? 'var(--timeline-row-label-task-text-color)' : '--timeline-row-label-step-text-color'};
+      p.type === 'task' ? 'var(--timeline-row-label-task-text-color)' : 'var(--timeline-row-label-step-text-color)'};
     text-decoration: none;
     max-width: 100%;
     white-space: nowrap;
