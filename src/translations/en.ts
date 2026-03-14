@@ -187,6 +187,7 @@ const en = {
       'unable-to-find-status': 'Unable to find status for this task',
       'log-search': 'Search',
       'log-search-tip': 'Searching only from locally available lines',
+      'foreach-label': 'Foreach value',
     },
 
     breadcrumb: {

@@ -56,15 +56,29 @@ const TaskListLabel: React.FC<Props> = (props) => {
           <RowLabelContent>
             <RowLabelTaskName
               data-testid="tasklistlabel-text"
-              title={`${props.item.step_name}/${getTaskLabel(props.item)}`}
+              title={
+                props.item.foreach_label
+                  ? `${props.item.step_name}/${getTaskLabel(props.item)} [${props.item.foreach_label}]`
+                  : `${props.item.step_name}/${getTaskLabel(props.item)}`
+              }
             >
               <RowStepName bigName={!grouped && props.item.step_name.length > 12}>
                 {!grouped ? props.item.step_name : ''}
               </RowStepName>
-              <RowTaskName>
-                {!grouped ? '/' : ''}
-                {getTaskLabel(props.item)}
-              </RowTaskName>
+              <RowTaskNameContainer>
+                <RowTaskName>
+                  {!grouped ? '/' : ''}
+                  {getTaskLabel(props.item)}
+                </RowTaskName>
+                {props.item.foreach_label && (
+                  <ForeachLabel
+                    data-testid="tasklistlabel-foreach-label"
+                    title={`${props.t('task.foreach-label')}: ${props.item.foreach_label}`}
+                  >
+                    {props.item.foreach_label}
+                  </ForeachLabel>
+                )}
+              </RowTaskNameContainer>
             </RowLabelTaskName>
             <RowDuration data-testid="tasklistlabel-duration">
               {formatDuration(getTaskDuration(props.item), 1)}
@@ -185,11 +199,37 @@ const RowLabelContent = styled.div<{ type?: 'step' }>`
 const RowLabelTaskName = styled.div`
   display: flex;
   overflow: hidden;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+const RowTaskNameContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
 `;
 
 const RowTaskName = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+const ForeachLabel = styled.span`
+  display: block;
+  font-size: 0.6rem;
+  line-height: 0.9rem;
+  color: var(--color-text-secondary-dim, #888);
+  background: var(--color-bg-tag, rgba(0, 0, 0, 0.06));
+  border-radius: 0.2rem;
+  padding: 0 0.25rem;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-top: 0.05rem;
+  cursor: help;
 `;
 
 const StatusWrapper = styled.div`
