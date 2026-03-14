@@ -32,7 +32,7 @@ const buttonFontSizes = {
 
 //
 // Basic button through out the application
-// TODO: Check if we really need all therse params
+// TODO: Check if we really need all these params
 //
 
 const Button: React.FC<ButtonProps> = ({
