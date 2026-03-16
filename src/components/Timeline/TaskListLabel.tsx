@@ -56,29 +56,20 @@ const TaskListLabel: React.FC<Props> = (props) => {
           <RowLabelContent>
             <RowLabelTaskName
               data-testid="tasklistlabel-text"
-              title={
-                props.item.foreach_label
-                  ? `${props.item.step_name}/${getTaskLabel(props.item)} [${props.item.foreach_label}]`
-                  : `${props.item.step_name}/${getTaskLabel(props.item)}`
-              }
+              title={`${props.item.step_name}/${getTaskLabel(props.item)}`}
             >
               <RowStepName bigName={!grouped && props.item.step_name.length > 12}>
                 {!grouped ? props.item.step_name : ''}
               </RowStepName>
-              <RowTaskNameContainer>
-                <RowTaskName>
-                  {!grouped ? '/' : ''}
-                  {getTaskLabel(props.item)}
-                </RowTaskName>
+              <RowTaskName>
+                {!grouped ? '/' : ''}
+                {getTaskLabel(props.item)}
                 {props.item.foreach_label && (
-                  <ForeachLabel
-                    data-testid="tasklistlabel-foreach-label"
-                    title={`${props.t('task.foreach-label')}: ${props.item.foreach_label}`}
-                  >
-                    {props.item.foreach_label}
-                  </ForeachLabel>
+                  <ForeachValue title={props.item.foreach_label}>
+                    &nbsp;·&nbsp;{parseForeachLabel(props.item.foreach_label)}
+                  </ForeachValue>
                 )}
-              </RowTaskNameContainer>
+              </RowTaskName>
             </RowLabelTaskName>
             <RowDuration data-testid="tasklistlabel-duration">
               {formatDuration(getTaskDuration(props.item), 1)}
@@ -128,6 +119,18 @@ function getTaskLabel(item: Task): string {
   return getTaskId(item);
 }
 
+/**
+ * Parses the foreach_label field from the API.
+ * The API returns values like 'country:US' or 'title:Inception'.
+ * We strip the key prefix so non-technical users see just the value: 'US', 'Inception'.
+ * If the label has no ':' separator, it is returned as-is.
+ */
+function parseForeachLabel(label: string): string {
+  const colonIndex = label.indexOf(':');
+  if (colonIndex === -1) return label;
+  return label.slice(colonIndex + 1);
+}
+
 export default TaskListLabel;
 
 //
@@ -152,7 +155,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
     display: flex;
     width: 100%;
     color: ${(p) =>
-      p.type === 'task' ? 'var(--timeline-row-label-task-text-color)' : '--timeline-row-label-step-text-color'};
+      p.type === 'task' ? 'var(--timeline-row-label-task-text-color)' : 'var(--timeline-row-label-step-text-color)'};
     text-decoration: none;
     max-width: 100%;
     white-space: nowrap;
@@ -199,37 +202,11 @@ const RowLabelContent = styled.div<{ type?: 'step' }>`
 const RowLabelTaskName = styled.div`
   display: flex;
   overflow: hidden;
-  flex-direction: column;
-  justify-content: center;
-`;
-
-const RowTaskNameContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-width: 0;
 `;
 
 const RowTaskName = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-`;
-
-const ForeachLabel = styled.span`
-  display: block;
-  font-size: 0.6rem;
-  line-height: 0.9rem;
-  color: var(--color-text-secondary-dim, #888);
-  background: var(--color-bg-tag, rgba(0, 0, 0, 0.06));
-  border-radius: 0.2rem;
-  padding: 0 0.25rem;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-top: 0.05rem;
-  cursor: help;
 `;
 
 const StatusWrapper = styled.div`
@@ -269,4 +246,14 @@ const StepNameWithCount = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100px;
+`;
+
+const ForeachValue = styled.span`
+  color: var(--color-text-secondary, #888);
+  font-weight: 400;
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80px;
 `;
