@@ -8,7 +8,7 @@ describe('DAGControlBar component', () => {
     const fn = cy.stub();
     mount(
       <TestWrapper>
-        <DAGControlBar setFullscreen={fn} t={(str: any) => str} />
+        <DAGControlBar setFullscreen={fn} isExpanded={false} setExpanded={cy.stub()} t={(str: any) => str} />
       </TestWrapper>,
     );
     cy.get('[data-testid="dag-control-fullscreen-button"]')
