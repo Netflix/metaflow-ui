@@ -64,6 +64,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   const [previousStepName, setPreviousStepName] = useState<string>();
   const [previousTaskId, setPreviousTaskId] = useState<string>();
   const [metadataRecord, setMetadataRecord] = useState<Record<string, string>>();
+  const [rawMetadata, setRawMetadata] = useState<Metadata[]>(emptyArray);
 
   useEffect(() => {
     params.stepName && params.stepName !== 'not-selected' && setPreviousStepName(params.stepName);
@@ -88,6 +89,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       const record = metadataToRecord(items);
 
       setMetadataRecord((old) => ({ ...old, ...record }));
+      setRawMetadata(items);
       addDataToStore('run-metadata', record);
     },
     [addDataToStore],
@@ -258,7 +260,7 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
                     linkTo: getPath.dag(params.flowId, params.runNumber) + '?' + urlParams,
                     component: (
                       <ErrorBoundary message={t('error.dag-error')}>
-                        <DAG run={run} steps={steps} result={dagResult} />
+                        <DAG run={run} steps={steps} rows={rows} metadata={rawMetadata} result={dagResult} />
                       </ErrorBoundary>
                     ),
                   },

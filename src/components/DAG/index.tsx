@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AsyncStatus, Run } from '@/types';
+import { Metadata, AsyncStatus, Run } from '@/types';
 import { GraphModel } from '@components/DAG/DAGUtils';
 import DAGContent from '@components/DAG/components/DAGContent';
 import DAGControlBar from '@components/DAG/components/DAGControlBar';
@@ -9,19 +9,35 @@ import FullPageContainer from '@components/FullPageContainer';
 import Spinner from '@components/Spinner';
 import { ItemRow } from '@components/Structure';
 import { StepLineData } from '@components/Timeline/taskdataUtils';
+import { RowDataModel } from '@components/Timeline/useTaskData';
 import { Resource } from '@hooks/useResource';
 
 //
 // DAG
 //
 
-const DAG: React.FC<{ run: Run; steps: StepLineData[]; result: Resource<GraphModel> }> = ({ run, steps, result }) => {
+const DAG: React.FC<{
+  run: Run;
+  steps: StepLineData[];
+  rows: RowDataModel;
+  metadata: Metadata[];
+  result: Resource<GraphModel>;
+}> = ({ run, steps, rows, metadata, result }) => {
   const { t } = useTranslation();
   const [showFullscreen, setFullscreen] = useState(false);
+  const [isExpanded, setExpanded] = useState(false);
   const graphData = result.data;
 
   const content = !!graphData && (
-    <DAGContent graphData={graphData} showFullscreen={showFullscreen} stepData={steps} run={run} />
+    <DAGContent
+      graphData={graphData}
+      showFullscreen={showFullscreen}
+      stepData={steps}
+      run={run}
+      tasks={rows}
+      metadata={metadata}
+      isExpanded={isExpanded}
+    />
   );
 
   return (
@@ -29,7 +45,7 @@ const DAG: React.FC<{ run: Run; steps: StepLineData[]; result: Resource<GraphMod
       {isDAGError(result.status, graphData) ? (
         <DAGError error={result.error} t={t} run={run} />
       ) : (
-        <DAGControlBar setFullscreen={setFullscreen} t={t} />
+        <DAGControlBar setFullscreen={setFullscreen} isExpanded={isExpanded} setExpanded={setExpanded} t={t} />
       )}
       {result.status === 'Loading' && (
         <ItemRow justify="center">
