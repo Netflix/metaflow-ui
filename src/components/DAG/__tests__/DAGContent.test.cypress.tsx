@@ -205,6 +205,9 @@ describe('DAGContent dev', () => {
             { step_name: 'regular_step', status: 'completed', started_at: 0, finished_at: 0 },
             { step_name: 'prepare_foreach', status: 'completed', started_at: 0, finished_at: 0 },
           ]}
+          tasks={{}}
+          metadata={[]}
+          isExpanded={false}
         />
       </TestWrapper>,
     );
@@ -216,7 +219,15 @@ describe('DAGContent dev', () => {
   it('test2', () => {
     mount(
       <TestWrapper>
-        <DAGContent graphData={data2} showFullscreen={true} run={createRun({})} stepData={[]} />
+        <DAGContent
+          graphData={data2}
+          showFullscreen={true}
+          run={createRun({})}
+          stepData={[]}
+          tasks={{}}
+          metadata={[]}
+          isExpanded={false}
+        />
       </TestWrapper>,
     );
 

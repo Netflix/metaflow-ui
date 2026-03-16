@@ -64,6 +64,11 @@ const TaskListLabel: React.FC<Props> = (props) => {
               <RowTaskName>
                 {!grouped ? '/' : ''}
                 {getTaskLabel(props.item)}
+                {props.item.foreach_label && (
+                  <ForeachValue title={props.item.foreach_label}>
+                    &nbsp;·&nbsp;{parseForeachLabel(props.item.foreach_label)}
+                  </ForeachValue>
+                )}
               </RowTaskName>
             </RowLabelTaskName>
             <RowDuration data-testid="tasklistlabel-duration">
@@ -114,6 +119,18 @@ function getTaskLabel(item: Task): string {
   return getTaskId(item);
 }
 
+/**
+ * Parses the foreach_label field from the API.
+ * The API returns values like 'country:US' or 'title:Inception'.
+ * We strip the key prefix so non-technical users see just the value: 'US', 'Inception'.
+ * If the label has no ':' separator, it is returned as-is.
+ */
+function parseForeachLabel(label: string): string {
+  const colonIndex = label.indexOf(':');
+  if (colonIndex === -1) return label;
+  return label.slice(colonIndex + 1);
+}
+
 export default TaskListLabel;
 
 //
@@ -138,7 +155,7 @@ const RowLabel = styled.div<{ type: 'step' | 'task'; isOpen?: boolean; group?: b
     display: flex;
     width: 100%;
     color: ${(p) =>
-      p.type === 'task' ? 'var(--timeline-row-label-task-text-color)' : '--timeline-row-label-step-text-color'};
+      p.type === 'task' ? 'var(--timeline-row-label-task-text-color)' : 'var(--timeline-row-label-step-text-color)'};
     text-decoration: none;
     max-width: 100%;
     white-space: nowrap;
@@ -229,4 +246,14 @@ const StepNameWithCount = styled.span`
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100px;
+`;
+
+const ForeachValue = styled.span`
+  color: var(--color-text-secondary, #888);
+  font-weight: 400;
+  flex-shrink: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 80px;
 `;

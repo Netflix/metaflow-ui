@@ -25,6 +25,8 @@ describe('DAG test', () => {
         <DAG
           run={run}
           steps={[]}
+          rows={{}}
+          metadata={[]}
           result={createResource(
             { file: 'test_file', parameters: [], constants: [], steps: {}, graph_structure: [] },
             {},

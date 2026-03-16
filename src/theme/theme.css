@@ -11,8 +11,11 @@
 
   --color-success: #20af2e;
   --color-success-light: rgba(32, 175, 46, 0.2);
+  --color-success-bg: #f4faf4;
   --color-warning: #e5a90c;
+  --color-warning-bg: #fffaf0;
   --color-danger: #eb3428;
+  --color-danger-bg: #fff4f4;
 
   --color-bg-primary: #fff;
   --color-bg-secondary: rgba(0, 0, 0, 0.03);
