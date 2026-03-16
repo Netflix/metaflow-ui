@@ -115,6 +115,8 @@ const en = {
       monitoring: 'New tasks',
       'error-tracker': 'Failed tasks',
       custom: 'Custom',
+      'expand-dag': 'Expand DAG',
+      'collapse-dag': 'Collapse DAG',
     },
 
     timeline: {
