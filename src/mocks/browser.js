@@ -255,7 +255,6 @@ export const worker = setupWorker(
         'python_version:3.12.7',
         'runtime:dev',
       ],
-      foreach_label: 'country:US',
       last_heartbeat_ts: 1739390730,
     },
     {
@@ -280,7 +279,6 @@ export const worker = setupWorker(
         'python_version:3.12.7',
         'runtime:dev',
       ],
-      foreach_label: 'country:UK',
       last_heartbeat_ts: 1739390728,
     },
     {
@@ -305,7 +303,6 @@ export const worker = setupWorker(
         'python_version:3.12.7',
         'runtime:dev',
       ],
-      foreach_label: 'country:JP',
       last_heartbeat_ts: 1739390721,
     },
     {
@@ -330,7 +327,6 @@ export const worker = setupWorker(
         'python_version:3.12.7',
         'runtime:dev',
       ],
-      foreach_label: 'country:DE',
       last_heartbeat_ts: 1739390738,
     },
     {
