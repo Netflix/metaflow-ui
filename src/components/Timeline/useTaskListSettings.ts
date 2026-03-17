@@ -90,6 +90,7 @@ export type TaskSettingsQueryParameters = {
   direction: QueryParamConfig<string | null | undefined, string | null | undefined>;
   steps: QueryParamConfig<string | null | undefined, string | null | undefined>;
   status: QueryParamConfig<string | null | undefined, string | null | undefined>;
+  open_steps: QueryParamConfig<string | null | undefined, string | null | undefined>;
 };
 
 export type TaskSettingsParametersMap = DecodedValueMap<TaskSettingsQueryParameters>;
@@ -158,6 +159,7 @@ export default function useTaskListSettings(): TaskSettingsHook {
     direction: StringParam,
     steps: StringParam,
     status: StringParam,
+    open_steps: StringParam,
   });
 
   useEffect(() => {
@@ -194,13 +196,13 @@ export default function useTaskListSettings(): TaskSettingsHook {
 
     // Check if we were in custom mode, if so we need to save change to localstorage as well
     if (taskListSettings.isCustomEnabled) {
-      const { steps, ...rest } = q;
+      const { steps, open_steps, ...rest } = q;
       localStorage.setItem('custom-settings', JSON.stringify(rest));
     } else {
       // If we changed something and we now differ from default settings, we need to set
       // custom mode on and start saving settingin localstorage
       if (!equalsDefaultMode(q.order, q.direction, q.status, q.group)) {
-        const { steps, ...rest } = q;
+        const { steps, open_steps, ...rest } = q;
 
         dispatch({ type: 'setCustom', value: true });
         localStorage.setItem('custom-settings', JSON.stringify(rest));
@@ -239,7 +241,8 @@ export default function useTaskListSettings(): TaskSettingsHook {
           const parsed = JSON.parse(previousSettings);
           if (parsed) {
             const steps = q.steps ? { steps: q.steps } : {};
-            sq({ ...parsed, ...steps }, 'replace');
+            const openSteps = q.open_steps ? { open_steps: q.open_steps } : {};
+            sq({ ...parsed, ...steps, ...openSteps }, 'replace');
           }
         }
       }

@@ -15,10 +15,9 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
   useEffect(() => {
     // Fetch Plugin definitions
     fetch(apiHttp('/plugin'))
-      .then((response) => {
-        return response.json();
-      })
-      .then((plugins: Plugin[]) => {
+      .then((response) => response.json())
+      .then((data: Plugin[] | { data?: Plugin[] }) => {
+        const plugins = Array.isArray(data) ? data : data?.data ?? [];
         setDefinitions(plugins);
       })
       .catch((e) => console.log(e));
@@ -46,7 +45,8 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
 
   // Filter out already registered plugin so their iframes will be destroyed.
   const registeredPlugins = plugins.map((item) => item.name);
-  const toRegister = definitions.filter((item) => registeredPlugins.indexOf(item.name) === -1);
+  const definitionsList = Array.isArray(definitions) ? definitions : [];
+  const toRegister = definitionsList.filter((item) => registeredPlugins.indexOf(item.name) === -1);
 
   return (
     <HidingElement>

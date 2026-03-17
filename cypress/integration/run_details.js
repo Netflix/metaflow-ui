@@ -21,9 +21,18 @@ const MOCK_STEPS = [
     user_name: 'SanteriCM',
     ts_epoch: 1595574762958,
     tags: ['testingtag'],
-    system_tags: ['user:SanteriCM', ],
-  }
-]
+    system_tags: ['user:SanteriCM'],
+  },
+  {
+    flow_id: 'BasicFlow',
+    run_number: 1,
+    step_name: 'end',
+    user_name: 'SanteriCM',
+    ts_epoch: 1595574763000,
+    tags: ['testingtag'],
+    system_tags: ['user:SanteriCM'],
+  },
+];
 
 const MOCK_TASKS = [
   {
@@ -41,8 +50,24 @@ const MOCK_TASKS = [
     attempt_id: 0,
     tags: ['testingtag'],
     system_tags: ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-24', 'metaflow_version:2.0.5'],
-  }
-]
+  },
+  {
+    flow_id: 'BasicFlow',
+    run_number: 1,
+    step_name: 'end',
+    task_id: 2,
+    task_name: '2',
+    status: 'completed',
+    user_name: 'SanteriCM',
+    ts_epoch: 1595574763001,
+    finished_at: 1595574763021,
+    started_at: 1595574763001,
+    duration: 20,
+    attempt_id: 0,
+    tags: ['testingtag'],
+    system_tags: ['user:SanteriCM', 'runtime:dev', 'python_version:3.7.6', 'date:2020-07-24', 'metaflow_version:2.0.5'],
+  },
+];
 
 describe('Rundetails', () => {
   beforeEach(() => {
@@ -179,5 +204,54 @@ describe('Rundetails', () => {
       .then(() => {
         cy.get('[data-testid="option-overview"]').click();
       });
+  });
+
+  describe('open_steps URL persistence', () => {
+    const navigateToTimeline = () => {
+      cy.get('[data-testid="result-group-row"]').first().click();
+      cy.wait('@TaskData');
+      cy.wait('@StepData');
+      cy.get('[data-testid="tab-heading-item"]').eq(1).contains('Timeline').click();
+    };
+
+    it('collapsing a step updates the URL to include open_steps with the open step names', () => {
+      navigateToTimeline();
+      cy.contains('[data-testid="tasklistlabel-step-container"]', 'start').click();
+      cy.location('search').then((search) => {
+        const params = new URLSearchParams(search);
+        expect(params.get('open_steps')).to.equal('end');
+      });
+    });
+
+    it('expanding all steps removes the open_steps param from the URL', () => {
+      navigateToTimeline();
+      // Collapse all, then expand all
+      cy.get('[data-testid="timeline-collapse-button"]').click();
+      cy.location('search').then((search) => {
+        const params = new URLSearchParams(search);
+        expect(params.get('open_steps')).to.exist;
+      });
+      cy.get('[data-testid="timeline-collapse-button"]').click();
+      cy.location('search').then((search) => {
+        const params = new URLSearchParams(search);
+        expect(params.get('open_steps')).to.be.null;
+      });
+    });
+
+    it('loading a URL with ?open_steps=stepName shows only that step expanded', () => {
+      cy.intercept({ method: 'GET', url: '**/dag*' }, (req) => {
+        req.reply({ statusCode: 200, body: { data: { steps: {}, graph_structure: [] } } });
+      });
+      cy.visit('/BasicFlow/1/view/timeline?open_steps=start');
+      cy.wait('@TaskData');
+      cy.wait('@StepData');
+      // "start" should be expanded (icon rotate=0), "end" should be collapsed (icon rotate=-90)
+      cy.contains('[data-testid="tasklistlabel-step-container"]', 'start').within(() => {
+        cy.get('[data-testid="tasklistlabel-open-icon"]').should('have.attr', 'rotate', '0');
+      });
+      cy.contains('[data-testid="tasklistlabel-step-container"]', 'end').within(() => {
+        cy.get('[data-testid="tasklistlabel-open-icon"]').should('have.attr', 'rotate', '-90');
+      });
+    });
   });
 });
