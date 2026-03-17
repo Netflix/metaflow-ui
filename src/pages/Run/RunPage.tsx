@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Run as IRun, Metadata } from '@/types';
@@ -120,6 +120,81 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
 
   const urlParams = new URLSearchParams(cleanParametersMap(listParams)).toString();
 
+  const lastOpenStepsFromUrlRef = useRef<string | null>(null);
+  const isInitializedRef = useRef(false);
+  const lastKnownStepNamesRef = useRef<Set<string>>(new Set());
+
+  // Keep URL in sync with which steps are expanded. On load, read from URL. Then when user toggles, write to URL.
+  useEffect(() => {
+    dispatch({ type: 'reset' });
+    lastOpenStepsFromUrlRef.current = null;
+    isInitializedRef.current = false;
+    lastKnownStepNamesRef.current = new Set();
+  }, [params.runNumber, dispatch]);
+
+  useEffect(() => {
+    const visibleStepNames = Object.keys(rows).filter((k) => !k.startsWith('_'));
+    if (visibleStepNames.length === 0) return;
+
+    const visibleSet = new Set(visibleStepNames);
+    const lastKnown = lastKnownStepNamesRef.current;
+    const hasNewSteps = visibleSet.size !== lastKnown.size || !visibleStepNames.every((n) => lastKnown.has(n));
+
+    const applyUrlToState = () => {
+      const urlOpenSteps = listParams.open_steps;
+      const desiredOpenSet =
+        urlOpenSteps === ''
+          ? new Set<string>()
+          : !urlOpenSteps || urlOpenSteps === 'all'
+            ? new Set(visibleStepNames)
+            : new Set(
+                urlOpenSteps
+                  .split(',')
+                  .map((s) => s.trim())
+                  .filter(Boolean),
+              );
+
+      const currentOpenSet = new Set(visibleStepNames.filter((name) => rows[name]?.isOpen));
+      const desiredSorted = [...desiredOpenSet].sort().join(',');
+      const currentSorted = [...currentOpenSet].sort().join(',');
+
+      if (desiredSorted !== currentSorted) {
+        dispatch({ type: 'closeAll' });
+        desiredOpenSet.forEach((stepName) => {
+          if (rows[stepName]) dispatch({ type: 'open', id: stepName });
+        });
+        lastOpenStepsFromUrlRef.current = desiredOpenSet.size === visibleStepNames.length ? 'all' : desiredSorted;
+      } else {
+        const allOpen = visibleStepNames.length === currentOpenSet.size;
+        lastOpenStepsFromUrlRef.current = allOpen ? 'all' : currentSorted;
+      }
+      lastKnownStepNamesRef.current = visibleSet;
+    };
+
+    if (!isInitializedRef.current) {
+      applyUrlToState();
+      isInitializedRef.current = true;
+      return;
+    }
+
+    // New steps load expanded by default, so apply URL state if we have open_steps.
+    if (hasNewSteps && listParams.open_steps) {
+      applyUrlToState();
+      return;
+    }
+
+    // User toggle
+    lastKnownStepNamesRef.current = visibleSet;
+    const openSteps = visibleStepNames.filter((name) => rows[name]?.isOpen);
+    const allOpen = openSteps.length === visibleStepNames.length;
+    const currentRepr = allOpen ? 'all' : openSteps.sort().join(',');
+
+    if (currentRepr === lastOpenStepsFromUrlRef.current) return;
+
+    lastOpenStepsFromUrlRef.current = currentRepr;
+    setQueryParam({ open_steps: allOpen ? undefined : currentRepr }, 'replaceIn');
+  }, [rows, listParams.open_steps, dispatch, setQueryParam]);
+
   useEffect(() => {
     setPreviousStepName(params.stepName || undefined);
     setPreviousTaskId(params.taskId || undefined);
@@ -147,10 +222,6 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   //
   // Graph measurements and rendering logic
   //
-
-  useEffect(() => {
-    dispatch({ type: 'reset' });
-  }, [params.runNumber, dispatch]);
 
   //
   // Data processing
