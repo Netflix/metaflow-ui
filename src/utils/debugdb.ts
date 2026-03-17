@@ -57,6 +57,6 @@ export function setLogItem(str: string): void {
 export async function getLogs(): Promise<void> {
   if (db) {
     const all = await db.getAll('logs' as never);
-    downloadString(all.join('\n'), 'text/plain', `logs-${new Date().toISOString()}}.txt`);
+    downloadString(all.join('\n'), 'text/plain', `logs-${new Date().toISOString()}.txt`);
   }
 }
