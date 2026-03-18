@@ -82,7 +82,28 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   //
   // Metadata for plugins
   //
-
+  // Restore timeline open steps from URL on mount
+  useEffect(() => {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const timelineParam = urlSearchParams.get('timeline');
+    if (timelineParam) {
+      const openSteps = timelineParam.split(',');
+      openSteps.forEach((stepId) => {
+        dispatch({ type: 'open', id: stepId });
+      });
+    }
+  }, [dispatch]);
+  // Sync open steps to URL whenever rows change
+  useEffect(() => {
+    const openSteps = Object.keys(rows).filter((key) => rows[key].isOpen);
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    if (openSteps.length > 0) {
+      urlSearchParams.set('timeline', openSteps.join(','));
+    } else {
+      urlSearchParams.delete('timeline');
+    }
+    window.history.replaceState(null, '', '?' + urlSearchParams.toString());
+  }, [rows]);
   const onUpdate = useCallback(
     (items: Metadata[]) => {
       const record = metadataToRecord(items);
