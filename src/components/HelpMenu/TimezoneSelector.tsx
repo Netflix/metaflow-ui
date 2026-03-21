@@ -112,10 +112,10 @@ const TimezoneRow = styled.div`
   align-items: center;
   padding: 0rem 0.5rem;
   width: 100%;
-  color: #666;
+  color: var(--color-text-secondary);
 
   .field {
-    color: #333;
+    color: var(--color-text-primary);
     margin: 0.5rem 0;
     width: 100%;
   }

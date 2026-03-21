@@ -179,7 +179,7 @@ const StyledHelpMenuLink = styled.a`
     background-color: var(--color-text-highlight);
   }
   &:after {
-    background-color: #666;
+    background-color: var(--color-text-secondary);
     content: '';
     display: inline-block;
     height: 1rem;
@@ -213,7 +213,7 @@ export const HelpMenuRow = styled.div`
 
   .field {
     width: 100%;
-    border: 1px solid #e9e9e9;
+    border: 1px solid var(--color-border-primary);
     border-radius: var(--radius-primary);
   }
 `;
