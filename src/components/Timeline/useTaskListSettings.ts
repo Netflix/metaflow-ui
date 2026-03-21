@@ -236,10 +236,14 @@ export default function useTaskListSettings(): TaskSettingsHook {
         // Check previous settings from localstorage for custom setting
         const previousSettings = localStorage.getItem('custom-settings');
         if (previousSettings) {
-          const parsed = JSON.parse(previousSettings);
-          if (parsed) {
-            const steps = q.steps ? { steps: q.steps } : {};
-            sq({ ...parsed, ...steps }, 'replace');
+          try {
+            const parsed = JSON.parse(previousSettings);
+            if (parsed) {
+              const steps = q.steps ? { steps: q.steps } : {};
+              sq({ ...parsed, ...steps }, 'replace');
+            }
+          } catch {
+            localStorage.removeItem('custom-settings');
           }
         }
       }
