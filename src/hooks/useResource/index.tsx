@@ -229,8 +229,9 @@ export default function useResource<T, U>({
     logWarning(`HTTP error id: ${err.id}, url: ${targetUrl}`);
   }
 
+  const MAX_RETRIES = 3;
   const fetchData = useCallback(
-    (targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, requestid: number) => {
+    (targetUrl: string, signal: AbortSignal, cb: (isSuccess: boolean) => void, requestid: number, retryCount = 0) => {
       setLogItem(`GET SENT ${targetUrl}`);
 
       fetch(targetUrl, { signal })
@@ -254,7 +255,7 @@ export default function useResource<T, U>({
                 // If we want all data and we are have next page available we fetch it.
                 // Else this fetch is done and we call the callback
                 if (fetchAllData && result.links.next !== null && result.links.next !== targetUrl) {
-                  fetchData(result.links.next || targetUrl, signal, cb, requestid);
+                  fetchData(result.links.next || targetUrl, signal, cb, requestid, retryCount);
                 } else {
                   cb(true);
                 }
@@ -286,9 +287,20 @@ export default function useResource<T, U>({
             }
           }
         })
-        .catch((_e) => {
-          newError(targetUrl, defaultError, requestid);
-          postRequest && postRequest(false, targetUrl);
+        .catch((e) => {
+          console.error('Fetch failed', e);
+
+          if (retryCount < MAX_RETRIES) {
+            setTimeout(
+              () => {
+                fetchData(targetUrl, signal, cb, requestid, retryCount + 1);
+              },
+              1000 * (retryCount + 1),
+            );
+          } else {
+            newError(targetUrl, defaultError, requestid);
+            postRequest && postRequest(false, targetUrl);
+          }
         });
     },
     [fetchAllData, onUpdate, postRequest, setData, setResult],
@@ -306,7 +318,6 @@ export default function useResource<T, U>({
       if (!onUpdate) {
         setData(initialData);
       }
-
       fetchData(
         target,
         signal,
@@ -320,6 +331,7 @@ export default function useResource<T, U>({
           }
         },
         requestid,
+        0,
       );
     }
 

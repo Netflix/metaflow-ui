@@ -56,7 +56,13 @@ export default function useWebsocketRequest<T>({
     };
     const _onError = (e: ErrorEvent) => {
       console.error('Websocket connection error', e);
-      onError && onError(e);
+      // new: trigger fallback signal
+      if (onError) {
+        onError(e);
+      }
+
+      // optional: custom log for fallback tracking
+      console.warn('WebSocket failed — fallback mechanisms may be triggered');
     };
 
     if (enabled) {
@@ -65,7 +71,10 @@ export default function useWebsocketRequest<T>({
 
       onConnecting && onConnecting();
 
-      conn = new ReconnectingWebSocket(apiWs(target), [], { maxRetries: 0 });
+      conn = new ReconnectingWebSocket(apiWs(target), [], {
+        maxRetries: 5,
+        reconnectionDelayGrowFactor: 1.5,
+      });
 
       conn.addEventListener('open', _onOpen);
       conn.addEventListener('close', _onClose);
