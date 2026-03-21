@@ -11,6 +11,7 @@ export type RowCounts = {
   running: number;
   pending: number;
   failed: number;
+  killed: number;
   unknown: number;
 };
 
@@ -20,6 +21,7 @@ export function countTaskRowsByStatus(rows: RowDataModel): RowCounts {
     completed: 0,
     running: 0,
     failed: 0,
+    killed: 0,
     pending: 0,
     unknown: 0,
   };
@@ -122,8 +124,11 @@ export function getStepStatus(stepTaskData: Record<string, Task[]>): TaskStatus 
       return 'running';
     }
     if (statusOfLastItem === 'failed') {
-      return 'failed';
-    }
+        return 'failed';
+        }
+    if (statusOfLastItem === 'killed') {
+        return 'killed';
+              }
   }
   return 'completed';
 }

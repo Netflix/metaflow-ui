@@ -37,6 +37,8 @@ export function colorByStatus(status: string): string {
       return 'var(--color-bg-success)';
     case 'failed':
       return 'var(--color-bg-danger)';
+    case 'killed':
+      return 'var(--color-bg-warning)';
     case 'running':
       return 'var(--color-bg-success-light)';
     case 'pending':
@@ -54,6 +56,8 @@ export function iconByStatus(status: keyof RunStatus | TaskStatus): keyof Suppor
     case 'completed':
       return 'completed';
     case 'failed':
+      return 'error';
+    case 'killed':
       return 'error';
     case 'running':
       return 'running';
