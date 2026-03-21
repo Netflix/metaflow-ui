@@ -108,6 +108,7 @@ const en = {
       'filter-completed': 'Completed',
       'filter-running': 'Running',
       'filter-failed': 'Failed',
+      'filter-killed': 'Killed',
       'filter-pending': 'Pending',
       'filter-unknown': 'Unknown',
       mode: 'Mode',

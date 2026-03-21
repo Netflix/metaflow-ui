@@ -24,6 +24,7 @@ const StatusLights: React.FC<Props> = ({ status }) => (
     )}
     {status === 'completed' && <StatusBox status="completed" />}
     {status === 'failed' && <StatusBox status="failed" />}
+    {status === 'killed' && <StatusBox status="killed" />}
     {status === 'running' && <StatusBox status="running" />}
     {status === 'pending' && <StatusBox status="pending" />}
     {status === 'unknown' && <StatusBox status="unknown" />}
