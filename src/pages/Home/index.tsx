@@ -55,7 +55,12 @@ const Home: React.FC = () => {
       // Try to use same params as last time when on frontpage. But only try this if
       // user is coming to default frontpage. We don't want to interrupt direct links from working
       const fromLS = localStorage.getItem('home-params');
-      const lastUsedParams = fromLS ? JSON.parse(fromLS) : false;
+      let lastUsedParams = false;
+      try {
+        lastUsedParams = fromLS ? JSON.parse(fromLS) : false;
+      } catch {
+        localStorage.removeItem('home-params');
+      }
       if (lastUsedParams && isDefaultParams(rawParams, false)) {
         setQp(lastUsedParams);
       }
@@ -83,7 +88,9 @@ const Home: React.FC = () => {
       params: rawParams,
       cachedResult: shouldUseCachedResult(historyAction),
     });
-    localStorage.setItem('home-params', JSON.stringify(rawParams));
+    try {
+      localStorage.setItem('home-params', JSON.stringify(rawParams));
+    } catch {}
   }, [historyAction, rawParams]);
 
   //
