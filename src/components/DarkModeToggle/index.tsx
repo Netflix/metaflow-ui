@@ -4,11 +4,6 @@ import { useTheme } from '@components/ThemeProvider';
 import moonIcon from '@assets/moon.svg';
 import sunIcon from '@assets/sun.svg';
 
-//
-// A compact sun/moon icon button that toggles between light and dark mode.
-// Placed in the AppBar next to "Quick links".
-//
-
 const DarkModeToggle: React.FC = () => {
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
@@ -53,7 +48,6 @@ const ToggleButton = styled.button`
   }
 `;
 
-// Renders the SVG as a CSS mask so it inherits `currentColor` from the button
 const IconMask = styled.span<{ iconUrl: string }>`
   display: block;
   width: 1rem;

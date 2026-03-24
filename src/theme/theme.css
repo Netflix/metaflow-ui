@@ -19,7 +19,7 @@
   --color-bg-secondary-highlight: #e4f0ff;
   --color-bg-heavy: #444;
 
-  /* --- Semantic surface (themed per mode) --- */
+  /* --- Semantic surface --- */
   --log-viewer-bg: #f5f5f5;
   --log-viewer-color: var(--color-text-primary);
   --property-table-bright-bg: var(--color-bg-primary);
@@ -442,12 +442,10 @@
    ====================================================================== */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    /* --- Core brand colors stay the same, but we brighten slightly --- */
     --color-primary: #4a9eff;
     --color-secondary: #c8c8c8;
     --color-tertiary: #00d4e8;
 
-    /* --- Semantic status colors — brightened for dark backgrounds --- */
     --color-success: #4caf50;
     --color-success-light: rgba(76, 175, 80, 0.25);
     --color-warning: #ffb74d;
@@ -617,7 +615,7 @@
     --color-text-alternative: #e8e8e8;
     --input-text-color: var(--color-text-primary);
 
-    /* --- Table / property table borders (use subtle dark instead of thick white) --- */
+    /* --- Table / property table borders --- */
     --border-alternative-medium: 1px solid rgba(255, 255, 255, 0.1);
 
     /* --- Log viewer, property table bright cells --- */
@@ -630,8 +628,7 @@
 /* =====================================================================
    Dark Mode — Manual Toggle (data-theme="dark")
    Mirrors the media-query dark tokens so that the JS toggle works
-   independent of the OS setting.  When data-theme="light" is set it
-   also explicitly resets everything so switching back to light works.
+   independent of the OS setting.
    ====================================================================== */
 [data-theme='dark'] {
   /* Keep html color-scheme in sync so native elements (scrollbars, inputs) go dark */

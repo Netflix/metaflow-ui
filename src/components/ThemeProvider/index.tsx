@@ -26,7 +26,6 @@ function getInitialTheme(): ThemeMode {
     const stored = localStorage.getItem(STORAGE_KEY) as ThemeMode | null;
     if (stored === 'light' || stored === 'dark') return stored;
   } catch (_) {
-    // localStorage not available (SSR / privacy mode)
   }
   // Fall back to OS preference
   return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
