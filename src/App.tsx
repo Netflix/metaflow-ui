@@ -16,6 +16,7 @@ import PluginRegisterSystem from '@components/Plugins/PluginRegisterSystem';
 import TopNavPlugin from '@components/Plugins/TopNavPlugin';
 import { Page } from '@components/Structure';
 import { TimezoneProvider } from '@components/TimezoneProvider';
+import { ThemeProvider } from '@components/ThemeProvider';
 import { LoggingProvider } from '@hooks/useLogger';
 import { fetchFeaturesConfig } from '@utils/FEATURE';
 import { fetchServiceVersion } from '@utils/VERSION';
@@ -35,6 +36,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
+    <ThemeProvider>
     <ErrorBoundary message={t('error.application-error')}>
       <NotificationsProvider>
         <TimezoneProvider>
@@ -65,6 +67,7 @@ const App: React.FC = () => {
         </TimezoneProvider>
       </NotificationsProvider>
     </ErrorBoundary>
+    </ThemeProvider>
   );
 };
 
