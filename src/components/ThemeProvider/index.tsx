@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 //
-// ThemeContext — provides light/dark mode state across the app.
 // Preference is persisted to localStorage and respects the OS default on first visit.
 //
 
