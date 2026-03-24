@@ -8,6 +8,7 @@ import PluginGroup from '@components/Plugins/PluginGroup';
 import { ItemRow } from '@components/Structure';
 import FEATURE_FLAGS from '@utils/FEATURE';
 import logo from '@assets/logo_dark_horizontal.svg';
+import DarkModeToggle from '@components/DarkModeToggle';
 
 //
 // Main application bar which is always shown on top of the page
@@ -24,6 +25,7 @@ const AppBar: React.FC = () => {
         )}
         <Breadcrumb />
         {!FEATURE_FLAGS.HIDE_QUICK_LINKS && <HelpMenu />}
+        <DarkModeToggle />
         {!FEATURE_FLAGS.HIDE_CONNECTION_STATUS && <ConnectionStatus />}
       </ItemRow>
       <ItemRow pad="lg">
