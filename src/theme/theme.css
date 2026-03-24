@@ -19,7 +19,7 @@
   --color-bg-secondary-highlight: #e4f0ff;
   --color-bg-heavy: #444;
 
-  /* --- Semantic surface tokens (themed per mode) --- */
+  /* --- Semantic surface (themed per mode) --- */
   --log-viewer-bg: #f5f5f5;
   --log-viewer-color: var(--color-text-primary);
   --property-table-bright-bg: var(--color-bg-primary);
