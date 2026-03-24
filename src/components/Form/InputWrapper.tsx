@@ -28,13 +28,15 @@ const InputWrapper = styled.section<InputWrapperProps>`
     padding-right: 1.5rem;
     font-size: var(--input-font-size);
 
+    color: var(--input-text-color);
+
     &:focus {
       outline: none;
       border: none;
     }
 
     &::placeholder {
-      color: var(--color-text-primary);
+      color: var(--input-placeholder-color);
       font-weight: 500;
       opacity: 1;
     }
@@ -51,9 +53,9 @@ const InputWrapper = styled.section<InputWrapperProps>`
     border-color: ${(p) =>
       p.status && p.status === 'Error'
         ? 'var(--color-bg-danger)'
-        : p.active
+         : p.active
           ? 'var(--color-text-highlight)'
-          : 'var(--color-text-primary)'};
+        : 'var(--color-text-primary)'};
   }
 `;
 

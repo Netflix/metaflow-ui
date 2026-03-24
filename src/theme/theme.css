@@ -19,6 +19,11 @@
   --color-bg-secondary-highlight: #e4f0ff;
   --color-bg-heavy: #444;
 
+  /* --- Semantic surface --- */
+  --log-viewer-bg: #f5f5f5;
+  --log-viewer-color: var(--color-text-primary);
+  --property-table-bright-bg: var(--color-bg-primary);
+
   --color-bg-brand-primary: var(--color-primary);
   --color-bg-brand-secondary: var(--color-secondary);
   --color-bg-brand-tertiary: var(--color-tertiary);
@@ -242,7 +247,7 @@
   --table-head-active-font-weight: var(--font-weight-medium);
 
   --table-cell-padding: var(--spacing-3) var(--spacing-7);
-  --table-cell-border: 1px solid #fff;
+  --table-cell-border: 1px solid #e0e0e0;
   --table-cell-border-top: var(--table-cell-border);
   --table-cell-border-right: var(--table-cell-border);
   --table-cell-border-bottom: var(--table-cell-border);
@@ -283,8 +288,8 @@
   --titled-row-text-color: var(--color-text-primary);
 
   --titled-row-table-title-cell-width: 200px;
-  --titled-row-table-border-bottom: 2px solid #fff;
-  --titled-row-table-separator-border: 2px solid #fff;
+  --titled-row-table-border-bottom: 1px solid #e0e0e0;
+  --titled-row-table-separator-border: 1px solid #e0e0e0;
   --titled-row-table-value-font-size: var(--titled-row-font-size);
   --titled-row-table-value-text-color: var(--titled-row-text-color);
   --titled-row-table-value-font-weight: var(--font-weight-regular);
@@ -427,4 +432,391 @@
   --task-content-border-right: none;
 
   --loglist-button-size: 2.5rem;
+}
+
+/* =====================================================================
+   Dark Mode
+   Automatically applied when the OS/browser prefers a dark color scheme.
+   Override only the color/surface tokens — spacing, typography, and
+   layout tokens don't change between themes.
+   ====================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-primary: #4a9eff;
+    --color-secondary: #c8c8c8;
+    --color-tertiary: #00d4e8;
+
+    --color-success: #4caf50;
+    --color-success-light: rgba(76, 175, 80, 0.25);
+    --color-warning: #ffb74d;
+    --color-danger: #f06060;
+
+    /* --- Surface / background --- */
+    --color-bg-primary: #121212;
+    --color-bg-secondary: rgba(255, 255, 255, 0.05);
+    --color-bg-secondary-highlight: #1a3a5c;
+    --color-bg-heavy: #2a2a2a;
+
+    --color-bg-brand-primary: var(--color-primary);
+    --color-bg-brand-secondary: var(--color-secondary);
+    --color-bg-brand-tertiary: var(--color-tertiary);
+
+    --color-bg-success: #2e6b45;
+    --color-bg-success-light: #4a7a10;
+    --color-bg-warning: #8a6120;
+    --color-bg-danger: #8a3c3c;
+    --color-bg-neutral: #2c2c2e;
+    --color-bg-disabled: #4a4a4a;
+
+    /* --- Borders --- */
+    --color-border-primary: #3a3a3a;
+    --color-border-1: rgba(255, 255, 255, 0.1);
+    --color-border-2: rgba(255, 255, 255, 0.2);
+    --color-border-3: rgba(255, 255, 255, 0.3);
+
+    /* --- Text --- */
+    --color-text-primary: #e8e8e8;
+    --color-text-secondary: #a0a0a0;
+    --color-text-light: #787878;
+    --color-text-alternative: #121212;
+    --color-text-highlight: #4a9eff;
+
+    --color-text-success: #66bb6a;
+    --color-text-info: #4dd0e1;
+    --color-text-warning: #ffb74d;
+    --color-text-danger: #f06060;
+
+    /* --- Icons --- */
+    --color-icon-light: #4a4a4a;
+    --color-icon-secondary: var(--color-text-secondary);
+    --color-icon-primary: var(--color-text-primary);
+
+    /* --- Reset button --- */
+    --reset-button-color: var(--color-text-primary);
+    --reset-button-border-color: var(--color-border-primary);
+
+    /* --- Layout --- */
+    --layout-color-bg: var(--color-bg-primary);
+
+    /* --- Notifications --- */
+    --notification-success-bg: #2e6b45;
+    --notification-success-text-color: #e8e8e8;
+    --notification-info-bg: #1a3a5c;
+    --notification-info-text-color: #e8e8e8;
+    --notification-warning-bg: #7a5418;
+    --notification-warning-text-color: #e8e8e8;
+    --notification-danger-bg: #6b2c2c;
+    --notification-danger-text-color: #e8e8e8;
+    --notification-default-bg: #2c2c2e;
+    --notification-default-text-color: var(--color-text-secondary);
+
+    /* --- Buttons --- */
+    --button-default-text-color: var(--color-text-secondary);
+    --button-default-bg-hover: rgba(255, 255, 255, 0.08);
+    --button-default-border: 1px solid var(--color-border-primary);
+    --button-default-active-text-color: var(--color-text-primary);
+    --button-default-active-bg: var(--color-bg-neutral);
+
+    --button-text-text-color: var(--color-text-primary);
+    --button-text-bg-hover: rgba(255, 255, 255, 0.05);
+    --button-text-active-text-color: var(--color-text-primary);
+    --button-text-active-bg: var(--color-bg-neutral);
+
+    --button-primaryText-text-color: var(--color-text-highlight);
+    --button-primaryText-bg-hover: rgba(74, 158, 255, 0.1);
+    --button-primaryText-border: 1px solid var(--color-text-highlight);
+    --button-primaryText-active-text-color: var(--color-text-highlight);
+    --button-primaryText-active-bg: rgba(74, 158, 255, 0.15);
+
+    /* --- Code block --- */
+    --code-bg: #1e1e1e;
+    --code-text-color: #d4d4d4;
+
+    /* --- Collapsable --- */
+    --collapsable-header-text-color: var(--color-text-primary);
+    --collapsable-header-open-text-color: var(--color-text-primary);
+    --collapsable-header-border-bottom: 1px solid var(--color-border-1);
+
+    /* --- Table --- */
+    --table-head-bg: #1a1a1a;
+    --table-head-text-color: var(--color-text-light);
+    --table-head-active-bg: #1a1a1a;
+    --table-head-active-text-color: var(--color-text-primary);
+
+    --table-cell-border: 1px solid #1a1a1a;
+    --table-cell-text-color: var(--color-text-primary);
+    --table-cell-bg: rgba(255, 255, 255, 0.03);
+    --table-cell-hover-bg: #1a3a5c;
+    --table-cell-hover-text-color: var(--color-text-highlight);
+
+    /* --- Tabs --- */
+    --tab-heading-text-color: var(--color-text-secondary);
+    --tab-heading-active-text-color: var(--color-text-primary);
+    --tab-heading-item-active-border-bottom: 2px solid var(--color-text-highlight);
+
+    /* --- Titled row --- */
+    --titled-row-head-text-color: var(--color-text-primary);
+    --titled-row-bg: rgba(255, 255, 255, 0.04);
+    --titled-row-text-color: var(--color-text-primary);
+    --titled-row-table-border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    --titled-row-table-separator-border: 1px solid rgba(255, 255, 255, 0.1);
+
+    /* --- Breadcrumb --- */
+    --breadcrumb-bg: #1e1e1e;
+    --breadcrumb-text-color: var(--color-text-primary);
+    --breadcrumb-border: 1px solid var(--color-text-highlight);
+    --breadcrumb-placeholder-color: #606060;
+    --breadcrumb-highlight-text-color: var(--color-text-primary);
+
+    /* --- Tooltip --- */
+    --tooltip-bg: rgba(30, 30, 30, 0.92);
+
+    /* --- Input --- */
+    --input-border: 1px solid var(--color-border-1);
+    --input-border-danger: 1px solid var(--color-bg-danger);
+    --input-text-color: var(--color-text-primary);
+    --input-bg: #1e1e1e;
+
+    /* --- Data header (the dark bar at top of task/run pages) --- */
+    --data-header-bg: #1e1e1e;
+    --data-header-text-color: #e8e8e8;
+    --data-header-label-text-color: #e8e8e8;
+    --data-header-link-color: #e8e8e8;
+
+    /* --- Popover --- */
+    --popover-border: 1px solid var(--color-border-primary);
+    --popover-shadow: 1px 1px 8px rgba(0, 0, 0, 0.6);
+    --popover-background: #1e1e1e;
+
+    /* --- Run tags --- */
+    --run-tag-text-color: var(--color-text-primary);
+
+    /* --- Run warning banner --- */
+    --run-warning-bg: #7a5418;
+    --run-warning-text-color: #e8e8e8;
+
+    /* --- Timeline --- */
+    --timeline-line-color-neutral: #4a4a4a;
+    --timeline-line-color-success: #2e6b45;
+    --timeline-line-color-running: #4a7a10;
+    --timeline-line-color-warning: #8a6120;
+    --timeline-line-color-danger: #8a3c3c;
+    --timeline-line-color-unknown: #4a4a4a;
+
+    --timeline-footer-bg: rgba(255, 255, 255, 0.04);
+    --timeline-footer-selected-bg: #1e1e1e;
+
+    /* --- DAG graph nodes --- */
+    --dag-node-bg: #1e1e1e;
+    --dag-container-bg: #252525;
+    --dag-foreach-bg: rgba(255, 255, 255, 0.06);
+
+    /* --- Overrides for components using hardcoded-ish tokens --- */
+    --color-text-alternative: #e8e8e8;
+    --input-text-color: var(--color-text-primary);
+
+    /* --- Table / property table borders --- */
+    --border-alternative-medium: 1px solid rgba(255, 255, 255, 0.1);
+
+    /* --- Log viewer, property table bright cells --- */
+    --log-viewer-bg: #181818;
+    --log-viewer-color: #d4d4d4;
+    --property-table-bright-bg: #252525;
+  }
+}
+
+/* =====================================================================
+   Dark Mode — Manual Toggle (data-theme="dark")
+   Mirrors the media-query dark tokens so that the JS toggle works
+   independent of the OS setting.
+   ====================================================================== */
+[data-theme='dark'] {
+  /* Keep html color-scheme in sync so native elements (scrollbars, inputs) go dark */
+  color-scheme: dark;
+
+  --color-primary: #4a9eff;
+  --color-secondary: #c8c8c8;
+  --color-tertiary: #00d4e8;
+
+  --color-bg-primary: #121212;
+  --color-bg-secondary: #1e1e1e;
+  --color-bg-heavy: #0a0a0a;
+  --color-bg-neutral: #252525;
+  --color-bg-secondary-highlight: #1a3a5c;
+
+  --color-text-primary: #e8e8e8;
+  --color-text-secondary: #a8a8a8;
+  --color-text-light: #888888;
+  --color-text-highlight: #4a9eff;
+
+  --color-border-primary: #2a2a2a;
+  --color-border-1: rgba(255, 255, 255, 0.06);
+  --color-border-2: rgba(255, 255, 255, 0.12);
+  --color-border-3: rgba(255, 255, 255, 0.2);
+
+  --color-success: #3a9e6a;
+  --color-warning: #c8840a;
+  --color-danger: #c0392b;
+
+  --color-success-bg: #0d2e1e;
+  --color-warning-bg: #2e1e00;
+  --color-danger-bg: #2e0d0d;
+
+  --color-success-text: #5abf8a;
+  --color-warning-text: #e8a030;
+  --color-danger-text: #e85050;
+
+  --input-bg: #1e1e1e;
+  --input-color: #e8e8e8;
+  --input-border: 1px solid #2a2a2a;
+  --input-placeholder-color: #606060;
+  --input-shadow: none;
+  --input-focus-shadow: 0 0 0 0.125rem rgba(74, 158, 255, 0.25);
+
+  /* Code / pre elements (e.g. JSON values in Details dropdown) */
+  --code-bg: #1e1e1e;
+  --code-text-color: #d4d4d4;
+
+  --layout-color-bg: #121212;
+  --layout-color-header-bg: #181818;
+  --layout-sidebar-bg: #1a1a1a;
+  --layout-sidebar-text-color: #c8c8c8;
+  --layout-sidebar-active-text-color: #4a9eff;
+  --layout-sidebar-border: 1px solid #2a2a2a;
+
+  --table-head-bg: #1a1a1a;
+  --table-head-text-color: #a8a8a8;
+  --table-border: 1px solid #2a2a2a;
+  --table-cell-border: 1px solid rgba(255, 255, 255, 0.1);
+  --table-odd-row-bg: #161616;
+  --table-even-row-bg: #1a1a1a;
+  --table-cell-hover-bg: #1a3a5c;
+  --table-cell-hover-text-color: #e8e8e8;
+
+  --button-default-bg: #1e1e1e;
+  --button-default-text-color: #c8c8c8;
+  --button-default-border: 1px solid #2a2a2a;
+  --button-default-bg-hover: rgba(255, 255, 255, 0.08);
+  --button-primary-bg: #4a9eff;
+  --button-primary-text-color: #121212;
+  --button-text-color: #4a9eff;
+  --button-text-bg-hover: rgba(255, 255, 255, 0.05);
+  --button-primaryText-text-color: #4a9eff;
+  --button-primaryText-bg-hover: rgba(74, 158, 255, 0.1);
+  --button-primaryText-border: 1px solid #4a9eff;
+  --button-primaryText-active-text-color: #4a9eff;
+  --button-primaryText-active-bg: rgba(74, 158, 255, 0.15);
+
+  --tab-active-color: #4a9eff;
+  --tab-inactive-color: #888888;
+  --tab-border-color: #2a2a2a;
+  --tab-active-border-color: #4a9eff;
+  --tab-bg: transparent;
+
+  --notification-success-bg: #0d2e1e;
+  --notification-success-border: 1px solid #2a6a45;
+  --notification-warning-bg: #2e1e00;
+  --notification-warning-border: 1px solid #8a5010;
+  --notification-danger-bg: #2e0d0d;
+  --notification-danger-border: 1px solid #8a2828;
+  --notification-default-bg: #1e1e1e;
+  --notification-default-border: 1px solid #2a2a2a;
+
+  --data-header-bg: #181818;
+  --data-header-border: 1px solid #2a2a2a;
+  --data-header-label-text-color: #e8e8e8;
+  --data-header-link-color: #e8e8e8;
+
+  --popover-border: 1px solid var(--color-border-primary);
+  --popover-shadow: 1px 1px 8px rgba(0, 0, 0, 0.6);
+  --popover-background: #1e1e1e;
+
+  --run-tag-text-color: var(--color-text-primary);
+  --run-warning-bg: #7a5418;
+  --run-warning-text-color: #e8e8e8;
+
+  --breadcrumb-bg: #1e1e1e;
+  --breadcrumb-text-color: var(--color-text-primary);
+  --breadcrumb-border: 1px solid var(--color-text-highlight);
+  --breadcrumb-placeholder-color: #606060;
+  --breadcrumb-highlight-text-color: var(--color-text-primary);
+
+  --timeline-line-color-neutral: #4a4a4a;
+  --timeline-line-color-success: #2e6b45;
+  --timeline-line-color-running: #4a7a10;
+  --timeline-line-color-warning: #8a6120;
+  --timeline-line-color-danger: #8a3c3c;
+  --timeline-line-color-unknown: #4a4a4a;
+  --timeline-footer-bg: rgba(255, 255, 255, 0.04);
+  --timeline-footer-selected-bg: #1e1e1e;
+
+  /* --- DAG graph nodes --- */
+  --dag-node-bg: #1e1e1e;
+  --dag-container-bg: #252525;
+  --dag-foreach-bg: rgba(255, 255, 255, 0.06);
+
+  /* --- Overrides for components using hardcoded-ish tokens --- */
+  --color-text-alternative: #e8e8e8;
+  --input-text-color: var(--color-text-primary);
+
+  /* --- Table / property table borders (use subtle dark instead of thick white) --- */
+  --border-alternative-medium: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* --- Titled row (Details dropdown separators) --- */
+  --titled-row-head-text-color: var(--color-text-primary);
+  --titled-row-bg: rgba(255, 255, 255, 0.04);
+  --titled-row-text-color: var(--color-text-primary);
+  --titled-row-table-border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  --titled-row-table-separator-border: 1px solid rgba(255, 255, 255, 0.1);
+
+  /* --- Log viewer, property table bright cells --- */
+  --log-viewer-bg: #181818;
+  --log-viewer-color: #d4d4d4;
+  --property-table-bright-bg: #252525;
+}
+
+/* Reset for explicit light mode (when dark is active via OS but user switches back) */
+[data-theme='light'] {
+  color-scheme: light;
+  /* Restore ALL light-mode values that might be overridden by dark blocks.
+     Use explicit hex values (not var()) so they always win regardless of
+     whether the OS itself is dark (prefers-color-scheme: dark). */
+
+  /* Core colours */
+  --color-primary: #338ef7;
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: rgba(0, 0, 0, 0.03);
+  --color-bg-secondary-highlight: #e4f0ff;
+  --color-bg-heavy: #444;
+  --color-bg-neutral: #e8eaed;
+  --color-text-primary: #333333;
+  --color-text-secondary: #606060;
+  --color-text-light: #a0a0a0;
+  --color-text-highlight: #338ef7;
+  --color-border-1: rgba(0, 0, 0, 0.06);
+  --color-border-2: rgba(0, 0, 0, 0.12);
+  --color-border-3: rgba(0, 0, 0, 0.2);
+
+  /* Components */
+  --color-text-alternative: #ffffff;
+  --border-alternative-medium: 2px solid rgba(0, 0, 0, 0.08);
+  --input-text-color: #333333;
+  --input-bg: #ffffff;
+  --input-color: #333333;
+  --input-placeholder-color: #a0a0a0;
+  --code-bg: #f7f7f7;
+  --code-text-color: #333333;
+  --log-viewer-bg: #f0f0f0;
+  --log-viewer-color: #333333;
+  --property-table-bright-bg: #ffffff;
+  --table-cell-border: 1px solid #e0e0e0;
+  --titled-row-bg: rgba(0, 0, 0, 0.03);
+  --titled-row-text-color: #333333;
+  --titled-row-table-border-bottom: 1px solid #e0e0e0;
+  --titled-row-table-separator-border: 1px solid #e0e0e0;
+  --layout-color-bg: #f8f8f8;
+  --layout-color-header-bg: #ffffff;
+  --layout-sidebar-bg: #fafafa;
+  --layout-sidebar-text-color: #333333;
+  --popover-background: #ffffff;
 }

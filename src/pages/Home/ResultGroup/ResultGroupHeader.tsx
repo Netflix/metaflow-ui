@@ -20,7 +20,7 @@ const ResultGroupHeader: React.FC<ResultGroupHeaderProps> = React.memo(
     <>
       {!FEATURE_FLAGS.HIDE_TABLE_HEADER && (
         <TR className="result-group-title">
-          <th colSpan={cols.length + 1} style={{ textAlign: 'left' }}>
+          <th colSpan={cols.length + 1} style={{ textAlign: 'left', paddingLeft: '0.75rem' }}>
             <ResultGroupTitle onClick={() => (clickable ? handleClick(label) : null)} clickable={clickable}>
               {label}
             </ResultGroupTitle>

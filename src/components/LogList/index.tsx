@@ -299,6 +299,8 @@ const LogListContainer = styled.code`
   position: relative;
   overflow: hidden;
   white-space: pre-wrap;
+  background: var(--log-viewer-bg, #f5f5f5);
+  color: var(--log-viewer-color, var(--color-text-primary));
 `;
 
 const LogLine = styled.div`
@@ -333,9 +335,9 @@ const ScrollToBottomButton = styled.div`
   cursor: pointer;
   padding: 0.5rem;
   border-radius: var(--radius-primary);
-
-  background: rgba(0, 0, 0, 0.5);
-  color: var(--color-text-alternative);
+  background: var(--color-bg-heavy, rgba(0, 0, 0, 0.7));
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-2);
 `;
 
 export default LogList;

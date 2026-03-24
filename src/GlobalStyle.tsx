@@ -8,6 +8,8 @@ const globalCSS = css`
 
   html {
     font-size: var(--html-document-font-size);
+    /* Lets browser-native elements (scrollbars, inputs, selects) adapt to dark mode too */
+    color-scheme: light dark;
   }
 
   body,
@@ -25,6 +27,7 @@ const globalCSS = css`
     -moz-osx-font-smoothing: grayscale;
     color: var(--color-text-primary);
     background: var(--layout-color-bg);
+    color-scheme: light dark;
   }
 
   a {

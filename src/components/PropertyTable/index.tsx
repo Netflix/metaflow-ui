@@ -111,7 +111,7 @@ const PropertyTableRowItemContent = styled.td<{ scheme: PropertyTableScheme }>`
   padding: 0.75rem 1rem;
   font-size: var(--font-size-primary);
   border-right: var(--border-alternative-medium);
-  background: ${(p) => (p.scheme === 'bright' ? 'var(--color-bg-primary)' : 'transparent')};
+  background: ${(p) => (p.scheme === 'bright' ? 'var(--property-table-bright-bg, var(--color-bg-primary))' : 'transparent')};
   word-break: break-word;
   &:last-child {
     border-right: none;

@@ -7,6 +7,8 @@ import GlobalStyle from '../GlobalStyle';
 import '../theme/font/roboto.css';
 import './i18n';
 
+import { ThemeProvider } from '@components/ThemeProvider';
+
 // Mock PluginsContext for testing - provides stub functions for plugin communication
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 const noop = () => {};
@@ -29,16 +31,18 @@ const TestWrapper: React.FC<{ children: ReactNode; route?: string }> = ({ childr
   return (
     <>
       <GlobalStyle />
-      <MemoryRouter initialEntries={[route]}>
-        <QueryParamProvider ReactRouterRoute={Route}>
-          <PluginsContext.Provider value={mockPluginsContextValue as never}>
-            <NotificationsProvider>
-              {children}
-              <Notifications />
-            </NotificationsProvider>
-          </PluginsContext.Provider>
-        </QueryParamProvider>
-      </MemoryRouter>
+      <ThemeProvider>
+        <MemoryRouter initialEntries={[route]}>
+          <QueryParamProvider ReactRouterRoute={Route}>
+            <PluginsContext.Provider value={mockPluginsContextValue as never}>
+              <NotificationsProvider>
+                {children}
+                <Notifications />
+              </NotificationsProvider>
+            </PluginsContext.Provider>
+          </QueryParamProvider>
+        </MemoryRouter>
+      </ThemeProvider>
     </>
   );
 };
