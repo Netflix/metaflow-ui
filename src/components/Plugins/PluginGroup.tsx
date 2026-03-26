@@ -108,7 +108,7 @@ export const PluginHeader = styled.div`
   line-height: 1.5rem;
 
   svg path {
-    fill: #333;
+    fill: var(--color-text-primary);
   }
 `;
 

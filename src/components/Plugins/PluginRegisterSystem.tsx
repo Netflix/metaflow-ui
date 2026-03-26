@@ -54,6 +54,7 @@ const PluginRegisterSystem: React.FC<{ baseurl?: string }> = ({ baseurl }) => {
         return (
           <iframe
             key={plg.name}
+            data-mf-plugin={plg.name}
             height="0"
             width="0"
             name={plg.name}

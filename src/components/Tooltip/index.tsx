@@ -29,13 +29,13 @@ const CustomTooltip = styled.div`
   .custom-tooltip {
     cursor: auto;
     max-width: 37.5rem;
-    background: #fff;
-    color: #333;
+    background: var(--tooltip-surface-bg);
+    color: var(--tooltip-surface-text);
     padding: 1rem;
     font-size: 0.75rem;
     border-radius: var(--radius-primary);
-    border: 1px solid #d0d0d0;
-    box-shadow: 2px 2px 4px rgb(0 0 0 / 25%);
+    border: var(--tooltip-surface-border);
+    box-shadow: var(--tooltip-surface-shadow);
     white-space: pre;
     pointer-events: auto;
 
@@ -45,8 +45,8 @@ const CustomTooltip = styled.div`
 
     &.place-bottom::after,
     &.place-top::after {
-      border-bottom-color: #fff;
-      background: #fff;
+      border-bottom-color: var(--tooltip-surface-bg);
+      background: var(--tooltip-surface-bg);
     }
     &:hover {
       visibility: visible;
@@ -60,7 +60,7 @@ const CustomTooltip = styled.div`
 //
 
 export const TooltipTitle = styled.div`
-  margin-bottom 0.5rem;
+  margin-bottom: 0.5rem;
   font-weight: 500;
 `;
 

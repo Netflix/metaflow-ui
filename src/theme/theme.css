@@ -427,4 +427,76 @@
   --task-content-border-right: none;
 
   --loglist-button-size: 2.5rem;
+
+  /* Modal */
+  --modal-backdrop: rgba(0, 0, 0, 0.25);
+
+  /* Solid tooltip (react-tooltip custom class) — distinct from translucent --tooltip-bg */
+  --tooltip-surface-bg: var(--color-bg-primary);
+  --tooltip-surface-text: var(--color-text-primary);
+  --tooltip-surface-border: var(--border-thin-1);
+  --tooltip-surface-shadow: var(--popover-shadow);
+
+  /* DAG panels */
+  --dag-line-color: var(--color-border-primary);
+  --dag-panel-bg: #f6f6f6;
+  --dag-split-outer-bg: rgba(192, 192, 192, 0.3);
+
+  /* Metadata markdown tables */
+  --metadata-table-header-bg: var(--color-bg-heavy);
+  --metadata-table-header-text: var(--color-text-alternative);
+  --metadata-table-cell-bg: var(--color-bg-secondary);
+  --metadata-table-cell-border: var(--color-bg-primary);
+
+  /* Timeline “refining” shimmer */
+  --timeline-refine-shimmer-mid: rgba(255, 255, 255, 0.5);
+  --timeline-refine-shimmer-edge: rgba(255, 255, 255, 0);
+}
+
+[data-theme='dark'] {
+  --brand-color-secondary: #e7e7e7;
+
+  --color-bg-primary: #15171b;
+  --color-bg-secondary: #1f2228;
+  --color-bg-secondary-highlight: #1d2f4f;
+  --color-bg-heavy: #0f1115;
+  --color-bg-neutral: #2a2e37;
+  --color-bg-disabled: #8a919d;
+
+  --color-border-primary: #3a414d;
+  --color-border-1: rgba(255, 255, 255, 0.14);
+  --color-border-2: rgba(255, 255, 255, 0.25);
+  --color-border-3: rgba(255, 255, 255, 0.38);
+
+  --color-text-primary: #e8ebef;
+  --color-text-secondary: #bac1cb;
+  --color-text-light: #9ea6b2;
+  --color-text-alternative: #ffffff;
+  --color-text-highlight: #77abff;
+
+  --color-icon-light: #9ea6b2;
+
+  --button-default-bg-hover: rgba(255, 255, 255, 0.06);
+  --button-text-bg-hover: rgba(255, 255, 255, 0.06);
+  --button-primaryText-bg-hover: rgba(119, 171, 255, 0.18);
+
+  --code-bg: #1b1f26;
+  --table-cell-border: 1px solid #15171b;
+  --titled-row-table-border-bottom: 2px solid #15171b;
+  --titled-row-table-separator-border: 2px solid #15171b;
+  --breadcrumb-placeholder-color: #8f98a6;
+  --tooltip-bg: rgba(22, 24, 29, 0.95);
+  --popover-border: 1px solid #3a414d;
+  --popover-shadow: 1px 1px 10px rgba(0, 0, 0, 0.6);
+  --timeline-line-color-neutral: #5b6473;
+
+  --modal-backdrop: rgba(0, 0, 0, 0.55);
+
+  --dag-panel-bg: var(--color-bg-secondary);
+  --dag-split-outer-bg: rgba(255, 255, 255, 0.06);
+
+  --metadata-table-cell-border: var(--color-bg-primary);
+
+  --timeline-refine-shimmer-mid: rgba(255, 255, 255, 0.22);
+  --timeline-refine-shimmer-edge: rgba(255, 255, 255, 0);
 }

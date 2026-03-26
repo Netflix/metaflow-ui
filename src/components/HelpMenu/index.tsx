@@ -8,6 +8,7 @@ import TimezoneSelector from '@components/HelpMenu/TimezoneSelector';
 import Icon from '@components/Icon';
 import { PopoverWrapper } from '@components/Popover';
 import useOnKeyPress from '@hooks/useOnKeyPress';
+import { useTheme } from '@hooks/useTheme';
 import FEATURE_FLAGS from '@utils/FEATURE';
 import VERSION_INFO from '@utils/VERSION';
 import LaunchIconBlack from '@assets/launch_black.svg';
@@ -32,6 +33,7 @@ const HelpMenu: React.FC = () => {
   const [links, setLinks] = useState<HelpMenuLink[]>(DEFAULT_LINKS);
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
 
   useOnKeyPress('Escape', () => setOpen(false));
 
@@ -70,6 +72,10 @@ const HelpMenu: React.FC = () => {
         <TimezoneSelectorContainer>
           <TimezoneSelector />
         </TimezoneSelectorContainer>
+
+        <HelpMenuItemButton onClick={toggleTheme} data-testid="helpmenu-toggle-theme">
+          {theme === 'dark' ? t('help.switch-light-mode') : t('help.switch-dark-mode')}
+        </HelpMenuItemButton>
 
         {INTERNAL_LINKS.map((link) => (
           <Link
@@ -194,6 +200,15 @@ const StyledHelpMenuLink = styled.a`
 
 const HelpMenuItem = styled.div`
   ${HelpMenuItemStyles}
+`;
+
+const HelpMenuItemButton = styled.button`
+  ${HelpMenuItemStyles}
+  background: transparent;
+  border: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
 `;
 
 const HelpMenuClickOverlay = styled.div`

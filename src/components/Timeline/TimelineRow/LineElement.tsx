@@ -201,12 +201,11 @@ const BoxGraphicLine = styled.div<{ grayed?: boolean; state: string; isLastAttem
         position: absolute;
         width: 100%;
         height: 200%;
-        background: rgb(255, 255, 255, 0.8);
         background: linear-gradient(
           90deg,
-          rgba(255, 255, 255, 0) 0%,
-          rgba(255, 255, 255, 0.5) 50%,
-          rgba(255, 255, 255, 0) 100%
+          var(--timeline-refine-shimmer-edge) 0%,
+          var(--timeline-refine-shimmer-mid) 50%,
+          var(--timeline-refine-shimmer-edge) 100%
         );
         top: -50%;
         left: 0;
