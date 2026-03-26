@@ -32,6 +32,8 @@ const en = {
       help: 'Help',
       'application-version': 'Application version',
       'service-version': 'Service version',
+      'switch-dark-mode': 'Switch to dark mode',
+      'switch-light-mode': 'Switch to light mode',
     },
 
     fields: {
