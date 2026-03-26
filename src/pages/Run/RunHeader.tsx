@@ -78,6 +78,16 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
       label: t('fields.duration'),
       value: <AutoUpdating enabled={run.status === 'running'} content={() => getRunDuration(run)} />,
     },
+    {
+      label: 'Code Package',
+      value: metadataRecord?.['code_package_url'] ? (
+        <CodePackageLink href={metadataRecord['code_package_url']} target="_blank" rel="noopener noreferrer">
+          Download
+          {metadataRecord['code_package_sha'] ? ' (' + metadataRecord['code_package_sha'].slice(0, 8) + ')' : ''}
+        </CodePackageLink>
+      ) : null,
+      hidden: !metadataRecord?.['code_package_url'],
+    },
   ];
 
   const params = useResource<RunParam, RunParam>({
@@ -183,6 +193,14 @@ const StyledLink = styled(Link)`
 
 const PluginWrapper = styled.div<{ active: boolean }>`
   margin-top: ${(p) => (p.active ? '1rem' : '0')};
+`;
+
+const CodePackageLink = styled.a`
+  color: var(--data-header-link-color);
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const TriggersInHeader = styled(Triggers)`
