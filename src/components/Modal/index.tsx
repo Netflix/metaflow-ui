@@ -57,7 +57,7 @@ const ModalBackDrop = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.25);
+  background: var(--modal-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;

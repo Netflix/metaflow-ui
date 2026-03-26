@@ -30,7 +30,7 @@ const RenderMetadata: React.FC<Props> = ({ metadata }) => {
 const TemplateSlot = styled.div`
   padding: 0.5rem 0;
   margin-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+  border-bottom: var(--border-thin-1);
 
   &:last-child {
     margin-bottom: 0;
@@ -44,10 +44,10 @@ const TemplateSlot = styled.div`
   }
 
   th {
-    background: #333;
-    color: #fff;
-    border-right: 2px solid #fff;
-    border-bottom: 2px solid #fff;
+    background: var(--metadata-table-header-bg);
+    color: var(--metadata-table-header-text);
+    border-right: 2px solid var(--metadata-table-cell-border);
+    border-bottom: 2px solid var(--metadata-table-cell-border);
     font-size: var(--font-size-primary);
     padding: 0.4rem 1rem;
     font-weight: 400;
@@ -65,9 +65,9 @@ const TemplateSlot = styled.div`
   td {
     padding: 0.75rem 1rem;
     font-size: var(--font-size-primary);
-    border-right: 2px solid #fff;
-    border-bottom: 2px solid #fff;
-    background: rgba(0, 0, 0, 0.03);
+    border-right: 2px solid var(--metadata-table-cell-border);
+    border-bottom: 2px solid var(--metadata-table-cell-border);
+    background: var(--metadata-table-cell-bg);
   }
 `;
 

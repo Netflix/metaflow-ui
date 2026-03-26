@@ -228,7 +228,7 @@ const Line = css`
     top: 0;
     width: 1px;
     height: 100%;
-    background: #d0d0d0;
+    background: var(--dag-line-color);
     left: 50%;
   }
 `;
@@ -262,12 +262,12 @@ const StatusColorStyles = css<{ state: TaskStatus }>`
             : 'var(--color-border-2)'};
   background: ${(p) =>
     p.state === 'completed'
-      ? 'color-mix(in hsl, var(--color-text-success) 5%, #fff)'
+      ? 'color-mix(in hsl, var(--color-text-success) 5%, var(--color-bg-primary))'
       : p.state === 'running'
-        ? 'color-mix(in hsl, var(--color-text-warning) 5%, #fff)'
+        ? 'color-mix(in hsl, var(--color-text-warning) 5%, var(--color-bg-primary))'
         : p.state === 'failed'
-          ? 'color-mix(in hsl, var(--color-text-danger) 5%, #fff)'
-          : '#fff'};
+          ? 'color-mix(in hsl, var(--color-text-danger) 5%, var(--color-bg-primary))'
+          : 'var(--color-bg-primary)'};
 `;
 
 const NormalItem = styled.div<{ state: TaskStatus }>`
@@ -282,7 +282,7 @@ const NormalItem = styled.div<{ state: TaskStatus }>`
 
 const BaseContainerStyle = css`
   border: var(--border-thin-2);
-  background: #f6f6f6;
+  background: var(--dag-panel-bg);
   display: flex;
   border-radius: var(--radius-secondary);
   position: relative;
@@ -295,14 +295,14 @@ const ContainerItem = styled.div`
 
 const ForeachContainer = styled.div`
   ${BaseContainerStyle}
-  background: rgba(192, 192, 192, 0.3);
+  background: var(--dag-split-outer-bg);
   transform: translateX(-0.275rem) translateY(-0.275rem);
   margin-top: 0.1875rem;
 `;
 
 const ForeachItem = styled.div`
   ${BaseContainerStyle}
-  background: #f6f6f6;
+  background: var(--dag-panel-bg);
   margin: 0;
   transform: translateX(0.275rem) translateY(0.275rem);
   flex: 1;
@@ -314,11 +314,11 @@ const StepInfoMarker = styled.div`
   right: 0.4rem;
 
   path {
-    fill: #717171;
+    fill: var(--color-text-secondary);
   }
 
   &:hover path {
-    fill: #333;
+    fill: var(--color-text-primary);
   }
 `;
 
