@@ -18,7 +18,16 @@ import { TriggerEventsValue } from '@components/Trigger';
 import Triggers from '@components/Triggers';
 import useResource from '@hooks/useResource';
 import { getISOString } from '@utils/date';
-import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '@utils/run';
+import {
+  getRunDuration,
+  getRunDisplayStatus,
+  getRunEndTime,
+  getRunId,
+  getRunStartTime,
+  getTagOfType,
+  getUsername,
+  isRunStale,
+} from '@utils/run';
 
 //
 // Typedef
@@ -49,7 +58,7 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
 
   const headerItems = [
     { label: t('fields.run-id'), value: getRunId(run) },
-    { label: t('fields.status'), value: <StatusField status={run.status} /> },
+    { label: t('fields.status'), value: <StatusField status={getRunDisplayStatus(run)} /> },
     {
       label: t('fields.triggered-by'),
       value: metadataRecord?.['execution-triggers'] ? (
@@ -76,7 +85,7 @@ const RunHeader: React.FC<Props> = ({ run, metadataRecord }) => {
     { label: t('fields.finished-at'), value: getRunEndTime(run, timezone) },
     {
       label: t('fields.duration'),
-      value: <AutoUpdating enabled={run.status === 'running'} content={() => getRunDuration(run)} />,
+      value: <AutoUpdating enabled={run.status === 'running' && !isRunStale(run)} content={() => getRunDuration(run)} />,
     },
   ];
 

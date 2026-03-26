@@ -1,4 +1,13 @@
-import { getRunDuration, getRunEndTime, getRunId, getRunStartTime, getTagOfType, getUsername } from '../run';
+import {
+  getRunDuration,
+  getRunDisplayStatus,
+  getRunEndTime,
+  getRunId,
+  getRunStartTime,
+  getTagOfType,
+  getUsername,
+  isRunStale,
+} from '../run';
 import { createRun } from '../testhelper';
 
 describe('run.ts tests', () => {
@@ -38,5 +47,48 @@ describe('run.ts tests', () => {
     expect(getTagOfType(tags, 'project')).to.equal('metaflow');
     expect(getTagOfType(tags, 'year')).to.equal('2021');
     expect(getTagOfType(tags, 'test')).to.equal('');
+  });
+
+  describe('isRunStale', () => {
+    it('returns false for completed runs', () => {
+      expect(isRunStale(createRun({ status: 'completed' }))).to.equal(false);
+    });
+
+    it('returns false for failed runs', () => {
+      expect(isRunStale(createRun({ status: 'failed' }))).to.equal(false);
+    });
+
+    it('returns false for running runs without heartbeat data', () => {
+      expect(isRunStale(createRun({ status: 'running' }))).to.equal(false);
+    });
+
+    it('returns false for running runs with recent heartbeat', () => {
+      const recentHeartbeat = Math.floor(Date.now() / 1000) - 60; // 1 minute ago
+      expect(
+        isRunStale(createRun({ status: 'running', last_heartbeat_ts: recentHeartbeat })),
+      ).to.equal(false);
+    });
+
+    it('returns true for running runs with expired heartbeat', () => {
+      const oldHeartbeat = Math.floor(Date.now() / 1000) - 600; // 10 minutes ago
+      expect(
+        isRunStale(createRun({ status: 'running', last_heartbeat_ts: oldHeartbeat })),
+      ).to.equal(true);
+    });
+  });
+
+  describe('getRunDisplayStatus', () => {
+    it('returns original status for non-stale runs', () => {
+      expect(getRunDisplayStatus(createRun({ status: 'completed' }))).to.equal('completed');
+      expect(getRunDisplayStatus(createRun({ status: 'running' }))).to.equal('running');
+      expect(getRunDisplayStatus(createRun({ status: 'failed' }))).to.equal('failed');
+    });
+
+    it('returns failed for stale running runs', () => {
+      const oldHeartbeat = Math.floor(Date.now() / 1000) - 600;
+      expect(
+        getRunDisplayStatus(createRun({ status: 'running', last_heartbeat_ts: oldHeartbeat })),
+      ).to.equal('failed');
+    });
   });
 });
