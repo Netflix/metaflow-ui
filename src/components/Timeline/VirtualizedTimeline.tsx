@@ -122,7 +122,7 @@ const VirtualizedTimeline: React.FC<TimelineProps> = ({
   const handleSetFullScreen = () => setFullscreen(true);
 
   const content = (
-    <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0 1rem' } : {}}>
+    <VirtualizedTimelineContainer style={showFullscreen ? { padding: '0.75rem 1rem 0 1rem' } : {}}>
       <VirtualizedTimelineSubContainer>
         <TaskListingHeader
           run={run}
