@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { broadcastThemeToPluginIframes } from '@/components/Plugins/pluginThemeSync';
 
 export type Theme = 'light' | 'dark';
 
@@ -27,6 +28,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     localStorage.setItem(THEME_STORAGE_KEY, theme);
+    broadcastThemeToPluginIframes(theme);
   }, [theme]);
 
   const toggleTheme = useCallback(() => {

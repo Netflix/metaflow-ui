@@ -3,7 +3,9 @@ import { useLocation } from 'react-router';
 import styled from 'styled-components';
 import PLUGIN_STYLESHEET from '@components/Plugins/PluginDefaultStyleSheet';
 import { MESSAGE_NAME, Plugin, PluginCommunicationsAPI, PluginsContext } from '@components/Plugins/PluginManager';
+import { injectPluginThemeBootstrap } from '@components/Plugins/pluginThemeSync';
 import { TimezoneContext } from '@components/TimezoneProvider';
+import { useTheme } from '@hooks/useTheme';
 import { KnownURLParams, getRouteMatch } from '@utils/routing';
 
 //
@@ -33,6 +35,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
   const VERY_UNIQUE_ID = id + title + url;
   const route = useMemo(() => getRouteMatch(loc.pathname), [loc.pathname]);
   const { timezone } = useContext(TimezoneContext);
+  const { theme } = useTheme();
 
   const listener = useCallback(
     (e: MessageEvent) => {
@@ -46,15 +49,16 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
               resource: resourceParams ? resourceParams : route ? convertParams(route.params) : {},
               settings: {
                 timezone,
+                theme,
               },
             },
             '*',
           );
-          if (plugin.config.useApplicationStyles) {
-            const iframeContent = _iframe?.current?.contentDocument;
-            if (iframeContent) {
+          const iframeContent = _iframe?.current?.contentDocument;
+          if (iframeContent) {
+            injectPluginThemeBootstrap(iframeContent);
+            if (plugin.config.useApplicationStyles) {
               iframeContent.head.innerHTML = `<style>${PLUGIN_STYLESHEET}</style>` + iframeContent.head.innerHTML;
-              // TODO: ADD VARIABLES
             }
           }
         } else {
@@ -113,7 +117,18 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
         }
       }
     },
-    [VERY_UNIQUE_ID, callEvent, plugin, resourceParams, route, subscribeToDatastore, subscribeToEvent, title, timezone],
+    [
+      VERY_UNIQUE_ID,
+      callEvent,
+      plugin,
+      resourceParams,
+      route,
+      subscribeToDatastore,
+      subscribeToEvent,
+      theme,
+      title,
+      timezone,
+    ],
   );
   //
   // Subscribe to messages from iframe
@@ -137,6 +152,7 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
       <iframe
         key={VERY_UNIQUE_ID}
         ref={_iframe}
+        data-mf-plugin={title}
         height={height}
         name={title}
         title={title}
