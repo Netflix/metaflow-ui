@@ -270,14 +270,36 @@ const StatusColorStyles = css<{ state: TaskStatus }>`
           : '#fff'};
 `;
 
+const pulseAnimation = css`
+  @keyframes dag-pulse {
+    0% {
+      box-shadow: 0 0 0 0 color-mix(in hsl, var(--color-text-warning) 40%, transparent);
+    }
+    70% {
+      box-shadow: 0 0 0 6px transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+`;
+
 const NormalItem = styled.div<{ state: TaskStatus }>`
   ${StatusColorStyles}
+  ${pulseAnimation}
   padding: 0.75rem 1.5rem;
 
   position: relative;
   border-radius: var(--radius-primary);
   transition: 0.15s border;
   cursor: pointer;
+
+  ${(p) =>
+    p.state === 'running'
+      ? css`
+          animation: dag-pulse 2s infinite;
+        `
+      : ''}
 `;
 
 const BaseContainerStyle = css`
