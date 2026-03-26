@@ -8,7 +8,7 @@ import ResultGroupTags from '@pages/Home/ResultGroup/ResultGroupTags';
 import StartedAtCell from '@pages/Home/ResultGroup/StartedAtCell';
 import AutoUpdating from '@components/AutoUpdating';
 import { TD } from '@components/Table';
-import { getRunDuration, getRunId, getTagOfType, getUsername } from '@utils/run';
+import { getRunDuration, getRunId, getRunDisplayStatus, isRunStale, getTagOfType, getUsername } from '@utils/run';
 
 //
 // Typedef
@@ -32,7 +32,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
     return (
       <>
         {/* STATUS INDICATOR */}
-        <StatusColorCell status={r.status} title={r.status} />
+        <StatusColorCell status={getRunDisplayStatus(r)} title={getRunDisplayStatus(r)} />
         {/* FLOW ID */}
         {params._group !== 'flow_id' && (
           <TDWithLink link={link}>
@@ -54,7 +54,7 @@ const ResultGroupCells: React.FC<ResultGroupCellsProps> = React.memo(
         {/* DURATION */}
         <TDWithLink link={link}>
           <WordBreak>
-            <AutoUpdating enabled={r.status === 'running'} content={() => getRunDuration(r)} />
+            <AutoUpdating enabled={r.status === 'running' && !isRunStale(r)} content={() => getRunDuration(r)} />
           </WordBreak>
         </TDWithLink>
         {/* USER TAGS */}

@@ -2,6 +2,10 @@ import { Run } from '@/types';
 import { getISOString } from './date';
 import { formatDuration } from './format';
 
+// If a run has been "running" with no heartbeat for longer than this,
+// consider it stale (likely crashed). Default: 5 minutes in seconds.
+const RUN_HEARTBEAT_TIMEOUT_SECONDS = 5 * 60;
+
 /**
  * Run id might be one of 3 fields. run, run_id, run_number. run should be field that has been combined from run_id and run_number but
  * let's have same fallbacks just in case.
@@ -44,6 +48,10 @@ export function getRunEndTime(run: Run, timezone?: string): string | null {
  */
 export function getRunDuration(run: Run): string | null {
   if (run.status === 'running') {
+    // Stop counting duration for stale runs -- freeze at last heartbeat
+    if (isRunStale(run) && run.last_heartbeat_ts) {
+      return formatDuration(run.last_heartbeat_ts * 1000 - run.ts_epoch, 0);
+    }
     return formatDuration(new Date().getTime() - run.ts_epoch, 0);
   }
 
@@ -52,6 +60,38 @@ export function getRunDuration(run: Run): string | null {
     : run.finished_at
       ? formatDuration(run.finished_at - run.ts_epoch, 0)
       : null;
+}
+
+/**
+ * Check if a run is stale: status is "running" but heartbeat has expired.
+ * This catches crashed flows that the backend hasn't updated yet.
+ * @param run - Run object
+ */
+export function isRunStale(run: Run): boolean {
+  if (run.status !== 'running') {
+    return false;
+  }
+
+  // If we have a heartbeat timestamp, check if it's expired
+  if (run.last_heartbeat_ts) {
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    return nowSeconds - run.last_heartbeat_ts > RUN_HEARTBEAT_TIMEOUT_SECONDS;
+  }
+
+  // No heartbeat data available, can't determine staleness
+  return false;
+}
+
+/**
+ * Get the display status for a run, accounting for staleness.
+ * Returns the original status unless the run is stale, in which case
+ * it returns 'failed' so the UI shows the correct visual state.
+ */
+export function getRunDisplayStatus(run: Run): 'completed' | 'running' | 'failed' {
+  if (isRunStale(run)) {
+    return 'failed';
+  }
+  return run.status;
 }
 
 /**
