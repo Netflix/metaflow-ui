@@ -124,11 +124,11 @@ export function getStepStatus(stepTaskData: Record<string, Task[]>): TaskStatus 
       return 'running';
     }
     if (statusOfLastItem === 'failed') {
-        return 'failed';
-        }
+      return 'failed';
+    }
     if (statusOfLastItem === 'killed') {
-        return 'killed';
-              }
+      return 'killed';
+    }
   }
   return 'completed';
 }

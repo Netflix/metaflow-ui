@@ -84,6 +84,9 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
               ...(counts.killed > 0
                 ? ([['killed', t('run.filter-killed') + ` (${counts.killed})`]] as [string, string][])
                 : []),
+              ...(counts.unknown > 0
+                ? ([['unknown', t('run.filter-unknown') + ` (${counts.unknown})`]] as [string, string][])
+                : []),
             ]}
             labelRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} />}
             optionRenderer={(value, label) => <StatusLabelRenderer val={label} status={value} />}
