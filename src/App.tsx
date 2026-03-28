@@ -15,6 +15,7 @@ import { PluginsProvider } from '@components/Plugins/PluginManager';
 import PluginRegisterSystem from '@components/Plugins/PluginRegisterSystem';
 import TopNavPlugin from '@components/Plugins/TopNavPlugin';
 import { Page } from '@components/Structure';
+import { ThemeProvider } from '@components/ThemeProvider';
 import { TimezoneProvider } from '@components/TimezoneProvider';
 import { LoggingProvider } from '@hooks/useLogger';
 import { fetchFeaturesConfig } from '@utils/FEATURE';
@@ -37,32 +38,34 @@ const App: React.FC = () => {
   return (
     <ErrorBoundary message={t('error.application-error')}>
       <NotificationsProvider>
-        <TimezoneProvider>
-          <PluginsProvider>
-            <LoggingProvider>
-              <GlobalStyle />
-              <Router basename={appBasePath}>
-                <QueryParamProvider ReactRouterRoute={Route}>
-                  {flagsReceived ? (
-                    <>
-                      <TopNavPlugin />
-                      <Notifications />
-                      <Announcements />
-                      <AppBar />
-                      <Page>
-                        <Root />
-                      </Page>
-                      <Logger />
-                    </>
-                  ) : (
-                    <FeatureFlagLoader />
-                  )}
-                </QueryParamProvider>
-              </Router>
-            </LoggingProvider>
-            <PluginRegisterSystem />
-          </PluginsProvider>
-        </TimezoneProvider>
+        <ThemeProvider>
+          <TimezoneProvider>
+            <PluginsProvider>
+              <LoggingProvider>
+                <GlobalStyle />
+                <Router basename={appBasePath}>
+                  <QueryParamProvider ReactRouterRoute={Route}>
+                    {flagsReceived ? (
+                      <>
+                        <TopNavPlugin />
+                        <Notifications />
+                        <Announcements />
+                        <AppBar />
+                        <Page>
+                          <Root />
+                        </Page>
+                        <Logger />
+                      </>
+                    ) : (
+                      <FeatureFlagLoader />
+                    )}
+                  </QueryParamProvider>
+                </Router>
+              </LoggingProvider>
+              <PluginRegisterSystem />
+            </PluginsProvider>
+          </TimezoneProvider>
+        </ThemeProvider>
       </NotificationsProvider>
     </ErrorBoundary>
   );
