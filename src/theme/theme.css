@@ -207,9 +207,9 @@
   /* Collapsable */
   --collapsable-margin: 0.5rem 0 1rem 0;
   --collapsable-header-padding: 0;
-  --collapsable-header-font-familty: var(--font-family-primary);
-  --collapsable-header-text-color: var(---color-text-primary);
-  --collapsable-header-open-text-color: var(---color-text-primary);
+  --collapsable-header-font-family: var(--font-family-primary);
+  --collapsable-header-text-color: var(--color-text-primary);
+  --collapsable-header-open-text-color: var(--color-text-primary);
   --collapsable-header-border-bottom: var(--border-thin-1);
   --collapsable-content-border-bottom: none;
 
@@ -427,4 +427,45 @@
   --task-content-border-right: none;
 
   --loglist-button-size: 2.5rem;
+}
+
+/* Dark theme overrides — only color-related variables need to change.
+   Component variables that reference these via var() cascade automatically. */
+[data-theme='dark'] {
+  --brand-color-secondary: #e0e0e8;
+
+  --color-success-light: rgba(32, 175, 46, 0.3);
+
+  --color-bg-primary: #1a1a2e;
+  --color-bg-secondary: rgba(255, 255, 255, 0.05);
+  --color-bg-secondary-highlight: #1e3a5f;
+  --color-bg-heavy: #2a2a3e;
+  --color-bg-neutral: #2e2e42;
+  --color-bg-disabled: #5a5a6e;
+
+  --color-border-primary: #35354a;
+  --color-border-1: rgba(255, 255, 255, 0.1);
+  --color-border-2: rgba(255, 255, 255, 0.18);
+  --color-border-3: rgba(255, 255, 255, 0.25);
+
+  --color-text-primary: #e0e0e8;
+  --color-text-secondary: #a0a0b4;
+  --color-text-light: #808094;
+  --color-text-highlight: #5b9bf5;
+
+  --color-icon-light: #4a4a60;
+
+  --layout-color-bg: #121220;
+
+  /* Hardcoded values in :root that don't cascade */
+  --code-bg: #252538;
+  --table-cell-border: 1px solid #121220;
+  --tooltip-bg: rgba(20, 20, 34, 0.9);
+  --breadcrumb-placeholder-color: #6a6a7e;
+  --popover-border: 1px solid #35354a;
+  --popover-shadow: 1px 1px 6px rgba(0, 0, 0, 0.5);
+  --data-header-link-color: #e0e0e8;
+  --titled-row-table-border-bottom: 2px solid #1a1a2e;
+  --titled-row-table-separator-border: 2px solid #1a1a2e;
+  --timeline-line-color-neutral: #4a4a5e;
 }
