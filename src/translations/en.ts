@@ -32,6 +32,9 @@ const en = {
       help: 'Help',
       'application-version': 'Application version',
       'service-version': 'Service version',
+      theme: 'Theme',
+      'theme-light': 'Light',
+      'theme-dark': 'Dark',
     },
 
     fields: {
