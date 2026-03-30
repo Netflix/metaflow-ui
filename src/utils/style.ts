@@ -58,7 +58,7 @@ export function iconByStatus(status: keyof RunStatus | TaskStatus): keyof Suppor
     case 'failed':
       return 'error';
     case 'killed':
-      return 'error';
+      return 'warning';
     case 'running':
       return 'running';
     default:
