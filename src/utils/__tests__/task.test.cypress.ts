@@ -43,4 +43,12 @@ describe('task.ts tests', () => {
     const task = createTask({ status: 'completed', duration: 1000, started_at: Date.now() - 9999 });
     expect(getTaskDuration(task)).to.equal(1000);
   });
+
+  it('getTaskDuration returns stored duration for a killed task', () => {
+    expect(getTaskDuration(createTask({ status: 'killed', duration: 4200 }))).to.equal(4200);
+  });
+
+  it('getTaskDuration returns null for a killed task with no duration', () => {
+    expect(getTaskDuration(createTask({ status: 'killed', duration: undefined }))).to.equal(null);
+  });
 });
