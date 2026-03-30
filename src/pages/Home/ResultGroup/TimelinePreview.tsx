@@ -9,7 +9,7 @@ import { Row } from '@components/Timeline/VirtualizedTimeline';
 import useTaskData from '@components/Timeline/useTaskData';
 import { startAndEndpointsOfRows } from '@utils/row';
 
-const zeroCounts = { all: 0, failed: 0, running: 0, completed: 0, unknown: 0, pending: 0 };
+const zeroCounts = { all: 0, failed: 0, running: 0, completed: 0, unknown: 0, pending: 0, killed: 0 };
 
 //
 // Typedef

@@ -302,6 +302,7 @@ export default function useTaskData(flowId: string, runNumber: string): useTaskD
     completed: 0,
     running: 0,
     failed: 0,
+    killed: 0,
     pending: 0,
     unknown: 0,
   });

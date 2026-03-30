@@ -259,7 +259,9 @@ const StatusColorStyles = css<{ state: TaskStatus }>`
           ? 'var(--color-text-warning)'
           : p.state === 'failed'
             ? 'var(--color-text-danger)'
-            : 'var(--color-border-2)'};
+            : p.state === 'killed'
+              ? 'var(--color-text-warning)'
+              : 'var(--color-border-2)'};
   background: ${(p) =>
     p.state === 'completed'
       ? 'color-mix(in hsl, var(--color-text-success) 5%, #fff)'
@@ -267,7 +269,9 @@ const StatusColorStyles = css<{ state: TaskStatus }>`
         ? 'color-mix(in hsl, var(--color-text-warning) 5%, #fff)'
         : p.state === 'failed'
           ? 'color-mix(in hsl, var(--color-text-danger) 5%, #fff)'
-          : '#fff'};
+          : p.state === 'killed'
+            ? 'color-mix(in hsl, var(--color-text-warning) 5%, #fff)'
+            : '#fff'};
 `;
 
 const NormalItem = styled.div<{ state: TaskStatus }>`

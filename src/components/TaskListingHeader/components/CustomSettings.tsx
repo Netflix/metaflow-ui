@@ -81,6 +81,9 @@ const CustomSettings: React.FC<CustomSettingsProps> = ({
               ['running', t('run.filter-running') + ` (${counts.running})`],
               ['pending', t('run.filter-pending') + ` (${counts.pending})`],
               ['failed', t('run.filter-failed') + ` (${counts.failed})`],
+              ...(counts.killed > 0
+                ? ([['killed', t('run.filter-killed') + ` (${counts.killed})`]] as [string, string][])
+                : []),
               ...(counts.unknown > 0
                 ? ([['unknown', t('run.filter-unknown') + ` (${counts.unknown})`]] as [string, string][])
                 : []),
