@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Run as IRun, Metadata } from '@/types';
@@ -82,7 +82,33 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
   //
   // Metadata for plugins
   //
+  // Restore timeline open steps from URL on mount
+  useEffect(() => {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const timelineParam = urlSearchParams.get('timeline');
+    if (timelineParam) {
+      const openSteps = timelineParam.split(',');
+      openSteps.forEach((stepId) => {
+        dispatch({ type: 'open', id: stepId });
+      });
+    }
+  }, [dispatch]);
+  // Derive open step keys as a stable string so URL updates only fire when steps are toggled
+  const openStepKeys = useMemo(
+    () => Object.keys(rows).filter((key) => rows[key].isOpen).join(','),
+    [rows],
+  );
 
+  // Sync open steps to URL whenever open steps actually change
+  useEffect(() => {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    if (openStepKeys) {
+      urlSearchParams.set('timeline', openStepKeys);
+    } else {
+      urlSearchParams.delete('timeline');
+    }
+    window.history.replaceState(null, '', '?' + urlSearchParams.toString());
+  }, [openStepKeys]);
   const onUpdate = useCallback(
     (items: Metadata[]) => {
       const record = metadataToRecord(items);
