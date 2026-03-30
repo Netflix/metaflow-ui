@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { Run as IRun, Metadata } from '@/types';
@@ -93,17 +93,22 @@ const RunPage: React.FC<RunPageProps> = ({ run, params }) => {
       });
     }
   }, [dispatch]);
-  // Sync open steps to URL whenever rows change
+  // Derive open step keys as a stable string so URL updates only fire when steps are toggled
+  const openStepKeys = useMemo(
+    () => Object.keys(rows).filter((key) => rows[key].isOpen).join(','),
+    [rows],
+  );
+
+  // Sync open steps to URL whenever open steps actually change
   useEffect(() => {
-    const openSteps = Object.keys(rows).filter((key) => rows[key].isOpen);
     const urlSearchParams = new URLSearchParams(window.location.search);
-    if (openSteps.length > 0) {
-      urlSearchParams.set('timeline', openSteps.join(','));
+    if (openStepKeys) {
+      urlSearchParams.set('timeline', openStepKeys);
     } else {
       urlSearchParams.delete('timeline');
     }
     window.history.replaceState(null, '', '?' + urlSearchParams.toString());
-  }, [rows]);
+  }, [openStepKeys]);
   const onUpdate = useCallback(
     (items: Metadata[]) => {
       const record = metadataToRecord(items);
