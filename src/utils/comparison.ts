@@ -67,7 +67,7 @@ export function computeStepDiffs(data: RunComparisonData): StepDiff[] {
     });
   }
 
-  return diffs;
+  return diffs.sort((a, b) => a.step_name.localeCompare(b.step_name));
 }
 
 /**

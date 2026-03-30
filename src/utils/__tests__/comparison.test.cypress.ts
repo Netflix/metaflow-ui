@@ -105,6 +105,27 @@ describe('comparison.ts — computeStepDiffs', () => {
 
     expect(diffs[0].delta_ms).to.equal(null);
   });
+
+  it('returns steps sorted alphabetically by step_name', () => {
+    const data: RunComparisonData = {
+      runA: makeSnapshot({ run_number: 1 }, {}, [
+        { stepName: 'train', status: 'completed', duration: 1000 },
+        { stepName: 'end', status: 'completed', duration: 500 },
+        { stepName: 'start', status: 'completed', duration: 200 },
+      ]),
+      runB: makeSnapshot({ run_number: 2 }, {}, [
+        { stepName: 'train', status: 'completed', duration: 2000 },
+        { stepName: 'end', status: 'completed', duration: 600 },
+        { stepName: 'start', status: 'completed', duration: 300 },
+      ]),
+    };
+    const diffs = computeStepDiffs(data);
+
+    expect(diffs.length).to.equal(3);
+    expect(diffs[0].step_name).to.equal('end');
+    expect(diffs[1].step_name).to.equal('start');
+    expect(diffs[2].step_name).to.equal('train');
+  });
 });
 
 describe('comparison.ts — computeArtifactDiffs', () => {
