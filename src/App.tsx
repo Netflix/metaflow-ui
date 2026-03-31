@@ -2,6 +2,7 @@ import '@theme/font/roboto.css';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
+import styled from 'styled-components';
 import { QueryParamProvider } from 'use-query-params';
 import GlobalStyle from '@/GlobalStyle';
 import Root from '@pages/Root';
@@ -21,16 +22,23 @@ import { fetchFeaturesConfig } from '@utils/FEATURE';
 import { fetchServiceVersion } from '@utils/VERSION';
 import { appBasePath } from './constants';
 
-const App: React.FC = () => {
+type AppProps = {
+  toggleTheme: () => void;
+  currentTheme: 'light' | 'dark';
+};
+
+const Wrapper = styled.div`
+  background-color: ${({ theme }) => theme.background};
+  color: ${({ theme }) => theme.text};
+  min-height: 100vh;
+`;
+
+const App: React.FC<AppProps> = ({ toggleTheme, currentTheme }) => {
   const { t } = useTranslation();
-  // Features list must be fetched before we render application so we don't render things that
-  // are disabled by backend service.
   const [flagsReceived, setFlagsReceived] = useState(false);
 
   useEffect(() => {
-    // Get info about backend versions.
     fetchServiceVersion();
-    // Get info about features that are enabled by server
     fetchFeaturesConfig(() => setFlagsReceived(true));
   }, []);
 
@@ -44,16 +52,16 @@ const App: React.FC = () => {
               <Router basename={appBasePath}>
                 <QueryParamProvider ReactRouterRoute={Route}>
                   {flagsReceived ? (
-                    <>
+                    <Wrapper>
                       <TopNavPlugin />
                       <Notifications />
                       <Announcements />
-                      <AppBar />
+                      <AppBar toggleTheme={toggleTheme} currentTheme={currentTheme} />
                       <Page>
                         <Root />
                       </Page>
                       <Logger />
-                    </>
+                    </Wrapper>
                   ) : (
                     <FeatureFlagLoader />
                   )}
