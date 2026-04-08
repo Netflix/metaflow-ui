@@ -2,14 +2,50 @@
 
 ## Setting feature flags
 
-Either
+### Environment variable (local development)
 
-`export REACT_APP_FEATURE_FLAG_NAME=true`
-
-Or, in the dockerfile
-
+```bash
+export REACT_APP_FEATURE_DAG=0
+yarn start
 ```
-ui_backed:
+
+### Docker build argument
+
+All `REACT_APP_FEATURE_*` flags are exposed as build arguments in the Dockerfile with their default values. Override any flag at build time:
+
+```bash
+# Disable a single feature
+docker build --build-arg REACT_APP_FEATURE_DAG=0 .
+
+# Enable an experimental feature
+docker build --build-arg REACT_APP_FEATURE_ARTIFACT_TABLE=1 .
+
+# Combine multiple overrides
+docker build \
+  --build-arg REACT_APP_FEATURE_HIDE_LOGO=1 \
+  --build-arg REACT_APP_FEATURE_HIDE_HOME_BUTTON=1 \
+  --build-arg REACT_APP_FEATURE_HIDE_QUICK_LINKS=1 .
+```
+
+### Docker Compose
+
+```yaml
+services:
+  ui:
+    build:
+      context: .
+      args:
+        REACT_APP_FEATURE_DAG: '1'
+        REACT_APP_FEATURE_ARTIFACT_TABLE: '1'
+```
+
+### Backend runtime override
+
+The backend service can also override feature flags at runtime via the `/features` API endpoint. Flags returned by the backend take precedence over build-time values.
+
+```yaml
+services:
+  ui_backend:
     environment:
       - FEATURE_NAME=1
 ```
@@ -28,10 +64,11 @@ ui_backed:
 | DEBUG_VIEW          | Expose this view in help menu as a link                                 | true    |
 | CARDS               | Show cards on task view                                                 | true    |
 | HIDE_LOGO           | Hide Metaflow logo                                                      | false   |
-| HIDE_HOME_BUTTON    | Hide Home bitton                                                        | false   |
+| HIDE_HOME_BUTTON    | Hide Home button                                                        | false   |
 | HIDE_STATUS_FILTERS | Hide run status filters                                                 | false   |
 | HIDE_TABLE_HEADER   | Hide header of runs table                                               | false   |
 | HIDE_QUICK_LINKS    | Hide Quick Links button                                                 | false   |
+| HIDE_CONNECTION_STATUS | Hide connection status indicator                                     | false   |
 | CACHE_DISABLE       | Disable cache from server side                                          | false   |
 | DB_LISTEN_DISABLE   | Disable real time update features from database                         | false   |
 | HEARTBEAT_DISABLE   | Disable heartbeat for tasks and runs                                    | false   |
