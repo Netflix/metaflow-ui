@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Icon from '@components/Icon';
 import { PopoverStyles } from '@components/Popover';
@@ -22,20 +22,64 @@ type ModalProps = {
 //
 
 const Modal: React.FC<ModalProps> = ({ show, title, actionbar, onClose, children }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useOnKeyPress('Escape', onClose);
+
+  // Focus trap: keep Tab/Shift+Tab cycling within the modal
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key !== 'Tab' || !modalRef.current) return;
+
+      const focusableElements = modalRef.current.querySelectorAll<HTMLElement>(
+        'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])',
+      );
+      if (focusableElements.length === 0) return;
+
+      const first = focusableElements[0];
+      const last = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    },
+    [],
+  );
+
+  // Auto-focus the modal container and set up focus trap
+  useEffect(() => {
+    if (!show) return;
+    const el = modalRef.current;
+    if (el) {
+      el.focus();
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [show, handleKeyDown]);
+
   if (!show) return null;
 
   return (
-    <ModalBackDrop data-testid="modal-container">
-      <ModalClickHandler onClick={() => onClose()} data-testid="modal-background" />
+    <ModalBackDrop data-testid="modal-container" role="dialog" aria-modal="true" aria-label={title || 'Dialog'}>
+      <ModalClickHandler onClick={() => onClose()} data-testid="modal-background" aria-hidden="true" />
 
-      <ModalContainer>
+      <ModalContainer ref={modalRef} tabIndex={-1}>
         <TitledSectionHeader
           label={title}
           actionbar={
             <>
               {actionbar}
-              <CloseModal onClick={onClose}>
+              <CloseModal onClick={onClose} role="button" aria-label="Close dialog" tabIndex={0}>
                 <Icon name="times" customSize="1.25rem" />
               </CloseModal>
             </>

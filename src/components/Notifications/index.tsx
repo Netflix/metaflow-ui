@@ -176,7 +176,7 @@ export const Notifications: React.FC = () => {
   }, [addNotification, subscribeToEvent, unsubscribeFromEvent]);
 
   return (
-    <NotificationsWrapper>
+    <NotificationsWrapper aria-live="polite" aria-label="Notifications">
       {(notifications || []).map((notification: Notification) => {
         return (
           <NotificationRenderer
