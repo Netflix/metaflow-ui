@@ -139,7 +139,7 @@ const Breadcrumb: React.FC = () => {
   useOnKeyPress('Escape', () => closeUp());
 
   return (
-    <StyledBreadcrumb pad="md">
+    <StyledBreadcrumb pad="md" aria-label="Breadcrumb navigation">
       {!FEATURE_FLAGS.HIDE_HOME_BUTTON && (
         <ButtonLink
           to={'/'}
@@ -209,7 +209,7 @@ const Breadcrumb: React.FC = () => {
                     autoFocus={true}
                   />
                 </BreadcrumbInputWrapper>
-                <GotoClose onClick={() => closeUp()}>
+                <GotoClose onClick={() => closeUp()} role="button" aria-label="Close navigation" tabIndex={0}>
                   <Icon name="times" size="md" />
                 </GotoClose>
               </ItemRow>
