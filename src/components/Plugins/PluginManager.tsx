@@ -257,13 +257,13 @@ export const PluginsProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const addDataToStore = useCallback((path: string, data: Record<string, unknown>) => {
     const existingPathData: Record<string, unknown> = DataStore.data[path] as Record<string, unknown>;
 
-    // Merge new data with existing data
-    const newPathData = { ...existingPathData, ...data };
-    DataStore.data = { ...DataStore.data, [path]: newPathData };
-    for (const item of PluginDataSubscriptions.filter((s) => s.path === path)) {
-      // Send out all data, not just the new data
-      item.fn(newPathData);
-    }
+  // Merge new data with existing data
+  const newPathData = { ...existingPathData, ...data };
+  DataStore.data = { ...DataStore.data, [path]: newPathData };
+  for (const item of PluginDataSubscriptions.filter((s) => s.path === path)) {
+    // Send out all data, not just the new data
+    item.fn(newPathData);
+  }
   }, []);
 
   // Clear the store before a metadata request
