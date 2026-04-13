@@ -152,11 +152,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
                   const isSelected = val === value;
                   const isHighlighted = index === highlightedIndex;
                   return (
-                    <DropdownOptionItem
-                      key={o[0]}
-                      role="option"
-                      aria-selected={isSelected}
-                    >
+                    <DropdownOptionItem key={o[0]} role="option" aria-selected={isSelected}>
                       <DropdownOption
                         data-testid={`option-${o[0]}`}
                         textOnly
