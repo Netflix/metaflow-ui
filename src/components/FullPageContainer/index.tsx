@@ -48,7 +48,13 @@ const FullPageContainer: React.FC<FullPageContainerProps> = ({ children, onClose
 
         <HeaderSection>
           {actionbar && actionbar}
-          <FullPageContainerClose data-testid="fullpage-close-button" onClick={onCloseEvent}>
+          <FullPageContainerClose
+            data-testid="fullpage-close-button"
+            onClick={onCloseEvent}
+            role="button"
+            aria-label="Close fullscreen"
+            tabIndex={0}
+          >
             <Icon name="times" size="lg" />
           </FullPageContainerClose>
         </HeaderSection>

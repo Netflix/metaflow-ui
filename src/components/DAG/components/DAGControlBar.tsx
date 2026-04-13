@@ -15,7 +15,12 @@ type DAGControlBarProps = {
 
 const DAGControlBar: React.FC<DAGControlBarProps> = ({ setFullscreen, t }) => (
   <ItemRow pad="sm" justify="flex-end">
-    <Button onClick={() => setFullscreen(true)} withIcon data-testid="dag-control-fullscreen-button">
+    <Button
+      onClick={() => setFullscreen(true)}
+      withIcon
+      data-testid="dag-control-fullscreen-button"
+      title={t('run.show-fullscreen') as string}
+    >
       <Icon name="maximize" />
       <span>{t('run.show-fullscreen') as string}</span>
     </Button>
