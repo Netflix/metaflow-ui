@@ -6,6 +6,62 @@ import { MESSAGE_NAME, Plugin, PluginCommunicationsAPI, PluginsContext } from '@
 import { TimezoneContext } from '@components/TimezoneProvider';
 import { KnownURLParams, getRouteMatch } from '@utils/routing';
 
+// Element id used for the injected host-theme variables stylesheet inside the plugin iframe.
+// We re-target this element on theme changes so plugins stay in sync with the host (e.g. dark mode).
+const PLUGIN_THEME_VARS_STYLE_ID = 'metaflow-plugin-theme-vars';
+
+//
+// Extracts the currently-applied CSS custom properties from the host
+// document and serializes them into a `:root { ... }` CSS string suitable
+// for injection into a plugin iframe.
+//
+// Reading computed values (rather than the raw stylesheet) captures any
+// runtime overrides — for example a dark-mode toggle that sets
+// `--color-bg-primary` to a different value on `document.documentElement`.
+//
+function getThemeCSSVariables(): string {
+  const root = document.documentElement;
+  const declaredProps = new Set<string>();
+
+  const collectFromRules = (rules: CSSRuleList): void => {
+    for (const rule of Array.from(rules)) {
+      if (rule instanceof CSSStyleRule) {
+        if (rule.selectorText && (rule.selectorText.includes(':root') || rule.selectorText === 'html')) {
+          for (let i = 0; i < rule.style.length; i++) {
+            const prop = rule.style[i];
+            if (prop.startsWith('--')) declaredProps.add(prop);
+          }
+        }
+      } else if (rule instanceof CSSMediaRule || rule instanceof CSSSupportsRule) {
+        collectFromRules(rule.cssRules);
+      }
+    }
+  };
+
+  for (const sheet of Array.from(document.styleSheets)) {
+    try {
+      collectFromRules(sheet.cssRules);
+    } catch {
+      // Cross-origin stylesheet — skip
+    }
+  }
+
+  // Include inline custom properties applied directly to `<html>`
+  for (let i = 0; i < root.style.length; i++) {
+    const prop = root.style[i];
+    if (prop.startsWith('--')) declaredProps.add(prop);
+  }
+
+  const computed = getComputedStyle(root);
+  const declarations: string[] = [];
+  declaredProps.forEach((prop) => {
+    const value = computed.getPropertyValue(prop).trim();
+    if (value) declarations.push(`  ${prop}: ${value};`);
+  });
+
+  return `:root {\n${declarations.join('\n')}\n}`;
+}
+
 //
 // Typedef
 //
@@ -53,8 +109,16 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
           if (plugin.config.useApplicationStyles) {
             const iframeContent = _iframe?.current?.contentDocument;
             if (iframeContent) {
-              iframeContent.head.innerHTML = `<style>${PLUGIN_STYLESHEET}</style>` + iframeContent.head.innerHTML;
-              // TODO: ADD VARIABLES
+              // Inject the static plugin stylesheet AND a snapshot of the host's
+              // currently-resolved CSS custom properties. Resolving variables at
+              // injection time captures any runtime overrides on `:root` (e.g.
+              // an active dark-mode class) so plugins render with the same theme
+              // as the host instead of always seeing the light defaults.
+              const themeVars = getThemeCSSVariables();
+              iframeContent.head.innerHTML =
+                `<style>${PLUGIN_STYLESHEET}</style>` +
+                `<style id="${PLUGIN_THEME_VARS_STYLE_ID}">${themeVars}</style>` +
+                iframeContent.head.innerHTML;
             }
           }
         } else {
@@ -131,6 +195,38 @@ const PluginSlot: React.FC<Props> = ({ id, url, title, plugin, resourceParams })
       unsubscribeFromEvent(VERY_UNIQUE_ID);
     };
   }, [VERY_UNIQUE_ID, unsubscribeFromDatastore, unsubscribeFromEvent]);
+
+  //
+  // Keep plugin iframe theme variables in sync with the host.
+  //
+  // When the host swaps its theme at runtime (e.g. dark mode toggled by
+  // adding a class on `<html>` or flipping a CSS variable), the iframe
+  // would otherwise be stuck on the snapshot taken at register time.
+  // We watch for class/style mutations on `<html>` and re-write the
+  // variables stylesheet inside the iframe whenever something changes.
+  //
+  useEffect(() => {
+    if (!plugin.config.useApplicationStyles) return;
+
+    const syncThemeVars = () => {
+      const iframeContent = _iframe.current?.contentDocument;
+      if (!iframeContent) return;
+      const styleEl = iframeContent.getElementById(PLUGIN_THEME_VARS_STYLE_ID);
+      if (styleEl) {
+        styleEl.textContent = getThemeCSSVariables();
+      }
+    };
+
+    const observer = new MutationObserver(syncThemeVars);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class', 'style', 'data-theme'],
+    });
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [plugin.config.useApplicationStyles]);
 
   return (
     <PluginSlotContainer>
