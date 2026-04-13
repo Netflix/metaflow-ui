@@ -26,7 +26,6 @@ const Modal: React.FC<ModalProps> = ({ show, title, actionbar, onClose, children
 
   useOnKeyPress('Escape', onClose);
 
-  // focus trap: keep Tab/Shift+Tab cycling within the modal
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key !== 'Tab' || !modalRef.current) return;
@@ -54,7 +53,6 @@ const Modal: React.FC<ModalProps> = ({ show, title, actionbar, onClose, children
     [],
   );
 
-  // auto-focus the modal container and set up focus trap
   useEffect(() => {
     if (!show) return;
     const el = modalRef.current;
