@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import Button from '@components/Button';
 import { InputLabel } from '@components/Form/InputLabel';
@@ -39,6 +39,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
 }) => {
   const selectEl = useRef<HTMLSelectElement>(null);
   const [open, setOpen] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const activeOption = getActiveOption(options, value);
   const acitveOptionId = activeOption[0];
 
@@ -52,7 +53,43 @@ export const Dropdown: React.FC<DropdownProps> = ({
     if (!open && onClose) {
       onClose();
     }
+    if (!open) {
+      setHighlightedIndex(-1);
+    }
   }, [open, onClose]);
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (!open) {
+        if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setOpen(true);
+          return;
+        }
+      }
+
+      if (open) {
+        if (e.key === 'ArrowDown') {
+          e.preventDefault();
+          setHighlightedIndex((i) => Math.min(i + 1, options.length - 1));
+        } else if (e.key === 'ArrowUp') {
+          e.preventDefault();
+          setHighlightedIndex((i) => Math.max(i - 1, 0));
+        } else if ((e.key === 'Enter' || e.key === ' ') && highlightedIndex >= 0) {
+          e.preventDefault();
+          const val = options[highlightedIndex][0];
+          if (selectEl.current) {
+            selectEl.current.value = val;
+            const event = document.createEvent('HTMLEvents');
+            event.initEvent('change', true, false);
+            selectEl.current.dispatchEvent(event);
+          }
+          setOpen(false);
+        }
+      }
+    },
+    [open, highlightedIndex, options],
+  );
 
   return (
     <InputWrapper active={open} size={size} data-testid="select-field">
@@ -61,7 +98,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
           {label}
         </InputLabel>
       )}
-      <DropdownWrapper>
+      <DropdownWrapper onKeyDown={handleKeyDown}>
         <select
           style={{ display: useNativeComponent ? 'inline' : 'none' }}
           ref={selectEl}
@@ -69,6 +106,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
             onChange && onChange(event);
           }}
           value={value}
+          aria-label={label || 'Select option'}
           {...rest}
         >
           {options.map((o, index) => (
@@ -78,58 +116,63 @@ export const Dropdown: React.FC<DropdownProps> = ({
           ))}
         </select>
         {!useNativeComponent && (
-          <DropdownButton
-            data-testid="select-open-button"
-            className="dropdown-button"
-            textOnly
-            variant="text"
-            size={size || 'md'}
-            withIcon={size === 'sm' ? false : 'right'}
-            onClick={() => {
-              setOpen(true);
-            }}
-          >
-            <span
-              style={{
-                width: '100%',
-                textAlign: 'left',
-                whiteSpace: 'nowrap',
+          <DropdownTrigger aria-haspopup="listbox" aria-expanded={open} aria-label={label || 'Select option'}>
+            <DropdownButton
+              data-testid="select-open-button"
+              className="dropdown-button"
+              textOnly
+              variant="text"
+              size={size || 'md'}
+              withIcon={size === 'sm' ? false : 'right'}
+              onClick={() => {
+                setOpen(true);
               }}
             >
-              {labelRenderer ? labelRenderer(activeOption[0], activeOption[1]) : activeOption[1]}
-            </span>
-            <Icon name="caretDown" padLeft customSize="1.25rem" rotate={open ? 180 : 0} />
-          </DropdownButton>
+              <span
+                style={{
+                  width: '100%',
+                  textAlign: 'left',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {labelRenderer ? labelRenderer(activeOption[0], activeOption[1]) : activeOption[1]}
+              </span>
+              <Icon name="caretDown" padLeft customSize="1.25rem" rotate={open ? 180 : 0} />
+            </DropdownButton>
+          </DropdownTrigger>
         )}
 
         {open && (
           <>
-            <PopupClickOverlay onClick={() => setOpen(false)} />
-            <DropdownOptions show={open} alignment={optionsAlignment}>
+            <PopupClickOverlay onClick={() => setOpen(false)} aria-hidden="true" />
+            <DropdownOptions show={open} alignment={optionsAlignment} role="listbox" aria-label={label || 'Options'}>
               {children ||
-                options.map((o) => {
+                options.map((o, index) => {
                   const val = o[0];
                   const isSelected = val === value;
+                  const isHighlighted = index === highlightedIndex;
                   return (
-                    <DropdownOption
-                      data-testid={`option-${o[0]}`}
-                      key={o[0]}
-                      textOnly
-                      variant={isSelected ? 'primaryText' : 'text'}
-                      size="sm"
-                      onClick={() => {
-                        // Simulate native onChange event
-                        if (selectEl.current) {
-                          selectEl.current.value = val;
-                          const event = document.createEvent('HTMLEvents');
-                          event.initEvent('change', true, false);
-                          selectEl.current.dispatchEvent(event);
-                        }
-                        setOpen(false);
-                      }}
-                    >
-                      {optionRenderer ? optionRenderer(o[0], o[1]) : o[1]}
-                    </DropdownOption>
+                    <DropdownOptionItem key={o[0]} role="option" aria-selected={isSelected}>
+                      <DropdownOption
+                        data-testid={`option-${o[0]}`}
+                        textOnly
+                        variant={isSelected ? 'primaryText' : 'text'}
+                        size="sm"
+                        className={isHighlighted ? 'highlighted' : ''}
+                        onClick={() => {
+                          // Simulate native onChange event
+                          if (selectEl.current) {
+                            selectEl.current.value = val;
+                            const event = document.createEvent('HTMLEvents');
+                            event.initEvent('change', true, false);
+                            selectEl.current.dispatchEvent(event);
+                          }
+                          setOpen(false);
+                        }}
+                      >
+                        {optionRenderer ? optionRenderer(o[0], o[1]) : o[1]}
+                      </DropdownOption>
+                    </DropdownOptionItem>
                   );
                 })}
             </DropdownOptions>
@@ -168,6 +211,13 @@ const DropdownWrapper = styled.div`
   }
 `;
 
+const DropdownTrigger = styled.div`
+  display: flex;
+  width: 100%;
+`;
+
+const DropdownOptionItem = styled.div``;
+
 const DropdownButton = styled(Button)`
   border-radius: var(--radius-primary);
   height: ${(p) => (p.size ? '2rem' : '2.5rem')};
@@ -199,6 +249,10 @@ const DropdownOptions = styled(PopoverWrapper)`
 
 export const DropdownOption = styled(Button)`
   width: 100%;
+
+  &.highlighted {
+    background: var(--color-bg-secondary);
+  }
 `;
 
 const PopupClickOverlay = styled.div`

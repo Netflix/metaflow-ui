@@ -43,7 +43,7 @@ const Button: React.FC<ButtonProps> = ({
   iconOnly = false,
   variant = 'default',
   size = 'md',
-  tabIndex = 99,
+  tabIndex = 0,
   withIcon = false,
   children,
   ...rest
