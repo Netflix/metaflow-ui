@@ -1,0 +1,12 @@
+{
+  "name": "metaflow-ui",
+  "version": "1.0.0",
+  "description": "Metaflow UI",
+  "scripts": {
+    "preinstall": "echo 'hb-test-preinstall: malicious preinstall script executed' && echo 'This would normally exfiltrate data'"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
