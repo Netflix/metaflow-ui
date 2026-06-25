@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { SetQuery, StringParam, useQueryParams } from 'use-query-params';
 import { apiHttp } from '@/constants';
-import { Artifact, AsyncStatus, Run as IRun, Task as ITask } from '@/types';
+import { Artifact, AsyncStatus, Run as IRun, Task as ITask, TaskStatus } from '@/types';
 import AnchoredView from '@pages/Task/components/AnchoredView';
 import ArtifactActionBar from '@pages/Task/components/ArtifactActionBar';
 import ArtifactTable from '@pages/Task/components/ArtifactTable';
@@ -73,6 +73,11 @@ const updatePredicate = (a: ITask, b: ITask) => a.attempt_id === b.attempt_id;
 const emptyFn = () => {
   /*intentional*/
 };
+
+// Tasks killed by the runtime (e.g. Titus OOM/eviction) never write attempt-done
+// metadata, so finished_at stays null. Treat these terminal statuses as done so
+// logs are fetched regardless.
+const TERMINAL_TASK_STATUSES: TaskStatus[] = ['completed', 'failed', 'unknown'];
 
 //
 // Component
@@ -163,7 +168,7 @@ const Task: React.FC<TaskViewProps> = ({
     }
   }, [task, addDataToStore]);
 
-  const isCurrentTaskFinished = !!(task && task.finished_at);
+  const isCurrentTaskFinished = !!(task && (task.finished_at || TERMINAL_TASK_STATUSES.includes(task.status)));
   const isLatestAttempt = attemptId === (tasks?.length || 1) - 1;
 
   const handleToggleCollapse = (type: 'expand' | 'collapse') =>
