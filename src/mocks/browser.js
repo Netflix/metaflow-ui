@@ -2,7 +2,7 @@ import { HttpResponse, http, ws } from 'msw';
 import { setupWorker } from 'msw/browser';
 
 const stantardGetEndpoint = (endpoint, data) => {
-  const url = `http://localhost:3000/${endpoint}`;
+  const url = `${window.location.origin}/${endpoint}`;
 
   return http.get(url, () => {
     return HttpResponse.json({
@@ -28,7 +28,7 @@ const rawGetEndpoint = (url, data) => {
   });
 };
 
-const wsApi = ws.link('ws://localhost:3000/api/ws');
+const wsApi = ws.link(`${window.location.origin.replace(/^http/, 'ws')}/api/ws`);
 
 export const worker = setupWorker(
   stantardGetEndpoint('api/runs', [
