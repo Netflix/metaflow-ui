@@ -42,14 +42,21 @@ export const apiWs = (path: string): string => formatUrl(METAFLOW_SERVICE_WS, pa
  * 1. `window.MF_DEFAULT_TIME_FILTER_DAYS` (during runtime, inject via index.html)
  * 2. `process.env.REACT_APP_MF_DEFAULT_TIME_FILTER_DAYS` (during build)
  * 3. Defaults to 30
+ *
+ * Values that are not a positive number of days are ignored.
  */
 
 const DEFAULT_NUM_DAYS = 30;
+
+export const parseTimeFilterDays = (value: string | undefined): number | undefined => {
+  const days = value ? parseInt(value, 10) : NaN;
+  return days > 0 ? days : undefined;
+};
+
 export const DEFAULT_TIME_FILTER_DAYS: number =
-  (window.MF_DEFAULT_TIME_FILTER_DAYS && parseInt(window.MF_DEFAULT_TIME_FILTER_DAYS, DEFAULT_NUM_DAYS)) ||
-  (process.env.REACT_APP_MF_DEFAULT_TIME_FILTER_DAYS &&
-    parseInt(process.env.REACT_APP_MF_DEFAULT_TIME_FILTER_DAYS, DEFAULT_NUM_DAYS)) ||
-  30;
+  parseTimeFilterDays(window.MF_DEFAULT_TIME_FILTER_DAYS) ??
+  parseTimeFilterDays(process.env.REACT_APP_MF_DEFAULT_TIME_FILTER_DAYS) ??
+  DEFAULT_NUM_DAYS;
 
 // The time between polls for new data for cards
 export const DYNAMIC_CARDS_REFRESH_INTERVAL =
